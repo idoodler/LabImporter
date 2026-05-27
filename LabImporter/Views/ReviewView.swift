@@ -198,8 +198,8 @@ struct ReviewView: View {
             do {
                 let granted = try await store.requestAccess(for: .contacts)
                 guard granted else { return }
-                let me = try store.unifiedMeContact(withKeys: keys)
-                let name = [me.givenName, me.familyName]
+                let meContact = try store.unifiedMeContact(withKeys: keys)
+                let name = [meContact.givenName, meContact.familyName]
                     .filter { !$0.isEmpty }
                     .joined(separator: " ")
                 if !name.isEmpty { patientName = name }
