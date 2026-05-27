@@ -211,14 +211,14 @@ platform :ios do
 
   # ── Check & Renew ──────────────────────────────────────────────────────────
 
-  desc "Check certificate expiry and write result to new_certificate_needed.txt"
+  desc "Check Certificates and Trigger Workflow for Expired or Missing Certificates"
   lane :check_and_renew_certificates do
     setup_ci if ENV['CI']
     ENV["MATCH_READONLY"] = false.to_s
 
-    app_store_connect_api_key(
-      key_id:    ENV["FASTLANE_KEY_ID"],
-      issuer_id: ENV["FASTLANE_ISSUER_ID"],
+    api_key = app_store_connect_api_key(
+      key_id:      ENV["FASTLANE_KEY_ID"],
+      issuer_id:   ENV["FASTLANE_ISSUER_ID"],
       key_content: ENV["FASTLANE_KEY"]
     )
 
@@ -233,20 +233,23 @@ platform :ios do
     else
       distribution_certs.each do |cert|
         expiration_date = Time.parse(cert.expiration_date)
-        puts "Distribution Certificate: #{cert.id}, Expires: #{expiration_date}"
+        puts "Current Distribution Certificate: #{cert.id}, Expiration date: #{expiration_date}"
         if expiration_date < Time.now
-          puts "Certificate #{cert.id} is expired!"
+          puts "Distribution Certificate #{cert.id} is expired! Triggering action to renew certificate."
           new_certificate_needed = true
         else
-          puts "Certificate #{cert.id} is valid."
+          puts "Distribution certificate #{cert.id} is valid. No action required."
         end
       end
     end
 
-    workspace = ENV['GITHUB_WORKSPACE'] || Dir.pwd
-    file_path = File.join(workspace, 'new_certificate_needed.txt')
+    file_path = File.expand_path('new_certificate_needed.txt')
     File.write(file_path, new_certificate_needed ? 'true' : 'false')
-    puts "Certificate renewal needed: #{File.read(file_path)}"
+
+    puts ""
+    puts "Absolute path of new_certificate_needed.txt: #{file_path}"
+    new_certificate_needed_content = File.read(file_path)
+    puts "Certificate creation or renewal needed: #{new_certificate_needed_content}"
   end
 
 end
