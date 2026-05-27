@@ -138,7 +138,8 @@ struct CDAExportService {
                   <effectiveTime value="\(date)"/>
                   <value xsi:type="PQ" value="\(valueStr)" unit="\(esc(unit))"/>
                 </observation>
-              </component>"""
+              </component>
+              """
     }
 
     // Maps common German lab unit strings to UCUM codes.
