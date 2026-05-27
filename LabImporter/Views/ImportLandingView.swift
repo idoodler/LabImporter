@@ -6,14 +6,20 @@ struct ImportLandingView: View {
     let onCamera: () -> Void
     let onPaste: () -> Void
     let clipboardAvailable: Bool
+    let isProcessing: Bool
 
     var body: some View {
         VStack(spacing: 0) {
             Spacer()
             heroSection
             Spacer()
-            importCard
-                .padding(.horizontal, 24)
+            if isProcessing {
+                processingCard
+                    .padding(.horizontal, 24)
+            } else {
+                importCard
+                    .padding(.horizontal, 24)
+            }
             Spacer()
                 .frame(height: 56)
         }
@@ -45,6 +51,28 @@ struct ImportLandingView: View {
                     .foregroundStyle(.secondary)
             }
         }
+    }
+
+    // MARK: - Processing card
+
+    private var processingCard: some View {
+        VStack(spacing: 16) {
+            ProgressView()
+                .controlSize(.large)
+            Text("Analyzing lab report…")
+                .font(.headline)
+                .foregroundStyle(.primary)
+            Text("Using on-device AI")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(32)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 28))
+        .overlay(
+            RoundedRectangle(cornerRadius: 28)
+                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
+        )
     }
 
     // MARK: - Import Card

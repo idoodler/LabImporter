@@ -17,7 +17,6 @@
 		AABB000000000000000046AA /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000026AA /* HomeView.swift */; };
 		AABB000000000000000047AA /* ReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000027AA /* ReviewView.swift */; };
 		AABB000000000000000048AA /* LabValueRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000028AA /* LabValueRowView.swift */; };
-		AABB000000000000000049AA /* ProcessingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000029AA /* ProcessingView.swift */; };
 		AABB000000000000000050AA /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000030AA /* CameraView.swift */; };
 		AABB000000000000000052AA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000032AA /* Assets.xcassets */; };
 		AABB000000000000000053AA /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AABB000000000000000035AA /* HealthKit.framework */; };
@@ -45,7 +44,6 @@
 		AABB000000000000000026AA /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		AABB000000000000000027AA /* ReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewView.swift; sourceTree = "<group>"; };
 		AABB000000000000000028AA /* LabValueRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabValueRowView.swift; sourceTree = "<group>"; };
-		AABB000000000000000029AA /* ProcessingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessingView.swift; sourceTree = "<group>"; };
 		AABB000000000000000030AA /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		AABB000000000000000032AA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AABB000000000000000033AA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -139,7 +137,6 @@
 				AABB000000000000000026AA /* HomeView.swift */,
 				AABB000000000000000027AA /* ReviewView.swift */,
 				AABB000000000000000028AA /* LabValueRowView.swift */,
-				AABB000000000000000029AA /* ProcessingView.swift */,
 				AABB000000000000000030AA /* CameraView.swift */,
 				AABB000000000000000065AA /* HistoryView.swift */,
 				AABB000000000000000067AA /* ReportDetailView.swift */,
@@ -239,7 +236,6 @@
 				AABB000000000000000046AA /* HomeView.swift in Sources */,
 				AABB000000000000000047AA /* ReviewView.swift in Sources */,
 				AABB000000000000000048AA /* LabValueRowView.swift in Sources */,
-				AABB000000000000000049AA /* ProcessingView.swift in Sources */,
 				AABB000000000000000050AA /* CameraView.swift in Sources */,
 				AABB000000000000000060AA /* LabReport.swift in Sources */,
 				AABB000000000000000064AA /* HistoryView.swift in Sources */,

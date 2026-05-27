@@ -30,9 +30,6 @@ struct HomeView: View {
                         Task { await processImage(image) }
                     }
                 }
-                .overlay {
-                    if isProcessing { ProcessingView() }
-                }
                 .alert("Error", isPresented: .constant(errorMessage != nil)) {
                     Button("OK") { errorMessage = nil }
                 } message: {
@@ -52,6 +49,9 @@ struct HomeView: View {
             Task { await loadReports() }
         }
         .onAppear { refreshClipboardState() }
+        .onOpenURL { url in
+            Task { await processSharedURL(url) }
+        }
     }
 
     // MARK: - Content routing
@@ -66,7 +66,8 @@ struct HomeView: View {
                 photosPickerItem: $photosPickerItem,
                 onCamera: { showCamera = true },
                 onPaste: pasteFromClipboard,
-                clipboardAvailable: clipboardHasContent
+                clipboardAvailable: clipboardHasContent,
+                isProcessing: isProcessing
             )
         } else {
             DashboardView(
@@ -74,7 +75,8 @@ struct HomeView: View {
                 photosPickerItem: $photosPickerItem,
                 onCamera: { showCamera = true },
                 onPaste: pasteFromClipboard,
-                clipboardAvailable: clipboardHasContent
+                clipboardAvailable: clipboardHasContent,
+                isProcessing: isProcessing
             )
         }
     }
@@ -104,6 +106,21 @@ struct HomeView: View {
         } else if let text = pasteboard.string, !text.isEmpty {
             Task { await processText(text) }
         }
+    }
+
+    // MARK: - Shared URL (share sheet / open with)
+
+    private func processSharedURL(_ url: URL) async {
+        let accessing = url.startAccessingSecurityScopedResource()
+        defer {
+            if accessing { url.stopAccessingSecurityScopedResource() }
+        }
+        guard let data = try? Data(contentsOf: url),
+              let image = UIImage(data: data) else {
+            errorMessage = "Could not open the shared image."
+            return
+        }
+        await processImage(image)
     }
 
     // MARK: - Processing

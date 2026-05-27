@@ -25,7 +25,10 @@ struct TrendsView: View {
             }
         }
         let pinned = prefs.pinnedSet
-        let orderMap = Dictionary(uniqueKeysWithValues: prefs.orderedCodes.enumerated().map { ($1, $0) })
+        var orderMap: [String: Int] = [:]
+        for (idx, code) in prefs.orderedCodes.enumerated() {
+            if orderMap[code] == nil { orderMap[code] = idx }
+        }
         return result.sorted { lhs, rhs in
             let aPin = pinned.contains(lhs.code)
             let bPin = pinned.contains(rhs.code)

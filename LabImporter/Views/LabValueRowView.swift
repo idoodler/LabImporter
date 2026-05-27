@@ -13,10 +13,14 @@ struct LabValueRowView: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 12) {
-            Image(systemName: value.isSelected ? "checkmark.circle.fill" : "circle")
-                .font(.title3)
-                .foregroundStyle(value.isSelected ? Color.accentColor : Color.secondary)
-                .onTapGesture { value.isSelected.toggle() }
+            Button {
+                value.isSelected = !value.isSelected
+            } label: {
+                Image(systemName: value.isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.title3)
+                    .foregroundStyle(value.isSelected ? Color.accentColor : Color.secondary)
+            }
+            .buttonStyle(.plain)
 
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 4) {
