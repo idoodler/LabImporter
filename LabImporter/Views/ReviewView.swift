@@ -7,7 +7,9 @@ struct ReviewView: View {
     @State private var isImporting = false
     @State private var importResult: ImportResult?
     @State private var importError: Error?
+    @State private var unsupportedCopied = false
 
+    @FocusState private var anyFieldFocused: Bool
     @Environment(\.dismiss) private var dismiss
 
     private let healthKitService = HealthKitService()
@@ -22,9 +24,13 @@ struct ReviewView: View {
             valuesSection
             infoSection
         }
+        .scrollDismissesKeyboard(.interactively)
         .navigationTitle("Review Values")
         .navigationBarTitleDisplayMode(.large)
-        .toolbar { importButton }
+        .toolbar {
+            importButton
+            keyboardDoneButton
+        }
         .overlay { if isImporting { ProcessingView(message: "Importing to Apple Health…") } }
         .sheet(item: $importResult) { result in
             ImportResultView(result: result)
@@ -52,7 +58,7 @@ struct ReviewView: View {
     private var valuesSection: some View {
         Section {
             ForEach($labValues) { $value in
-                LabValueRowView(value: $value)
+                LabValueRowView(value: $value, anyFieldFocused: $anyFieldFocused)
             }
         } header: {
             Text("Lab Values — tap values to correct them")
@@ -64,21 +70,40 @@ struct ReviewView: View {
         let unsupported = labValues.filter { !$0.canImportToHealth }
         if !unsupported.isEmpty {
             Section {
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: 10) {
                     Label(
                         "\(unsupported.count) value\(unsupported.count == 1 ? "" : "s") not supported by Apple Health",
                         systemImage: "info.circle"
                     )
-                    .font(.footnote)
+                    .font(.footnote.weight(.medium))
                     .foregroundStyle(.secondary)
 
                     Text(unsupported.map(\.name).joined(separator: ", "))
                         .font(.caption)
                         .foregroundStyle(.tertiary)
+
+                    Text("Apple Health's writable API currently supports only a limited set of lab values. The values above are recorded in this report but cannot be imported.")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+
+                    Button {
+                        copyUnsupportedToClipboard(unsupported)
+                    } label: {
+                        Label(
+                            unsupportedCopied ? "Copied!" : "Copy as Text",
+                            systemImage: unsupportedCopied ? "checkmark" : "doc.on.doc"
+                        )
+                        .font(.caption.weight(.medium))
+                    }
+                    .buttonStyle(.borderless)
+                    .foregroundStyle(.blue)
                 }
+                .padding(.vertical, 4)
             }
         }
     }
+
+    // MARK: - Toolbar
 
     private var importButton: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
@@ -89,6 +114,31 @@ struct ReviewView: View {
             }
             .disabled(importableCount == 0 || isImporting)
             .fontWeight(.semibold)
+        }
+    }
+
+    private var keyboardDoneButton: some ToolbarContent {
+        ToolbarItem(placement: .keyboard) {
+            HStack {
+                Spacer()
+                Button("Done") { anyFieldFocused = false }
+                    .fontWeight(.semibold)
+            }
+        }
+    }
+
+    // MARK: - Clipboard
+
+    private func copyUnsupportedToClipboard(_ values: [LabValue]) {
+        let lines = values.map { v -> String in
+            let val = v.displayValue == "-" ? "negative" : "\(v.displayValue) \(v.unit)".trimmingCharacters(in: .whitespaces)
+            return "\(v.name): \(val)"
+        }
+        UIPasteboard.general.string = lines.joined(separator: "\n")
+        unsupportedCopied = true
+        Task {
+            try? await Task.sleep(for: .seconds(2))
+            unsupportedCopied = false
         }
     }
 

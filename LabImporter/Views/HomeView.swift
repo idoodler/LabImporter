@@ -8,6 +8,7 @@ struct HomeView: View {
     @State private var labValues: [LabValue] = []
     @State private var showReview = false
     @State private var errorMessage: String?
+    @State private var clipboardHasContent = false
 
     private let ocrService = OCRService()
     private let parserService = LabParserService()
@@ -23,6 +24,7 @@ struct HomeView: View {
             .padding()
             .navigationTitle("Lab Importer")
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear { refreshClipboardState() }
             .onChange(of: photosPickerItem) { _, item in
                 guard let item else { return }
                 Task { await loadAndProcess(item: item) }
@@ -90,6 +92,32 @@ struct HomeView: View {
             .buttonStyle(.bordered)
             .controlSize(.large)
             .disabled(!UIImagePickerController.isSourceTypeAvailable(.camera))
+
+            Button {
+                pasteFromClipboard()
+            } label: {
+                Label("Paste from Clipboard", systemImage: "doc.on.clipboard")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.large)
+            .disabled(!clipboardHasContent)
+        }
+    }
+
+    // MARK: - Clipboard
+
+    private func refreshClipboardState() {
+        let pb = UIPasteboard.general
+        clipboardHasContent = pb.hasImages || pb.hasStrings
+    }
+
+    private func pasteFromClipboard() {
+        let pb = UIPasteboard.general
+        if let image = pb.image {
+            Task { await processImage(image) }
+        } else if let text = pb.string, !text.isEmpty {
+            Task { await processText(text) }
         }
     }
 
@@ -115,6 +143,25 @@ struct HomeView: View {
 
             if values.isEmpty {
                 errorMessage = "No lab values were found in this image. Make sure the report is clearly visible."
+                return
+            }
+
+            labValues = values
+            showReview = true
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    private func processText(_ text: String) async {
+        isProcessing = true
+        defer { isProcessing = false }
+
+        do {
+            let values = try await parserService.parseLabValues(from: text)
+
+            if values.isEmpty {
+                errorMessage = "No lab values were found in the clipboard text."
                 return
             }
 

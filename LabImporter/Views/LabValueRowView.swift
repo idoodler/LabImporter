@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LabValueRowView: View {
     @Binding var value: LabValue
+    var anyFieldFocused: FocusState<Bool>.Binding
 
     @State private var editedValue: String = ""
     @FocusState private var isFocused: Bool
@@ -39,6 +40,13 @@ struct LabValueRowView: View {
         .onAppear { editedValue = value.displayValue }
         .onChange(of: value.displayValue) { _, new in
             if editedValue != new { editedValue = new }
+        }
+        .onChange(of: isFocused) { _, focused in
+            // Mirror local focus state up so the toolbar Done button works
+            if focused { anyFieldFocused.wrappedValue = true }
+        }
+        .onChange(of: anyFieldFocused.wrappedValue) { _, globalFocused in
+            if !globalFocused { isFocused = false }
         }
     }
 
@@ -85,7 +93,8 @@ struct LabValueRowView: View {
         numericValue: 0.91,
         unit: "mg/dl"
     )
+    @Previewable @FocusState var focused: Bool
     List {
-        LabValueRowView(value: $value)
+        LabValueRowView(value: $value, anyFieldFocused: $focused)
     }
 }
