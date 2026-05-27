@@ -49,12 +49,11 @@ actor HealthKitService {
                     return
                 }
                 if let cdaSamples = samples as? [HKCDADocumentSample] {
-                    for sample in cdaSamples {
-                        if let xmlData = sample.document?.documentData,
-                           let report = CDADocumentParser.parse(data: xmlData, id: sample.uuid) {
-                            results.append(report)
-                        }
+                    let parsed = cdaSamples.compactMap { sample -> LabReport? in
+                        guard let xmlData = sample.document?.documentData else { return nil }
+                        return CDADocumentParser.parse(data: xmlData, id: sample.uuid)
                     }
+                    results.append(contentsOf: parsed)
                 }
                 if done {
                     finished = true

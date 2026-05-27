@@ -197,8 +197,8 @@ struct DashboardView: View {
     private var sortedMetrics: [MetricData] {
         let pinned = prefs.pinnedSet
         var orderMap: [String: Int] = [:]
-        for (idx, code) in prefs.orderedCodes.enumerated() {
-            if orderMap[code] == nil { orderMap[code] = idx }
+        for (idx, code) in prefs.orderedCodes.enumerated() where orderMap[code] == nil {
+            orderMap[code] = idx
         }
         return metrics.sorted { lhs, rhs in
             let aPin = pinned.contains(lhs.entry.code)
