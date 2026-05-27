@@ -24,8 +24,6 @@
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSContactsUsageDescription</key>
-	<string>Lab Importer reads your contact card to pre-fill the patient name on lab reports.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Camera is used to photograph your lab report so values can be extracted automatically.</string>
 	<key>NSHealthShareUsageDescription</key>

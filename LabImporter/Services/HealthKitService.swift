@@ -72,7 +72,7 @@ actor HealthKitService {
         guard let documentType = HKObjectType.documentType(forIdentifier: .CDA) else { return }
         try await store.requestAuthorization(toShare: [documentType], read: [])
 
-        let sample = try HKCDADocumentSample(data: data, start: date, end: date, device: nil, metadata: nil)
+        let sample = try HKCDADocumentSample(data: data, start: date, end: date, metadata: nil)
         try await store.save(sample)
     }
 }

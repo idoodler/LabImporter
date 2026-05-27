@@ -1,6 +1,5 @@
 import SwiftUI
 import HealthKit
-import Contacts
 
 struct ReviewView: View {
     @State var labValues: [LabValue]
@@ -71,19 +70,9 @@ struct ReviewView: View {
 
     private var patientSection: some View {
         Section("Patient") {
-            HStack {
-                TextField("Full Name (optional)", text: $patientName)
-                    .autocorrectionDisabled()
-                    .textContentType(.name)
-
-                Button {
-                    fillNameFromContacts()
-                } label: {
-                    Image(systemName: "person.crop.circle")
-                        .foregroundStyle(.blue)
-                }
-                .buttonStyle(.borderless)
-            }
+            TextField("Full Name (optional)", text: $patientName)
+                .autocorrectionDisabled()
+                .textContentType(.name)
         }
     }
 
@@ -185,26 +174,6 @@ struct ReviewView: View {
                 Spacer()
                 Button("Done") { anyFieldFocused = false }
                     .fontWeight(.semibold)
-            }
-        }
-    }
-
-    // MARK: - Contacts
-
-    private func fillNameFromContacts() {
-        Task {
-            let store = CNContactStore()
-            let keys = [CNContactGivenNameKey, CNContactFamilyNameKey] as [CNKeyDescriptor]
-            do {
-                let granted = try await store.requestAccess(for: .contacts)
-                guard granted else { return }
-                let meContact = try store.unifiedMeContact(withKeys: keys)
-                let name = [meContact.givenName, meContact.familyName]
-                    .filter { !$0.isEmpty }
-                    .joined(separator: " ")
-                if !name.isEmpty { patientName = name }
-            } catch {
-                // No me-card set up or access denied — silently ignore
             }
         }
     }
