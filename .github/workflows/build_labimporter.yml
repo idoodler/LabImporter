@@ -46,6 +46,13 @@ jobs:
       - name: Sync clock
         run: sudo sntp -sS time.windows.com
 
+      - name: SwiftLint
+        run: |
+          if ! command -v swiftlint &>/dev/null; then
+            brew install swiftlint
+          fi
+          swiftlint lint --strict --reporter github-actions-logging
+
       - name: Fastlane Build & Archive
         run: bundle exec fastlane build_labimporter
         env:

@@ -12,7 +12,6 @@ struct ReviewView: View {
     @State private var cdaExportError: String?
 
     @FocusState private var anyFieldFocused: Bool
-    @Environment(\.dismiss) private var dismiss
 
     private let healthKitService = HealthKitService()
     private let cdaService = CDAExportService()
@@ -157,7 +156,7 @@ struct ReviewView: View {
     // MARK: - Clipboard
 
     private func copyUnsupportedToClipboard(_ values: [LabValue]) {
-        let lines = values.map { v -> String in
+        let lines = values.map { v in
             let val = v.displayValue == "-" ? "negative" : "\(v.displayValue) \(v.unit)".trimmingCharacters(in: .whitespaces)
             return "\(v.name): \(val)"
         }
