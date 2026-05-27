@@ -55,9 +55,11 @@ This checks that all secrets are valid, that your App Store Connect API key work
 
 Go to **Actions → 2. Add Identifiers → Run workflow**.
 
-This registers the `de.idoodler.LabImporter` App ID in App Store Connect and enables the **HealthKit** capability on it.
+This registers your app's bundle ID in App Store Connect and enables the **HealthKit** capability on it.
 
-After this step, go to [App Store Connect](https://appstoreconnect.apple.com) and create a new app record for **LabImporter** using the `de.idoodler.LabImporter` bundle ID. This is required before the first build can upload to TestFlight.
+The bundle identifier is `dev.idoodler.<TEAMID>.labimporter` — the same pattern as Trio (`org.nightscout.<TEAMID>.trio`). The `<TEAMID>` placeholder is substituted automatically from the `TEAMID` secret at build time via `Config.xcconfig`.
+
+After this step, go to [App Store Connect](https://appstoreconnect.apple.com) and create a new app record for **LabImporter** using the bundle ID shown in the workflow log. This is required before the first build can upload to TestFlight.
 
 #### 3. Create Certificates
 

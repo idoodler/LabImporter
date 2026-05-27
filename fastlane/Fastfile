@@ -10,7 +10,26 @@ FASTLANE_KEY            = ENV["FASTLANE_KEY"]
 
 ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "120"
 
-BUNDLE_ID = "de.idoodler.LabImporter"
+# Parse Config.xcconfig and substitute $(DEVELOPMENT_TEAM) with TEAMID,
+# mirroring the same pattern used in the Trio repository.
+def parse_xcconfig_file(path)
+  xcconfig = {}
+  File.open(path).each_line do |line|
+    line.strip!
+    next if line.empty? || line.start_with?('//')
+    parts = line.split('=')
+    next if parts.length < 2
+    key, value = parts.map(&:strip)
+    value = value.gsub('$(DEVELOPMENT_TEAM)', TEAMID)
+    xcconfig[key] = value
+  end
+  xcconfig
+end
+
+xcconfig_path = "#{GITHUB_WORKSPACE}/Config.xcconfig"
+xcconfig      = parse_xcconfig_file(xcconfig_path)
+ENV["BUNDLE_ID"] = xcconfig["BUNDLE_IDENTIFIER"]
+BUNDLE_ID        = ENV["BUNDLE_ID"]
 
 platform :ios do
 

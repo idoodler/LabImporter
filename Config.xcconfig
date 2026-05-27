@@ -1,0 +1,3 @@
+// Customise the bundle identifier prefix here.
+// $(DEVELOPMENT_TEAM) is substituted automatically by Xcode and Fastlane.
+BUNDLE_IDENTIFIER = dev.idoodler.$(DEVELOPMENT_TEAM).labimporter
