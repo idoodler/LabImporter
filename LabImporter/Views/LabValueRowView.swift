@@ -9,12 +9,21 @@ struct LabValueRowView: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 12) {
-            selectionControl
+            Toggle("", isOn: $value.isSelected)
+                .labelsHidden()
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(value.name)
-                    .font(.body)
-                    .foregroundStyle(value.canImportToHealth ? .primary : .secondary)
+                HStack(spacing: 4) {
+                    Text(value.name)
+                        .font(.body)
+
+                    if !value.canImportToHealth {
+                        Image(systemName: "cross.case")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                            .help("Not supported by Apple Health — included in CDA only")
+                    }
+                }
 
                 Text(value.code)
                     .font(.caption2)
@@ -47,18 +56,6 @@ struct LabValueRowView: View {
         }
         .onChange(of: anyFieldFocused.wrappedValue) { _, globalFocused in
             if !globalFocused { isFocused = false }
-        }
-    }
-
-    @ViewBuilder
-    private var selectionControl: some View {
-        if value.canImportToHealth {
-            Toggle("", isOn: $value.isSelected)
-                .labelsHidden()
-        } else {
-            Image(systemName: "info.circle")
-                .foregroundStyle(.secondary)
-                .help("This value type is not yet supported by Apple Health")
         }
     }
 

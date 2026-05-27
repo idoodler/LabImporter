@@ -3,15 +3,16 @@ import Foundation
 struct CDAExportService {
 
     // Returns a C-CDA R2.1 Lab Report XML string.
-    // Values without a LOINC mapping or numeric result are omitted.
+    // Values without a LOINC mapping, numeric result, or that are deselected are omitted.
     // swiftlint:disable:next function_body_length
-    func generateCDA(labValues: [LabValue], date: Date) -> String {
+    func generateCDA(labValues: [LabValue], date: Date, patientName: String = "") -> String {
         let dateStr = hl7Date(date)
         let docId   = uuid()
         let orgId   = uuid()
+        let patientFamily = esc(patientName.trimmingCharacters(in: .whitespaces).isEmpty ? "Unknown" : patientName)
 
         let exportable = labValues.filter {
-            $0.numericValue != nil && LabMapping.loincCode(for: $0.code) != nil
+            $0.isSelected && $0.numericValue != nil && LabMapping.loincCode(for: $0.code) != nil
         }
 
         let narrativeRows = exportable.map { labValue in
@@ -42,7 +43,7 @@ struct CDAExportService {
       <id nullFlavor="UNK"/>
       <patient>
         <name>
-          <family>Unknown</family>
+          <family>\(patientFamily)</family>
         </name>
         <administrativeGenderCode nullFlavor="UNK"/>
         <birthTime nullFlavor="UNK"/>
@@ -106,8 +107,8 @@ struct CDAExportService {
     }
 
     // Writes the CDA to a temp file and returns the URL for sharing.
-    func exportToTempFile(labValues: [LabValue], date: Date) throws -> URL {
-        let xml = generateCDA(labValues: labValues, date: date)
+    func exportToTempFile(labValues: [LabValue], date: Date, patientName: String = "") throws -> URL {
+        let xml = generateCDA(labValues: labValues, date: date, patientName: patientName)
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         let name = "LabResults-\(formatter.string(from: date)).xml"

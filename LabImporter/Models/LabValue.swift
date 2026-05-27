@@ -34,7 +34,7 @@ struct LabValue: Identifiable, Equatable, @unchecked Sendable {
         self.numericValue = numericValue
         self.unit = unit
         self.healthKitMapping = healthKitMapping
-        self.isSelected = isSelected && healthKitMapping != nil && numericValue != nil
+        self.isSelected = isSelected
     }
 
     static func == (lhs: LabValue, rhs: LabValue) -> Bool {

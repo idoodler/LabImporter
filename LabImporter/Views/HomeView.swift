@@ -23,11 +23,11 @@ struct HomeView: View {
                 actionButtons
             }
             .padding()
-            .navigationTitle("Lab Importer")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("")
             .onAppear { refreshClipboardState() }
             .onChange(of: photosPickerItem) { _, item in
                 guard let item else { return }
+                photosPickerItem = nil
                 Task { await loadAndProcess(item: item) }
             }
             .sheet(isPresented: $showCamera) {

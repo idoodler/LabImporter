@@ -1,25 +1,28 @@
 import SwiftUI
 import HealthKit
+import Contacts
 
 struct ReviewView: View {
     @State var labValues: [LabValue]
     @State private var reportDate: Date
+    @AppStorage("patientName") private var patientName: String = ""
 
-    init(labValues: [LabValue], reportDate: Date = Date()) {
-        _labValues = State(initialValue: labValues)
-        _reportDate = State(initialValue: reportDate)
-    }
     @State private var isImporting = false
     @State private var importResult: ImportResult?
     @State private var importError: Error?
     @State private var unsupportedCopied = false
-    @State private var cdaExportURL: URL?
-    @State private var cdaExportError: String?
+    @State private var cdaShareURL: URL?
+    @State private var cdaError: String?
 
     @FocusState private var anyFieldFocused: Bool
 
     private let healthKitService = HealthKitService()
     private let cdaService = CDAExportService()
+
+    init(labValues: [LabValue], reportDate: Date = Date()) {
+        _labValues = State(initialValue: labValues)
+        _reportDate = State(initialValue: reportDate)
+    }
 
     private var importableCount: Int {
         labValues.filter { $0.isSelected && $0.canImportToHealth }.count
@@ -27,6 +30,7 @@ struct ReviewView: View {
 
     var body: some View {
         List {
+            patientSection
             dateSection
             valuesSection
             infoSection
@@ -43,10 +47,10 @@ struct ReviewView: View {
             ImportResultView(result: result)
         }
         .sheet(isPresented: Binding(
-            get: { cdaExportURL != nil },
-            set: { if !$0 { cdaExportURL = nil } }
+            get: { cdaShareURL != nil },
+            set: { if !$0 { cdaShareURL = nil } }
         )) {
-            if let url = cdaExportURL {
+            if let url = cdaShareURL {
                 ShareSheet(url: url)
                     .ignoresSafeArea()
             }
@@ -56,14 +60,32 @@ struct ReviewView: View {
         } message: {
             Text(importError?.localizedDescription ?? "")
         }
-        .alert("Export Error", isPresented: .constant(cdaExportError != nil)) {
-            Button("OK") { cdaExportError = nil }
+        .alert("Export Error", isPresented: .constant(cdaError != nil)) {
+            Button("OK") { cdaError = nil }
         } message: {
-            Text(cdaExportError ?? "")
+            Text(cdaError ?? "")
         }
     }
 
     // MARK: - Sections
+
+    private var patientSection: some View {
+        Section("Patient") {
+            HStack {
+                TextField("Full Name (optional)", text: $patientName)
+                    .autocorrectionDisabled()
+                    .textContentType(.name)
+
+                Button {
+                    fillNameFromContacts()
+                } label: {
+                    Image(systemName: "person.crop.circle")
+                        .foregroundStyle(.blue)
+                }
+                .buttonStyle(.borderless)
+            }
+        }
+    }
 
     private var dateSection: some View {
         Section {
@@ -137,10 +159,18 @@ struct ReviewView: View {
                 }
                 .disabled(importableCount == 0 || isImporting)
 
+                Divider()
+
                 Button {
-                    exportCDA()
+                    Task { await performCDAImport() }
                 } label: {
-                    Label("Export as CDA (Clinical Document)", systemImage: "doc.badge.arrow.up")
+                    Label("Save to Health Records (CDA)", systemImage: "doc.badge.plus")
+                }
+
+                Button {
+                    shareCDA()
+                } label: {
+                    Label("Share XML File", systemImage: "doc.badge.arrow.up")
                 }
             } label: {
                 Text(importableCount > 0 ? "Import \(importableCount)" : "Import")
@@ -155,6 +185,26 @@ struct ReviewView: View {
                 Spacer()
                 Button("Done") { anyFieldFocused = false }
                     .fontWeight(.semibold)
+            }
+        }
+    }
+
+    // MARK: - Contacts
+
+    private func fillNameFromContacts() {
+        Task {
+            let store = CNContactStore()
+            let keys = [CNContactGivenNameKey, CNContactFamilyNameKey] as [CNKeyDescriptor]
+            do {
+                let granted = try await store.requestAccess(for: .contacts)
+                guard granted else { return }
+                let me = try store.unifiedMeContact(withKeys: keys)
+                let name = [me.givenName, me.familyName]
+                    .filter { !$0.isEmpty }
+                    .joined(separator: " ")
+                if !name.isEmpty { patientName = name }
+            } catch {
+                // No me-card set up or access denied — silently ignore
             }
         }
     }
@@ -176,13 +226,26 @@ struct ReviewView: View {
         }
     }
 
-    // MARK: - CDA Export
+    // MARK: - CDA
 
-    private func exportCDA() {
+    private func shareCDA() {
         do {
-            cdaExportURL = try cdaService.exportToTempFile(labValues: labValues, date: reportDate)
+            cdaShareURL = try cdaService.exportToTempFile(
+                labValues: labValues,
+                date: reportDate,
+                patientName: patientName
+            )
         } catch {
-            cdaExportError = error.localizedDescription
+            cdaError = error.localizedDescription
+        }
+    }
+
+    private func performCDAImport() async {
+        let xml = cdaService.generateCDA(labValues: labValues, date: reportDate, patientName: patientName)
+        do {
+            try await healthKitService.importCDADocument(xml, date: reportDate)
+        } catch {
+            cdaError = error.localizedDescription
         }
     }
 
