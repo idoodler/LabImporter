@@ -139,7 +139,7 @@ struct CDAExportService {
                   <value xsi:type="PQ" value="\(valueStr)" unit="\(esc(unit))"/>
                 </observation>
               </component>
-              """
+"""
     }
 
     // Maps common German lab unit strings to UCUM codes.
