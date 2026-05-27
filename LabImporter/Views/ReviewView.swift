@@ -245,9 +245,13 @@ struct ReviewView: View {
         }
     }
 
-    // MARK: - Add Value Sheet
+}
 
-    private var addValueSheet: some View {
+// MARK: - Views
+
+private extension ReviewView {
+
+    var addValueSheet: some View {
         NavigationStack {
             Form {
                 Section {
@@ -284,9 +288,7 @@ struct ReviewView: View {
         }
     }
 
-    // MARK: - Bottom Buttons
-
-    private var bottomButtons: some View {
+    var bottomButtons: some View {
         VStack(spacing: 10) {
             Button("Save to Health Records") {
                 Task { await performCDAImport() }
@@ -319,9 +321,7 @@ struct ReviewView: View {
         }
     }
 
-    // MARK: - Toolbar
-
-    private var keyboardDoneButton: some ToolbarContent {
+    var keyboardDoneButton: some ToolbarContent {
         ToolbarItem(placement: .keyboard) {
             HStack {
                 Spacer()
@@ -335,24 +335,27 @@ struct ReviewView: View {
             }
         }
     }
+}
 
-    // MARK: - Helpers
+// MARK: - Helpers
 
-    private var birthdateBinding: Binding<Date> {
+private extension ReviewView {
+
+    var birthdateBinding: Binding<Date> {
         Binding(
             get: { Date(timeIntervalSinceReferenceDate: birthdateInterval) },
             set: { birthdateInterval = $0.timeIntervalSinceReferenceDate }
         )
     }
 
-    private var hkBirthdateDiffers: Bool {
+    var hkBirthdateDiffers: Bool {
         guard let hkDob = hkBirthdate else { return false }
         guard birthdateInterval != 0 else { return true }
         let stored = Date(timeIntervalSinceReferenceDate: birthdateInterval)
         return !Calendar.current.isDate(stored, inSameDayAs: hkDob)
     }
 
-    private func hkSexName(_ raw: Int) -> String {
+    func hkSexName(_ raw: Int) -> String {
         switch raw {
         case 1: return "Female"
         case 2: return "Male"
@@ -361,20 +364,20 @@ struct ReviewView: View {
         }
     }
 
-    private func loadHKCharacteristics() async {
+    func loadHKCharacteristics() async {
         guard let chars = try? await HealthKitService.shared.readPatientCharacteristics() else { return }
         hkBirthdate = chars.dateOfBirth
         hkSex = chars.biologicalSexRaw
     }
 
-    private func resetAddForm() {
+    func resetAddForm() {
         addName = ""
         addCode = ""
         addDisplayValue = ""
         addUnit = ""
     }
 
-    private func commitAddValue() {
+    func commitAddValue() {
         let code = addCode.isEmpty
             ? "MANUAL"
             : addCode.uppercased().trimmingCharacters(in: .whitespaces)
@@ -392,9 +395,7 @@ struct ReviewView: View {
         resetAddForm()
     }
 
-    // MARK: - CDA
-
-    private func shareCDA() {
+    func shareCDA() {
         do {
             cdaShareURL = try cdaService.exportToTempFile(
                 labValues: labValues,
@@ -407,7 +408,7 @@ struct ReviewView: View {
         }
     }
 
-    private func performCDAImport() async {
+    func performCDAImport() async {
         guard exportableCount > 0 else {
             cdaError = CDAExportError.noExportableValues.errorDescription
             return
