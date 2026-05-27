@@ -321,7 +321,7 @@ private struct LabOrderSheet: View {
                     .buttonStyle(.plain)
                 }
             }
-            .onMove { from, to in visibleOrdered.move(fromOffsets: from, toOffset: to) }
+            .onMove { from, dest in visibleOrdered.move(fromOffsets: from, toOffset: dest) }
         }
     }
 
