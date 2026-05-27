@@ -7,6 +7,10 @@ struct LabValueRowView: View {
     @State private var editedValue: String = ""
     @FocusState private var isFocused: Bool
 
+    private var hasLoincCode: Bool {
+        LabMapping.loincCode(for: value.code) != nil
+    }
+
     var body: some View {
         HStack(alignment: .center, spacing: 12) {
             Toggle("", isOn: $value.isSelected)
@@ -17,11 +21,11 @@ struct LabValueRowView: View {
                     Text(value.name)
                         .font(.body)
 
-                    if !value.canImportToHealth {
-                        Image(systemName: "cross.case")
+                    if !hasLoincCode {
+                        Image(systemName: "doc.badge.minus")
                             .font(.caption2)
                             .foregroundStyle(.tertiary)
-                            .help("Not supported by Apple Health — included in CDA only")
+                            .help("No LOINC code — excluded from CDA export")
                     }
                 }
 
@@ -51,7 +55,6 @@ struct LabValueRowView: View {
             if editedValue != new { editedValue = new }
         }
         .onChange(of: isFocused) { _, focused in
-            // Mirror local focus state up so the toolbar Done button works
             if focused { anyFieldFocused.wrappedValue = true }
         }
         .onChange(of: anyFieldFocused.wrappedValue) { _, globalFocused in

@@ -151,18 +151,33 @@ struct CDAExportService {
     }
 
     // Maps common German lab unit strings to UCUM codes.
+    // swiftlint:disable:next cyclomatic_complexity
     private func ucum(_ raw: String) -> String {
         switch raw.lowercased().trimmingCharacters(in: .whitespaces) {
         case "mg/dl":                           return "mg/dL"
         case "mmol/l":                          return "mmol/L"
         case "u/l":                             return "U/L"
         case "mu/l", "miu/l":                   return "m[IU]/L"
+        case "iu/l":                            return "[IU]/L"
         case "mmol/mol":                        return "mmol/mol"
         case "%":                               return "%"
         case "ml/min/1,73m2kof",
              "ml/min/1.73m2kof",
              "ml/min/1.73 m2":                 return "mL/min/{1.73_m2}"
-        default:                               return raw
+        case "nmol/l":                          return "nmol/L"
+        case "pmol/l":                          return "pmol/L"
+        case "g/dl":                            return "g/dL"
+        case "g/l":                             return "g/L"
+        case "pg/ml":                           return "pg/mL"
+        case "ng/ml":                           return "ng/mL"
+        case "ng/dl":                           return "ng/dL"
+        case "µg/dl", "ug/dl", "μg/dl":        return "ug/dL"
+        case "µg/l", "ug/l", "μg/l":           return "ug/L"
+        case "fl":                              return "fL"
+        case "pg":                              return "pg"
+        case "1/µl", "1/ul", "/µl", "/ul":     return "/uL"
+        case "1/nl", "/nl":                     return "/nL"
+        default:                                return raw
         }
     }
 

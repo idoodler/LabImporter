@@ -1,25 +1,7 @@
-import HealthKit
+import Foundation
 
-// Maps German lab report codes to human-readable names and HealthKit types.
-//
-// HealthKit only exposes a small set of writable clinical quantity types.
-// Blood glucose (HKQuantityTypeIdentifier.bloodGlucose) is the primary one
-// relevant to lab reports. As Apple expands HealthKit, add new cases below.
+// Maps German lab report codes to human-readable names, LOINC codes, and reference ranges.
 enum LabMapping {
-
-    static func healthKitMapping(for code: String) -> HealthKitMapping? {
-        switch code.uppercased() {
-
-        // Blood glucose (mg/dL) — HKQuantityTypeIdentifier.bloodGlucose
-        case "BZ", "GLUCOSE", "GLU", "BLOOD-GLUCOSE":
-            return HealthKitMapping(identifier: .bloodGlucose, unit: HKUnit(from: "mg/dL"))
-
-        // Add further mappings here once Apple adds the corresponding
-        // HKQuantityTypeIdentifier entries (e.g. HbA1c, cholesterol, TSH).
-        default:
-            return nil
-        }
-    }
 
     // swiftlint:disable:next cyclomatic_complexity
     static func displayName(for code: String) -> String {
@@ -82,14 +64,60 @@ enum LabMapping {
         }
     }
 
-    // Values without HealthKit support — shown read-only with info badge
-    static let unsupportedCodes: Set<String> = [
-        "KREA", "MDRD", "HDL", "NONHDL", "NON-HDL", "LDL", "TRIG", "TG",
-        "GPT", "ALT", "G-GT", "GGT", "GGTP",
-        "HB-A1C", "HBAIC", "HBA1C", "HBA1C%",
-        "HB-A1", "HBA1",
-        "TSH-0", "TSH",
-        "DIABOL", "DIAB0L",
-        "KREA-GFR", "CKD-EPI"
-    ]
+    // Standard clinical reference ranges.
+    // Borderline values fall between normal and clearly abnormal.
+    // swiftlint:disable:next cyclomatic_complexity
+    static func referenceRange(for code: String) -> ReferenceRange? {
+        switch code.uppercased() {
+        case "BZ", "GLUCOSE", "GLU", "BLOOD-GLUCOSE":
+            return ReferenceRange(normalLow: 70, normalHigh: 100, borderlineLow: nil, borderlineHigh: 125)
+        case "HB-A1C", "HBAIC", "HBA1C", "HBA1C%":
+            return ReferenceRange(normalLow: nil, normalHigh: 5.7, borderlineLow: nil, borderlineHigh: 6.4)
+        case "CHOL", "TC":
+            return ReferenceRange(normalLow: nil, normalHigh: 200, borderlineLow: nil, borderlineHigh: 239)
+        case "LDL":
+            return ReferenceRange(normalLow: nil, normalHigh: 100, borderlineLow: nil, borderlineHigh: 159)
+        case "HDL":
+            return ReferenceRange(normalLow: 40, normalHigh: nil, borderlineLow: nil, borderlineHigh: nil)
+        case "TRIG", "TG":
+            return ReferenceRange(normalLow: nil, normalHigh: 150, borderlineLow: nil, borderlineHigh: 199)
+        case "KREA", "CREATININE":
+            return ReferenceRange(normalLow: 0.5, normalHigh: 1.2, borderlineLow: nil, borderlineHigh: nil)
+        case "GPT", "ALT":
+            return ReferenceRange(normalLow: nil, normalHigh: 40, borderlineLow: nil, borderlineHigh: nil)
+        case "G-GT", "GGT", "GGTP":
+            return ReferenceRange(normalLow: nil, normalHigh: 55, borderlineLow: nil, borderlineHigh: nil)
+        case "TSH-0", "TSH":
+            return ReferenceRange(normalLow: 0.4, normalHigh: 4.0, borderlineLow: nil, borderlineHigh: nil)
+        case "MDRD", "EGFR", "KREA-GFR", "CKD-EPI":
+            return ReferenceRange(normalLow: 90, normalHigh: nil, borderlineLow: 60, borderlineHigh: nil)
+        default:
+            return nil
+        }
+    }
+}
+
+// MARK: - Reference range types
+
+enum RangeStatus: Equatable {
+    case normal, borderline, abnormal
+}
+
+struct ReferenceRange {
+    let normalLow: Double?       // nil = no lower bound
+    let normalHigh: Double?      // nil = no upper bound
+    let borderlineLow: Double?   // low boundary of borderline zone (e.g. eGFR 60–89)
+    let borderlineHigh: Double?  // high boundary of borderline zone (e.g. HbA1c 5.7–6.4)
+
+    func status(for value: Double) -> RangeStatus {
+        if let low = normalLow, value < low {
+            if let bLow = borderlineLow, value >= bLow { return .borderline }
+            return .abnormal
+        }
+        if let high = normalHigh, value > high {
+            if let bHigh = borderlineHigh, value <= bHigh { return .borderline }
+            return .abnormal
+        }
+        return .normal
+    }
 }

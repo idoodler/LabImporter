@@ -7,12 +7,9 @@ struct ReviewView: View {
     @AppStorage("patientName") private var patientName: String = ""
     @AppStorage("authorName") private var authorName: String = ""
 
-    @State private var isImporting = false
-    @State private var importResult: ImportResult?
-    @State private var importError: Error?
-    @State private var unsupportedCopied = false
     @State private var cdaShareURL: URL?
     @State private var cdaError: String?
+    @State private var cdaImportSuccess = false
 
     @FocusState private var anyFieldFocused: Bool
 
@@ -24,10 +21,6 @@ struct ReviewView: View {
         _reportDate = State(initialValue: reportDate)
     }
 
-    private var importableCount: Int {
-        labValues.filter { $0.isSelected && $0.canImportToHealth }.count
-    }
-
     var body: some View {
         List {
             patientSection
@@ -36,15 +29,13 @@ struct ReviewView: View {
             infoSection
         }
         .scrollDismissesKeyboard(.interactively)
+        .scrollContentBackground(.hidden)
+        .background(.ultraThinMaterial)
         .navigationTitle("Review Values")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
-            importButton
+            exportButton
             keyboardDoneButton
-        }
-        .overlay { if isImporting { ProcessingView(message: "Importing to Apple Health…") } }
-        .sheet(item: $importResult) { result in
-            ImportResultView(result: result)
         }
         .sheet(isPresented: Binding(
             get: { cdaShareURL != nil },
@@ -55,10 +46,10 @@ struct ReviewView: View {
                     .ignoresSafeArea()
             }
         }
-        .alert("Import Error", isPresented: .constant(importError != nil)) {
-            Button("OK") { importError = nil }
+        .alert("Saved to Health Records", isPresented: $cdaImportSuccess) {
+            Button("OK") {}
         } message: {
-            Text(importError?.localizedDescription ?? "")
+            Text("The lab report has been saved as a CDA document in Apple Health.")
         }
         .alert("Export Error", isPresented: .constant(cdaError != nil)) {
             Button("OK") { cdaError = nil }
@@ -105,70 +96,38 @@ struct ReviewView: View {
 
     @ViewBuilder
     private var infoSection: some View {
-        let unsupported = labValues.filter { !$0.canImportToHealth }
-        if !unsupported.isEmpty {
+        let excluded = labValues.filter { LabMapping.loincCode(for: $0.code) == nil }
+        if !excluded.isEmpty {
             Section {
-                VStack(alignment: .leading, spacing: 10) {
-                    Label(
-                        "\(unsupported.count) value\(unsupported.count == 1 ? "" : "s") not supported by Apple Health",
-                        systemImage: "info.circle"
-                    )
-                    .font(.footnote.weight(.medium))
-                    .foregroundStyle(.secondary)
-
-                    Text(unsupported.map(\.name).joined(separator: ", "))
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
-
+                Label(
                     // swiftlint:disable:next line_length
-                    Text("Apple Health's writable API currently supports only a limited set of lab values. The values above are recorded in this report but cannot be imported.")
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
-
-                    Button {
-                        copyUnsupportedToClipboard(unsupported)
-                    } label: {
-                        Label(
-                            unsupportedCopied ? "Copied!" : "Copy as Text",
-                            systemImage: unsupportedCopied ? "checkmark" : "doc.on.doc"
-                        )
-                        .font(.caption.weight(.medium))
-                    }
-                    .buttonStyle(.borderless)
-                    .foregroundStyle(.blue)
-                }
-                .padding(.vertical, 4)
+                    "\(excluded.count) value\(excluded.count == 1 ? "" : "s") without a LOINC code — not included in CDA export",
+                    systemImage: "info.circle"
+                )
+                .font(.footnote)
+                .foregroundStyle(.secondary)
             }
         }
     }
 
     // MARK: - Toolbar
 
-    private var importButton: some ToolbarContent {
+    private var exportButton: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
             Menu {
                 Button {
-                    Task { await performImport() }
-                } label: {
-                    Label("Import to Apple Health", systemImage: "heart.fill")
-                }
-                .disabled(importableCount == 0 || isImporting)
-
-                Divider()
-
-                Button {
                     Task { await performCDAImport() }
                 } label: {
-                    Label("Save to Health Records (CDA)", systemImage: "doc.badge.plus")
+                    Label("Save to Health Records", systemImage: "doc.badge.plus")
                 }
 
                 Button {
                     shareCDA()
                 } label: {
-                    Label("Share XML File", systemImage: "doc.badge.arrow.up")
+                    Label("Share CDA File", systemImage: "doc.badge.arrow.up")
                 }
             } label: {
-                Text(importableCount > 0 ? "Import \(importableCount)" : "Import")
+                Image(systemName: "square.and.arrow.up")
                     .fontWeight(.semibold)
             }
         }
@@ -181,23 +140,6 @@ struct ReviewView: View {
                 Button("Done") { anyFieldFocused = false }
                     .fontWeight(.semibold)
             }
-        }
-    }
-
-    // MARK: - Clipboard
-
-    private func copyUnsupportedToClipboard(_ values: [LabValue]) {
-        let lines = values.map { labValue in
-            let val = labValue.displayValue == "-"
-                ? "negative"
-                : "\(labValue.displayValue) \(labValue.unit)".trimmingCharacters(in: .whitespaces)
-            return "\(labValue.name): \(val)"
-        }
-        UIPasteboard.general.string = lines.joined(separator: "\n")
-        unsupportedCopied = true
-        Task {
-            try? await Task.sleep(for: .seconds(2))
-            unsupportedCopied = false
         }
     }
 
@@ -223,26 +165,13 @@ struct ReviewView: View {
         do {
             try await healthKitService.importCDADocument(xml, date: reportDate)
             saveToHistory()
+            cdaImportSuccess = true
         } catch {
             cdaError = error.localizedDescription
         }
     }
 
-    // MARK: - Import
-
-    private func performImport() async {
-        isImporting = true
-        defer { isImporting = false }
-
-        do {
-            try await healthKitService.requestAuthorization(for: labValues)
-            let result = try await healthKitService.importValues(labValues, date: reportDate)
-            importResult = result
-            saveToHistory()
-        } catch {
-            importError = error
-        }
-    }
+    // MARK: - History
 
     private func saveToHistory() {
         let entries = labValues.map { value in
@@ -285,8 +214,7 @@ private struct ShareSheet: UIViewControllerRepresentable {
 #Preview {
     NavigationStack {
         ReviewView(labValues: [
-            LabValue(code: "BZ", name: "Blood Glucose", displayValue: "95", numericValue: 95, unit: "mg/dl",
-                     healthKitMapping: HealthKitMapping(identifier: .bloodGlucose, unit: HKUnit(from: "mg/dL"))),
+            LabValue(code: "BZ", name: "Blood Glucose", displayValue: "95", numericValue: 95, unit: "mg/dl"),
             LabValue(code: "KREA", name: "Creatinine", displayValue: "0.91", numericValue: 0.91, unit: "mg/dl"),
             LabValue(code: "HB-A1C", name: "HbA1c (%)", displayValue: "6.5", numericValue: 6.5, unit: "%"),
             LabValue(code: "DIABOL", name: "Diabetes Screening", displayValue: "-", numericValue: nil, unit: ""),

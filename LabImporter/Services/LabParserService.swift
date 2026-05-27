@@ -53,8 +53,7 @@ actor LabParserService {
                 name: LabMapping.displayName(for: entry.code),
                 displayValue: entry.rawValue,
                 numericValue: numericValue,
-                unit: entry.unit,
-                healthKitMapping: LabMapping.healthKitMapping(for: entry.code)
+                unit: entry.unit
             )
         }
 

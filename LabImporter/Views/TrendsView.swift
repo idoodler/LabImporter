@@ -42,16 +42,20 @@ struct TrendsView: View {
     private var currentUnit: String { dataPoints.first?.unit ?? "" }
 
     var body: some View {
-        VStack(spacing: 0) {
-            if availableCodes.isEmpty {
-                noDataView
-            } else {
-                codePicker
-                trendContent
+        ZStack {
+            backgroundGradient
+            VStack(spacing: 0) {
+                if availableCodes.isEmpty {
+                    noDataView
+                } else {
+                    codePicker
+                    trendContent
+                }
             }
         }
         .navigationTitle("Trends")
         .navigationBarTitleDisplayMode(.large)
+        .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         .onAppear {
             if selectedCode.isEmpty, let first = availableCodes.first {
                 selectedCode = first.code
@@ -61,12 +65,25 @@ struct TrendsView: View {
 
     // MARK: - Subviews
 
+    private var backgroundGradient: some View {
+        LinearGradient(
+            colors: [
+                Color(hue: 0.65, saturation: 0.6, brightness: 0.35),
+                Color(hue: 0.75, saturation: 0.7, brightness: 0.25)
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .ignoresSafeArea()
+    }
+
     private var noDataView: some View {
         ContentUnavailableView(
             "No Numeric Data",
             systemImage: "chart.line.uptrend.xyaxis",
             description: Text("Import reports with numeric lab values to see trends.")
         )
+        .foregroundStyle(.white)
     }
 
     private var codePicker: some View {
@@ -76,6 +93,7 @@ struct TrendsView: View {
             }
         }
         .pickerStyle(.menu)
+        .tint(.white)
         .padding([.horizontal, .top])
     }
 
@@ -87,9 +105,12 @@ struct TrendsView: View {
                 systemImage: "chart.xyaxis.line",
                 description: Text("Import at least two reports containing this value to see a trend.")
             )
+            .foregroundStyle(.white)
         } else {
-            trendChart
-                .padding()
+            ScrollView {
+                trendChart
+                    .padding()
+            }
         }
     }
 
@@ -99,21 +120,40 @@ struct TrendsView: View {
                 x: .value("Date", point.date),
                 y: .value(currentUnit, point.value)
             )
-            .foregroundStyle(.blue)
+            .foregroundStyle(.white.opacity(0.9))
 
             PointMark(
                 x: .value("Date", point.date),
                 y: .value(currentUnit, point.value)
             )
-            .foregroundStyle(.blue)
+            .foregroundStyle(.white)
+
+            AreaMark(
+                x: .value("Date", point.date),
+                y: .value(currentUnit, point.value)
+            )
+            .foregroundStyle(.white.opacity(0.1))
         }
         .chartXAxis {
             AxisMarks(values: .automatic) { _ in
-                AxisGridLine()
+                AxisGridLine().foregroundStyle(.white.opacity(0.2))
                 AxisValueLabel(format: .dateTime.month(.abbreviated).day())
+                    .foregroundStyle(.white.opacity(0.7))
+            }
+        }
+        .chartYAxis {
+            AxisMarks { _ in
+                AxisGridLine().foregroundStyle(.white.opacity(0.2))
+                AxisValueLabel().foregroundStyle(.white.opacity(0.7))
             }
         }
         .chartYAxisLabel(currentUnit)
         .frame(minHeight: 260)
+        .padding()
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(.white.opacity(0.15), lineWidth: 0.5)
+        )
     }
 }

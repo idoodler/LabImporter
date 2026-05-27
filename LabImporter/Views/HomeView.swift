@@ -2,6 +2,11 @@ import SwiftUI
 import PhotosUI
 
 struct HomeView: View {
+    // Report state
+    @State private var reports: [LabReport] = []
+    @State private var isLoaded = false
+
+    // Import flow state
     @State private var photosPickerItem: PhotosPickerItem?
     @State private var showCamera = false
     @State private var isProcessing = false
@@ -16,34 +21,17 @@ struct HomeView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                Spacer()
-                heroSection
-                Spacer()
-                actionButtons
+            ZStack {
+                backgroundGradient
+                content
             }
-            .padding()
-            .navigationTitle("")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink(destination: HistoryView()) {
-                        Image(systemName: "clock.arrow.circlepath")
-                    }
-                }
-            }
-            .onAppear { refreshClipboardState() }
-            .onChange(of: photosPickerItem) { _, item in
-                guard let item else { return }
-                photosPickerItem = nil
-                Task { await loadAndProcess(item: item) }
+            .navigationDestination(isPresented: $showReview) {
+                ReviewView(labValues: labValues, reportDate: parsedReportDate ?? Date())
             }
             .sheet(isPresented: $showCamera) {
                 CameraView { image in
                     Task { await processImage(image) }
                 }
-            }
-            .navigationDestination(isPresented: $showReview) {
-                ReviewView(labValues: labValues, reportDate: parsedReportDate ?? Date())
             }
             .overlay {
                 if isProcessing { ProcessingView() }
@@ -54,63 +42,68 @@ struct HomeView: View {
                 Text(errorMessage ?? "")
             }
         }
+        .task { await loadReports() }
+        .onChange(of: photosPickerItem) { _, item in
+            guard let item else { return }
+            photosPickerItem = nil
+            Task { await loadAndProcess(item: item) }
+        }
+        .onChange(of: showReview) { _, showing in
+            if !showing { Task { await loadReports() } }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+            Task { await loadReports() }
+        }
+        .onAppear { refreshClipboardState() }
     }
 
-    // MARK: - Sections
+    // MARK: - Content routing
 
-    private var heroSection: some View {
-        VStack(spacing: 24) {
-            ZStack {
-                Circle()
-                    .fill(.blue.opacity(0.1))
-                    .frame(width: 120, height: 120)
-                Image(systemName: "waveform.path.ecg.rectangle.fill")
-                    .font(.system(size: 56))
-                    .foregroundStyle(.blue)
-            }
-
-            VStack(spacing: 8) {
-                Text("Lab Report Importer")
-                    .font(.largeTitle.bold())
-
-                Text("Photograph your lab report and import\nthe values directly into Apple Health\nusing on-device AI.")
-                    .font(.body)
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(.secondary)
-            }
+    @ViewBuilder
+    private var content: some View {
+        if !isLoaded {
+            ProgressView()
+                .tint(.white)
+                .scaleEffect(1.4)
+        } else if reports.isEmpty {
+            ImportLandingView(
+                photosPickerItem: $photosPickerItem,
+                onCamera: { showCamera = true },
+                onPaste: pasteFromClipboard,
+                clipboardAvailable: clipboardHasContent
+            )
+        } else {
+            DashboardView(
+                reports: reports,
+                photosPickerItem: $photosPickerItem,
+                onCamera: { showCamera = true },
+                onPaste: pasteFromClipboard,
+                clipboardAvailable: clipboardHasContent
+            )
         }
     }
 
-    private var actionButtons: some View {
-        VStack(spacing: 12) {
-            PhotosPicker(selection: $photosPickerItem, matching: .images) {
-                Label("Choose from Photos", systemImage: "photo.on.rectangle")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            .tint(.blue)
+    private var backgroundGradient: some View {
+        LinearGradient(
+            colors: [
+                Color(hue: 0.65, saturation: 0.6, brightness: 0.35),
+                Color(hue: 0.75, saturation: 0.7, brightness: 0.25)
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .ignoresSafeArea()
+    }
 
-            Button {
-                showCamera = true
-            } label: {
-                Label("Take a Photo", systemImage: "camera")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.bordered)
-            .controlSize(.large)
-            .disabled(!UIImagePickerController.isSourceTypeAvailable(.camera))
+    // MARK: - Report loading
 
-            Button {
-                pasteFromClipboard()
-            } label: {
-                Label("Paste from Clipboard", systemImage: "doc.on.clipboard")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.bordered)
-            .controlSize(.large)
-            .disabled(!clipboardHasContent)
+    private func loadReports() async {
+        do {
+            reports = try await ReportHistoryService.shared.loadAll()
+        } catch {
+            errorMessage = error.localizedDescription
         }
+        isLoaded = true
     }
 
     // MARK: - Clipboard
