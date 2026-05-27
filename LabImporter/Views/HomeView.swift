@@ -24,6 +24,9 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             content
+                .overlay {
+                    if isProcessing { ProcessingHUD() }
+                }
                 .navigationDestination(isPresented: $showReview) {
                     ReviewView(
                         labValues: labValues,
@@ -185,6 +188,29 @@ struct HomeView: View {
         } catch {
             errorMessage = error.localizedDescription
         }
+    }
+}
+
+// MARK: - Processing HUD
+
+private struct ProcessingHUD: View {
+    var body: some View {
+        Color.clear
+            .ignoresSafeArea()
+            .overlay {
+                VStack(spacing: 16) {
+                    ProgressView()
+                        .controlSize(.large)
+                    Text("Analyzing lab report…")
+                        .font(.headline)
+                    Text("Using on-device AI")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(32)
+                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 24))
+            }
+            .transition(.opacity.animation(.easeInOut(duration: 0.2)))
     }
 }
 

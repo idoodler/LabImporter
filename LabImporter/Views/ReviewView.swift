@@ -22,10 +22,6 @@ struct ReviewView: View {
         }.count
     }
 
-    private var supportedIndices: [Int] {
-        labValues.indices.filter { LabMapping.loincCode(for: labValues[$0].code) != nil }
-    }
-
     private var unsupportedValues: [LabValue] {
         labValues.filter { LabMapping.loincCode(for: $0.code) == nil }
     }
@@ -141,8 +137,10 @@ struct ReviewView: View {
 
     private var valuesSection: some View {
         Section {
-            ForEach(supportedIndices, id: \.self) { idx in
-                LabValueRowView(value: $labValues[idx], anyFieldFocused: $anyFieldFocused)
+            ForEach($labValues) { $value in
+                if LabMapping.loincCode(for: value.code) != nil {
+                    LabValueRowView(value: $value, anyFieldFocused: $anyFieldFocused)
+                }
             }
         } header: {
             Text("Lab Values — tap values to correct them")
@@ -185,33 +183,34 @@ struct ReviewView: View {
     // MARK: - Bottom buttons
 
     private var bottomButtons: some View {
-        VStack(spacing: 0) {
-            LinearGradient(
-                colors: [.clear, Color(UIColor.systemBackground)],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .frame(height: 32)
-            .allowsHitTesting(false)
+        VStack(spacing: 10) {
+            Button("Save to Health Records") {
+                Task { await performCDAImport() }
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+            .frame(maxWidth: .infinity)
 
-            VStack(spacing: 10) {
-                Button("Save to Health Records") {
-                    Task { await performCDAImport() }
-                }
-                .buttonStyle(.borderedProminent)
+            Button("Share CDA File") { shareCDA() }
+                .buttonStyle(.bordered)
                 .controlSize(.large)
                 .frame(maxWidth: .infinity)
-                .disabled(exportableCount == 0)
-
-                Button("Share CDA File") { shareCDA() }
-                    .buttonStyle(.bordered)
-                    .controlSize(.large)
-                    .frame(maxWidth: .infinity)
-                    .disabled(exportableCount == 0)
-            }
-            .padding([.horizontal, .bottom])
-            .padding(.top, 8)
-            .background(.regularMaterial)
+        }
+        .opacity(exportableCount == 0 ? 0.4 : 1)
+        .allowsHitTesting(exportableCount > 0)
+        .padding(.horizontal)
+        .padding(.bottom)
+        .padding(.top, 16)
+        .background {
+            Rectangle()
+                .fill(.regularMaterial)
+                .mask {
+                    LinearGradient(
+                        colors: [.clear, .black],
+                        startPoint: .top,
+                        endPoint: UnitPoint(x: 0.5, y: 0.3)
+                    )
+                }
         }
     }
 

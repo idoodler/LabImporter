@@ -18,11 +18,7 @@ struct DashboardView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                if isProcessing {
-                    processingCard
-                } else {
-                    metricsGrid
-                }
+                metricsGrid
                 trendsLink
                 footer
             }
@@ -52,23 +48,6 @@ struct DashboardView: View {
         .sheet(isPresented: $showOrderSheet) {
             LabOrderSheet(prefs: $prefs, allCodes: allCodeNames)
         }
-    }
-
-    // MARK: - Processing card
-
-    private var processingCard: some View {
-        VStack(spacing: 16) {
-            ProgressView()
-                .controlSize(.extraLarge)
-            Text("Analyzing lab report…")
-                .font(.headline)
-            Text("Using on-device AI")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(40)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 24))
     }
 
     // MARK: - Import menu

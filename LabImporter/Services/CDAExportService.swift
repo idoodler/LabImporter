@@ -28,8 +28,7 @@ struct CDAExportService {
         return """
 <?xml version="1.0" encoding="UTF-8"?>
 <ClinicalDocument xmlns="urn:hl7-org:v3"
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:schemaLocation="urn:hl7-org:v3 CDA.xsd">
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
   <templateId root="2.16.840.1.113883.10.20.22.1.1"/>
   <id root="\(docId)"/>
@@ -161,7 +160,7 @@ struct CDAExportService {
         switch raw.lowercased().trimmingCharacters(in: .whitespaces) {
         case "mg/dl":                           return "mg/dL"
         case "mmol/l":                          return "mmol/L"
-        case "u/l":                             return "U/L"
+        case "u/", "u/l":                       return "U/L"
         case "mu/l", "miu/l":                   return "m[IU]/L"
         case "iu/l":                            return "[IU]/L"
         case "mmol/mol":                        return "mmol/mol"

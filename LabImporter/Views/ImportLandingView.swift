@@ -13,13 +13,10 @@ struct ImportLandingView: View {
             Spacer()
             heroSection
             Spacer()
-            if isProcessing {
-                processingCard
-                    .padding(.horizontal, 24)
-            } else {
-                importCard
-                    .padding(.horizontal, 24)
-            }
+            importCard
+                .padding(.horizontal, 24)
+                .opacity(isProcessing ? 0.4 : 1)
+                .allowsHitTesting(!isProcessing)
             Spacer()
                 .frame(height: 56)
         }
@@ -51,28 +48,6 @@ struct ImportLandingView: View {
                     .foregroundStyle(.secondary)
             }
         }
-    }
-
-    // MARK: - Processing card
-
-    private var processingCard: some View {
-        VStack(spacing: 16) {
-            ProgressView()
-                .controlSize(.large)
-            Text("Analyzing lab report…")
-                .font(.headline)
-                .foregroundStyle(.primary)
-            Text("Using on-device AI")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(32)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 28))
-        .overlay(
-            RoundedRectangle(cornerRadius: 28)
-                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
-        )
     }
 
     // MARK: - Import Card
