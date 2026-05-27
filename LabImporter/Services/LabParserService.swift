@@ -7,6 +7,9 @@ import FoundationModels
 struct AILabReport {
     @Guide(description: "All lab test values found in the text")
     var entries: [AILabEntry]
+
+    @Guide(description: "Report or blood draw date in yyyy-MM-dd format (e.g. 2026-05-06). Empty string if no date is visible.")
+    var reportDate: String
 }
 
 @Generable
@@ -25,16 +28,20 @@ struct AILabEntry {
 
 actor LabParserService {
 
-    func parseLabValues(from text: String) async throws -> [LabValue] {
+    func parseLabValues(from text: String) async throws -> (values: [LabValue], reportDate: Date?) {
         let entries: [AILabEntry]
+        var reportDate: Date?
 
         if SystemLanguageModel.default.isAvailable {
-            entries = try await parseWithFoundationModels(text: text)
+            let report = try await parseWithFoundationModels(text: text)
+            entries = report.entries
+            reportDate = parseDate(report.reportDate)
         } else {
             entries = parseWithRegex(text: text)
+            reportDate = extractDate(from: text)
         }
 
-        return entries.map { entry in
+        let values = entries.map { entry in
             let normalizedValue = entry.rawValue
                 .trimmingCharacters(in: .whitespaces)
                 .replacingOccurrences(of: ",", with: ".")
@@ -50,16 +57,19 @@ actor LabParserService {
                 healthKitMapping: LabMapping.healthKitMapping(for: entry.code)
             )
         }
+
+        return (values, reportDate)
     }
 
     // MARK: - Foundation Models path
 
-    private func parseWithFoundationModels(text: String) async throws -> [AILabEntry] {
+    private func parseWithFoundationModels(text: String) async throws -> AILabReport {
         let session = LanguageModelSession(
             instructions: """
             You are a medical lab report parser. Extract every lab test entry from the provided text.
             Lab reports follow the pattern: CODE: value unit; CODE2: value2 unit2; ...
             Preserve codes exactly as printed. Use '-' as rawValue when the result is negative or not detected.
+            If you can see a report date or blood draw date, return it in yyyy-MM-dd format; otherwise return an empty string.
             """
         )
 
@@ -68,7 +78,7 @@ actor LabParserService {
             generating: AILabReport.self
         )
 
-        return response.content.entries
+        return response.content
     }
 
     // MARK: - Regex fallback
@@ -91,5 +101,45 @@ actor LabParserService {
 
             return AILabEntry(code: code, rawValue: rawValue, unit: unit)
         }
+    }
+
+    // MARK: - Date helpers
+
+    // Scans free text for German (dd.MM.yyyy) or ISO (yyyy-MM-dd) date patterns.
+    private func extractDate(from text: String) -> Date? {
+        let germanPattern = /\b(\d{1,2})\.(\d{1,2})\.(\d{4})\b/
+        if let match = text.firstMatch(of: germanPattern) {
+            let day = Int(match.1) ?? 0
+            let month = Int(match.2) ?? 0
+            let year = Int(match.3) ?? 0
+            return makeDate(year: year, month: month, day: day)
+        }
+
+        let isoPattern = /\b(\d{4})-(\d{2})-(\d{2})\b/
+        if let match = text.firstMatch(of: isoPattern) {
+            let year = Int(match.1) ?? 0
+            let month = Int(match.2) ?? 0
+            let day = Int(match.3) ?? 0
+            return makeDate(year: year, month: month, day: day)
+        }
+
+        return nil
+    }
+
+    private func parseDate(_ string: String) -> Date? {
+        guard !string.isEmpty else { return nil }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        return formatter.date(from: string)
+    }
+
+    private func makeDate(year: Int, month: Int, day: Int) -> Date? {
+        guard year > 1900, (1...12).contains(month), (1...31).contains(day) else { return nil }
+        var components = DateComponents()
+        components.year = year
+        components.month = month
+        components.day = day
+        return Calendar.current.date(from: components)
     }
 }

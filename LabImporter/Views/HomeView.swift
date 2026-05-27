@@ -6,6 +6,7 @@ struct HomeView: View {
     @State private var showCamera = false
     @State private var isProcessing = false
     @State private var labValues: [LabValue] = []
+    @State private var parsedReportDate: Date?
     @State private var showReview = false
     @State private var errorMessage: String?
     @State private var clipboardHasContent = false
@@ -35,7 +36,7 @@ struct HomeView: View {
                 }
             }
             .navigationDestination(isPresented: $showReview) {
-                ReviewView(labValues: labValues)
+                ReviewView(labValues: labValues, reportDate: parsedReportDate ?? Date())
             }
             .overlay {
                 if isProcessing { ProcessingView() }
@@ -139,7 +140,7 @@ struct HomeView: View {
 
         do {
             let text = try await ocrService.extractText(from: image)
-            let values = try await parserService.parseLabValues(from: text)
+            let (values, parsedDate) = try await parserService.parseLabValues(from: text)
 
             if values.isEmpty {
                 errorMessage = "No lab values were found in this image. Make sure the report is clearly visible."
@@ -147,6 +148,7 @@ struct HomeView: View {
             }
 
             labValues = values
+            parsedReportDate = parsedDate
             showReview = true
         } catch {
             errorMessage = error.localizedDescription
@@ -158,7 +160,7 @@ struct HomeView: View {
         defer { isProcessing = false }
 
         do {
-            let values = try await parserService.parseLabValues(from: text)
+            let (values, parsedDate) = try await parserService.parseLabValues(from: text)
 
             if values.isEmpty {
                 errorMessage = "No lab values were found in the clipboard text."
@@ -166,6 +168,7 @@ struct HomeView: View {
             }
 
             labValues = values
+            parsedReportDate = parsedDate
             showReview = true
         } catch {
             errorMessage = error.localizedDescription

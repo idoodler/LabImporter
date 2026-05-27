@@ -3,7 +3,12 @@ import HealthKit
 
 struct ReviewView: View {
     @State var labValues: [LabValue]
-    @State private var reportDate = Date()
+    @State private var reportDate: Date
+
+    init(labValues: [LabValue], reportDate: Date = Date()) {
+        _labValues = State(initialValue: labValues)
+        _reportDate = State(initialValue: reportDate)
+    }
     @State private var isImporting = false
     @State private var importResult: ImportResult?
     @State private var importError: Error?
