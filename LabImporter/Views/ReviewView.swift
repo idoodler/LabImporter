@@ -73,6 +73,7 @@ struct ReviewView: View {
             TextField("Full Name (optional)", text: $patientName)
                 .autocorrectionDisabled()
                 .textContentType(.name)
+                .focused($anyFieldFocused)
         }
     }
 
