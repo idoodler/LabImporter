@@ -181,17 +181,18 @@ struct ReviewView: View {
 
     private var valuesSection: some View {
         Section {
-            ForEach($labValues) { $value in
-                if LabMapping.loincCode(for: value.code) != nil {
-                    LabValueRowView(value: $value)
-                        .swipeActions(edge: .trailing) {
-                            Button(role: .destructive) {
-                                labValues.removeAll { $0.id == value.id }
-                            } label: {
-                                Label("Delete", systemImage: "trash")
-                            }
+            ForEach(
+                labValues.indices.filter { LabMapping.loincCode(for: labValues[$0].code) != nil },
+                id: \.self
+            ) { idx in
+                LabValueRowView(value: $labValues[idx])
+                    .swipeActions(edge: .trailing) {
+                        Button(role: .destructive) {
+                            labValues.remove(at: idx)
+                        } label: {
+                            Label("Delete", systemImage: "trash")
                         }
-                }
+                    }
             }
             Button {
                 showAddValue = true
