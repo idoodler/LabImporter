@@ -2,8 +2,6 @@ import SwiftUI
 import PhotosUI
 
 struct HomeView: View {
-    @Environment(\.colorScheme) private var colorScheme
-
     // Report state
     @State private var reports: [LabReport] = []
     @State private var isLoaded = false
@@ -23,26 +21,23 @@ struct HomeView: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                backgroundGradient
-                content
-            }
-            .navigationDestination(isPresented: $showReview) {
-                ReviewView(labValues: labValues, reportDate: parsedReportDate ?? Date())
-            }
-            .sheet(isPresented: $showCamera) {
-                CameraView { image in
-                    Task { await processImage(image) }
+            content
+                .navigationDestination(isPresented: $showReview) {
+                    ReviewView(labValues: labValues, reportDate: parsedReportDate ?? Date())
                 }
-            }
-            .overlay {
-                if isProcessing { ProcessingView() }
-            }
-            .alert("Error", isPresented: .constant(errorMessage != nil)) {
-                Button("OK") { errorMessage = nil }
-            } message: {
-                Text(errorMessage ?? "")
-            }
+                .sheet(isPresented: $showCamera) {
+                    CameraView { image in
+                        Task { await processImage(image) }
+                    }
+                }
+                .overlay {
+                    if isProcessing { ProcessingView() }
+                }
+                .alert("Error", isPresented: .constant(errorMessage != nil)) {
+                    Button("OK") { errorMessage = nil }
+                } message: {
+                    Text(errorMessage ?? "")
+                }
         }
         .task { await loadReports() }
         .onChange(of: photosPickerItem) { _, item in
@@ -65,7 +60,6 @@ struct HomeView: View {
     private var content: some View {
         if !isLoaded {
             ProgressView()
-                .tint(.primary)
                 .scaleEffect(1.4)
         } else if reports.isEmpty {
             ImportLandingView(
@@ -83,19 +77,6 @@ struct HomeView: View {
                 clipboardAvailable: clipboardHasContent
             )
         }
-    }
-
-    private var backgroundGradient: some View {
-        LinearGradient(
-            colors: colorScheme == .dark
-                ? [Color(hue: 0.65, saturation: 0.60, brightness: 0.35),
-                   Color(hue: 0.75, saturation: 0.70, brightness: 0.25)]
-                : [Color(hue: 0.65, saturation: 0.20, brightness: 0.95),
-                   Color(hue: 0.75, saturation: 0.25, brightness: 0.92)],
-            startPoint: .top,
-            endPoint: .bottom
-        )
-        .ignoresSafeArea()
     }
 
     // MARK: - Report loading

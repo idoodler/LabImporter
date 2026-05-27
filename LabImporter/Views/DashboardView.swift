@@ -11,6 +11,9 @@ struct DashboardView: View {
     let onPaste: () -> Void
     let clipboardAvailable: Bool
 
+    @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
+    @State private var showOrderSheet = false
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -22,19 +25,28 @@ struct DashboardView: View {
             .padding(.top, 8)
             .padding(.bottom, 24)
         }
-        .scrollContentBackground(.hidden)
         .navigationTitle("Lab Results")
         .navigationBarTitleDisplayMode(.large)
-        .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 NavigationLink(destination: HistoryView()) {
                     Image(systemName: "clock.arrow.circlepath")
                 }
             }
+            ToolbarItem(placement: .topBarLeading) {
+                Button { showOrderSheet = true } label: {
+                    Image(systemName: "slider.horizontal.3")
+                }
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 importMenu
             }
+        }
+        .sheet(isPresented: $showOrderSheet) {
+            LabOrderSheet(
+                prefs: $prefs,
+                availableCodes: sortedMetrics.map { CodeName(code: $0.entry.code, name: $0.entry.name) }
+            )
         }
     }
 
@@ -67,8 +79,15 @@ struct DashboardView: View {
             columns: [GridItem(.flexible()), GridItem(.flexible())],
             spacing: 14
         ) {
-            ForEach(metrics) { metric in
-                MetricCard(metric: metric)
+            ForEach(sortedMetrics) { metric in
+                MetricCard(metric: metric, isPinned: prefs.pinnedSet.contains(metric.entry.code))
+                    .contextMenu {
+                        let pinned = prefs.pinnedSet.contains(metric.entry.code)
+                        Button { togglePin(metric.entry.code) } label: {
+                            Label(pinned ? "Unpin" : "Pin to Top",
+                                  systemImage: pinned ? "pin.slash" : "pin")
+                        }
+                    }
             }
         }
     }
@@ -132,7 +151,35 @@ struct DashboardView: View {
             }
             return MetricData(entry: item.entry, history: points, status: status)
         }
-        .sorted { $0.entry.name < $1.entry.name }
+    }
+
+    private var sortedMetrics: [MetricData] {
+        let pinned = prefs.pinnedSet
+        let orderMap = Dictionary(uniqueKeysWithValues: prefs.orderedCodes.enumerated().map { ($1, $0) })
+        return metrics.sorted { a, b in
+            let aPin = pinned.contains(a.entry.code)
+            let bPin = pinned.contains(b.entry.code)
+            if aPin != bPin { return aPin }
+            let aOrd = orderMap[a.entry.code] ?? Int.max
+            let bOrd = orderMap[b.entry.code] ?? Int.max
+            if aOrd != bOrd { return aOrd < bOrd }
+            return a.entry.name < b.entry.name
+        }
+    }
+
+    // MARK: - Pin helpers
+
+    private func togglePin(_ code: String) {
+        var updated = prefs
+        if updated.pinnedCodes.contains(code) {
+            updated.pinnedCodes.removeAll { $0 == code }
+        } else {
+            updated.pinnedCodes.append(code)
+            if !updated.orderedCodes.contains(code) {
+                updated.orderedCodes.append(code)
+            }
+        }
+        prefs = updated
     }
 }
 
@@ -151,36 +198,51 @@ private struct MetricData: Identifiable {
     let status: RangeStatus?
 }
 
+private struct CodeName: Identifiable {
+    var id: String { code }
+    let code: String
+    let name: String
+}
+
 // MARK: - MetricCard
 
 private struct MetricCard: View {
     let metric: MetricData
+    let isPinned: Bool
 
     private var statusColor: Color {
         switch metric.status {
-        case .normal: return Color.green
+        case .normal:    return Color.green
         case .borderline: return Color.orange
-        case .abnormal: return Color.red
-        case .none: return Color.secondary
+        case .abnormal:  return Color.red
+        case .none:      return Color.secondary
         }
     }
 
     private var statusLabel: String {
         switch metric.status {
-        case .normal: return "Normal"
+        case .normal:    return "Normal"
         case .borderline: return "Borderline"
-        case .abnormal: return "Elevated"
-        case .none: return ""
+        case .abnormal:  return "Elevated"
+        case .none:      return ""
         }
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(metric.entry.name)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .lineLimit(2)
-                .fixedSize(horizontal: false, vertical: true)
+            HStack(alignment: .top, spacing: 4) {
+                Text(metric.entry.name)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 0)
+                if isPinned {
+                    Image(systemName: "pin.fill")
+                        .font(.caption2)
+                        .foregroundStyle(Color.accentColor)
+                }
+            }
 
             HStack(alignment: .firstTextBaseline, spacing: 3) {
                 Text(metric.entry.displayValue)
@@ -245,5 +307,84 @@ private struct MetricCard: View {
         .chartXAxis(.hidden)
         .chartYAxis(.hidden)
         .frame(height: 40)
+    }
+}
+
+// MARK: - Order sheet
+
+private struct LabOrderSheet: View {
+    @Binding var prefs: LabDisplayPreferences
+    let availableCodes: [CodeName]
+
+    @State private var items: [CodeName] = []
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            List {
+                ForEach(items) { item in
+                    HStack(spacing: 12) {
+                        Button { togglePin(item.code) } label: {
+                            Image(systemName: prefs.pinnedSet.contains(item.code) ? "pin.fill" : "pin")
+                                .foregroundStyle(prefs.pinnedSet.contains(item.code) ? Color.accentColor : .secondary)
+                                .frame(width: 20)
+                        }
+                        .buttonStyle(.plain)
+                        Text(item.name)
+                        Spacer()
+                    }
+                }
+                .onMove { from, to in items.move(fromOffsets: from, toOffset: to) }
+            }
+            .environment(\.editMode, .constant(.active))
+            .navigationTitle("Edit Order")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { saveAndDismiss() }
+                        .fontWeight(.semibold)
+                }
+            }
+        }
+        .onAppear { initItems() }
+    }
+
+    private func initItems() {
+        let pinned = prefs.pinnedSet
+        let orderMap = Dictionary(uniqueKeysWithValues: prefs.orderedCodes.enumerated().map { ($1, $0) })
+        items = availableCodes.sorted { a, b in
+            let aPin = pinned.contains(a.code)
+            let bPin = pinned.contains(b.code)
+            if aPin != bPin { return aPin }
+            let aOrd = orderMap[a.code] ?? Int.max
+            let bOrd = orderMap[b.code] ?? Int.max
+            if aOrd != bOrd { return aOrd < bOrd }
+            return a.name < b.name
+        }
+    }
+
+    private func togglePin(_ code: String) {
+        var updated = prefs
+        if updated.pinnedCodes.contains(code) {
+            updated.pinnedCodes.removeAll { $0 == code }
+        } else {
+            updated.pinnedCodes.append(code)
+            if !updated.orderedCodes.contains(code) {
+                updated.orderedCodes.append(code)
+            }
+        }
+        prefs = updated
+    }
+
+    private func saveAndDismiss() {
+        let newOrder = items.map(\.code)
+        let absent = prefs.orderedCodes.filter { !newOrder.contains($0) }
+        var updated = prefs
+        updated.orderedCodes = newOrder + absent
+        prefs = updated
+        dismiss()
     }
 }

@@ -30,6 +30,7 @@
 		AABB000000000000000068AA /* TrendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000069AA /* TrendsView.swift */; };
 		AABB000000000000000070AA /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000071AA /* DashboardView.swift */; };
 		AABB000000000000000072AA /* ImportLandingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000073AA /* ImportLandingView.swift */; };
+		AABB000000000000000074AA /* LabDisplayPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000075AA /* LabDisplayPreferences.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -60,6 +61,7 @@
 		AABB000000000000000069AA /* TrendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendsView.swift; sourceTree = "<group>"; };
 		AABB000000000000000071AA /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		AABB000000000000000073AA /* ImportLandingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportLandingView.swift; sourceTree = "<group>"; };
+		AABB000000000000000075AA /* LabDisplayPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabDisplayPreferences.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,6 +117,7 @@
 				AABB000000000000000021AA /* LabValue.swift */,
 				AABB000000000000000022AA /* LabMapping.swift */,
 				AABB000000000000000061AA /* LabReport.swift */,
+				AABB000000000000000075AA /* LabDisplayPreferences.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -244,6 +247,7 @@
 				AABB000000000000000068AA /* TrendsView.swift in Sources */,
 				AABB000000000000000070AA /* DashboardView.swift in Sources */,
 				AABB000000000000000072AA /* ImportLandingView.swift in Sources */,
+				AABB000000000000000074AA /* LabDisplayPreferences.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

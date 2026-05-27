@@ -4,8 +4,8 @@ import Charts
 struct TrendsView: View {
     let reports: [LabReport]
 
-    @Environment(\.colorScheme) private var colorScheme
-    @State private var selectedCode: String = ""
+    @AppStorage("trendsSelectedCode") private var selectedCode: String = ""
+    @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
 
     private struct DataPoint: Identifiable {
         let id = UUID()
@@ -24,7 +24,17 @@ struct TrendsView: View {
                 }
             }
         }
-        return result.sorted { $0.name < $1.name }
+        let pinned = prefs.pinnedSet
+        let orderMap = Dictionary(uniqueKeysWithValues: prefs.orderedCodes.enumerated().map { ($1, $0) })
+        return result.sorted { a, b in
+            let aPin = pinned.contains(a.code)
+            let bPin = pinned.contains(b.code)
+            if aPin != bPin { return aPin }
+            let aOrd = orderMap[a.code] ?? Int.max
+            let bOrd = orderMap[b.code] ?? Int.max
+            if aOrd != bOrd { return aOrd < bOrd }
+            return a.name < b.name
+        }
     }
 
     private var dataPoints: [DataPoint] {
@@ -43,41 +53,25 @@ struct TrendsView: View {
     private var currentUnit: String { dataPoints.first?.unit ?? "" }
 
     var body: some View {
-        ZStack {
-            backgroundGradient
-            VStack(spacing: 0) {
-                if availableCodes.isEmpty {
-                    noDataView
-                } else {
-                    codePicker
-                    trendContent
-                }
+        VStack(spacing: 0) {
+            if availableCodes.isEmpty {
+                noDataView
+            } else {
+                codePicker
+                trendContent
             }
         }
         .navigationTitle("Trends")
         .navigationBarTitleDisplayMode(.large)
-        .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         .onAppear {
-            if selectedCode.isEmpty, let first = availableCodes.first {
-                selectedCode = first.code
+            let codes = availableCodes.map(\.code)
+            if selectedCode.isEmpty || !codes.contains(selectedCode) {
+                selectedCode = codes.first ?? ""
             }
         }
     }
 
     // MARK: - Subviews
-
-    private var backgroundGradient: some View {
-        LinearGradient(
-            colors: colorScheme == .dark
-                ? [Color(hue: 0.65, saturation: 0.60, brightness: 0.35),
-                   Color(hue: 0.75, saturation: 0.70, brightness: 0.25)]
-                : [Color(hue: 0.65, saturation: 0.20, brightness: 0.95),
-                   Color(hue: 0.75, saturation: 0.25, brightness: 0.92)],
-            startPoint: .top,
-            endPoint: .bottom
-        )
-        .ignoresSafeArea()
-    }
 
     private var noDataView: some View {
         ContentUnavailableView(
