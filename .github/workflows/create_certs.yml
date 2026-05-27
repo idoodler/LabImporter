@@ -1,0 +1,127 @@
+name: 3. Create Certificates
+run-name: Create Certificates (${{ github.ref_name }})
+on:
+  workflow_call:
+    outputs:
+      new_certificate_needed:
+        description: "Whether a new certificate was needed"
+        value: ${{ jobs.create-certs.outputs.new_certificate_needed }}
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate
+    uses: ./.github/workflows/validate_secrets.yml
+    secrets: inherit
+
+  create-certs:
+    name: Create Certificates
+    needs: [validate]
+    runs-on: macos-26
+    outputs:
+      new_certificate_needed: ${{ steps.check-certs.outputs.new_certificate_needed }}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v5
+
+      - name: Patch Match Tables
+        run: |
+          TABLE_PRINTER_PATH=$(ruby -e 'puts Gem::Specification.find_by_name("fastlane").gem_dir')/match/lib/match/table_printer.rb
+          if [ -f "$TABLE_PRINTER_PATH" ]; then
+            sed -i "" "/puts(Terminal::Table.new(params))/d" "$TABLE_PRINTER_PATH"
+          else
+            echo "table_printer.rb not found"
+            exit 1
+          fi
+
+      - name: Install Project Dependencies
+        run: bundle install
+
+      - name: Sync clock
+        run: sudo sntp -sS time.windows.com
+
+      - name: Fastlane Certs
+        continue-on-error: true
+        run: bundle exec fastlane certs
+        env:
+          TEAMID: ${{ secrets.TEAMID }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+          FASTLANE_KEY_ID: ${{ secrets.FASTLANE_KEY_ID }}
+          FASTLANE_ISSUER_ID: ${{ secrets.FASTLANE_ISSUER_ID }}
+          FASTLANE_KEY: ${{ secrets.FASTLANE_KEY }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+
+      - name: Check Certificate Validity
+        id: check-certs
+        run: |
+          bundle exec fastlane check_and_renew_certificates
+          new_cert=$(cat new_certificate_needed.txt)
+          echo "new_certificate_needed=$new_cert" >> $GITHUB_OUTPUT
+
+          if [ "$new_cert" == "true" ]; then
+            if [ "${{ vars.ENABLE_NUKE_CERTS }}" == "true" ]; then
+              echo "::notice::A new certificate is needed and ENABLE_NUKE_CERTS is enabled — certificates will be renewed automatically."
+            else
+              echo "::error::A new certificate is needed but ENABLE_NUKE_CERTS is not enabled. Set the ENABLE_NUKE_CERTS repository variable to 'true' to allow automatic renewal, or run the 'Create Certificates' workflow manually."
+            fi
+          else
+            echo "::notice::Distribution certificate is valid — no renewal needed."
+          fi
+        env:
+          TEAMID: ${{ secrets.TEAMID }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+          FASTLANE_KEY_ID: ${{ secrets.FASTLANE_KEY_ID }}
+          FASTLANE_ISSUER_ID: ${{ secrets.FASTLANE_ISSUER_ID }}
+          FASTLANE_KEY: ${{ secrets.FASTLANE_KEY }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+
+  nuke-certs:
+    name: Nuke and Recreate Certificates
+    needs: [create-certs]
+    runs-on: macos-26
+    if: |
+      (needs.create-certs.outputs.new_certificate_needed == 'true' && vars.ENABLE_NUKE_CERTS == 'true') ||
+      vars.FORCE_NUKE_CERTS == 'true'
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v5
+
+      - name: Patch Match Tables
+        run: |
+          TABLE_PRINTER_PATH=$(ruby -e 'puts Gem::Specification.find_by_name("fastlane").gem_dir')/match/lib/match/table_printer.rb
+          if [ -f "$TABLE_PRINTER_PATH" ]; then
+            sed -i "" "/puts(Terminal::Table.new(params))/d" "$TABLE_PRINTER_PATH"
+          else
+            echo "table_printer.rb not found"
+            exit 1
+          fi
+
+      - name: Install Project Dependencies
+        run: bundle install
+
+      - name: Sync clock
+        run: sudo sntp -sS time.windows.com
+
+      - name: Warn about certificate impact
+        run: |
+          echo "::warning::Revoking and recreating Distribution certificates. If you use the same Apple Developer account for other apps that share certificate infrastructure, those apps may be affected."
+
+      - name: Fastlane Nuke Certs
+        run: bundle exec fastlane nuke_certs
+        env:
+          TEAMID: ${{ secrets.TEAMID }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+          FASTLANE_KEY_ID: ${{ secrets.FASTLANE_KEY_ID }}
+          FASTLANE_ISSUER_ID: ${{ secrets.FASTLANE_ISSUER_ID }}
+          FASTLANE_KEY: ${{ secrets.FASTLANE_KEY }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+
+      - name: Fastlane Recreate Certs
+        run: bundle exec fastlane certs
+        env:
+          TEAMID: ${{ secrets.TEAMID }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+          FASTLANE_KEY_ID: ${{ secrets.FASTLANE_KEY_ID }}
+          FASTLANE_ISSUER_ID: ${{ secrets.FASTLANE_ISSUER_ID }}
+          FASTLANE_KEY: ${{ secrets.FASTLANE_KEY }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}

@@ -1,0 +1,232 @@
+default_platform(:ios)
+
+TEAMID                  = ENV["TEAMID"]
+GH_PAT                  = ENV["GH_PAT"]
+GITHUB_WORKSPACE        = ENV["GITHUB_WORKSPACE"]
+GITHUB_REPOSITORY_OWNER = ENV["GITHUB_REPOSITORY_OWNER"]
+FASTLANE_KEY_ID         = ENV["FASTLANE_KEY_ID"]
+FASTLANE_ISSUER_ID      = ENV["FASTLANE_ISSUER_ID"]
+FASTLANE_KEY            = ENV["FASTLANE_KEY"]
+
+ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "120"
+
+BUNDLE_ID = "de.idoodler.LabImporter"
+
+platform :ios do
+
+  # ── Build ──────────────────────────────────────────────────────────────────
+
+  desc "Build LabImporter and archive to IPA"
+  lane :build_labimporter do
+    setup_ci if ENV['CI']
+
+    update_project_team(
+      path: "#{GITHUB_WORKSPACE}/LabImporter.xcodeproj",
+      teamid: "#{TEAMID}"
+    )
+
+    api_key = app_store_connect_api_key(
+      key_id:    "#{FASTLANE_KEY_ID}",
+      issuer_id: "#{FASTLANE_ISSUER_ID}",
+      key_content: "#{FASTLANE_KEY}"
+    )
+
+    previous_build_number = latest_testflight_build_number(
+      app_identifier: "#{BUNDLE_ID}",
+      api_key: api_key
+    )
+
+    current_build_number = previous_build_number + 1
+
+    increment_build_number(
+      xcodeproj: "#{GITHUB_WORKSPACE}/LabImporter.xcodeproj",
+      build_number: current_build_number
+    )
+
+    match(
+      type: "appstore",
+      git_basic_authorization: Base64.strict_encode64("#{GITHUB_REPOSITORY_OWNER}:#{GH_PAT}"),
+      app_identifier: ["#{BUNDLE_ID}"]
+    )
+
+    mapping = Actions.lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
+
+    update_code_signing_settings(
+      path: "#{GITHUB_WORKSPACE}/LabImporter.xcodeproj",
+      profile_name: mapping["#{BUNDLE_ID}"],
+      code_sign_identity: "iPhone Distribution",
+      targets: ["LabImporter"]
+    )
+
+    gym(
+      export_method:  "app-store",
+      scheme:         "LabImporter",
+      output_name:    "LabImporter.ipa",
+      configuration:  "Release",
+      destination:    "generic/platform=iOS",
+      buildlog_path:  "buildlog"
+    )
+
+    copy_artifacts(
+      target_path: "artifacts",
+      artifacts: ["*.mobileprovision", "*.ipa", "*.dSYM.zip"]
+    )
+  end
+
+  # ── Release ────────────────────────────────────────────────────────────────
+
+  desc "Upload IPA to TestFlight"
+  lane :release do
+    api_key = app_store_connect_api_key(
+      key_id:    "#{FASTLANE_KEY_ID}",
+      issuer_id: "#{FASTLANE_ISSUER_ID}",
+      key_content: "#{FASTLANE_KEY}"
+    )
+
+    upload_to_testflight(
+      api_key: api_key,
+      skip_submission: false,
+      ipa: "LabImporter.ipa",
+      skip_waiting_for_build_processing: true,
+      changelog: git_branch + " " + last_git_commit[:abbreviated_commit_hash]
+    )
+  end
+
+  # ── Identifiers ────────────────────────────────────────────────────────────
+
+  desc "Register App ID and capabilities in App Store Connect"
+  lane :identifiers do
+    setup_ci if ENV['CI']
+    ENV["MATCH_READONLY"] = false.to_s
+
+    app_store_connect_api_key(
+      key_id:    "#{FASTLANE_KEY_ID}",
+      issuer_id: "#{FASTLANE_ISSUER_ID}",
+      key_content: "#{FASTLANE_KEY}"
+    )
+
+    def configure_bundle_id(name, identifier, capabilities)
+      bundle_id = Spaceship::ConnectAPI::BundleId.find(identifier) ||
+                  Spaceship::ConnectAPI::BundleId.create(
+                    name: name, identifier: identifier, platform: "IOS"
+                  )
+      existing = bundle_id.get_capabilities.map(&:capability_type)
+      capabilities.reject { |c| existing.include?(c) }.each do |cap|
+        bundle_id.create_capability(cap)
+      end
+    end
+
+    configure_bundle_id("LabImporter", "#{BUNDLE_ID}", [
+      Spaceship::ConnectAPI::BundleIdCapability::Type::HEALTHKIT
+    ])
+  end
+
+  # ── Certificates ───────────────────────────────────────────────────────────
+
+  desc "Create/refresh Distribution certificates and provisioning profiles"
+  lane :certs do
+    setup_ci if ENV['CI']
+    ENV["MATCH_READONLY"] = false.to_s
+
+    app_store_connect_api_key(
+      key_id:    "#{FASTLANE_KEY_ID}",
+      issuer_id: "#{FASTLANE_ISSUER_ID}",
+      key_content: "#{FASTLANE_KEY}"
+    )
+
+    match(
+      type: "appstore",
+      force: false,
+      verbose: true,
+      git_basic_authorization: Base64.strict_encode64("#{GITHUB_REPOSITORY_OWNER}:#{GH_PAT}"),
+      app_identifier: ["#{BUNDLE_ID}"]
+    )
+  end
+
+  # ── Validate Secrets ───────────────────────────────────────────────────────
+
+  desc "Smoke-test that all secrets are functional"
+  lane :validate_secrets do
+    setup_ci if ENV['CI']
+    ENV["MATCH_READONLY"] = true.to_s
+
+    app_store_connect_api_key(
+      key_id:    "#{FASTLANE_KEY_ID}",
+      issuer_id: "#{FASTLANE_ISSUER_ID}",
+      key_content: "#{FASTLANE_KEY}"
+    )
+
+    def find_bundle_id(identifier)
+      Spaceship::ConnectAPI::BundleId.find(identifier)
+    end
+
+    find_bundle_id("#{BUNDLE_ID}")
+
+    match(
+      type: "appstore",
+      git_basic_authorization: Base64.strict_encode64("#{GITHUB_REPOSITORY_OWNER}:#{GH_PAT}"),
+      app_identifier: []
+    )
+  end
+
+  # ── Nuke Certs ─────────────────────────────────────────────────────────────
+
+  desc "Revoke all Distribution certificates and recreate from scratch"
+  lane :nuke_certs do
+    setup_ci if ENV['CI']
+    ENV["MATCH_READONLY"] = false.to_s
+
+    app_store_connect_api_key(
+      key_id:    "#{FASTLANE_KEY_ID}",
+      issuer_id: "#{FASTLANE_ISSUER_ID}",
+      key_content: "#{FASTLANE_KEY}"
+    )
+
+    match_nuke(
+      type: "appstore",
+      team_id: "#{TEAMID}",
+      skip_confirmation: true,
+      git_basic_authorization: Base64.strict_encode64("#{GITHUB_REPOSITORY_OWNER}:#{GH_PAT}")
+    )
+  end
+
+  # ── Check & Renew ──────────────────────────────────────────────────────────
+
+  desc "Check certificate expiry and write result to new_certificate_needed.txt"
+  lane :check_and_renew_certificates do
+    setup_ci if ENV['CI']
+    ENV["MATCH_READONLY"] = false.to_s
+
+    app_store_connect_api_key(
+      key_id:    ENV["FASTLANE_KEY_ID"],
+      issuer_id: ENV["FASTLANE_ISSUER_ID"],
+      key_content: ENV["FASTLANE_KEY"]
+    )
+
+    new_certificate_needed = false
+
+    certificates = Spaceship::ConnectAPI::Certificate.all
+    distribution_certs = certificates.select { |cert| cert.certificate_type == "DISTRIBUTION" }
+
+    if distribution_certs.empty?
+      puts "No Distribution certificates found! Triggering action to create certificate."
+      new_certificate_needed = true
+    else
+      distribution_certs.each do |cert|
+        expiration_date = Time.parse(cert.expiration_date)
+        puts "Distribution Certificate: #{cert.id}, Expires: #{expiration_date}"
+        if expiration_date < Time.now
+          puts "Certificate #{cert.id} is expired!"
+          new_certificate_needed = true
+        else
+          puts "Certificate #{cert.id} is valid."
+        end
+      end
+    end
+
+    file_path = File.expand_path('new_certificate_needed.txt')
+    File.write(file_path, new_certificate_needed ? 'true' : 'false')
+    puts "Certificate renewal needed: #{File.read(file_path)}"
+  end
+
+end
