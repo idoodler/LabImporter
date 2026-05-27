@@ -41,7 +41,9 @@ struct CDAExportService {
     <patientRole>
       <id nullFlavor="UNK"/>
       <patient>
-        <name nullFlavor="UNK"/>
+        <name>
+          <family>Unknown</family>
+        </name>
         <administrativeGenderCode nullFlavor="UNK"/>
         <birthTime nullFlavor="UNK"/>
       </patient>
