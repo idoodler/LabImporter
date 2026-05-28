@@ -7,6 +7,7 @@ struct TrendsView: View {
 
     @AppStorage("trendsSelectedCode") private var selectedCode: String = ""
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
+    @State private var selectedDate: Date?
 
     private struct DataPoint: Identifiable {
         let id = UUID()
@@ -53,6 +54,13 @@ struct TrendsView: View {
     }
 
     private var currentUnit: String { dataPoints.first?.unit ?? "" }
+
+    private var selectedDataPoint: DataPoint? {
+        guard let selectedDate else { return nil }
+        return dataPoints.min(by: {
+            abs($0.date.timeIntervalSince(selectedDate)) < abs($1.date.timeIntervalSince(selectedDate))
+        })
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -112,25 +120,41 @@ struct TrendsView: View {
     }
 
     private var trendChart: some View {
-        Chart(dataPoints) { point in
-            LineMark(
-                x: .value(String(localized: "Date"), point.date),
-                y: .value(currentUnit, point.value)
-            )
-            .foregroundStyle(Color.accentColor.opacity(0.9))
+        Chart {
+            ForEach(dataPoints) { point in
+                LineMark(
+                    x: .value(String(localized: "Date"), point.date),
+                    y: .value(currentUnit, point.value)
+                )
+                .foregroundStyle(Color.accentColor.opacity(0.9))
 
-            PointMark(
-                x: .value(String(localized: "Date"), point.date),
-                y: .value(currentUnit, point.value)
-            )
-            .foregroundStyle(Color.accentColor)
+                PointMark(
+                    x: .value(String(localized: "Date"), point.date),
+                    y: .value(currentUnit, point.value)
+                )
+                .foregroundStyle(Color.accentColor)
 
-            AreaMark(
-                x: .value(String(localized: "Date"), point.date),
-                y: .value(currentUnit, point.value)
-            )
-            .foregroundStyle(Color.accentColor.opacity(0.15))
+                AreaMark(
+                    x: .value(String(localized: "Date"), point.date),
+                    y: .value(currentUnit, point.value)
+                )
+                .foregroundStyle(Color.accentColor.opacity(0.15))
+            }
+
+            if let selected = selectedDataPoint {
+                RuleMark(x: .value(String(localized: "Date"), selected.date))
+                    .foregroundStyle(.secondary.opacity(0.5))
+                    .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
+                    .annotation(
+                        position: .top,
+                        spacing: 6,
+                        overflowResolution: .init(x: .fit(to: .chart), y: .disabled)
+                    ) {
+                        scrubCallout(selected)
+                    }
+            }
         }
+        .chartXSelection(value: $selectedDate)
         .chartXAxis {
             AxisMarks(values: .automatic) { _ in
                 AxisGridLine().foregroundStyle(Color.primary.opacity(0.15))
@@ -152,5 +176,32 @@ struct TrendsView: View {
             RoundedRectangle(cornerRadius: 20)
                 .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
         )
+    }
+
+    private func scrubCallout(_ point: DataPoint) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(point.date.formatted(date: .abbreviated, time: .omitted))
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+            HStack(alignment: .firstTextBaseline, spacing: 3) {
+                Text(formatValue(point.value))
+                    .font(.caption.bold())
+                if !point.unit.isEmpty {
+                    Text(point.unit)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 5)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.primary.opacity(0.1), lineWidth: 0.5))
+    }
+
+    private func formatValue(_ value: Double) -> String {
+        value.truncatingRemainder(dividingBy: 1) == 0
+            ? String(format: "%.0f", value)
+            : String(format: "%.4g", value)
     }
 }
