@@ -52,7 +52,7 @@ struct ReportDetailView: View {
         } message: {
             Text("This report will be permanently removed from Apple Health.")
         }
-        .sheet(isPresented: $showEdit, onDismiss: { dismiss() }) {
+        .sheet(isPresented: $showEdit, onDismiss: { dismiss() }, content: {
             NavigationStack {
                 ReviewView(
                     labValues: report.asLabValues,
@@ -61,7 +61,7 @@ struct ReportDetailView: View {
                 )
             }
             .interactiveDismissDisabled()
-        }
+        })
     }
 
     private func entryRow(_ entry: LabReport.Entry) -> some View {

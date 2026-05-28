@@ -29,7 +29,7 @@ struct HistoryView: View {
             }
         }
         .onAppear { Task { await loadReports() } }
-        .sheet(item: $reportToEdit, onDismiss: { Task { await loadReports() } }) { report in
+        .sheet(item: $reportToEdit, onDismiss: { Task { await loadReports() } }, content: { report in
             NavigationStack {
                 ReviewView(
                     labValues: report.asLabValues,
@@ -38,7 +38,7 @@ struct HistoryView: View {
                 )
             }
             .interactiveDismissDisabled()
-        }
+        })
         .alert("Load Error", isPresented: .constant(loadError != nil)) {
             Button("OK") { loadError = nil }
         } message: {
