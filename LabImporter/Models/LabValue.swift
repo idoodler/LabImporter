@@ -10,7 +10,7 @@ struct LabValue: Identifiable, Equatable, @unchecked Sendable {
     var numericValue: Double?
     var unit: String
     var isSelected: Bool
-    var parsedRange: ReferenceRangeOverrides.StoredRange?
+    var parsedRange: ParsedRange?
 
     init(
         id: UUID = UUID(),
@@ -20,7 +20,7 @@ struct LabValue: Identifiable, Equatable, @unchecked Sendable {
         numericValue: Double?,
         unit: String,
         isSelected: Bool = true,
-        parsedRange: ReferenceRangeOverrides.StoredRange? = nil
+        parsedRange: ParsedRange? = nil
     ) {
         self.id = id
         self.code = code
@@ -33,8 +33,10 @@ struct LabValue: Identifiable, Equatable, @unchecked Sendable {
     }
 
     var resolvedName: String {
-        let mapped = LabMapping.displayName(for: code)
-        return mapped == code ? name : mapped
+        if let entry = LoincDirectory.shared.entry(for: code) {
+            return LoincDirectory.shared.displayName(for: entry)
+        }
+        return name.isEmpty ? code : name
     }
 
     static func == (lhs: LabValue, rhs: LabValue) -> Bool {

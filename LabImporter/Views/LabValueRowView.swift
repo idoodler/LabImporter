@@ -8,7 +8,7 @@ struct LabValueRowView: View {
     @FocusState private var isFocused: Bool
 
     private var hasLoincCode: Bool {
-        LabMapping.loincCode(for: value.code) != nil
+        !value.code.isEmpty && LoincDirectory.shared.entry(for: value.code) != nil
     }
 
     var body: some View {

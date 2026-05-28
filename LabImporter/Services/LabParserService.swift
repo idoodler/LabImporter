@@ -74,10 +74,16 @@ actor LabParserService {
                 .replacingOccurrences(of: ",", with: ".")
 
             let numericValue: Double? = entry.rawValue == "-" ? nil : Double(normalizedValue)
+            // Translate German shorthand to LOINC; if no translation, keep the
+            // raw code so the value isn't lost. resolvedName falls back to the
+            // entry's display name.
+            let canonicalCode = LabMapping.loinc(forShorthand: entry.code) ?? entry.code
+            let displayName = LoincDirectory.shared.entry(for: canonicalCode)
+                .map { LoincDirectory.shared.displayName(for: $0) } ?? entry.code
 
             return LabValue(
-                code: entry.code,
-                name: LabMapping.displayName(for: entry.code),
+                code: canonicalCode,
+                name: displayName,
                 displayValue: entry.rawValue,
                 numericValue: numericValue,
                 unit: entry.unit,

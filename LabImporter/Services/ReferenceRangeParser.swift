@@ -15,7 +15,7 @@ import Foundation
 enum ReferenceRangeParser {
 
     // swiftlint:disable:next cyclomatic_complexity
-    static func parse(_ raw: String) -> ReferenceRangeOverrides.StoredRange? {
+    static func parse(_ raw: String) -> ParsedRange? {
         let cleaned = raw
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .replacingOccurrences(of: "—", with: "")

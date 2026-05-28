@@ -9,14 +9,13 @@ struct LabReport: Codable, Identifiable {
 
     struct Entry: Codable, Identifiable {
         let id: UUID
-        let code: String
-        let name: String
+        let code: String              // LOINC identifier
+        let name: String              // Display name captured at import time
         let displayValue: String
         let numericValue: Double?
         let unit: String
-        // Reference range printed on the report itself (per-entry). Older reports
-        // serialised without this field decode as nil.
-        let parsedRange: ReferenceRangeOverrides.StoredRange?
+        // Reference range printed on the report itself (per-entry).
+        let parsedRange: ParsedRange?
 
         init(
             id: UUID,
@@ -25,7 +24,7 @@ struct LabReport: Codable, Identifiable {
             displayValue: String,
             numericValue: Double?,
             unit: String,
-            parsedRange: ReferenceRangeOverrides.StoredRange? = nil
+            parsedRange: ParsedRange? = nil
         ) {
             self.id = id
             self.code = code
@@ -37,8 +36,10 @@ struct LabReport: Codable, Identifiable {
         }
 
         var resolvedName: String {
-            let mapped = LabMapping.displayName(for: code)
-            return mapped == code ? name : mapped
+            if let entry = LoincDirectory.shared.entry(for: code) {
+                return LoincDirectory.shared.displayName(for: entry)
+            }
+            return name.isEmpty ? code : name
         }
     }
 }

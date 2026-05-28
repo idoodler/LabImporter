@@ -10,39 +10,18 @@ struct AddCodePickerPage: View {
     @Environment(\.dismiss) private var dismiss
     @State private var query = ""
 
-    private var filtered: [(code: String, name: String)] {
-        guard !query.isEmpty else { return LabMapping.allKnownCodes }
-        return LabMapping.allKnownCodes.filter {
-            $0.name.localizedCaseInsensitiveContains(query) ||
-            $0.code.localizedCaseInsensitiveContains(query)
-        }
-    }
-
     var body: some View {
-        List(filtered, id: \.code) { item in
-            Button {
-                code = item.code
-                if name.isEmpty { name = item.name }
-                dismiss()
-            } label: {
-                HStack {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(item.name)
-                        Text(item.code)
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                            .textCase(.uppercase)
-                    }
-                    Spacer()
-                    if code.uppercased() == item.code {
-                        Image(systemName: "checkmark")
-                            .foregroundStyle(Color.accentColor)
-                    }
+        codeList(
+            query: $query,
+            currentCode: code,
+            onSelect: { entry in
+                code = entry.loinc
+                if name.isEmpty {
+                    name = LoincDirectory.shared.displayName(for: entry)
                 }
+                dismiss()
             }
-            .foregroundStyle(.primary)
-        }
-        .searchable(text: $query, prompt: Text("Search lab tests"))
+        )
         .navigationTitle("Lab Test")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -56,40 +35,17 @@ struct CodePickerSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var query = ""
 
-    private var filtered: [(code: String, name: String)] {
-        guard !query.isEmpty else { return LabMapping.allKnownCodes }
-        return LabMapping.allKnownCodes.filter {
-            $0.name.localizedCaseInsensitiveContains(query) ||
-            $0.code.localizedCaseInsensitiveContains(query)
-        }
-    }
-
     var body: some View {
         NavigationStack {
-            List(filtered, id: \.code) { item in
-                Button {
-                    code = item.code
-                    name = item.name
+            codeList(
+                query: $query,
+                currentCode: code,
+                onSelect: { entry in
+                    code = entry.loinc
+                    name = LoincDirectory.shared.displayName(for: entry)
                     dismiss()
-                } label: {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(item.name)
-                            Text(item.code)
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
-                                .textCase(.uppercase)
-                        }
-                        Spacer()
-                        if code.uppercased() == item.code {
-                            Image(systemName: "checkmark")
-                                .foregroundStyle(Color.accentColor)
-                        }
-                    }
                 }
-                .foregroundStyle(.primary)
-            }
-            .searchable(text: $query, prompt: Text("Search lab tests"))
+            )
             .navigationTitle("Lab Test")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -99,4 +55,51 @@ struct CodePickerSheet: View {
             }
         }
     }
+}
+
+@ViewBuilder
+private func codeList(
+    query: Binding<String>,
+    currentCode: String,
+    onSelect: @escaping (LoincDirectory.Entry) -> Void
+) -> some View {
+    let trimmed = query.wrappedValue.trimmingCharacters(in: .whitespacesAndNewlines)
+    let results: [LoincDirectory.Entry] = trimmed.isEmpty
+        ? []
+        : LoincDirectory.shared.search(trimmed, limit: 100)
+
+    List {
+        if trimmed.isEmpty {
+            Text("Start typing to search LOINC codes.")
+                .foregroundStyle(.secondary)
+        } else if results.isEmpty {
+            Text(LoincDirectory.shared.isAvailable
+                 ? String(localized: "No matches")
+                 : String(localized: "LOINC database not loaded yet."))
+                .foregroundStyle(.secondary)
+        } else {
+            ForEach(results) { entry in
+                Button {
+                    onSelect(entry)
+                } label: {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(LoincDirectory.shared.displayName(for: entry))
+                                .lineLimit(2)
+                            Text(entry.loinc)
+                                .font(.caption2.monospaced())
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        if currentCode == entry.loinc {
+                            Image(systemName: "checkmark")
+                                .foregroundStyle(Color.accentColor)
+                        }
+                    }
+                }
+                .foregroundStyle(.primary)
+            }
+        }
+    }
+    .searchable(text: query, prompt: Text("Search LOINC code or name"))
 }

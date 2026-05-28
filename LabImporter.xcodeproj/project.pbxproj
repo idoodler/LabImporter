@@ -35,7 +35,7 @@
 		AABB000000000000000074AA /* LabDisplayPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000075AA /* LabDisplayPreferences.swift */; };
 		AABB000000000000000077AA /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000076AA /* Localizable.xcstrings */; };
 		AABB000000000000000078AA /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000079AA /* WelcomeView.swift */; };
-		AABB000000000000000087AA /* ReferenceRangeOverrides.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000086AA /* ReferenceRangeOverrides.swift */; };
+		AABB00000000000000009CAA /* ParsedRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00000000000000009DAA /* ParsedRange.swift */; };
 		AABB000000000000000089AA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000088AA /* SettingsView.swift */; };
 		AABB000000000000000091AA /* LoincDirectory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000090AA /* LoincDirectory.swift */; };
 		AABB000000000000000094AA /* loinc.db in Resources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000093AA /* loinc.db */; };
@@ -77,7 +77,7 @@
 		AABB000000000000000075AA /* LabDisplayPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabDisplayPreferences.swift; sourceTree = "<group>"; };
 		AABB000000000000000076AA /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		AABB000000000000000079AA /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
-		AABB000000000000000086AA /* ReferenceRangeOverrides.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferenceRangeOverrides.swift; sourceTree = "<group>"; };
+		AABB00000000000000009DAA /* ParsedRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsedRange.swift; sourceTree = "<group>"; };
 		AABB000000000000000088AA /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		AABB000000000000000090AA /* LoincDirectory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoincDirectory.swift; sourceTree = "<group>"; };
 		AABB000000000000000093AA /* loinc.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = loinc.db; sourceTree = "<group>"; };
@@ -152,7 +152,7 @@
 				AABB000000000000000022AA /* LabMapping.swift */,
 				AABB000000000000000061AA /* LabReport.swift */,
 				AABB000000000000000075AA /* LabDisplayPreferences.swift */,
-				AABB000000000000000086AA /* ReferenceRangeOverrides.swift */,
+				AABB00000000000000009DAA /* ParsedRange.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -320,7 +320,7 @@
 				AABB000000000000000072AA /* ImportLandingView.swift in Sources */,
 				AABB000000000000000074AA /* LabDisplayPreferences.swift in Sources */,
 				AABB000000000000000078AA /* WelcomeView.swift in Sources */,
-				AABB000000000000000087AA /* ReferenceRangeOverrides.swift in Sources */,
+				AABB00000000000000009CAA /* ParsedRange.swift in Sources */,
 				AABB000000000000000089AA /* SettingsView.swift in Sources */,
 				AABB000000000000000091AA /* LoincDirectory.swift in Sources */,
 				AABB000000000000000096AA /* LabOrderEditorView.swift in Sources */,

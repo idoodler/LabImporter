@@ -15,7 +15,7 @@ struct CDAExportService {
         let authorOrgXML = authorTrimmed.isEmpty ? "" : "\n      <representedOrganization>\n        <name>\(esc(authorTrimmed))</name>\n      </representedOrganization>"
 
         let exportable = labValues.filter {
-            $0.isSelected && $0.numericValue != nil && LabMapping.loincCode(for: $0.code) != nil
+            $0.isSelected && $0.numericValue != nil && !$0.code.isEmpty
         }
 
         let narrativeRows = exportable.map { labValue in
@@ -111,7 +111,7 @@ struct CDAExportService {
     // Writes the CDA to a temp file and returns the URL for sharing.
     func exportToTempFile(labValues: [LabValue], date: Date, patientName: String = "", authorName: String = "") throws -> URL {
         let exportable = labValues.filter {
-            $0.isSelected && $0.numericValue != nil && LabMapping.loincCode(for: $0.code) != nil
+            $0.isSelected && $0.numericValue != nil && !$0.code.isEmpty
         }
         guard !exportable.isEmpty else {
             throw CDAExportError.noExportableValues
@@ -128,9 +128,11 @@ struct CDAExportService {
     // MARK: - Private helpers
 
     private func observationXML(_ value: LabValue, date: String) -> String? {
-        guard let num = value.numericValue,
-              let (loincCode, loincDisplay) = LabMapping.loincCode(for: value.code) else { return nil }
+        guard let num = value.numericValue, !value.code.isEmpty else { return nil }
 
+        let loincCode = value.code
+        let loincDisplay = LoincDirectory.shared.entry(for: value.code)
+            .map { LoincDirectory.shared.displayName(for: $0) } ?? value.name
         let unit = ucum(value.unit)
         // Format as integer when possible, otherwise 4 significant figures
         let valueStr = num.truncatingRemainder(dividingBy: 1) == 0
@@ -156,7 +158,7 @@ struct CDAExportService {
 """
     }
 
-    private func referenceRangeXML(for range: ReferenceRangeOverrides.StoredRange?, unit: String) -> String {
+    private func referenceRangeXML(for range: ParsedRange?, unit: String) -> String {
         guard let range, range.normalLow != nil || range.normalHigh != nil else { return "" }
         let escapedUnit = esc(unit)
         let lowXML = range.normalLow.map { "<low value=\"\(formatNumber($0))\" unit=\"\(escapedUnit)\"/>" } ?? ""

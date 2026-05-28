@@ -30,12 +30,16 @@ struct ReviewView: View {
 
     private var exportableCount: Int {
         labValues.filter {
-            $0.isSelected && $0.numericValue != nil && LabMapping.loincCode(for: $0.code) != nil
+            $0.isSelected && $0.numericValue != nil && isLoincRecognized($0)
         }.count
     }
 
     private var unsupportedValues: [LabValue] {
-        labValues.filter { LabMapping.loincCode(for: $0.code) == nil }
+        labValues.filter { !isLoincRecognized($0) }
+    }
+
+    private func isLoincRecognized(_ value: LabValue) -> Bool {
+        !value.code.isEmpty && LoincDirectory.shared.entry(for: value.code) != nil
     }
 
     init(
@@ -195,7 +199,7 @@ struct ReviewView: View {
     private var valuesSection: some View {
         Section {
             ForEach(
-                labValues.indices.filter { LabMapping.loincCode(for: labValues[$0].code) != nil },
+                labValues.indices.filter { isLoincRecognized(labValues[$0]) },
                 id: \.self
             ) { idx in
                 LabValueRowView(value: $labValues[idx])

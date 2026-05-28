@@ -151,7 +151,7 @@ private struct CDAObservation {
     let display: String
     let value: Double
     let unit: String
-    let parsedRange: ReferenceRangeOverrides.StoredRange?
+    let parsedRange: ParsedRange?
 }
 
 private final class CDADocumentParser: NSObject, XMLParserDelegate {
@@ -183,16 +183,13 @@ private final class CDADocumentParser: NSObject, XMLParserDelegate {
         guard let date = delegate.reportDate else { return nil }
 
         let entries = delegate.observations.map { obs -> LabReport.Entry in
-            let internalCode = LabMapping.internalCode(forLoinc: obs.loinc) ?? obs.loinc
-            let mappedName = LabMapping.displayName(for: internalCode)
-            let name = mappedName == internalCode ? obs.display : mappedName
             let display = obs.value.truncatingRemainder(dividingBy: 1) == 0
                 ? String(format: "%.0f", obs.value)
                 : String(format: "%.4g", obs.value)
             return LabReport.Entry(
                 id: UUID(),
-                code: internalCode,
-                name: name,
+                code: obs.loinc,
+                name: obs.display,
                 displayValue: display,
                 numericValue: obs.value,
                 unit: obs.unit,
@@ -285,7 +282,7 @@ private final class CDADocumentParser: NSObject, XMLParserDelegate {
         case "observation" where inObservation:
             if let loinc = obsLoinc, let display = obsDisplay,
                let value = obsValue, let unit = obsUnit {
-                let parsed: ReferenceRangeOverrides.StoredRange? =
+                let parsed: ParsedRange? =
                     (refLow != nil || refHigh != nil)
                         ? .init(normalLow: refLow, normalHigh: refHigh, borderlineLow: nil, borderlineHigh: nil)
                         : nil
