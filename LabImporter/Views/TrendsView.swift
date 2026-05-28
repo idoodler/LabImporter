@@ -114,7 +114,7 @@ struct TrendsView: View {
         } label: {
             Image(systemName: isPinned ? "pin.fill" : "pin")
                 .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(isPinned ? Color.accentColor : .primary)
+                .foregroundStyle(isPinned ? Color.yellow : .primary)
                 .frame(width: 32, height: 32)
                 .glassEffect(in: Circle())
         }
