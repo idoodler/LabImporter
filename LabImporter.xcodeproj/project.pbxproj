@@ -35,6 +35,7 @@
 		AABB000000000000000074AA /* LabDisplayPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000075AA /* LabDisplayPreferences.swift */; };
 		AABB000000000000000077AA /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000076AA /* Localizable.xcstrings */; };
 		AABB000000000000000078AA /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000079AA /* WelcomeView.swift */; };
+		AABB000000000000000086AA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000087AA /* SettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -70,6 +71,7 @@
 		AABB000000000000000075AA /* LabDisplayPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabDisplayPreferences.swift; sourceTree = "<group>"; };
 		AABB000000000000000076AA /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		AABB000000000000000079AA /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		AABB000000000000000087AA /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,6 +160,7 @@
 				AABB000000000000000071AA /* DashboardView.swift */,
 				AABB000000000000000073AA /* ImportLandingView.swift */,
 				AABB000000000000000079AA /* WelcomeView.swift */,
+				AABB000000000000000087AA /* SettingsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -185,6 +188,7 @@
 				AABB000000000000000016AA /* Sources */,
 				AABB000000000000000017AA /* Frameworks */,
 				AABB000000000000000018AA /* Resources */,
+				AABB000000000000000088AA /* Embed Git Branch */,
 			);
 			buildRules = (
 			);
@@ -240,6 +244,24 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		AABB000000000000000088AA /* Embed Git Branch */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Git Branch";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -u\nINFO_PLIST=\"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\n[ -f \"$INFO_PLIST\" ] || exit 0\nBRANCH=$(cd \"${SRCROOT}\" && git rev-parse --abbrev-ref HEAD 2>/dev/null)\nCOMMIT=$(cd \"${SRCROOT}\" && git rev-parse --short HEAD 2>/dev/null)\n[ -n \"$BRANCH\" ] || BRANCH=unknown\n[ -n \"$COMMIT\" ] || COMMIT=unknown\n/usr/libexec/PlistBuddy -c \"Set :GitBranch $BRANCH\" \"$INFO_PLIST\" 2>/dev/null || /usr/libexec/PlistBuddy -c \"Add :GitBranch string $BRANCH\" \"$INFO_PLIST\"\n/usr/libexec/PlistBuddy -c \"Set :GitCommit $COMMIT\" \"$INFO_PLIST\" 2>/dev/null || /usr/libexec/PlistBuddy -c \"Add :GitCommit string $COMMIT\" \"$INFO_PLIST\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		AABB000000000000000016AA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -265,6 +287,7 @@
 				AABB000000000000000072AA /* ImportLandingView.swift in Sources */,
 				AABB000000000000000074AA /* LabDisplayPreferences.swift in Sources */,
 				AABB000000000000000078AA /* WelcomeView.swift in Sources */,
+				AABB000000000000000086AA /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -401,6 +424,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = LabImporter/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
@@ -428,6 +452,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = LabImporter/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
