@@ -14,7 +14,6 @@ struct DashboardView: View {
     let isProcessing: Bool
 
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
-    @State private var showOrderSheet = false
     @State private var showSettings = false
     @State private var trendSheet: TrendSheet?
 
@@ -43,13 +42,6 @@ struct DashboardView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    showOrderSheet = true
-                } label: {
-                    Image(systemName: "slider.horizontal.3")
-                }
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
                     showSettings = true
                 } label: {
                     Image(systemName: "gearshape")
@@ -59,11 +51,8 @@ struct DashboardView: View {
                 importMenu
             }
         }
-        .sheet(isPresented: $showOrderSheet) {
-            LabOrderSheet(prefs: $prefs, allCodes: allCodeNames)
-        }
         .sheet(isPresented: $showSettings) {
-            SettingsView()
+            SettingsView(visibleCodes: allCodeNames)
         }
         .sheet(item: $trendSheet) { sheet in
             NavigationStack {
@@ -221,142 +210,6 @@ private struct MetricData: Identifiable {
     let entry: LabReport.Entry
     let history: [SparkPoint]
     let status: RangeStatus?
-}
-
-private struct CodeName: Identifiable {
-    var id: String { code }
-    let code: String
-    let name: String
-}
-
-// MARK: - LabOrderSheet
-
-private struct LabOrderSheet: View {
-    @Binding var prefs: LabDisplayPreferences
-    let allCodes: [CodeName]
-    @Environment(\.dismiss) private var dismiss
-
-    @State private var visibleOrdered: [CodeName]
-    @State private var hiddenSet: Set<String>
-    @State private var pinnedSet: Set<String>
-
-    init(prefs: Binding<LabDisplayPreferences>, allCodes: [CodeName]) {
-        _prefs = prefs
-        self.allCodes = allCodes
-
-        let currentPrefs = prefs.wrappedValue
-        let hidden = currentPrefs.hiddenSet
-
-        var seen = Set<String>()
-        var initial: [CodeName] = []
-        for code in currentPrefs.orderedCodes where !hidden.contains(code) {
-            guard let item = allCodes.first(where: { $0.code == code }),
-                  seen.insert(code).inserted else { continue }
-            initial.append(item)
-        }
-        for item in allCodes where !hidden.contains(item.code) && seen.insert(item.code).inserted {
-            initial.append(item)
-        }
-
-        _visibleOrdered = State(initialValue: initial)
-        _hiddenSet = State(initialValue: hidden)
-        _pinnedSet = State(initialValue: currentPrefs.pinnedSet)
-    }
-
-    var body: some View {
-        NavigationStack {
-            List {
-                visibleSection
-                hiddenSection
-            }
-            .environment(\.editMode, .constant(.active))
-            .navigationTitle("Customize")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") { save(); dismiss() }
-                        .fontWeight(.semibold)
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var visibleSection: some View {
-        Section("Visible") {
-            ForEach(visibleOrdered) { item in
-                HStack(spacing: 12) {
-                    Button { togglePin(item.code) } label: {
-                        Image(systemName: pinnedSet.contains(item.code) ? "pin.fill" : "pin")
-                            .foregroundStyle(pinnedSet.contains(item.code) ? Color.yellow : Color.secondary)
-                            .frame(width: 20)
-                    }
-                    .buttonStyle(.plain)
-                    Text(item.name)
-                    Spacer()
-                    Button { hideCode(item.code) } label: {
-                        Image(systemName: "eye.slash")
-                            .foregroundStyle(Color.secondary)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-            .onMove { from, dest in visibleOrdered.move(fromOffsets: from, toOffset: dest) }
-        }
-    }
-
-    @ViewBuilder
-    private var hiddenSection: some View {
-        let hiddenItems = allCodes.filter { hiddenSet.contains($0.code) }
-        if !hiddenItems.isEmpty {
-            Section("Hidden") {
-                ForEach(hiddenItems) { item in
-                    HStack {
-                        Text(item.name)
-                            .foregroundStyle(.secondary)
-                        Spacer()
-                        Button("Restore") { restoreCode(item.code) }
-                            .buttonStyle(.plain)
-                            .foregroundStyle(Color.accentColor)
-                            .fontWeight(.medium)
-                    }
-                    .moveDisabled(true)
-                }
-            }
-        }
-    }
-
-    private func togglePin(_ code: String) {
-        if pinnedSet.contains(code) {
-            pinnedSet.remove(code)
-        } else {
-            pinnedSet.insert(code)
-        }
-    }
-
-    private func hideCode(_ code: String) {
-        hiddenSet.insert(code)
-        visibleOrdered.removeAll { $0.code == code }
-    }
-
-    private func restoreCode(_ code: String) {
-        hiddenSet.remove(code)
-        if let item = allCodes.first(where: { $0.code == code }) {
-            visibleOrdered.append(item)
-        }
-    }
-
-    private func save() {
-        let hiddenOrdered = allCodes.filter { hiddenSet.contains($0.code) }
-        var updated = prefs
-        updated.orderedCodes = visibleOrdered.map(\.code) + hiddenOrdered.map(\.code)
-        updated.pinnedCodes = Array(pinnedSet)
-        updated.hiddenCodes = Array(hiddenSet)
-        prefs = updated
-    }
 }
 
 // MARK: - MetricCard
