@@ -4,6 +4,7 @@ struct LabValueRowView: View {
     @Binding var value: LabValue
 
     @State private var editedValue: String = ""
+    @State private var showCodePicker = false
     @FocusState private var isFocused: Bool
 
     private var hasLoincCode: Bool {
@@ -34,10 +35,18 @@ struct LabValueRowView: View {
                     }
                 }
 
-                Text(value.code)
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
-                    .textCase(.uppercase)
+                Button { showCodePicker = true } label: {
+                    HStack(spacing: 3) {
+                        Text(value.code)
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                            .textCase(.uppercase)
+                        Image(systemName: "chevron.up.chevron.down")
+                            .font(.system(size: 7))
+                            .foregroundStyle(.quaternary)
+                    }
+                }
+                .buttonStyle(.plain)
             }
 
             Spacer()
@@ -55,6 +64,9 @@ struct LabValueRowView: View {
             }
         }
         .padding(.vertical, 2)
+        .sheet(isPresented: $showCodePicker) {
+            CodePickerSheet(code: $value.code, name: $value.name)
+        }
         .onAppear { editedValue = strippedDisplayValue }
         .onChange(of: value.displayValue) { _, new in
             let stripped = strippedValue(new)

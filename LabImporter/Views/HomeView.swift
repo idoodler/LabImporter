@@ -24,14 +24,6 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             content
-                .navigationDestination(isPresented: $showReview) {
-                    ReviewView(
-                        labValues: labValues,
-                        reportDate: parsedReportDate ?? Date(),
-                        extractedPatientName: parsedPatientName,
-                        extractedAuthorName: parsedAuthorName
-                    )
-                }
                 .sheet(isPresented: $showCamera) {
                     CameraView { image in
                         Task { await processImage(image) }
@@ -42,6 +34,17 @@ struct HomeView: View {
                 } message: {
                     Text(errorMessage ?? "")
                 }
+        }
+        .sheet(isPresented: $showReview) {
+            NavigationStack {
+                ReviewView(
+                    labValues: labValues,
+                    reportDate: parsedReportDate ?? Date(),
+                    extractedPatientName: parsedPatientName,
+                    extractedAuthorName: parsedAuthorName
+                )
+            }
+            .interactiveDismissDisabled()
         }
         .overlay {
             if isProcessing { ProcessingHUD() }

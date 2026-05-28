@@ -3,6 +3,24 @@ import Foundation
 // Maps German lab report codes to human-readable names, LOINC codes, and reference ranges.
 enum LabMapping {
 
+    static let allKnownCodes: [(code: String, name: String)] = [
+        ("BZ", "Blood Glucose"),
+        ("KREA", "Creatinine"),
+        ("MDRD", "eGFR (MDRD)"),
+        ("CKD-EPI", "eGFR (CKD-EPI)"),
+        ("CHOL", "Total Cholesterol"),
+        ("HDL", "HDL Cholesterol"),
+        ("NONHDL", "Non-HDL Cholesterol"),
+        ("LDL", "LDL Cholesterol"),
+        ("TRIG", "Triglycerides"),
+        ("GPT", "GPT (ALT)"),
+        ("G-GT", "Gamma-GT (GGT)"),
+        ("HB-A1C", "HbA1c (%)"),
+        ("HB-A1", "HbA1 (mmol/mol)"),
+        ("TSH", "TSH (Thyroid)"),
+        ("DIABOL", "Diabetes Screening"),
+    ]
+
     // swiftlint:disable:next cyclomatic_complexity
     static func displayName(for code: String) -> String {
         switch code.uppercased() {

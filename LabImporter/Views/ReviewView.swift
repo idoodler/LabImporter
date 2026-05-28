@@ -14,6 +14,7 @@ struct ReviewView: View {
 
     @State private var cdaShareURL: URL?
     @State private var cdaError: String?
+    @State private var showDiscardAlert = false
 
     @State private var showAddValue = false
     @State private var addName = ""
@@ -58,10 +59,19 @@ struct ReviewView: View {
         .scrollDismissesKeyboard(.interactively)
         .scrollContentBackground(.hidden)
         .background(.ultraThinMaterial)
-        .navigationTitle("Review Values")
+        .navigationTitle("Lab Report")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             keyboardDoneButton
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Cancel") { showDiscardAlert = true }
+            }
+        }
+        .alert("Discard Report?", isPresented: $showDiscardAlert) {
+            Button("Discard", role: .destructive) { dismiss() }
+            Button("Continue Editing", role: .cancel) { }
+        } message: {
+            Text("Any entered values will not be saved.")
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             bottomButtons
@@ -257,9 +267,16 @@ private extension ReviewView {
                 Section {
                     TextField("Name", text: $addName)
                         .autocorrectionDisabled()
-                    TextField("Code (optional)", text: $addCode)
-                        .autocorrectionDisabled()
-                        .textInputAutocapitalization(.characters)
+                    NavigationLink {
+                        AddCodePickerPage(code: $addCode, name: $addName)
+                    } label: {
+                        HStack {
+                            Text("Lab Test")
+                            Spacer()
+                            Text(addCode.isEmpty ? "Any" : addCode)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                 }
                 Section {
                     TextField("Value", text: $addDisplayValue)
@@ -425,6 +442,52 @@ private extension ReviewView {
         } catch {
             cdaError = error.localizedDescription
         }
+    }
+}
+
+// MARK: - Code picker page (used inside addValueSheet's NavigationStack)
+
+private struct AddCodePickerPage: View {
+    @Binding var code: String
+    @Binding var name: String
+    @Environment(\.dismiss) private var dismiss
+    @State private var query = ""
+
+    private var filtered: [(code: String, name: String)] {
+        guard !query.isEmpty else { return LabMapping.allKnownCodes }
+        return LabMapping.allKnownCodes.filter {
+            $0.name.localizedCaseInsensitiveContains(query) ||
+            $0.code.localizedCaseInsensitiveContains(query)
+        }
+    }
+
+    var body: some View {
+        List(filtered, id: \.code) { item in
+            Button {
+                code = item.code
+                if name.isEmpty { name = item.name }
+                dismiss()
+            } label: {
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(item.name)
+                        Text(item.code)
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .textCase(.uppercase)
+                    }
+                    Spacer()
+                    if code.uppercased() == item.code {
+                        Image(systemName: "checkmark")
+                            .foregroundStyle(Color.accentColor)
+                    }
+                }
+            }
+            .foregroundStyle(.primary)
+        }
+        .searchable(text: $query, prompt: Text("Search lab tests"))
+        .navigationTitle("Lab Test")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
