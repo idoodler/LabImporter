@@ -15,6 +15,12 @@ struct DashboardView: View {
 
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
     @State private var showOrderSheet = false
+    @State private var trendSheet: TrendSheet?
+
+    private struct TrendSheet: Identifiable {
+        var id: String { code }
+        let code: String
+    }
 
     var body: some View {
         ScrollView {
@@ -47,6 +53,13 @@ struct DashboardView: View {
         }
         .sheet(isPresented: $showOrderSheet) {
             LabOrderSheet(prefs: $prefs, allCodes: allCodeNames)
+        }
+        .sheet(item: $trendSheet) { sheet in
+            NavigationStack {
+                TrendsView(reports: reports, initialCode: sheet.code)
+            }
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
         }
     }
 
@@ -83,7 +96,7 @@ struct DashboardView: View {
             spacing: 14
         ) {
             ForEach(sortedMetrics) { metric in
-                NavigationLink(destination: TrendsView(reports: reports, initialCode: metric.entry.code)) {
+                Button { trendSheet = TrendSheet(code: metric.entry.code) } label: {
                     MetricCard(metric: metric, isPinned: prefs.pinnedSet.contains(metric.entry.code))
                 }
                 .buttonStyle(.plain)
