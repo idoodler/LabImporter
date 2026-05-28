@@ -36,7 +36,7 @@
 		AABB000000000000000077AA /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000076AA /* Localizable.xcstrings */; };
 		AABB000000000000000078AA /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000079AA /* WelcomeView.swift */; };
 		AABB000000000000000086AA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000087AA /* SettingsView.swift */; };
-		AABB000000000000000088AA /* UnsupportedDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000089AA /* UnsupportedDeviceView.swift */; };
+		AABB0000000000000000C2DE /* UnsupportedDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000C3DE /* UnsupportedDeviceView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -73,7 +73,7 @@
 		AABB000000000000000076AA /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		AABB000000000000000079AA /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		AABB000000000000000087AA /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		AABB000000000000000089AA /* UnsupportedDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsupportedDeviceView.swift; sourceTree = "<group>"; };
+		AABB0000000000000000C3DE /* UnsupportedDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsupportedDeviceView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,7 +163,7 @@
 				AABB000000000000000073AA /* ImportLandingView.swift */,
 				AABB000000000000000079AA /* WelcomeView.swift */,
 				AABB000000000000000087AA /* SettingsView.swift */,
-				AABB000000000000000089AA /* UnsupportedDeviceView.swift */,
+				AABB0000000000000000C3DE /* UnsupportedDeviceView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -291,7 +291,7 @@
 				AABB000000000000000074AA /* LabDisplayPreferences.swift in Sources */,
 				AABB000000000000000078AA /* WelcomeView.swift in Sources */,
 				AABB000000000000000086AA /* SettingsView.swift in Sources */,
-				AABB000000000000000088AA /* UnsupportedDeviceView.swift in Sources */,
+				AABB0000000000000000C2DE /* UnsupportedDeviceView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
