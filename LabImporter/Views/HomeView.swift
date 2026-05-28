@@ -199,7 +199,7 @@ struct HomeView: View {
 
         do {
             let text = try await ocrService.extractText(fromPDFAt: url)
-            try await handleExtractedText(text, emptyMessage: String(localized: "No lab values were found in this document. Make sure the report is clearly visible."))
+            try await handleExtractedText(text, emptyMessage: documentEmptyMessage)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -212,10 +212,14 @@ struct HomeView: View {
 
         do {
             let text = try await ocrService.extractText(from: images)
-            try await handleExtractedText(text, emptyMessage: String(localized: "No lab values were found in this document. Make sure the report is clearly visible."))
+            try await handleExtractedText(text, emptyMessage: documentEmptyMessage)
         } catch {
             errorMessage = error.localizedDescription
         }
+    }
+
+    private var documentEmptyMessage: String {
+        String(localized: "No lab values were found in this document. Make sure the report is clearly visible.")
     }
 
     private func processText(_ text: String) async {
