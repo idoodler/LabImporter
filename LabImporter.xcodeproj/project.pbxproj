@@ -211,6 +211,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = AABB000000000000000008AA /* Build configuration list for PBXNativeTarget "LabImporter" */;
 			buildPhases = (
+				AABB00000000000000009BAA /* Sync LOINC */,
 				AABB000000000000000016AA /* Sources */,
 				AABB000000000000000017AA /* Frameworks */,
 				AABB000000000000000018AA /* Resources */,
@@ -225,6 +226,30 @@
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		AABB00000000000000009BAA /* Sync LOINC */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/tools/sync_loinc.py",
+			);
+			name = "Sync LOINC";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(SRCROOT)/LabImporter/Resources/loinc.db",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/bin/env python3 \"${SRCROOT}/tools/sync_loinc.py\" || { echo \"warning: LOINC sync failed; using existing loinc.db\"; exit 0; }\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXProject section */
 		AABB000000000000000001AA /* Project object */ = {

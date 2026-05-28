@@ -1,53 +1,53 @@
 # Tools
 
-## `build_loinc_db.py` — bundled LOINC lookup database
+## `sync_loinc.py` — bundled LOINC lookup database
 
 LabImporter ships a read-only SQLite database (`LabImporter/Resources/loinc.db`)
-that powers the per-code reference-range editor and the LOINC lookup section in
-Settings. The DB is produced from the Regenstrief LOINC release and is **not
-checked into git** (the LOINC table is licensed and must be downloaded by each
-developer).
+that powers the LOINC search and per-code colour customisation in Settings.
+The DB is populated automatically at build time from Wikidata's public SPARQL
+endpoint — **no Regenstrief account, no manual download, no checked-in binary
+data**. A Run Script build phase in the Xcode project invokes
+`python3 tools/sync_loinc.py` before the app sources compile.
 
-### Build steps
+### What it does
 
-1. Register a free Regenstrief account at https://loinc.org/downloads/ and
-   download the latest **LOINC Table File (CSV)** release plus the **LOINC
-   Linguistic Variants** archive.
-2. Unzip both into `tools/.loinc_source/` such that the directory tree looks
-   like:
+1. Queries `https://query.wikidata.org/sparql` for every item with a LOINC ID
+   (property P4338), pulling the English label plus translations in DE, FR,
+   ES, IT, NL, PT, PL, JA, ZH.
+2. Builds a fresh SQLite file with an FTS5 search index, an
+   `loinc_translations` table, and a `meta` table carrying the source
+   (`wikidata-sparql`), build timestamp, and attribution.
+3. Atomically replaces `LabImporter/Resources/loinc.db`.
 
-       tools/.loinc_source/
-         LoincTable/Loinc.csv
-         AccessoryFiles/LinguisticVariants/deAT24LinguisticVariant.csv
-         AccessoryFiles/LinguisticVariants/frFR24LinguisticVariant.csv
-         …
+### Caching
 
-3. From the repo root, run:
+- If `loinc.db` already exists and is younger than 30 days, the script
+  exits without contacting the network. Bypass with `--force`.
+- If Wikidata is unreachable (offline build, blocked corporate proxy),
+  the script prints a warning and exits 0 so the Xcode build still
+  succeeds with whatever DB is already on disk (placeholder or previous
+  fetch).
 
-       python3 tools/build_loinc_db.py
+### Coverage
 
-   The script filters to lab-observation classes (CHEM, HEM/BC, COAG, MICRO, …),
-   builds an FTS5 search index, imports linguistic variants for the supported
-   locales, stamps version metadata, and writes the resulting database to
-   `LabImporter/Resources/loinc.db`. Typical output: ~6–8 MB.
+Wikidata's LOINC coverage is intentionally narrower than the full
+Regenstrief release (~1.5–2.5K codes vs. ~100K). It captures the lab
+tests that show up on a typical clinical chemistry, hematology, lipid,
+liver, endocrine, or hormone panel — which is what consumer-facing
+reports use. Tests outside that scope simply won't surface in Settings'
+search; the user can still customise per-code colours and parsed
+reference ranges flow through regardless.
 
-4. Open `LabImporter.xcodeproj` and confirm `Resources/loinc.db` is included in
-   the LabImporter target's Copy Bundle Resources phase (the project already
-   references the path; rebuilding the DB just refreshes the file in place).
+### Manual run
 
-The app boots without the DB — Settings simply falls back to the legacy
-hard-coded code list. Once you build and bundle the DB, the full LOINC
-directory becomes searchable.
+From the repo root:
 
-### Refreshing for a new LOINC release
-
-Regenstrief publishes new LOINC versions roughly twice per year. Replace the
-contents of `tools/.loinc_source/` with the new release and re-run the script.
-The output filename and bundle path don't change.
+    python3 tools/sync_loinc.py            # respects 30-day cache
+    python3 tools/sync_loinc.py --force    # rebuild now
 
 ### Licensing
 
-The bundled LOINC content is licensed under the Regenstrief LOINC License
-(see https://loinc.org/license). The required attribution is shown in the
-app's **About → License** screen and stored in the `meta` table of the
-generated database.
+LOINC identifiers themselves are © Regenstrief Institute, Inc. and used
+under the LOINC License (http://loinc.org/license). Display names come
+from Wikidata's CC0 corpus. Both attributions are stored in the `meta`
+table and surfaced in **Settings → About → License** at runtime.
