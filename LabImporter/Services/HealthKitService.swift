@@ -36,7 +36,7 @@ actor HealthKitService {
             var finished = false
             let query = HKDocumentQuery(
                 documentType: documentType,
-                predicate: nil,
+                predicate: HKQuery.predicateForObjects(from: HKSource.default()),
                 limit: HKObjectQueryNoLimit,
                 sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate,
                                                    ascending: false)],
