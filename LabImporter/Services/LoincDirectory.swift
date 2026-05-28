@@ -76,6 +76,17 @@ final class LoincDirectory {
         queue.sync { fetchLocalizedName(loinc: loinc, languageCode: languageCode) }
     }
 
+    // Picks the best display name for an entry: localised long_common_name if a
+    // translation exists for the device's primary language, otherwise the
+    // English long_common_name.
+    func displayName(for entry: Entry, locale: Locale = .current) -> String {
+        if let code = locale.language.languageCode?.identifier,
+           let localised = localizedName(for: entry.loinc, languageCode: code) {
+            return localised
+        }
+        return entry.longCommonName
+    }
+
     // MARK: - Internal queries
 
     private func metaValue(_ key: String) -> String? {

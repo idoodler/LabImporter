@@ -78,6 +78,12 @@ struct SettingsView: View {
                 Text(versionString)
                     .foregroundStyle(.secondary)
             }
+            HStack {
+                Text("LOINC Data")
+                Spacer()
+                Text(loincDataString)
+                    .foregroundStyle(.secondary)
+            }
             NavigationLink(destination: LicenseView()) {
                 Text("License")
             }
@@ -89,6 +95,14 @@ struct SettingsView: View {
         let version = info?["CFBundleShortVersionString"] as? String ?? "—"
         let build = info?["CFBundleVersion"] as? String ?? "—"
         return "\(version) (\(build))"
+    }
+
+    private var loincDataString: String {
+        let directory = LoincDirectory.shared
+        guard directory.isAvailable, let version = directory.version else {
+            return String(localized: "Not loaded")
+        }
+        return "v\(version) · \(directory.codeCount.formatted()) codes"
     }
 
     // MARK: - Reference Ranges
@@ -154,7 +168,7 @@ struct SettingsView: View {
                     rangeRow(code: item.code.uppercased(), displayName: item.name)
                 }
                 ForEach(directoryHits) { entry in
-                    rangeRow(code: entry.loinc, displayName: entry.longCommonName)
+                    rangeRow(code: entry.loinc, displayName: LoincDirectory.shared.displayName(for: entry))
                 }
             }
         }
@@ -279,7 +293,7 @@ struct ReferenceRangeEditorView: View {
             return (mapped.loinc, mapped.display)
         }
         if let entry = LoincDirectory.shared.entry(for: code) {
-            return (entry.loinc, entry.longCommonName)
+            return (entry.loinc, LoincDirectory.shared.displayName(for: entry))
         }
         return nil
     }
