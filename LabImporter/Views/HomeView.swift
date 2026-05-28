@@ -1,5 +1,6 @@
 import SwiftUI
-import PhotosUI
+import UniformTypeIdentifiers
+import VisionKit
 
 struct HomeView: View {
     // Report state
@@ -7,8 +8,8 @@ struct HomeView: View {
     @State private var isLoaded = false
 
     // Import flow state
-    @State private var photosPickerItem: PhotosPickerItem?
-    @State private var showCamera = false
+    @State private var showScanner = false
+    @State private var showFileImporter = false
     @State private var isProcessing = false
     @State private var labValues: [LabValue] = []
     @State private var parsedReportDate: Date?
@@ -25,9 +26,28 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             content
-                .sheet(isPresented: $showCamera) {
-                    CameraView { image in
-                        Task { await processImage(image) }
+                .fullScreenCover(isPresented: $showScanner) {
+                    DocumentScannerView(
+                        onComplete: { images in
+                            Task { await processImages(images) }
+                        },
+                        onError: { error in
+                            errorMessage = error.localizedDescription
+                        }
+                    )
+                    .ignoresSafeArea()
+                }
+                .fileImporter(
+                    isPresented: $showFileImporter,
+                    allowedContentTypes: [.pdf, .image],
+                    allowsMultipleSelection: false
+                ) { result in
+                    switch result {
+                    case .success(let urls):
+                        guard let url = urls.first else { return }
+                        Task { await processFile(at: url) }
+                    case .failure:
+                        errorMessage = String(localized: "Could not load the selected file.")
                     }
                 }
                 .alert("Error", isPresented: .constant(errorMessage != nil)) {
@@ -51,11 +71,6 @@ struct HomeView: View {
             if isProcessing { ProcessingHUD() }
         }
         .task { await loadReports() }
-        .onChange(of: photosPickerItem) { _, item in
-            guard let item else { return }
-            photosPickerItem = nil
-            Task { await loadAndProcess(item: item) }
-        }
         .onChange(of: showReview) { _, showing in
             if !showing { Task { await loadReports() } }
         }
@@ -83,20 +98,22 @@ struct HomeView: View {
                 .scaleEffect(1.4)
         } else if reports.isEmpty {
             ImportLandingView(
-                photosPickerItem: $photosPickerItem,
-                onCamera: { showCamera = true },
+                onScan: openScanner,
+                onPickFile: { showFileImporter = true },
                 onPaste: pasteFromClipboard,
                 onManual: createManually,
+                scannerAvailable: VNDocumentCameraViewController.isSupported,
                 clipboardAvailable: clipboardHasContent,
                 isProcessing: isProcessing
             )
         } else {
             DashboardView(
                 reports: reports,
-                photosPickerItem: $photosPickerItem,
-                onCamera: { showCamera = true },
+                onScan: openScanner,
+                onPickFile: { showFileImporter = true },
                 onPaste: pasteFromClipboard,
                 onManual: createManually,
+                scannerAvailable: VNDocumentCameraViewController.isSupported,
                 clipboardAvailable: clipboardHasContent,
                 isProcessing: isProcessing
             )
@@ -124,10 +141,20 @@ struct HomeView: View {
     private func pasteFromClipboard() {
         let pasteboard = UIPasteboard.general
         if let image = pasteboard.image {
-            Task { await processImage(image) }
+            Task { await processImages([image]) }
         } else if let text = pasteboard.string, !text.isEmpty {
             Task { await processText(text) }
         }
+    }
+
+    // MARK: - Scanner
+
+    private func openScanner() {
+        guard VNDocumentCameraViewController.isSupported else {
+            errorMessage = String(localized: "Document scanning isn't available on this device.")
+            return
+        }
+        showScanner = true
     }
 
     // MARK: - Manual creation
@@ -143,48 +170,49 @@ struct HomeView: View {
     // MARK: - Shared URL (share sheet / open with)
 
     private func processSharedURL(_ url: URL) async {
+        await processFile(at: url)
+    }
+
+    private func processFile(at url: URL) async {
         let accessing = url.startAccessingSecurityScopedResource()
         defer {
             if accessing { url.stopAccessingSecurityScopedResource() }
         }
-        guard let data = try? Data(contentsOf: url),
-              let image = UIImage(data: data) else {
-            errorMessage = String(localized: "Could not open the shared image.")
-            return
+
+        let isPDF = url.pathExtension.lowercased() == "pdf"
+            || (try? url.resourceValues(forKeys: [.contentTypeKey]).contentType?.conforms(to: .pdf)) == true
+
+        if isPDF {
+            await processPDF(at: url)
+        } else if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
+            await processImages([image])
+        } else {
+            errorMessage = String(localized: "Could not load the selected file.")
         }
-        await processImage(image)
     }
 
     // MARK: - Processing
 
-    private func loadAndProcess(item: PhotosPickerItem) async {
-        guard let data = try? await item.loadTransferable(type: Data.self),
-              let image = UIImage(data: data)
-        else {
-            errorMessage = String(localized: "Could not load the selected image.")
-            return
-        }
-        await processImage(image)
-    }
-
-    private func processImage(_ image: UIImage) async {
+    private func processPDF(at url: URL) async {
         isProcessing = true
         defer { isProcessing = false }
 
         do {
-            let text = try await ocrService.extractText(from: image)
-            let result = try await parserService.parseLabValues(from: text)
+            let text = try await ocrService.extractText(fromPDFAt: url)
+            try await handleExtractedText(text, emptyMessage: String(localized: "No lab values were found in this document. Make sure the report is clearly visible."))
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
 
-            if result.values.isEmpty {
-                errorMessage = String(localized: "No lab values were found in this image. Make sure the report is clearly visible.")
-                return
-            }
+    private func processImages(_ images: [UIImage]) async {
+        guard !images.isEmpty else { return }
+        isProcessing = true
+        defer { isProcessing = false }
 
-            labValues = result.values
-            parsedReportDate = result.reportDate
-            parsedPatientName = result.patientName
-            parsedAuthorName = result.authorName
-            showReview = true
+        do {
+            let text = try await ocrService.extractText(from: images)
+            try await handleExtractedText(text, emptyMessage: String(localized: "No lab values were found in this document. Make sure the report is clearly visible."))
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -195,21 +223,25 @@ struct HomeView: View {
         defer { isProcessing = false }
 
         do {
-            let result = try await parserService.parseLabValues(from: text)
-
-            if result.values.isEmpty {
-                errorMessage = String(localized: "No lab values were found in the clipboard text.")
-                return
-            }
-
-            labValues = result.values
-            parsedReportDate = result.reportDate
-            parsedPatientName = result.patientName
-            parsedAuthorName = result.authorName
-            showReview = true
+            try await handleExtractedText(text, emptyMessage: String(localized: "No lab values were found in the clipboard text."))
         } catch {
             errorMessage = error.localizedDescription
         }
+    }
+
+    private func handleExtractedText(_ text: String, emptyMessage: String) async throws {
+        let result = try await parserService.parseLabValues(from: text)
+
+        if result.values.isEmpty {
+            errorMessage = emptyMessage
+            return
+        }
+
+        labValues = result.values
+        parsedReportDate = result.reportDate
+        parsedPatientName = result.patientName
+        parsedAuthorName = result.authorName
+        showReview = true
     }
 }
 

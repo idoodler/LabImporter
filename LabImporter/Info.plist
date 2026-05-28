@@ -25,7 +25,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Camera is used to photograph your lab report so values can be extracted automatically.</string>
+	<string>Camera is used to scan your lab report pages so values can be extracted automatically.</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Lab Importer reads your lab reports from Apple Health and may read basic characteristics like date of birth and biological sex to pre-fill your lab report metadata.</string>
 	<key>NSHealthUpdateUsageDescription</key>
@@ -44,6 +44,18 @@
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>public.image</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>PDF Document</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.adobe.pdf</string>
 			</array>
 		</dict>
 	</array>
