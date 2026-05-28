@@ -12,6 +12,7 @@ struct SettingsView: View {
 
     @AppStorage(LabMapping.overridesUserDefaultsKey) private var overrides = ReferenceRangeOverrides()
     @State private var showResetAllConfirm = false
+    @State private var searchText = ""
     @Environment(\.dismiss) private var dismiss
 
     init(visibleCodes: [CodeName] = []) {
@@ -22,10 +23,12 @@ struct SettingsView: View {
         NavigationStack {
             List {
                 orderSection
-                referenceRangesSection
+                referenceRangesContent
                 resetSection
                 aboutSection
             }
+            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always),
+                        prompt: Text("Search LOINC code or name"))
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -91,35 +94,95 @@ struct SettingsView: View {
     // MARK: - Reference Ranges
 
     @ViewBuilder
-    private var referenceRangesSection: some View {
-        Section {
-            ForEach(LabMapping.allKnownCodes, id: \.code) { item in
-                NavigationLink(destination: ReferenceRangeEditorView(code: item.code, displayName: item.name)) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(item.name)
-                            Text(item.code)
-                                .font(.caption2)
-                                .foregroundStyle(.tertiary)
-                        }
-                        Spacer()
-                        if let range = LabMapping.referenceRange(for: item.code) {
-                            Text(range.normalSummary)
-                                .font(.subheadline.monospacedDigit())
-                                .foregroundStyle(.secondary)
-                        }
-                        if overrides.range(for: item.code) != nil {
-                            Image(systemName: "pencil.circle.fill")
-                                .font(.caption)
-                                .foregroundStyle(Color.accentColor)
-                        }
+    private var referenceRangesContent: some View {
+        if searchText.isEmpty {
+            browseSections
+        } else {
+            searchResultsSection
+        }
+    }
+
+    @ViewBuilder
+    private var browseSections: some View {
+        let yourCodes = visibleCodes.map { CodeName(code: $0.code.uppercased(), name: $0.name) }
+        let yourCodesSet = Set(yourCodes.map(\.code))
+        let common = LabMapping.allKnownCodes
+            .map { CodeName(code: $0.code.uppercased(), name: $0.name) }
+            .filter { !yourCodesSet.contains($0.code) }
+
+        if !yourCodes.isEmpty {
+            Section {
+                ForEach(yourCodes) { item in rangeRow(code: item.code, displayName: item.name) }
+            } header: {
+                Text("Your Codes")
+            } footer: {
+                Text("Customise the Normal and Borderline boundaries used to flag values on the dashboard.")
+            }
+        }
+        if !common.isEmpty {
+            Section(yourCodes.isEmpty ? "Reference Ranges" : "Other Common Codes") {
+                ForEach(common) { item in rangeRow(code: item.code, displayName: item.name) }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var searchResultsSection: some View {
+        let directoryHits = LoincDirectory.shared.search(searchText, limit: 100)
+        let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let legacyHits = LabMapping.allKnownCodes.filter {
+            $0.code.lowercased().contains(trimmed) || $0.name.lowercased().contains(trimmed)
+        }
+
+        Section("Results") {
+            if directoryHits.isEmpty && legacyHits.isEmpty {
+                if LoincDirectory.shared.isAvailable {
+                    Text("No matches")
+                        .foregroundStyle(.secondary)
+                } else {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("LOINC database not loaded")
+                            .font(.subheadline.weight(.medium))
+                        Text("Run `python3 tools/build_loinc_db.py` against a Regenstrief LOINC release to enable full search.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
+                    .padding(.vertical, 4)
+                }
+            } else {
+                ForEach(legacyHits, id: \.code) { item in
+                    rangeRow(code: item.code.uppercased(), displayName: item.name)
+                }
+                ForEach(directoryHits) { entry in
+                    rangeRow(code: entry.loinc, displayName: entry.longCommonName)
                 }
             }
-        } header: {
-            Text("Reference Ranges")
-        } footer: {
-            Text("Customise the Normal and Borderline boundaries used to flag values on the dashboard.")
+        }
+    }
+
+    @ViewBuilder
+    private func rangeRow(code: String, displayName: String) -> some View {
+        NavigationLink(destination: ReferenceRangeEditorView(code: code, displayName: displayName)) {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(displayName)
+                        .lineLimit(2)
+                    Text(code)
+                        .font(.caption2.monospaced())
+                        .foregroundStyle(.tertiary)
+                }
+                Spacer()
+                if let range = LabMapping.referenceRange(for: code) {
+                    Text(range.normalSummary)
+                        .font(.subheadline.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                }
+                if overrides.range(for: code) != nil {
+                    Image(systemName: "pencil.circle.fill")
+                        .font(.caption)
+                        .foregroundStyle(Color.accentColor)
+                }
+            }
         }
     }
 
@@ -211,9 +274,19 @@ struct ReferenceRangeEditorView: View {
         .onAppear { loadFields() }
     }
 
+    private var loincDisplay: (loinc: String, display: String)? {
+        if let mapped = LabMapping.loincCode(for: code) {
+            return (mapped.loinc, mapped.display)
+        }
+        if let entry = LoincDirectory.shared.entry(for: code) {
+            return (entry.loinc, entry.longCommonName)
+        }
+        return nil
+    }
+
     @ViewBuilder
     private var loincSection: some View {
-        if let loinc = LabMapping.loincCode(for: code) {
+        if let loinc = loincDisplay {
             Section {
                 HStack {
                     Text("Code")
@@ -313,170 +386,6 @@ struct ReferenceRangeEditorView: View {
         overrides.setRange(stored, for: code)
         dismiss()
     }
-}
-
-// MARK: - Order & visibility editor
-
-struct LabOrderEditorView: View {
-    let allCodes: [CodeName]
-
-    @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
-    @Environment(\.dismiss) private var dismiss
-
-    @State private var visibleOrdered: [CodeName] = []
-    @State private var hiddenSet: Set<String> = []
-    @State private var pinnedSet: Set<String> = []
-    @State private var didLoad = false
-
-    var body: some View {
-        List {
-            visibleSection
-            hiddenSection
-        }
-        .environment(\.editMode, .constant(.active))
-        .navigationTitle("Order & Visibility")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Save") { save(); dismiss() }
-                    .fontWeight(.semibold)
-            }
-        }
-        .onAppear { loadInitialState() }
-    }
-
-    @ViewBuilder
-    private var visibleSection: some View {
-        Section("Visible") {
-            ForEach(visibleOrdered) { item in
-                HStack(spacing: 12) {
-                    Button { togglePin(item.code) } label: {
-                        Image(systemName: pinnedSet.contains(item.code) ? "pin.fill" : "pin")
-                            .foregroundStyle(pinnedSet.contains(item.code) ? Color.yellow : Color.secondary)
-                            .frame(width: 20)
-                    }
-                    .buttonStyle(.plain)
-                    Text(item.name)
-                    Spacer()
-                    Button { hideCode(item.code) } label: {
-                        Image(systemName: "eye.slash")
-                            .foregroundStyle(Color.secondary)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-            .onMove { from, dest in visibleOrdered.move(fromOffsets: from, toOffset: dest) }
-        }
-    }
-
-    @ViewBuilder
-    private var hiddenSection: some View {
-        let hiddenItems = allCodes.filter { hiddenSet.contains($0.code) }
-        if !hiddenItems.isEmpty {
-            Section("Hidden") {
-                ForEach(hiddenItems) { item in
-                    HStack {
-                        Text(item.name)
-                            .foregroundStyle(.secondary)
-                        Spacer()
-                        Button("Restore") { restoreCode(item.code) }
-                            .buttonStyle(.plain)
-                            .foregroundStyle(Color.accentColor)
-                            .fontWeight(.medium)
-                    }
-                    .moveDisabled(true)
-                }
-            }
-        }
-    }
-
-    private func loadInitialState() {
-        guard !didLoad else { return }
-        didLoad = true
-        let hidden = prefs.hiddenSet
-        var seen = Set<String>()
-        var initial: [CodeName] = []
-        for code in prefs.orderedCodes where !hidden.contains(code) {
-            guard let item = allCodes.first(where: { $0.code == code }),
-                  seen.insert(code).inserted else { continue }
-            initial.append(item)
-        }
-        for item in allCodes where !hidden.contains(item.code) && seen.insert(item.code).inserted {
-            initial.append(item)
-        }
-        visibleOrdered = initial
-        hiddenSet = hidden
-        pinnedSet = prefs.pinnedSet
-    }
-
-    private func togglePin(_ code: String) {
-        if pinnedSet.contains(code) {
-            pinnedSet.remove(code)
-        } else {
-            pinnedSet.insert(code)
-        }
-    }
-
-    private func hideCode(_ code: String) {
-        hiddenSet.insert(code)
-        visibleOrdered.removeAll { $0.code == code }
-    }
-
-    private func restoreCode(_ code: String) {
-        hiddenSet.remove(code)
-        if let item = allCodes.first(where: { $0.code == code }) {
-            visibleOrdered.append(item)
-        }
-    }
-
-    private func save() {
-        let hiddenOrdered = allCodes.filter { hiddenSet.contains($0.code) }
-        var updated = prefs
-        updated.orderedCodes = visibleOrdered.map(\.code) + hiddenOrdered.map(\.code)
-        updated.pinnedCodes = Array(pinnedSet)
-        updated.hiddenCodes = Array(hiddenSet)
-        prefs = updated
-    }
-}
-
-// MARK: - License view
-
-struct LicenseView: View {
-    var body: some View {
-        ScrollView {
-            Text(Self.mitLicenseText)
-                .font(.system(.footnote, design: .monospaced))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(20)
-                .textSelection(.enabled)
-        }
-        .navigationTitle("License")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-
-    private static let mitLicenseText: String = """
-    MIT License
-
-    Copyright (c) 2026 idoodler
-
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
-    """
 }
 
 #Preview {

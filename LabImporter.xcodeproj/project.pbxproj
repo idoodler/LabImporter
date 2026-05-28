@@ -39,6 +39,8 @@
 		AABB000000000000000089AA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000088AA /* SettingsView.swift */; };
 		AABB000000000000000091AA /* LoincDirectory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000090AA /* LoincDirectory.swift */; };
 		AABB000000000000000094AA /* loinc.db in Resources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000093AA /* loinc.db */; };
+		AABB000000000000000096AA /* LabOrderEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000095AA /* LabOrderEditorView.swift */; };
+		AABB000000000000000098AA /* LicenseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000097AA /* LicenseView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -78,6 +80,8 @@
 		AABB000000000000000088AA /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		AABB000000000000000090AA /* LoincDirectory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoincDirectory.swift; sourceTree = "<group>"; };
 		AABB000000000000000093AA /* loinc.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = loinc.db; sourceTree = "<group>"; };
+		AABB000000000000000095AA /* LabOrderEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabOrderEditorView.swift; sourceTree = "<group>"; };
+		AABB000000000000000097AA /* LicenseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -178,6 +182,8 @@
 				AABB000000000000000073AA /* ImportLandingView.swift */,
 				AABB000000000000000079AA /* WelcomeView.swift */,
 				AABB000000000000000088AA /* SettingsView.swift */,
+				AABB000000000000000095AA /* LabOrderEditorView.swift */,
+				AABB000000000000000097AA /* LicenseView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -289,6 +295,8 @@
 				AABB000000000000000087AA /* ReferenceRangeOverrides.swift in Sources */,
 				AABB000000000000000089AA /* SettingsView.swift in Sources */,
 				AABB000000000000000091AA /* LoincDirectory.swift in Sources */,
+				AABB000000000000000096AA /* LabOrderEditorView.swift in Sources */,
+				AABB000000000000000098AA /* LicenseView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
