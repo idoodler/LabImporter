@@ -17,6 +17,7 @@ struct HomeView: View {
     @State private var showReview = false
     @State private var errorMessage: String?
     @State private var clipboardHasContent = false
+    @AppStorage("hasSeenWelcome") private var hasSeenWelcome = false
 
     private let ocrService = OCRService()
     private let parserService = LabParserService()
@@ -64,6 +65,12 @@ struct HomeView: View {
         .onAppear { refreshClipboardState() }
         .onOpenURL { url in
             Task { await processSharedURL(url) }
+        }
+        .fullScreenCover(isPresented: Binding(
+            get: { !hasSeenWelcome },
+            set: { _ in }
+        )) {
+            WelcomeView { hasSeenWelcome = true }
         }
     }
 
