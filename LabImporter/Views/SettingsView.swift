@@ -78,21 +78,7 @@ struct SettingsView: View {
                     }
                 }
 
-                Section("Project") {
-                    if let repository = AppInfo.repositoryURL {
-                        externalLink("View on GitHub",
-                                     systemImage: "chevron.left.forwardslash.chevron.right",
-                                     url: repository)
-                    }
-                    if let newIssue = AppInfo.newIssueURL {
-                        externalLink("Report an Issue",
-                                     systemImage: "exclamationmark.bubble",
-                                     url: newIssue)
-                    }
-                }
-
                 Section("About") {
-                    LabeledContent("Version", value: "\(AppInfo.version) (\(AppInfo.build))")
                     LabeledContent("Branch", value: AppInfo.branch)
                     LabeledContent("Commit", value: AppInfo.commit)
                     NavigationLink {
@@ -100,6 +86,29 @@ struct SettingsView: View {
                     } label: {
                         Label("License", systemImage: "doc.text")
                     }
+                }
+
+                Section {
+                    VStack(spacing: 16) {
+                        HStack(spacing: 28) {
+                            if let repository = AppInfo.repositoryURL {
+                                roundButton("chevron.left.forwardslash.chevron.right",
+                                            label: "View on GitHub",
+                                            url: repository)
+                            }
+                            if let newIssue = AppInfo.newIssueURL {
+                                roundButton("exclamationmark.bubble",
+                                            label: "Report an Issue",
+                                            url: newIssue)
+                            }
+                        }
+                        Text("Version \(AppInfo.version) (\(AppInfo.build))")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
                 }
             }
             .navigationTitle("Settings")
@@ -117,20 +126,19 @@ struct SettingsView: View {
         }
     }
 
-    /// A row that opens a web URL in an in-app browser, with a trailing affordance.
-    private func externalLink(_ titleKey: LocalizedStringKey, systemImage: String, url: URL) -> some View {
+    /// A circular icon button that opens a web URL in an in-app browser.
+    private func roundButton(_ systemImage: String, label: LocalizedStringKey, url: URL) -> some View {
         Button {
             browserURL = IdentifiedURL(url: url)
         } label: {
-            HStack {
-                Label(titleKey, systemImage: systemImage)
-                Spacer()
-                Image(systemName: "arrow.up.right")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
+            Image(systemName: systemImage)
+                .font(.title2)
+                .frame(width: 56, height: 56)
         }
+        .buttonStyle(.bordered)
+        .buttonBorderShape(.circle)
         .tint(.primary)
+        .accessibilityLabel(label)
     }
 }
 
