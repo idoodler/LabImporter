@@ -44,23 +44,11 @@ struct ParseResult {
 actor LabParserService {
 
     func parseLabValues(from text: String) async throws -> ParseResult {
-        let entries: [AILabEntry]
-        var reportDate: Date?
-        var patientName: String?
-        var authorName: String?
-
-        if SystemLanguageModel.default.isAvailable {
-            let report = try await parseWithFoundationModels(text: text)
-            entries = report.entries
-            reportDate = parseDate(report.reportDate)
-            patientName = report.patientName.isEmpty ? nil : report.patientName
-            authorName = report.authorName.isEmpty ? nil : report.authorName
-        } else {
-            entries = parseWithRegex(text: text)
-            reportDate = extractDate(from: text)
-            patientName = extractPatientName(from: text)
-            authorName = extractAuthorName(from: text)
-        }
+        let report = try await parseWithFoundationModels(text: text)
+        let entries = report.entries
+        let reportDate = parseDate(report.reportDate)
+        let patientName = report.patientName.isEmpty ? nil : report.patientName
+        let authorName = report.authorName.isEmpty ? nil : report.authorName
 
         let values = entries.map { entry in
             let normalizedValue = entry.rawValue
@@ -103,62 +91,7 @@ actor LabParserService {
         return response.content
     }
 
-    // MARK: - Regex fallback
-
-    // Handles: "CODE: value unit;" or "CODE: - ;" patterns from semicolon-separated German lab reports
-    private func parseWithRegex(text: String) -> [AILabEntry] {
-        let segments = text.components(separatedBy: ";")
-        let entryPattern = /([A-Z][A-Z0-9\-]+)\s*:\s*(-|[\d]+[,\.]?[\d]*)\s*(.*)/
-
-        return segments.compactMap { segment in
-            let trimmed = segment.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard let match = trimmed.firstMatch(of: entryPattern) else { return nil }
-
-            let code = String(match.1)
-            let rawValue = String(match.2)
-            let unit = String(match.3).trimmingCharacters(in: .whitespacesAndNewlines)
-
-            return AILabEntry(code: code, rawValue: rawValue, unit: unit)
-        }
-    }
-
-    // MARK: - Name extraction helpers
-
-    private func extractPatientName(from text: String) -> String? {
-        let pattern = /Patientin?\s*:\s*([^\n;,]{3,60})/
-        guard let match = text.firstMatch(of: pattern) else { return nil }
-        let name = String(match.1).trimmingCharacters(in: .whitespacesAndNewlines)
-        return name.isEmpty ? nil : name
-    }
-
-    private func extractAuthorName(from text: String) -> String? {
-        let pattern = /(?:Labor|Arzt(?:praxis)?)\s*:\s*([^\n;]{3,60})/
-        guard let match = text.firstMatch(of: pattern) else { return nil }
-        let name = String(match.1).trimmingCharacters(in: .whitespacesAndNewlines)
-        return name.isEmpty ? nil : name
-    }
-
     // MARK: - Date helpers
-
-    private func extractDate(from text: String) -> Date? {
-        let germanPattern = /\b(\d{1,2})\.(\d{1,2})\.(\d{4})\b/
-        if let match = text.firstMatch(of: germanPattern) {
-            let day = Int(match.1) ?? 0
-            let month = Int(match.2) ?? 0
-            let year = Int(match.3) ?? 0
-            return makeDate(year: year, month: month, day: day)
-        }
-
-        let isoPattern = /\b(\d{4})-(\d{2})-(\d{2})\b/
-        if let match = text.firstMatch(of: isoPattern) {
-            let year = Int(match.1) ?? 0
-            let month = Int(match.2) ?? 0
-            let day = Int(match.3) ?? 0
-            return makeDate(year: year, month: month, day: day)
-        }
-
-        return nil
-    }
 
     private func parseDate(_ string: String) -> Date? {
         guard !string.isEmpty else { return nil }
@@ -166,14 +99,5 @@ actor LabParserService {
         formatter.dateFormat = "yyyy-MM-dd"
         formatter.locale = Locale(identifier: "en_US_POSIX")
         return formatter.date(from: string)
-    }
-
-    private func makeDate(year: Int, month: Int, day: Int) -> Date? {
-        guard year > 1900, (1...12).contains(month), (1...31).contains(day) else { return nil }
-        var components = DateComponents()
-        components.year = year
-        components.month = month
-        components.day = day
-        return Calendar.current.date(from: components)
     }
 }

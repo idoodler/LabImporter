@@ -104,7 +104,7 @@ After the first manual run succeeds, builds are triggered automatically on the *
 
 4. Build and run on a connected device or simulator (iOS 26+).
 
-> **Note:** The on-device Foundation Models framework requires a physical device with Apple Intelligence support. The OCR and review UI work in the simulator, but AI-powered parsing falls back to the regex parser when the model is unavailable.
+> **Note:** The on-device Foundation Models framework requires a physical device with Apple Intelligence support. On unsupported hardware the app shows a "Device Not Supported" screen, since lab value parsing depends entirely on the on-device model.
 
 ---
 
@@ -116,7 +116,6 @@ After the first manual run succeeds, builds are triggered automatically on the *
 | PDF rendering | `PDFKit` — extracts embedded text or renders pages for OCR |
 | Text extraction | `Vision` — `VNRecognizeTextRequest` (German + English) |
 | Lab value parsing | `FoundationModels` — `@Generable` structured output via `LanguageModelSession` |
-| Parsing fallback | Swift regex, splits on `;` separators common in German lab reports |
 | Health import | `HealthKit` — `HKCDADocumentSample` (CDA R2 clinical document) |
 
 ---
@@ -131,7 +130,7 @@ All processing happens entirely on-device. No lab data is sent to any server. Th
 
 ### On-device AI inside the app
 
-Lab value extraction is powered by Apple's on-device Foundation Models framework (`LanguageModelSession` / `@Generable`). The language model runs entirely on the device — no lab data is transmitted to any external server or API. An Apple Intelligence-capable device (A17 Pro / M1 chip or later, iOS 26+) is required for AI-assisted parsing; the app falls back to a regex parser on unsupported hardware.
+Lab value extraction is powered by Apple's on-device Foundation Models framework (`LanguageModelSession` / `@Generable`). The language model runs entirely on the device — no lab data is transmitted to any external server or API. An Apple Intelligence-capable device (A17 Pro / M1 chip or later, iOS 26+) is required for parsing; on unsupported hardware the app shows a "Device Not Supported" screen.
 
 ### Built with AI assistance
 
