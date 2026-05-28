@@ -1,15 +1,15 @@
 import SwiftUI
 import Charts
-import PhotosUI
 
 // MARK: - Dashboard
 
 struct DashboardView: View {
     let reports: [LabReport]
-    @Binding var photosPickerItem: PhotosPickerItem?
-    let onCamera: () -> Void
+    let onScan: () -> Void
+    let onPickFile: () -> Void
     let onPaste: () -> Void
     let onManual: () -> Void
+    let scannerAvailable: Bool
     let clipboardAvailable: Bool
     let isProcessing: Bool
 
@@ -68,13 +68,13 @@ struct DashboardView: View {
     @ViewBuilder
     private var importMenu: some View {
         Menu {
-            PhotosPicker(selection: $photosPickerItem, matching: .images) {
-                Label("Choose from Photos", systemImage: "photo.on.rectangle")
+            Button(action: onScan) {
+                Label("Scan Document", systemImage: "doc.viewfinder")
             }
-            Button(action: onCamera) {
-                Label("Take a Photo", systemImage: "camera")
+            .disabled(!scannerAvailable)
+            Button(action: onPickFile) {
+                Label("Choose File", systemImage: "folder")
             }
-            .disabled(!UIImagePickerController.isSourceTypeAvailable(.camera))
             Button(action: onPaste) {
                 Label("Paste from Clipboard", systemImage: "doc.on.clipboard")
             }

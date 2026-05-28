@@ -1,11 +1,11 @@
 import SwiftUI
-import PhotosUI
 
 struct ImportLandingView: View {
-    @Binding var photosPickerItem: PhotosPickerItem?
-    let onCamera: () -> Void
+    let onScan: () -> Void
+    let onPickFile: () -> Void
     let onPaste: () -> Void
     let onManual: () -> Void
+    let scannerAvailable: Bool
     let clipboardAvailable: Bool
     let isProcessing: Bool
 
@@ -43,7 +43,7 @@ struct ImportLandingView: View {
                 Text("Lab Importer")
                     .font(.largeTitle.bold())
                     .foregroundStyle(.primary)
-                Text("Photograph your lab report and\nsave it directly to Apple Health.")
+                Text("Scan or import your lab report and\nsave it directly to Apple Health.")
                     .font(.body)
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.secondary)
@@ -60,20 +60,20 @@ struct ImportLandingView: View {
                 .foregroundStyle(.secondary)
                 .kerning(1)
 
-            PhotosPicker(selection: $photosPickerItem, matching: .images) {
-                Label("Choose from Photos", systemImage: "photo.on.rectangle")
+            Button(action: onScan) {
+                Label("Scan Document", systemImage: "doc.viewfinder")
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
+            .disabled(!scannerAvailable)
 
-            Button(action: onCamera) {
-                Label("Take a Photo", systemImage: "camera")
+            Button(action: onPickFile) {
+                Label("Choose File", systemImage: "folder")
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.bordered)
             .controlSize(.large)
-            .disabled(!UIImagePickerController.isSourceTypeAvailable(.camera))
 
             Button(action: onPaste) {
                 Label("Paste from Clipboard", systemImage: "doc.on.clipboard")

@@ -2,13 +2,13 @@
 
 A native iOS app that imports lab report values into Apple Health using on-device AI.
 
-Photograph or paste your lab report — the app uses Vision OCR and the on-device Foundation Models framework to extract values, lets you review and correct them, then saves them directly into Apple Health as a CDA clinical document.
+Scan, import, or paste your lab report — the app uses Vision OCR and the on-device Foundation Models framework to extract values, lets you review and correct them, then saves them directly into Apple Health as a CDA clinical document.
 
 ---
 
 ## Features
 
-- **Import** from camera, photo library, or clipboard paste
+- **Import** by scanning multi-page documents with the camera, picking PDFs or images from Files, or pasting from the clipboard
 - **On-device AI parsing** — Foundation Models + Vision OCR extract lab values without sending any data to a server
 - **Review & correct** — edit values, change codes, add or remove entries before saving
 - **Dashboard** — metric cards with current value, sparkline trend, and normal / borderline / elevated status
@@ -112,7 +112,8 @@ After the first manual run succeeds, builds are triggered automatically on the *
 
 | Step | Technology |
 |---|---|
-| Image input | `PhotosUI` PhotosPicker, Camera, or Clipboard |
+| Document input | `VisionKit` document scanner (multi-page), `UIDocumentPicker` for PDFs / images, or Clipboard |
+| PDF rendering | `PDFKit` — extracts embedded text or renders pages for OCR |
 | Text extraction | `Vision` — `VNRecognizeTextRequest` (German + English) |
 | Lab value parsing | `FoundationModels` — `@Generable` structured output via `LanguageModelSession` |
 | Parsing fallback | Swift regex, splits on `;` separators common in German lab reports |

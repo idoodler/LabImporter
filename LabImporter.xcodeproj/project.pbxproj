@@ -18,7 +18,9 @@
 		AABB000000000000000047AA /* ReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000027AA /* ReviewView.swift */; };
 		AABB000000000000000048AA /* LabValueRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000028AA /* LabValueRowView.swift */; };
 		AABB0000000000000000C0DE /* CodePickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000C1DE /* CodePickerSheet.swift */; };
-		AABB000000000000000050AA /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000030AA /* CameraView.swift */; };
+		AABB000000000000000080AA /* DocumentScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000081AA /* DocumentScannerView.swift */; };
+		AABB000000000000000082AA /* VisionKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AABB000000000000000083AA /* VisionKit.framework */; };
+		AABB000000000000000084AA /* PDFKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AABB000000000000000085AA /* PDFKit.framework */; };
 		AABB000000000000000052AA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000032AA /* Assets.xcassets */; };
 		AABB000000000000000053AA /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AABB000000000000000035AA /* HealthKit.framework */; };
 		AABB000000000000000054AA /* Vision.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AABB000000000000000036AA /* Vision.framework */; };
@@ -48,7 +50,9 @@
 		AABB000000000000000027AA /* ReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewView.swift; sourceTree = "<group>"; };
 		AABB000000000000000028AA /* LabValueRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabValueRowView.swift; sourceTree = "<group>"; };
 		AABB0000000000000000C1DE /* CodePickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodePickerSheet.swift; sourceTree = "<group>"; };
-		AABB000000000000000030AA /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
+		AABB000000000000000081AA /* DocumentScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentScannerView.swift; sourceTree = "<group>"; };
+		AABB000000000000000083AA /* VisionKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VisionKit.framework; path = System/Library/Frameworks/VisionKit.framework; sourceTree = SDKROOT; };
+		AABB000000000000000085AA /* PDFKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PDFKit.framework; path = System/Library/Frameworks/PDFKit.framework; sourceTree = SDKROOT; };
 		AABB000000000000000032AA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AABB000000000000000033AA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AABB000000000000000034AA /* LabImporter.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LabImporter.entitlements; sourceTree = "<group>"; };
@@ -77,6 +81,8 @@
 				AABB000000000000000054AA /* Vision.framework in Frameworks */,
 				AABB000000000000000055AA /* FoundationModels.framework in Frameworks */,
 				AABB000000000000000056AA /* PhotosUI.framework in Frameworks */,
+				AABB000000000000000082AA /* VisionKit.framework in Frameworks */,
+				AABB000000000000000084AA /* PDFKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,7 +151,7 @@
 				AABB000000000000000027AA /* ReviewView.swift */,
 				AABB000000000000000028AA /* LabValueRowView.swift */,
 				AABB0000000000000000C1DE /* CodePickerSheet.swift */,
-				AABB000000000000000030AA /* CameraView.swift */,
+				AABB000000000000000081AA /* DocumentScannerView.swift */,
 				AABB000000000000000065AA /* HistoryView.swift */,
 				AABB000000000000000067AA /* ReportDetailView.swift */,
 				AABB000000000000000069AA /* TrendsView.swift */,
@@ -163,6 +169,8 @@
 				AABB000000000000000036AA /* Vision.framework */,
 				AABB000000000000000037AA /* FoundationModels.framework */,
 				AABB000000000000000038AA /* PhotosUI.framework */,
+				AABB000000000000000083AA /* VisionKit.framework */,
+				AABB000000000000000085AA /* PDFKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -248,7 +256,7 @@
 				AABB000000000000000047AA /* ReviewView.swift in Sources */,
 				AABB000000000000000048AA /* LabValueRowView.swift in Sources */,
 				AABB0000000000000000C0DE /* CodePickerSheet.swift in Sources */,
-				AABB000000000000000050AA /* CameraView.swift in Sources */,
+				AABB000000000000000080AA /* DocumentScannerView.swift in Sources */,
 				AABB000000000000000060AA /* LabReport.swift in Sources */,
 				AABB000000000000000064AA /* HistoryView.swift in Sources */,
 				AABB000000000000000066AA /* ReportDetailView.swift in Sources */,
