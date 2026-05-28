@@ -89,11 +89,8 @@ struct LabValueRowView: View {
 
     private func strippedValue(_ raw: String) -> String {
         guard !value.unit.isEmpty else { return raw }
-        for suffix in [" \(value.unit)", value.unit] {
-            if raw.lowercased().hasSuffix(suffix.lowercased()) {
-                return String(raw.dropLast(suffix.count))
-                    .trimmingCharacters(in: .whitespaces)
-            }
+        for suffix in [" \(value.unit)", value.unit] where raw.lowercased().hasSuffix(suffix.lowercased()) {
+            return String(raw.dropLast(suffix.count)).trimmingCharacters(in: .whitespaces)
         }
         return raw
     }
