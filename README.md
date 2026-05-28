@@ -140,4 +140,4 @@ This app was designed and built with the assistance of [Claude Code](https://cla
 
 ## License
 
-MIT
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
