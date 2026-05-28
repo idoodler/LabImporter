@@ -180,13 +180,15 @@ private final class CDADocumentParser: NSObject, XMLParserDelegate {
 
         let entries = delegate.observations.map { obs -> LabReport.Entry in
             let internalCode = LabMapping.internalCode(forLoinc: obs.loinc) ?? obs.loinc
+            let mappedName = LabMapping.displayName(for: internalCode)
+            let name = mappedName == internalCode ? obs.display : mappedName
             let display = obs.value.truncatingRemainder(dividingBy: 1) == 0
                 ? String(format: "%.0f", obs.value)
                 : String(format: "%.4g", obs.value)
             return LabReport.Entry(
                 id: UUID(),
                 code: internalCode,
-                name: obs.display,
+                name: name,
                 displayValue: display,
                 numericValue: obs.value,
                 unit: obs.unit
