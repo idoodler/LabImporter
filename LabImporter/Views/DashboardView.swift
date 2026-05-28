@@ -280,7 +280,7 @@ private struct LabOrderSheet: View {
                 HStack(spacing: 12) {
                     Button { togglePin(item.code) } label: {
                         Image(systemName: pinnedSet.contains(item.code) ? "pin.fill" : "pin")
-                            .foregroundStyle(pinnedSet.contains(item.code) ? Color.accentColor : Color.secondary)
+                            .foregroundStyle(pinnedSet.contains(item.code) ? Color.yellow : Color.secondary)
                             .frame(width: 20)
                     }
                     .buttonStyle(.plain)
@@ -384,7 +384,7 @@ private struct MetricCard: View {
                 if isPinned {
                     Image(systemName: "pin.fill")
                         .font(.caption2)
-                        .foregroundStyle(Color.accentColor)
+                        .foregroundStyle(Color.yellow)
                 }
             }
 
