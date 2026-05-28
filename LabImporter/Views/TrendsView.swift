@@ -269,9 +269,9 @@ struct TrendsView: View {
 
     // MARK: - Helpers
 
-    private func clampedX(_ x: CGFloat, in frame: CGRect) -> CGFloat {
+    private func clampedX(_ xPos: CGFloat, in frame: CGRect) -> CGFloat {
         let halfBubble: CGFloat = 60
-        return min(max(x, frame.minX + halfBubble), frame.maxX - halfBubble)
+        return min(max(xPos, frame.minX + halfBubble), frame.maxX - halfBubble)
     }
 
     private func formatValue(_ value: Double) -> String {
