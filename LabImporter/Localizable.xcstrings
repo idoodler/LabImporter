@@ -214,6 +214,36 @@
             }
           }
         },
+        "uk": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld значення"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld значень"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld значення"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld значення"
+                }
+              }
+            }
+          }
+        },
         "zh-Hans": {
           "variations": {
             "plural": {
@@ -290,6 +320,12 @@
             "value": "Ekle"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Додати"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -358,6 +394,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Değer Ekle"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Додати значення"
           }
         },
         "zh-Hans": {
@@ -430,6 +472,12 @@
             "value": "Laboratuvar raporu analiz ediliyor…"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Аналіз лабораторного звіту…"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -498,6 +546,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Herhangi"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Будь-який"
           }
         },
         "zh-Hans": {
@@ -570,6 +624,12 @@
             "value": "Girilen değerler kaydedilmeyecek."
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Введені значення не будуть збережені."
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -638,6 +698,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Apple Intelligence raporunuzu gizli olarak okur — cihazınızdan hiçbir şey çıkmaz."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence читає ваш звіт конфіденційно — нічого не залишає ваш пристрій."
           }
         },
         "zh-Hans": {
@@ -710,6 +776,12 @@
             "value": "Yazar"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Автор"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -778,6 +850,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Doğum Tarihi"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дата народження"
           }
         },
         "zh-Hans": {
@@ -850,6 +928,12 @@
             "value": "Kan Şekeri"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Глюкоза крові"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -918,6 +1002,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sınırda"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Граничний"
           }
         },
         "zh-Hans": {
@@ -990,6 +1080,12 @@
             "value": "İptal"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Скасувати"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -1058,6 +1154,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Fotoğraflardan Seç"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вибрати з Фото"
           }
         },
         "zh-Hans": {
@@ -1130,6 +1232,12 @@
             "value": "Kapat"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Закрити"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -1198,6 +1306,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kod (isteğe bağlı)"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Код (необов'язково)"
           }
         },
         "zh-Hans": {
@@ -1270,6 +1384,12 @@
             "value": "Düzenlemeye Devam Et"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Продовжити редагування"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -1338,6 +1458,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Seçilen görüntü yüklenemedi."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не вдалося завантажити вибране зображення."
           }
         },
         "zh-Hans": {
@@ -1410,6 +1536,12 @@
             "value": "Paylaşılan görüntü açılamadı."
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не вдалося відкрити спільне зображення."
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -1478,6 +1610,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Raporu Manuel Oluştur"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Створити звіт вручну"
           }
         },
         "zh-Hans": {
@@ -1550,6 +1688,12 @@
             "value": "Kreatinin"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Креатинін"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -1618,6 +1762,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Özelleştir"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Налаштувати"
           }
         },
         "zh-Hans": {
@@ -1690,6 +1840,12 @@
             "value": "Tarih"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дата"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -1758,6 +1914,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sil"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Видалити"
           }
         },
         "zh-Hans": {
@@ -1830,6 +1992,12 @@
             "value": "Rapor silinsin mi?"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Видалити звіт?"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -1898,6 +2066,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sağlık'ta algılandı: \"%@\""
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Виявлено у Здоров'ї: «%@»"
           }
         },
         "zh-Hans": {
@@ -1970,6 +2144,12 @@
             "value": "Raporda algılandı: \"%@\""
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Виявлено у звіті: «%@»"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -2038,6 +2218,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Diyabet Taraması"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Скринінг діабету"
           }
         },
         "zh-Hans": {
@@ -2110,6 +2296,12 @@
             "value": "At"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Відхилити"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -2178,6 +2370,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rapor atılsın mı?"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Відхилити звіт?"
           }
         },
         "zh-Hans": {
@@ -2250,6 +2448,12 @@
             "value": "Bitti"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Готово"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -2318,6 +2522,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Düzenle"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Редагувати"
           }
         },
         "zh-Hans": {
@@ -2390,6 +2600,12 @@
             "value": "Yüksek"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Підвищений"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -2458,6 +2674,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Hata"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Помилка"
           }
         },
         "zh-Hans": {
@@ -2530,6 +2752,12 @@
             "value": "Dışa Aktarma Hatası"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Помилка експорту"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -2598,6 +2826,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kadın"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Жіночий"
           }
         },
         "zh-Hans": {
@@ -2670,6 +2904,12 @@
             "value": "Tam Ad (isteğe bağlı)"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повне ім'я (необов'язково)"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -2738,6 +2978,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "GPT (ALT)"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "АЛТ"
           }
         },
         "zh-Hans": {
@@ -2810,6 +3056,12 @@
             "value": "Gama-GT (GGT)"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Гамма-ГТ (ГГТ)"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -2878,6 +3130,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cinsiyet"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Стать"
           }
         },
         "zh-Hans": {
@@ -2950,6 +3208,12 @@
             "value": "Başla"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Почати"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -3018,6 +3282,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "HDL Kolesterol"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Холестерин ЛПВЩ"
           }
         },
         "zh-Hans": {
@@ -3090,6 +3360,12 @@
             "value": "HbA1 (mmol/mol)"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HbA1 (ммоль/моль)"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -3155,6 +3431,12 @@
           }
         },
         "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HbA1c (%)"
+          }
+        },
+        "uk": {
           "stringUnit": {
             "state": "translated",
             "value": "HbA1c (%)"
@@ -3230,6 +3512,12 @@
             "value": "Gizli"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Приховано"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -3298,6 +3586,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Geçmiş"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Історія"
           }
         },
         "zh-Hans": {
@@ -3370,6 +3664,12 @@
             "value": "RAPORU İÇE AKTAR"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ІМПОРТУВАТИ ЗВІТ"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -3438,6 +3738,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Herhangi Bir Laboratuvar Raporu İçe Aktar"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Імпортувати будь-який лабораторний звіт"
           }
         },
         "zh-Hans": {
@@ -3510,6 +3816,12 @@
             "value": "Bir laboratuvar raporu içe aktarın ve burada görmek için Sağlık'a kaydedin."
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Імпортуйте лабораторний звіт і збережіть його у Здоров'ї, щоб побачити тут."
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -3578,6 +3890,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Trend görmek için bu değeri içeren en az iki rapor içe aktarın."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Імпортуйте принаймні два звіти з цим значенням, щоб побачити тенденцію."
           }
         },
         "zh-Hans": {
@@ -3650,6 +3968,12 @@
             "value": "Trendleri görmek için sayısal laboratuvar değerleri içeren raporlar içe aktarın."
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Імпортуйте звіти з числовими лабораторними даними, щоб бачити тенденції."
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -3718,6 +4042,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "LDL Kolesterol"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Холестерин ЛПНЩ"
           }
         },
         "zh-Hans": {
@@ -3790,6 +4120,12 @@
             "value": "Lab / Doktor (isteğe bağlı)"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Лабораторія / Лікар (необов'язково)"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -3855,6 +4191,12 @@
           }
         },
         "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lab Importer"
+          }
+        },
+        "uk": {
           "stringUnit": {
             "state": "translated",
             "value": "Lab Importer"
@@ -3930,6 +4272,12 @@
             "value": "Laboratuvar Raporu"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Лабораторний звіт"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -3998,6 +4346,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Laboratuvar Sonuçları"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Результати аналізів"
           }
         },
         "zh-Hans": {
@@ -4070,6 +4424,12 @@
             "value": "Laboratuvar Testi"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Лабораторний аналіз"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -4138,6 +4498,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Laboratuvar Değeri"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Лабораторне значення"
           }
         },
         "zh-Hans": {
@@ -4210,6 +4576,12 @@
             "value": "Laboratuvar Değerleri"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Лабораторні значення"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -4278,6 +4650,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Laboratuvar Değerleri — düzeltmek için dokunun"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Значення — торкніться для виправлення"
           }
         },
         "zh-Hans": {
@@ -4350,6 +4728,12 @@
             "value": "Son güncelleme: %@"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Останнє оновлення %@"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -4418,6 +4802,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Yükleme Hatası"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Помилка завантаження"
           }
         },
         "zh-Hans": {
@@ -4490,6 +4880,12 @@
             "value": "Erkek"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Чоловічий"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -4558,6 +4954,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ad"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Назва"
           }
         },
         "zh-Hans": {
@@ -4630,6 +5032,12 @@
             "value": "LOINC kodu yok — CDA dışa aktarımından hariç tutuldu"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Немає коду LOINC — виключено з експорту CDA"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -4698,6 +5106,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sayısal Veri Yok"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Немає числових даних"
           }
         },
         "zh-Hans": {
@@ -4770,6 +5184,12 @@
             "value": "Henüz Rapor Yok"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Звітів поки немає"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -4838,6 +5258,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pano metninde laboratuvar değeri bulunamadı."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "У тексті буфера обміну не знайдено лабораторних значень."
           }
         },
         "zh-Hans": {
@@ -4910,6 +5336,12 @@
             "value": "Bu görüntüde laboratuvar değeri bulunamadı. Raporun net görünür olduğundan emin olun."
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "На цьому зображенні не знайдено лабораторних значень. Переконайтеся, що звіт добре видно."
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -4978,6 +5410,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Dışa aktarılacak değer yok. En az bir değerin etkin olduğundan ve sayısal bir sonucu olduğundan emin olun."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Немає значень для експорту. Переконайтеся, що принаймні одне значення увімкнено і має числовий результат."
           }
         },
         "zh-Hans": {
@@ -5050,6 +5488,12 @@
             "value": "HDL Dışı Kolesterol"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Холестерин не-ЛПВЩ"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -5118,6 +5562,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Normal"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Норма"
           }
         },
         "zh-Hans": {
@@ -5190,6 +5640,12 @@
             "value": "Yeterli Veri Yok"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Недостатньо даних"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -5258,6 +5714,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Dışa aktarma için desteklenmiyor"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не підтримується для експорту"
           }
         },
         "zh-Hans": {
@@ -5330,6 +5792,12 @@
             "value": "Tamam"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -5398,6 +5866,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cihaz İçi Yapay Zeka"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ШІ на пристрої"
           }
         },
         "zh-Hans": {
@@ -5470,6 +5944,12 @@
             "value": "Diğer"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Інший"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -5538,6 +6018,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Panodan Yapıştır"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вставити з буфера обміну"
           }
         },
         "zh-Hans": {
@@ -5610,6 +6096,12 @@
             "value": "Hasta"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пацієнт"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -5678,6 +6170,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Laboratuvar raporunuzu fotoğraflayın ve\ndoğrudan Sağlık'a kaydedin."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сфотографуйте лабораторний звіт і\nзбережіть його прямо у Здоров'ї."
           }
         },
         "zh-Hans": {
@@ -5750,6 +6248,12 @@
             "value": "Değerlerinizi çıkarmak için bir raporu fotoğraflayın, yapıştırın veya tarayın."
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сфотографуйте, вставте або відскануйте звіт, щоб витягти значення."
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -5818,6 +6322,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "En Üste Sabitle"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Закріпити вгорі"
           }
         },
         "zh-Hans": {
@@ -5890,6 +6400,12 @@
             "value": "Rapor Tarihi"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дата звіту"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -5958,6 +6474,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Raporlar, klinik CDA kayıtları olarak doğrudan Sağlık'ta depolanır."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Звіти зберігаються як клінічні документи CDA безпосередньо у Здоров'ї."
           }
         },
         "zh-Hans": {
@@ -6030,6 +6552,12 @@
             "value": "Geri Yükle"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Відновити"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -6098,6 +6626,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Değerleri İncele"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перевірити значення"
           }
         },
         "zh-Hans": {
@@ -6170,6 +6704,12 @@
             "value": "Sağlık Kayıtlarına Kaydet"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Зберегти в медичні записи"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -6238,6 +6778,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sağlık'a Kaydedildi"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Збережено у Здоров'ї"
           }
         },
         "zh-Hans": {
@@ -6310,6 +6856,12 @@
             "value": "Sağlık Kayıtlarına Kaydedildi"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Збережено в медичні записи"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -6378,6 +6930,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Laboratuvar testlerini ara"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пошук лабораторних аналізів"
           }
         },
         "zh-Hans": {
@@ -6450,6 +7008,12 @@
             "value": "Etkileşimli grafiklerle değerlerinizin zaman içinde nasıl değiştiğini görün."
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Стежте за зміною своїх показників за допомогою інтерактивних графіків."
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -6518,6 +7082,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "CDA Dosyasını Paylaş"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Поділитися файлом CDA"
           }
         },
         "zh-Hans": {
@@ -6590,6 +7160,12 @@
             "value": "TSH (Tiroid)"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ТТГ (Щитовидна залоза)"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -6658,6 +7234,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Fotoğraf Çek"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Зробити фото"
           }
         },
         "zh-Hans": {
@@ -6730,6 +7312,12 @@
             "value": "Laboratuvar raporu Sağlık'ta CDA belgesi olarak kaydedildi."
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Лабораторний звіт збережено як документ CDA у Здоров'ї."
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -6798,6 +7386,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bu değerlerin LOINC kodu yok ve Sağlık'a kaydedilmeyecek."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ці значення не мають коду LOINC і не будуть збережені у Здоров'ї."
           }
         },
         "zh-Hans": {
@@ -6870,6 +7464,12 @@
             "value": "Bu rapor Sağlık'tan kalıcı olarak kaldırılacak."
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Цей звіт буде назавжди видалено зі Здоров'я."
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -6938,6 +7538,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Toplam Kolesterol"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Загальний холестерин"
           }
         },
         "zh-Hans": {
@@ -7010,6 +7616,12 @@
             "value": "Eğilimlerinizi Takip Edin"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Відстежуйте свої тенденції"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -7078,6 +7690,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Eğilimler"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тенденції"
           }
         },
         "zh-Hans": {
@@ -7150,6 +7768,12 @@
             "value": "Trigliseritler"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тригліцериди"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -7218,6 +7842,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Birim (isteğe bağlı)"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Одиниця виміру (необов'язково)"
           }
         },
         "zh-Hans": {
@@ -7290,6 +7920,12 @@
             "value": "Sabitlemeyi Kaldır"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Відкріпити"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -7358,6 +7994,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kullan"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Використати"
           }
         },
         "zh-Hans": {
@@ -7430,6 +8072,12 @@
             "value": "Cihaz içi yapay zeka kullanılıyor"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ШІ на пристрої"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -7498,6 +8146,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Değer"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Значення"
           }
         },
         "zh-Hans": {
@@ -7570,6 +8224,12 @@
             "value": "Tüm Eğilimleri Görüntüle"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Переглянути всі тенденції"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -7638,6 +8298,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Görünür"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Видимий"
           }
         },
         "zh-Hans": {
@@ -7710,6 +8376,12 @@
             "value": "Hoş Geldiniz"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ласкаво просимо до"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -7778,6 +8450,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "eGFR (CKD-EPI)"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "рШКФ (CKD-EPI)"
           }
         },
         "zh-Hans": {
@@ -7850,6 +8528,12 @@
             "value": "eGFR (MDRD)"
           }
         },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "рШКФ (MDRD)"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -7915,6 +8599,12 @@
           }
         },
         "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "–"
+          }
+        },
+        "uk": {
           "stringUnit": {
             "state": "translated",
             "value": "–"
