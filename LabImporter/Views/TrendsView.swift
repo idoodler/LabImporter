@@ -16,6 +16,7 @@ struct TrendsView: View {
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
     @State private var selectedDate: Date?
     private let selectionFeedback = UISelectionFeedbackGenerator()
+    private let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
 
     private struct DataPoint: Identifiable {
         let id = UUID()
@@ -259,5 +260,6 @@ struct TrendsView: View {
             }
         }
         prefs = updated
+        impactFeedback.impactOccurred()
     }
 }
