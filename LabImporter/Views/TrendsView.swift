@@ -8,6 +8,7 @@ struct TrendsView: View {
     @AppStorage("trendsSelectedCode") private var selectedCode: String = ""
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
     @State private var selectedDate: Date?
+    private let selectionFeedback = UISelectionFeedbackGenerator()
 
     private struct DataPoint: Identifiable {
         let id = UUID()
@@ -155,6 +156,9 @@ struct TrendsView: View {
             }
         }
         .chartXSelection(value: $selectedDate)
+        .onChange(of: selectedDataPoint?.date) { _, newDate in
+            if newDate != nil { selectionFeedback.selectionChanged() }
+        }
         .chartXAxis {
             AxisMarks(values: .automatic) { _ in
                 AxisGridLine().foregroundStyle(Color.primary.opacity(0.15))
