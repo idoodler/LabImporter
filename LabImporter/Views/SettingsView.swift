@@ -14,14 +14,13 @@ enum AppInfo {
     static var branch: String { string("GitBranch") ?? "unknown" }
     static var commit: String { string("GitCommit") ?? "unknown" }
 
-    /// Canonical upstream repository, used as a fallback when no build-time URL is stamped.
-    static let fallbackRepository = "https://github.com/idoodler-s-Diabetes-Management/LabImporter"
-
-    /// Web URL of the repository this build came from. Stamped into `Info.plist`
-    /// at build time (`GitRepositoryURL`) so forks open their own repo, with the
-    /// upstream as a fallback.
+    /// Web URL of the repository this build came from, stamped into `Info.plist`
+    /// at build time (`GitRepositoryURL`) so forks open their own repo. Returns
+    /// `nil` when the build did not stamp a URL (e.g. local Xcode builds), in
+    /// which case the GitHub buttons are hidden.
     static var repositoryURL: URL? {
-        webURL(from: string("GitRepositoryURL") ?? fallbackRepository)
+        guard let value = string("GitRepositoryURL") else { return nil }
+        return webURL(from: value)
     }
 
     /// URL that opens the "new issue" composer for `repositoryURL`.
