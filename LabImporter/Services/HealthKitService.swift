@@ -31,12 +31,15 @@ actor HealthKitService {
         guard let documentType = cdaType else { return [] }
         try await store.requestAuthorization(toShare: [documentType], read: [documentType])
 
+        let sources = try await appSources(for: documentType)
+        let predicate = HKQuery.predicateForObjects(from: sources)
+
         return try await withCheckedThrowingContinuation { continuation in
             var results: [LabReport] = []
             var finished = false
             let query = HKDocumentQuery(
                 documentType: documentType,
-                predicate: HKQuery.predicateForObjects(from: HKSource.default()),
+                predicate: predicate,
                 limit: HKObjectQueryNoLimit,
                 sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate,
                                                    ascending: false)],
@@ -88,6 +91,22 @@ actor HealthKitService {
         let sexWrapper = try? store.biologicalSex()
         let sexRaw = sexWrapper.map { $0.biologicalSex.rawValue }.flatMap { $0 == 0 ? nil : $0 }
         return PatientCharacteristics(dateOfBirth: dob, biologicalSexRaw: sexRaw)
+    }
+
+    private func appSources(for sampleType: HKSampleType) async throws -> Set<HKSource> {
+        let bundleID = Bundle.main.bundleIdentifier ?? ""
+        return try await withCheckedThrowingContinuation { continuation in
+            let query = HKSourceQuery(sampleType: sampleType, samplePredicate: nil) { _, sources, error in
+                if let error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                var result = (sources ?? []).filter { $0.bundleIdentifier == bundleID }
+                result.insert(HKSource.default())
+                continuation.resume(returning: result)
+            }
+            self.store.execute(query)
+        }
     }
 
     // MARK: - Delete
