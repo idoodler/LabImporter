@@ -1,3 +1,4 @@
+import SafariServices
 import SwiftUI
 
 // MARK: - App info
@@ -64,6 +65,7 @@ struct SettingsView: View {
     @Binding var prefs: LabDisplayPreferences
     let allCodes: [CodeName]
     @Environment(\.dismiss) private var dismiss
+    @State private var browserURL: IdentifiedURL?
 
     var body: some View {
         NavigationStack {
@@ -108,12 +110,18 @@ struct SettingsView: View {
                         .fontWeight(.semibold)
                 }
             }
+            .sheet(item: $browserURL) { item in
+                SafariView(url: item.url)
+                    .ignoresSafeArea()
+            }
         }
     }
 
-    /// A row that opens an external web URL, with a trailing affordance.
+    /// A row that opens a web URL in an in-app browser, with a trailing affordance.
     private func externalLink(_ titleKey: LocalizedStringKey, systemImage: String, url: URL) -> some View {
-        Link(destination: url) {
+        Button {
+            browserURL = IdentifiedURL(url: url)
+        } label: {
             HStack {
                 Label(titleKey, systemImage: systemImage)
                 Spacer()
@@ -122,7 +130,27 @@ struct SettingsView: View {
                     .foregroundStyle(.secondary)
             }
         }
+        .tint(.primary)
     }
+}
+
+// MARK: - In-app browser
+
+/// Wraps a `URL` so it can drive a `.sheet(item:)` presentation.
+private struct IdentifiedURL: Identifiable {
+    let id = UUID()
+    let url: URL
+}
+
+/// SwiftUI wrapper around `SFSafariViewController` for in-app web browsing.
+private struct SafariView: UIViewControllerRepresentable {
+    let url: URL
+
+    func makeUIViewController(context: Context) -> SFSafariViewController {
+        SFSafariViewController(url: url)
+    }
+
+    func updateUIViewController(_ controller: SFSafariViewController, context: Context) {}
 }
 
 // MARK: - CodeName
