@@ -1,4 +1,3 @@
-// swiftlint:disable comma
 import SwiftUI
 import PhotosUI
 

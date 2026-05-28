@@ -1,5 +1,6 @@
 disabled_rules:
   - trailing_comma           # cosmetic, no impact on correctness
+  - comma                    # SwiftLint 0.63.2 false-positives on EOL commas in multi-line calls
 
 opt_in_rules:
   - empty_count
