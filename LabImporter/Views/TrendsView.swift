@@ -175,13 +175,6 @@ struct TrendsView: View {
                 RuleMark(x: .value(String(localized: "Date"), selected.date))
                     .foregroundStyle(.secondary.opacity(0.5))
                     .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
-                    .annotation(
-                        position: .top,
-                        spacing: 8,
-                        overflowResolution: .init(x: .fit(to: .chart), y: .disabled)
-                    ) {
-                        scrubCallout(selected)
-                    }
 
                 PointMark(
                     x: .value(String(localized: "Date"), selected.date),
@@ -194,6 +187,20 @@ struct TrendsView: View {
             }
         }
         .chartXSelection(value: $selectedDate)
+        .chartOverlay { proxy in
+            GeometryReader { geo in
+                if let selected = selectedDataPoint,
+                   let plotFrame = proxy.plotFrame.map({ geo[$0] }),
+                   let xPos = proxy.position(forX: selected.date) {
+                    scrubCallout(selected)
+                        .position(
+                            x: clampedX(xPos, in: plotFrame),
+                            y: plotFrame.minY + 22
+                        )
+                        .allowsHitTesting(false)
+                }
+            }
+        }
         .onChange(of: selectedDataPoint?.date) { _, newDate in
             if newDate != nil { selectionFeedback.selectionChanged() }
         }
@@ -261,6 +268,11 @@ struct TrendsView: View {
     }
 
     // MARK: - Helpers
+
+    private func clampedX(_ x: CGFloat, in frame: CGRect) -> CGFloat {
+        let halfBubble: CGFloat = 60
+        return min(max(x, frame.minX + halfBubble), frame.maxX - halfBubble)
+    }
 
     private func formatValue(_ value: Double) -> String {
         value.truncatingRemainder(dividingBy: 1) == 0
