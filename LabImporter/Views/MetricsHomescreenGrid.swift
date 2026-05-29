@@ -3,41 +3,26 @@ import Charts
 
 // MARK: - MetricsHomescreenGrid
 
-/// The dashboard's metric grid with iOS-homescreen-style drag-to-reorder:
-/// press-and-hold a card briefly to pick it up (a little "sticky"), then drag
-/// it around and the rest of the grid reflows live to make room. A quick tap
-/// still opens the card's trend.
+/// The dashboard's metric grid with drag-to-reorder. Built on SwiftUI's
+/// `.draggable`/`.dropDestination` (UIKit drag-and-drop) so it coexists with the
+/// surrounding `ScrollView`: a swipe scrolls, a long-press lifts a card so it
+/// follows the finger, a drop reorders, and a tap opens the card's trend.
 struct MetricsHomescreenGrid: View {
     let metrics: [MetricData]
     @Binding var prefs: LabDisplayPreferences
     let onOpenTrend: (String) -> Void
 
-    /// The transient lift/drag, driven by the gesture. Using `@GestureState`
-    /// means SwiftUI snaps it back to `nil` automatically the moment the finger
-    /// lifts or the gesture is cancelled — so a tap (or an interrupted press)
-    /// can never leave a card stuck enlarged.
-    @GestureState private var activeDrag: ActiveDrag?
-    @State private var workingOrder: [String] = []
-    @State private var cellFrames: [String: CGRect] = [:]
-
-    private let haptics = UIImpactFeedbackGenerator(style: .medium)
-    private let gridSpace = "dashboardGrid"
-
-    private struct ActiveDrag: Equatable {
-        let code: String
-        var location: CGPoint?
-    }
+    @State private var dropTargetCode: String?
 
     var body: some View {
         LazyVGrid(
             columns: [GridItem(.flexible()), GridItem(.flexible())],
             spacing: 14
         ) {
-            ForEach(displayedMetrics) { metric in
+            ForEach(sortedMetrics) { metric in
                 metricCard(for: metric)
             }
         }
-        .coordinateSpace(.named(gridSpace))
     }
 
     // MARK: - Card
@@ -46,88 +31,28 @@ struct MetricsHomescreenGrid: View {
     private func metricCard(for metric: MetricData) -> some View {
         let code = metric.entry.code
         let pinned = prefs.pinnedSet.contains(code)
-        let lifted = activeDrag?.code == code
-        MetricCard(metric: metric, isPinned: pinned)
-            .contentShape(RoundedRectangle(cornerRadius: 20))
-            .scaleEffect(lifted ? 1.05 : 1)
-            .offset(lifted ? dragOffset(for: code) : .zero)
-            .opacity(lifted ? 0.95 : 1)
-            .shadow(color: .black.opacity(lifted ? 0.22 : 0), radius: lifted ? 12 : 0, y: lifted ? 6 : 0)
-            .zIndex(lifted ? 1 : 0)
-            .animation(.interactiveSpring(response: 0.25, dampingFraction: 0.86), value: activeDrag)
-            .onGeometryChange(for: CGRect.self) {
-                $0.frame(in: .named(gridSpace))
-            } action: { cellFrames[code] = $0 }
-            .onTapGesture { onOpenTrend(code) }
-            .gesture(reorderGesture(for: code))
-    }
-
-    // MARK: - Sticky drag gesture
-
-    /// A long-press "grabs" the card, then the drag moves it with live reflow.
-    /// The 0.5s duration (and the drag's default 10pt threshold) keep taps and
-    /// scroll swipes from triggering it — a quick tap opens the trend, and a
-    /// swipe fails the long press so the ScrollView scrolls normally. The
-    /// visible lift is bound to `@GestureState` (`updating`), which auto-resets
-    /// on release; `onChanged`/`onEnded` only handle the reorder bookkeeping.
-    private func reorderGesture(for code: String) -> some Gesture {
-        LongPressGesture(minimumDuration: 0.5)
-            .sequenced(before: DragGesture(coordinateSpace: .named(gridSpace)))
-            .updating($activeDrag) { value, state, _ in
-                switch value {
-                case .first(true):
-                    state = ActiveDrag(code: code, location: nil)
-                case .second(true, let drag):
-                    state = ActiveDrag(code: code, location: drag?.location)
-                default:
-                    break
-                }
-            }
-            .onChanged { value in
-                switch value {
-                case .first(true):
-                    pickUp()
-                case .second(true, let drag):
-                    if let drag { updateDrag(code, to: drag.location) }
-                default:
-                    break
-                }
-            }
-            .onEnded { _ in commitOrder() }
-    }
-
-    /// Long press recognized: snapshot the current order for live reflow. Runs
-    /// fresh on every press, so it never depends on the previous drag's cleanup.
-    private func pickUp() {
-        workingOrder = sortedMetrics.map(\.entry.code)
-        haptics.impactOccurred()
-    }
-
-    /// Live reflow: when the finger crosses into another card's slot, move the
-    /// dragged card there and let the grid animate the rest out of the way.
-    private func updateDrag(_ code: String, to location: CGPoint) {
-        guard let target = cellFrames.first(where: { $0.key != code && $0.value.contains(location) })?.key,
-              let from = workingOrder.firstIndex(of: code),
-              let dest = workingOrder.firstIndex(of: target),
-              from != dest
-        else { return }
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
-            let moved = workingOrder.remove(at: from)
-            workingOrder.insert(moved, at: dest)
+        Button { onOpenTrend(code) } label: {
+            MetricCard(metric: metric, isPinned: pinned)
         }
-        haptics.impactOccurred(intensity: 0.4)
-    }
-
-    private func commitOrder() {
-        guard !workingOrder.isEmpty else { return }
-        persistOrder(workingOrder)
-    }
-
-    /// Offset that keeps the lifted card glued under the finger, regardless of
-    /// how the grid has reflowed beneath it. Zero while merely pressing.
-    private func dragOffset(for code: String) -> CGSize {
-        guard let location = activeDrag?.location, let frame = cellFrames[code] else { return .zero }
-        return CGSize(width: location.x - frame.midX, height: location.y - frame.midY)
+        .buttonStyle(.plain)
+        .overlay {
+            if dropTargetCode == code {
+                RoundedRectangle(cornerRadius: 20)
+                    .stroke(Color.accentColor, lineWidth: 2)
+            }
+        }
+        .draggable(code) {
+            MetricCard(metric: metric, isPinned: pinned)
+                .frame(width: 180)
+        }
+        .dropDestination(for: String.self) { items, _ in
+            dropTargetCode = nil
+            guard let dragged = items.first else { return false }
+            moveMetric(dragged, before: code)
+            return true
+        } isTargeted: { isTargeted in
+            dropTargetCode = isTargeted ? code : (dropTargetCode == code ? nil : dropTargetCode)
+        }
     }
 
     // MARK: - Ordering
@@ -136,12 +61,17 @@ struct MetricsHomescreenGrid: View {
         dashboardSortedMetrics(metrics, prefs: prefs)
     }
 
-    /// While dragging, follow the live `workingOrder` so reflow is immediate;
-    /// otherwise use the persisted sort.
-    private var displayedMetrics: [MetricData] {
-        guard activeDrag != nil, !workingOrder.isEmpty else { return sortedMetrics }
-        let byCode = Dictionary(metrics.map { ($0.entry.code, $0) }, uniquingKeysWith: { first, _ in first })
-        return workingOrder.compactMap { byCode[$0] }
+    /// Moves `dragged` to sit immediately before `target`, then persists the new
+    /// sequence. Pinned cards still float to the top per the sort rules, so this
+    /// effectively reorders within the pin groups.
+    private func moveMetric(_ dragged: String, before target: String) {
+        guard dragged != target else { return }
+        var order = sortedMetrics.map(\.entry.code)
+        guard let from = order.firstIndex(of: dragged) else { return }
+        order.remove(at: from)
+        guard let targetIndex = order.firstIndex(of: target) else { return }
+        order.insert(dragged, at: targetIndex)
+        persistOrder(order)
     }
 
     /// Persists `codes` as the leading entries of `orderedCodes`, preserving any
