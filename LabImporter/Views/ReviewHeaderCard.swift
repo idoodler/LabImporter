@@ -12,6 +12,28 @@ struct CDAShareSheet: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
+/// A "we detected X — use it?" row offering to fill a field with a value found
+/// in the report or in Apple Health.
+struct SuggestionRow: View {
+    let label: LocalizedStringKey
+    let onUse: () -> Void
+
+    var body: some View {
+        HStack {
+            Text(label)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .lineLimit(2)
+            Spacer()
+            Button("Use", action: onUse)
+                .buttonStyle(.plain)
+                .foregroundStyle(Color.accentColor)
+                .fontWeight(.semibold)
+                .font(.footnote)
+        }
+    }
+}
+
 /// A clinical category paired with how many values fall into it — used to drive
 /// the chips on the review header and the grouped section headers.
 struct CategoryCount: Identifiable {

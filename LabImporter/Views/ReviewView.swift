@@ -21,6 +21,10 @@ struct ReviewView: View {
     @State private var showAddValue = false
     @State private var importEngine = LabImportEngine()
 
+    // Snapshot the sheet opened with, so we only warn about discarding real edits.
+    private let initialLabValues: [LabValue]
+    private let initialReportDate: Date
+
     @FocusState private var anyFieldFocused: Bool
     @Environment(\.dismiss) private var dismiss
 
@@ -47,8 +51,7 @@ struct ReviewView: View {
     }
 
     // Indices into `labValues` for LOINC-mapped values, grouped by clinical
-    // category in canonical order so the list reads like the saved report.
-    // Indices (not copies) keep each row a live binding for editing.
+    // category in canonical order. Indices (not copies) keep rows live bindings.
     private var valueGroups: [ValueGroup] {
         let supported = labValues.indices.filter { LabMapping.loincCode(for: labValues[$0].code) != nil }
         let grouped = Dictionary(grouping: supported) { LabCategory.forCode(labValues[$0].code) }
@@ -82,12 +85,15 @@ struct ReviewView: View {
         _extractedPatientName = State(initialValue: extractedPatientName)
         _extractedAuthorName = State(initialValue: extractedAuthorName)
         _replacingReport = State(initialValue: replacingReport)
+        initialLabValues = labValues
+        initialReportDate = reportDate
     }
 
     var body: some View {
         List {
             headerSection
             patientSection
+            authorSection
             dateSection
             valuesSection
             addValueSection
@@ -102,7 +108,9 @@ struct ReviewView: View {
         .toolbar {
             keyboardDoneButton
             ToolbarItem(placement: .topBarLeading) {
-                Button(role: .close) { showDiscardAlert = true }
+                Button(role: .close) {
+                    if hasEdits { showDiscardAlert = true } else { dismiss() }
+                }
             }
         }
         .alert("Discard Report?", isPresented: $showDiscardAlert) {
@@ -166,21 +174,8 @@ struct ReviewView: View {
             if let extracted = extractedPatientName,
                !extracted.isEmpty,
                extracted != patientName {
-                suggestionRow(label: "Detected in report: \"\(extracted)\"") {
+                SuggestionRow(label: "Detected in report: \"\(extracted)\"") {
                     patientName = extracted
-                }
-            }
-
-            TextField("Lab / Doctor (optional)", text: $authorName)
-                .autocorrectionDisabled()
-                .textContentType(.organizationName)
-                .focused($anyFieldFocused)
-
-            if let extracted = extractedAuthorName,
-               !extracted.isEmpty,
-               extracted != authorName {
-                suggestionRow(label: "Detected in report: \"\(extracted)\"") {
-                    authorName = extracted
                 }
             }
 
@@ -201,7 +196,7 @@ struct ReviewView: View {
             }
 
             if let hkDob = hkBirthdate, hkBirthdateDiffers {
-                suggestionRow(label: "Detected in Health: \"\(hkDob.formatted(date: .abbreviated, time: .omitted))\"") {
+                SuggestionRow(label: "Detected in Health: \"\(hkDob.formatted(date: .abbreviated, time: .omitted))\"") {
                     birthdateInterval = hkDob.timeIntervalSinceReferenceDate
                 }
             }
@@ -214,7 +209,7 @@ struct ReviewView: View {
             }
 
             if let hkSexRaw = hkSex, hkSexRaw != 0, hkSexRaw != patientSexRaw {
-                suggestionRow(label: "Detected in Health: \"\(hkSexName(hkSexRaw))\"") {
+                SuggestionRow(label: "Detected in Health: \"\(hkSexName(hkSexRaw))\"") {
                     patientSexRaw = hkSexRaw
                 }
             }
@@ -222,19 +217,22 @@ struct ReviewView: View {
         .listRowBackground(Rectangle().fill(.ultraThinMaterial))
     }
 
-    private func suggestionRow(label: LocalizedStringKey, onUse: @escaping () -> Void) -> some View {
-        HStack {
-            Text(label)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .lineLimit(2)
-            Spacer()
-            Button("Use", action: onUse)
-                .buttonStyle(.plain)
-                .foregroundStyle(Color.accentColor)
-                .fontWeight(.semibold)
-                .font(.footnote)
+    private var authorSection: some View {
+        Section("Lab / Doctor") {
+            TextField("Lab / Doctor (optional)", text: $authorName)
+                .autocorrectionDisabled()
+                .textContentType(.organizationName)
+                .focused($anyFieldFocused)
+
+            if let extracted = extractedAuthorName,
+               !extracted.isEmpty,
+               extracted != authorName {
+                SuggestionRow(label: "Detected in report: \"\(extracted)\"") {
+                    authorName = extracted
+                }
+            }
         }
+        .listRowBackground(Rectangle().fill(.ultraThinMaterial))
     }
 
     private var dateSection: some View {
@@ -401,6 +399,15 @@ private extension ReviewView {
     var clipboardHasContent: Bool {
         let pasteboard = UIPasteboard.general
         return pasteboard.hasImages || pasteboard.hasStrings
+    }
+
+    /// Whether the report date or any lab value differs from what the sheet
+    /// opened with — drives the discard confirmation. Patient/author/biometrics
+    /// live in `@AppStorage` and persist, so they aren't discardable edits.
+    var hasEdits: Bool {
+        guard reportDate == initialReportDate,
+              labValues.count == initialLabValues.count else { return true }
+        return zip(labValues, initialLabValues).contains { !$0.matchesContent(of: $1) }
     }
 
     /// Appends freshly parsed values to the open report rather than replacing it,

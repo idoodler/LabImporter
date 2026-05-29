@@ -47,4 +47,17 @@ struct LabValue: Identifiable, Equatable, @unchecked Sendable {
             && lhs.numericValue == rhs.numericValue
             && lhs.isSuggestedCode == rhs.isSuggestedCode
     }
+
+    /// Whether two values are identical in every user-editable field — unlike
+    /// `==`, this also compares `code`/`name`/`unit`, so it detects a re-mapped
+    /// code. Used to tell whether a report was actually edited.
+    func matchesContent(of other: LabValue) -> Bool {
+        id == other.id
+            && code == other.code
+            && name == other.name
+            && displayValue == other.displayValue
+            && numericValue == other.numericValue
+            && unit == other.unit
+            && isSelected == other.isSelected
+    }
 }
