@@ -1,9 +1,10 @@
 import SwiftUI
 
 // MARK: - LabTestPickerList
-// Shared lab-test chooser: a curated quick-pick list plus live search over the
-// full bundled LOINC catalog (LoincDirectory). Selecting a catalog row stores
-// the raw LOINC number as the value's code; LabMapping resolves it everywhere.
+// Shared lab-test chooser: live search over the full bundled LOINC catalog
+// (LoincDirectory). With no query it shows the most commonly ordered tests.
+// Selecting a row stores the raw LOINC number as the value's code; LabMapping
+// resolves it everywhere.
 
 private struct LabTestPickerList: View {
     @Binding var code: String
@@ -15,31 +16,12 @@ private struct LabTestPickerList: View {
     @State private var query = ""
     @State private var loincResults: [LoincTerm] = []
 
-    private var curated: [(code: String, name: String)] {
-        guard !query.isEmpty else { return LabMapping.allKnownCodes }
-        return LabMapping.allKnownCodes.filter {
-            $0.name.localizedCaseInsensitiveContains(query) ||
-            $0.code.localizedCaseInsensitiveContains(query)
-        }
-    }
-
     var body: some View {
         List {
-            if !curated.isEmpty {
-                Section(query.isEmpty ? Text("Common tests") : Text("Matches")) {
-                    ForEach(curated, id: \.code) { item in
-                        row(rowCode: item.code, title: item.name, subtitle: nil) {
-                            select(item.code, item.name)
-                        }
-                    }
-                }
-            }
-            if !query.isEmpty && !loincResults.isEmpty {
-                Section(Text("LOINC catalog")) {
-                    ForEach(loincResults) { term in
-                        row(rowCode: term.code, title: term.name, subtitle: term.description) {
-                            select(term.code, term.name)
-                        }
+            Section(query.isEmpty ? Text("Common tests") : Text("Matches")) {
+                ForEach(loincResults) { term in
+                    row(rowCode: term.code, title: term.name, subtitle: term.description) {
+                        select(term.code, term.name)
                     }
                 }
             }
@@ -47,7 +29,6 @@ private struct LabTestPickerList: View {
         .searchable(text: $query, prompt: Text("Search lab tests"))
         .task(id: query) {
             let current = query
-            guard !current.isEmpty else { loincResults = []; return }
             let found = await Task.detached(priority: .userInitiated) {
                 LoincDirectory.shared.search(current)
             }.value

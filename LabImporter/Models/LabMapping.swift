@@ -6,72 +6,44 @@ import Foundation
 // reports actually print (KREA, HB-A1C, …) only appear here as *import-time*
 // resolver inputs — see `loinc(forPrinted:)`.
 //
-// For the handful of curated "favorite" metrics we keep hand-tuned localized
-// names and clinical reference ranges; everything else is resolved against the
-// full bundled catalog via `LoincDirectory`.
+// Names come entirely from the bundled catalog (`LoincDirectory`). The only
+// thing curated here is the set of clinical reference ranges, which LOINC does
+// not provide and which drive the dashboard status colors.
 enum LabMapping {
 
-    // MARK: - Curated common metrics (LOINC-keyed)
+    // MARK: - Reference ranges (LOINC-keyed)
 
-    struct Metric {
-        let loinc: String
-        let name: String
-        let range: ReferenceRange?
-    }
-
-    // Single source of truth for the app's favorite metrics.
-    static let commonMetrics: [Metric] = [
-        Metric(loinc: "2345-7", name: String(localized: "Blood Glucose"),
-               range: ReferenceRange(normalLow: 70, normalHigh: 100, borderlineLow: nil, borderlineHigh: 125)),
-        Metric(loinc: "2160-0", name: String(localized: "Creatinine"),
-               range: ReferenceRange(normalLow: 0.5, normalHigh: 1.2, borderlineLow: nil, borderlineHigh: nil)),
-        Metric(loinc: "33914-3", name: String(localized: "eGFR (MDRD)"),
-               range: ReferenceRange(normalLow: 90, normalHigh: nil, borderlineLow: 60, borderlineHigh: nil)),
-        Metric(loinc: "62238-1", name: String(localized: "eGFR (CKD-EPI)"),
-               range: ReferenceRange(normalLow: 90, normalHigh: nil, borderlineLow: 60, borderlineHigh: nil)),
-        Metric(loinc: "2093-3", name: String(localized: "Total Cholesterol"),
-               range: ReferenceRange(normalLow: nil, normalHigh: 200, borderlineLow: nil, borderlineHigh: 239)),
-        Metric(loinc: "2085-9", name: String(localized: "HDL Cholesterol"),
-               range: ReferenceRange(normalLow: 40, normalHigh: nil, borderlineLow: nil, borderlineHigh: nil)),
-        Metric(loinc: "43396-1", name: String(localized: "Non-HDL Cholesterol"), range: nil),
-        Metric(loinc: "2089-1", name: String(localized: "LDL Cholesterol"),
-               range: ReferenceRange(normalLow: nil, normalHigh: 100, borderlineLow: nil, borderlineHigh: 159)),
-        Metric(loinc: "2571-8", name: String(localized: "Triglycerides"),
-               range: ReferenceRange(normalLow: nil, normalHigh: 150, borderlineLow: nil, borderlineHigh: 199)),
-        Metric(loinc: "1742-6", name: String(localized: "GPT (ALT)"),
-               range: ReferenceRange(normalLow: nil, normalHigh: 40, borderlineLow: nil, borderlineHigh: nil)),
-        Metric(loinc: "2324-2", name: String(localized: "Gamma-GT (GGT)"),
-               range: ReferenceRange(normalLow: nil, normalHigh: 55, borderlineLow: nil, borderlineHigh: nil)),
-        Metric(loinc: "4548-4", name: String(localized: "HbA1c (%)"),
-               range: ReferenceRange(normalLow: nil, normalHigh: 5.7, borderlineLow: nil, borderlineHigh: 6.4)),
-        Metric(loinc: "59261-8", name: String(localized: "HbA1 (mmol/mol)"), range: nil),
-        Metric(loinc: "3016-3", name: String(localized: "TSH (Thyroid)"),
-               range: ReferenceRange(normalLow: 0.4, normalHigh: 4.0, borderlineLow: nil, borderlineHigh: nil)),
-        Metric(loinc: "14647-2", name: String(localized: "Diabetes Screening"), range: nil),
+    // Clinical normal/borderline bands keyed by LOINC code. LOINC carries no
+    // reference ranges, so these are hand-tuned; every code here exists in the
+    // bundled catalog (so it also has a name). Codes without a range simply get
+    // no dashboard status — that is fine.
+    static let referenceRanges: [String: ReferenceRange] = [
+        "2345-7": ReferenceRange(normalLow: 70, normalHigh: 100, borderlineLow: nil, borderlineHigh: 125),
+        "2160-0": ReferenceRange(normalLow: 0.5, normalHigh: 1.2, borderlineLow: nil, borderlineHigh: nil),
+        "77147-7": ReferenceRange(normalLow: 90, normalHigh: nil, borderlineLow: 60, borderlineHigh: nil),
+        "62238-1": ReferenceRange(normalLow: 90, normalHigh: nil, borderlineLow: 60, borderlineHigh: nil),
+        "2093-3": ReferenceRange(normalLow: nil, normalHigh: 200, borderlineLow: nil, borderlineHigh: 239),
+        "2085-9": ReferenceRange(normalLow: 40, normalHigh: nil, borderlineLow: nil, borderlineHigh: nil),
+        "2089-1": ReferenceRange(normalLow: nil, normalHigh: 100, borderlineLow: nil, borderlineHigh: 159),
+        "2571-8": ReferenceRange(normalLow: nil, normalHigh: 150, borderlineLow: nil, borderlineHigh: 199),
+        "1742-6": ReferenceRange(normalLow: nil, normalHigh: 40, borderlineLow: nil, borderlineHigh: nil),
+        "2324-2": ReferenceRange(normalLow: nil, normalHigh: 55, borderlineLow: nil, borderlineHigh: nil),
+        "4548-4": ReferenceRange(normalLow: nil, normalHigh: 5.7, borderlineLow: nil, borderlineHigh: 6.4),
+        "3016-3": ReferenceRange(normalLow: 0.4, normalHigh: 4.0, borderlineLow: nil, borderlineHigh: nil),
     ]
-
-    private static let metricsByLoinc: [String: Metric] =
-        Dictionary(commonMetrics.map { ($0.loinc, $0) }, uniquingKeysWith: { first, _ in first })
-
-    // Quick-pick "favorites" list shown in the picker and Settings.
-    static var allKnownCodes: [(code: String, name: String)] {
-        commonMetrics.map { (code: $0.loinc, name: $0.name) }
-    }
 
     // MARK: - LOINC lookups
 
-    // Localized display name for a LOINC code: curated favorite name first, then
-    // the bundled catalog, finally the raw code (e.g. an as-yet-unmapped value).
+    // Localized display name for a LOINC code from the catalog; falls back to the
+    // raw code (e.g. an as-yet-unmapped value).
     static func displayName(for code: String) -> String {
         let trimmed = code.trimmingCharacters(in: .whitespaces)
-        if let metric = metricsByLoinc[trimmed] { return metric.name }
-        if let term = LoincDirectory.shared.term(for: trimmed) { return term.name }
-        return code
+        return LoincDirectory.shared.term(for: trimmed)?.name ?? code
     }
 
-    // Clinical reference range, only defined for the curated favorites.
+    // Clinical reference range for a LOINC code, if one is curated.
     static func referenceRange(for code: String) -> ReferenceRange? {
-        metricsByLoinc[code.trimmingCharacters(in: .whitespaces)]?.range
+        referenceRanges[code.trimmingCharacters(in: .whitespaces)]
     }
 
     // Validates that `code` is a real LOINC code and returns it with an English
@@ -79,14 +51,8 @@ enum LabMapping {
     // is how the UI decides a value cannot yet be saved to Health.
     static func loincCode(for code: String) -> (loinc: String, display: String)? {
         let trimmed = code.trimmingCharacters(in: .whitespaces)
-        if let term = LoincDirectory.shared.term(for: trimmed) {
-            return (term.code, term.englishName)
-        }
-        if let metric = metricsByLoinc[trimmed] {
-            // Curated favorite that falls outside the common-lab catalog (e.g. eGFR MDRD).
-            return (metric.loinc, metric.name)
-        }
-        return nil
+        guard let term = LoincDirectory.shared.term(for: trimmed) else { return nil }
+        return (term.code, term.englishName)
     }
 
     // MARK: - Import resolution (printed report code -> LOINC)
@@ -98,9 +64,9 @@ enum LabMapping {
     // swiftlint:disable:next cyclomatic_complexity
     static func loinc(forPrinted printed: String) -> String? {
         switch printed.uppercased().trimmingCharacters(in: .whitespaces) {
-        case "DIABOL", "DIAB0L":            return "14647-2"
+        case "DIABOL", "DIAB0L":            return "1558-6"
         case "KREA", "CREATININE":          return "2160-0"
-        case "MDRD", "EGFR":                return "33914-3"
+        case "MDRD", "EGFR":                return "77147-7"
         case "KREA-GFR", "CKD-EPI":         return "62238-1"
         case "CHOL", "TC":                  return "2093-3"
         case "HDL":                          return "2085-9"
