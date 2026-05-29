@@ -16,6 +16,7 @@ struct DashboardView: View {
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
     @State private var showSettings = false
     @State private var trendSheet: TrendSheet?
+    @State private var dropTargetCode: String?
 
     private struct TrendSheet: Identifiable {
         var id: String { code }
@@ -97,19 +98,43 @@ struct DashboardView: View {
             spacing: 14
         ) {
             ForEach(sortedMetrics) { metric in
-                Button { trendSheet = TrendSheet(code: metric.entry.code) } label: {
-                    MetricCard(metric: metric, isPinned: prefs.pinnedSet.contains(metric.entry.code))
-                }
-                .buttonStyle(.plain)
-                .contextMenu {
-                    let pinned = prefs.pinnedSet.contains(metric.entry.code)
-                    Button { togglePin(metric.entry.code) } label: {
-                        Label(
-                            pinned ? "Unpin" : "Pin to Top",
-                            systemImage: pinned ? "pin.slash" : "pin"
-                        )
-                    }
-                }
+                metricCard(for: metric)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func metricCard(for metric: MetricData) -> some View {
+        let code = metric.entry.code
+        let pinned = prefs.pinnedSet.contains(code)
+        Button { trendSheet = TrendSheet(code: code) } label: {
+            MetricCard(metric: metric, isPinned: pinned)
+        }
+        .buttonStyle(.plain)
+        .overlay {
+            if dropTargetCode == code {
+                RoundedRectangle(cornerRadius: 20)
+                    .stroke(Color.accentColor, lineWidth: 2)
+            }
+        }
+        .draggable(code) {
+            MetricCard(metric: metric, isPinned: pinned)
+                .frame(width: 180)
+        }
+        .dropDestination(for: String.self) { items, _ in
+            dropTargetCode = nil
+            guard let dragged = items.first else { return false }
+            moveMetric(dragged, before: code)
+            return true
+        } isTargeted: { isTargeted in
+            dropTargetCode = isTargeted ? code : (dropTargetCode == code ? nil : dropTargetCode)
+        }
+        .contextMenu {
+            Button { togglePin(code) } label: {
+                Label(
+                    pinned ? "Unpin" : "Pin to Top",
+                    systemImage: pinned ? "pin.slash" : "pin"
+                )
             }
         }
     }
@@ -195,6 +220,34 @@ struct DashboardView: View {
             }
         }
         return result
+    }
+
+    // MARK: - Drag & drop reordering
+
+    /// Moves `dragged` to sit immediately before `target` in the dashboard order,
+    /// then persists the new sequence. Pinned cards still float to the top per the
+    /// `sortedMetrics` rules, so reordering effectively sorts within the pin groups.
+    private func moveMetric(_ dragged: String, before target: String) {
+        guard dragged != target else { return }
+        var order = sortedMetrics.map(\.entry.code)
+        guard let from = order.firstIndex(of: dragged) else { return }
+        order.remove(at: from)
+        guard let targetIndex = order.firstIndex(of: target) else { return }
+        order.insert(dragged, at: targetIndex)
+        persistOrder(order)
+    }
+
+    /// Persists `codes` as the leading entries of `orderedCodes`, preserving any
+    /// previously ordered codes that aren't currently shown (e.g. hidden metrics).
+    private func persistOrder(_ codes: [String]) {
+        var result = codes
+        var seen = Set(codes)
+        for code in prefs.orderedCodes where seen.insert(code).inserted {
+            result.append(code)
+        }
+        var updated = prefs
+        updated.orderedCodes = result
+        prefs = updated
     }
 
     // MARK: - Pin helpers
