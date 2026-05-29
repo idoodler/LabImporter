@@ -143,9 +143,8 @@ struct SettingsView: View {
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") { dismiss() }
-                        .fontWeight(.semibold)
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(role: .close) { dismiss() }
                 }
             }
             .sheet(item: $browserURL) { item in

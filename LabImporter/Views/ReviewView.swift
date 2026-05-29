@@ -67,7 +67,7 @@ struct ReviewView: View {
         .toolbar {
             keyboardDoneButton
             ToolbarItem(placement: .topBarLeading) {
-                Button("Cancel") { showDiscardAlert = true }
+                Button(role: .close) { showDiscardAlert = true }
             }
         }
         .alert("Discard Report?", isPresented: $showDiscardAlert) {
@@ -292,7 +292,7 @@ private extension ReviewView {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") {
+                    Button(role: .close) {
                         showAddValue = false
                         resetAddForm()
                     }

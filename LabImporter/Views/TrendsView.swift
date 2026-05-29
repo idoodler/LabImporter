@@ -92,7 +92,7 @@ struct TrendsView: View {
         .toolbar {
             if let onDismiss {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Close", action: onDismiss)
+                    Button(role: .close, action: onDismiss)
                 }
             }
             if !selectedCode.isEmpty {

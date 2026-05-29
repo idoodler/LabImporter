@@ -107,7 +107,7 @@ struct CodePickerSheet: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
-                        Button("Cancel") { dismiss() }
+                        Button(role: .close) { dismiss() }
                     }
                 }
         }
