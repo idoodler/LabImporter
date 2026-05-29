@@ -12,13 +12,21 @@ struct MetricsHomescreenGrid: View {
     @Binding var prefs: LabDisplayPreferences
     let onOpenTrend: (String) -> Void
 
+    /// The transient lift/drag, driven by the gesture. Using `@GestureState`
+    /// means SwiftUI snaps it back to `nil` automatically the moment the finger
+    /// lifts or the gesture is cancelled — so a tap (or an interrupted press)
+    /// can never leave a card stuck enlarged.
+    @GestureState private var activeDrag: ActiveDrag?
     @State private var workingOrder: [String] = []
-    @State private var draggingCode: String?
-    @State private var dragLocation: CGPoint?
     @State private var cellFrames: [String: CGRect] = [:]
 
     private let haptics = UIImpactFeedbackGenerator(style: .medium)
     private let gridSpace = "dashboardGrid"
+
+    private struct ActiveDrag: Equatable {
+        let code: String
+        var location: CGPoint?
+    }
 
     var body: some View {
         LazyVGrid(
@@ -38,15 +46,15 @@ struct MetricsHomescreenGrid: View {
     private func metricCard(for metric: MetricData) -> some View {
         let code = metric.entry.code
         let pinned = prefs.pinnedSet.contains(code)
-        let dragging = draggingCode == code
+        let lifted = activeDrag?.code == code
         MetricCard(metric: metric, isPinned: pinned)
             .contentShape(RoundedRectangle(cornerRadius: 20))
-            .scaleEffect(dragging ? 1.05 : 1)
-            .offset(dragging ? dragOffset(for: code) : .zero)
-            .opacity(dragging ? 0.95 : 1)
-            .shadow(color: .black.opacity(dragging ? 0.22 : 0), radius: dragging ? 12 : 0, y: dragging ? 6 : 0)
-            .zIndex(dragging ? 1 : 0)
-            .animation(.interactiveSpring(response: 0.25, dampingFraction: 0.86), value: dragLocation)
+            .scaleEffect(lifted ? 1.05 : 1)
+            .offset(lifted ? dragOffset(for: code) : .zero)
+            .opacity(lifted ? 0.95 : 1)
+            .shadow(color: .black.opacity(lifted ? 0.22 : 0), radius: lifted ? 12 : 0, y: lifted ? 6 : 0)
+            .zIndex(lifted ? 1 : 0)
+            .animation(.interactiveSpring(response: 0.25, dampingFraction: 0.86), value: activeDrag)
             .onGeometryChange(for: CGRect.self) {
                 $0.frame(in: .named(gridSpace))
             } action: { cellFrames[code] = $0 }
@@ -57,47 +65,47 @@ struct MetricsHomescreenGrid: View {
     // MARK: - Sticky drag gesture
 
     /// A short long-press "grabs" the card (so it doesn't fight the scroll view
-    /// or a quick tap), then the drag moves it with live reflow.
-    ///
-    /// The drag uses `minimumDistance: 0` so it begins the instant the long
-    /// press completes — otherwise releasing without moving cancels the
-    /// sequence instead of ending it, and `onEnded`/`drop()` never runs, leaving
-    /// the card stuck lifted and enlarged.
+    /// or a quick tap), then the drag moves it with live reflow. The visible
+    /// lift is bound to `@GestureState` (`updating`), which auto-resets on
+    /// release; `onChanged`/`onEnded` only handle the reorder bookkeeping.
     private func reorderGesture(for code: String) -> some Gesture {
         LongPressGesture(minimumDuration: 0.22)
             .sequenced(before: DragGesture(minimumDistance: 0, coordinateSpace: .named(gridSpace)))
-            .onChanged { value in
+            .updating($activeDrag) { value, state, _ in
                 switch value {
                 case .first(true):
-                    pickUp(code)
+                    state = ActiveDrag(code: code, location: nil)
                 case .second(true, let drag):
-                    if let drag { updateDrag(to: drag.location) }
+                    state = ActiveDrag(code: code, location: drag?.location)
                 default:
                     break
                 }
             }
-            .onEnded { _ in drop() }
+            .onChanged { value in
+                switch value {
+                case .first(true):
+                    pickUp()
+                case .second(true, let drag):
+                    if let drag { updateDrag(code, to: drag.location) }
+                default:
+                    break
+                }
+            }
+            .onEnded { _ in commitOrder() }
     }
 
-    /// Long press recognized: lift the card and snapshot the current order.
-    private func pickUp(_ code: String) {
-        if draggingCode == nil {
-            workingOrder = sortedMetrics.map(\.entry.code)
-        }
-        draggingCode = code
-        if let frame = cellFrames[code] {
-            dragLocation = CGPoint(x: frame.midX, y: frame.midY)
-        }
+    /// Long press recognized: snapshot the current order for live reflow. Runs
+    /// fresh on every press, so it never depends on the previous drag's cleanup.
+    private func pickUp() {
+        workingOrder = sortedMetrics.map(\.entry.code)
         haptics.impactOccurred()
     }
 
     /// Live reflow: when the finger crosses into another card's slot, move the
     /// dragged card there and let the grid animate the rest out of the way.
-    private func updateDrag(to location: CGPoint) {
-        guard let dragging = draggingCode else { return }
-        dragLocation = location
-        guard let target = cellFrames.first(where: { $0.key != dragging && $0.value.contains(location) })?.key,
-              let from = workingOrder.firstIndex(of: dragging),
+    private func updateDrag(_ code: String, to location: CGPoint) {
+        guard let target = cellFrames.first(where: { $0.key != code && $0.value.contains(location) })?.key,
+              let from = workingOrder.firstIndex(of: code),
               let dest = workingOrder.firstIndex(of: target),
               from != dest
         else { return }
@@ -108,19 +116,15 @@ struct MetricsHomescreenGrid: View {
         haptics.impactOccurred(intensity: 0.4)
     }
 
-    private func drop() {
-        guard draggingCode != nil else { return }
+    private func commitOrder() {
+        guard !workingOrder.isEmpty else { return }
         persistOrder(workingOrder)
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            draggingCode = nil
-            dragLocation = nil
-        }
     }
 
     /// Offset that keeps the lifted card glued under the finger, regardless of
-    /// how the grid has reflowed beneath it.
+    /// how the grid has reflowed beneath it. Zero while merely pressing.
     private func dragOffset(for code: String) -> CGSize {
-        guard let location = dragLocation, let frame = cellFrames[code] else { return .zero }
+        guard let location = activeDrag?.location, let frame = cellFrames[code] else { return .zero }
         return CGSize(width: location.x - frame.midX, height: location.y - frame.midY)
     }
 
@@ -133,7 +137,7 @@ struct MetricsHomescreenGrid: View {
     /// While dragging, follow the live `workingOrder` so reflow is immediate;
     /// otherwise use the persisted sort.
     private var displayedMetrics: [MetricData] {
-        guard draggingCode != nil else { return sortedMetrics }
+        guard activeDrag != nil, !workingOrder.isEmpty else { return sortedMetrics }
         let byCode = Dictionary(metrics.map { ($0.entry.code, $0) }, uniquingKeysWith: { first, _ in first })
         return workingOrder.compactMap { byCode[$0] }
     }
