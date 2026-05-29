@@ -145,7 +145,7 @@ struct SettingsView: View {
         }
         .buttonStyle(.bordered)
         .buttonBorderShape(.capsule)
-        .controlSize(.small)
+        .controlSize(.regular)
         .tint(.primary)
     }
 }
