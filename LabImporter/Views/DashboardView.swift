@@ -39,8 +39,9 @@ struct DashboardView: View {
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 NavigationLink(destination: HistoryView()) {
-                    Image(systemName: "clock.arrow.circlepath")
+                    Image(systemName: "doc.text")
                 }
+                .accessibilityLabel("Reports")
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {

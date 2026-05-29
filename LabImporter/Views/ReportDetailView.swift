@@ -69,16 +69,17 @@ struct ReportDetailView: View {
         } message: {
             Text(shareError ?? "")
         }
-        .sheet(isPresented: $showEdit, onDismiss: { dismiss() }, content: {
+        .sheet(isPresented: $showEdit) {
             NavigationStack {
                 ReviewView(
                     labValues: report.asLabValues,
                     reportDate: report.date,
-                    replacingReport: report
+                    replacingReport: report,
+                    onSaved: { dismiss() }
                 )
             }
             .interactiveDismissDisabled()
-        })
+        }
         .sheet(item: $shareURL) { item in
             ShareSheet(url: item.url)
         }
@@ -251,7 +252,7 @@ struct ReportDetailView: View {
     }
 
     private var dominantColor: Color {
-        categoryGroups.max(by: { $0.entries.count < $1.entries.count })?.category.color ?? .accentColor
+        report.dominantCategory?.color ?? .accentColor
     }
 
     private var backgroundColors: [Color] {

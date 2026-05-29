@@ -3,7 +3,6 @@ import SwiftUI
 struct LabValueRowView: View {
     @Binding var value: LabValue
 
-    @State private var editedValue: String = ""
     @State private var showCodePicker = false
     @FocusState private var isFocused: Bool
 
@@ -74,11 +73,6 @@ struct LabValueRowView: View {
         .sheet(isPresented: $showCodePicker, onDismiss: { value.isSuggestedCode = false }, content: {
             CodePickerSheet(code: $value.code, name: $value.name)
         })
-        .onAppear { editedValue = strippedDisplayValue }
-        .onChange(of: value.displayValue) { _, new in
-            let stripped = strippedValue(new)
-            if editedValue != stripped { editedValue = stripped }
-        }
     }
 
     @ViewBuilder
@@ -88,22 +82,27 @@ struct LabValueRowView: View {
                 .font(.body)
                 .foregroundStyle(.secondary)
         } else {
-            TextField("Value", text: $editedValue)
+            TextField("Value", text: valueText)
                 .multilineTextAlignment(.trailing)
                 .keyboardType(.decimalPad)
                 .focused($isFocused)
                 .frame(minWidth: 44, maxWidth: 80)
-                .onChange(of: editedValue) { _, newRaw in
-                    value.displayValue = newRaw
-                    let normalized = newRaw.replacingOccurrences(of: ",", with: ".")
-                    value.numericValue = Double(normalized)
-                }
         }
     }
 
-    // Strips the unit suffix from displayValue so it shows only the number.
-    private var strippedDisplayValue: String {
-        strippedValue(value.displayValue)
+    // A binding over the model's value, stripped of its unit for editing. Reading
+    // derives the string on demand and writing propagates the user's edit — so we
+    // never mutate the model just because the row appeared (which previously
+    // re-parsed a lossily-formatted value and looked like an edit).
+    private var valueText: Binding<String> {
+        Binding(
+            get: { strippedValue(value.displayValue) },
+            set: { newRaw in
+                value.displayValue = newRaw
+                let normalized = newRaw.replacingOccurrences(of: ",", with: ".")
+                value.numericValue = Double(normalized)
+            }
+        )
     }
 
     private func strippedValue(_ raw: String) -> String {

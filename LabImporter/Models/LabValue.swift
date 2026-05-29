@@ -47,4 +47,19 @@ struct LabValue: Identifiable, Equatable, @unchecked Sendable {
             && lhs.numericValue == rhs.numericValue
             && lhs.isSuggestedCode == rhs.isSuggestedCode
     }
+
+    /// Whether two values are identical in every *saved* field. Unlike `==` it
+    /// compares `code`/`name`/`unit` (so a re-mapped code is detected), but it
+    /// deliberately ignores `displayValue`: that string is re-derived from
+    /// `numericValue` + `unit` when a row appears (unit stripped, decimal
+    /// separator normalized), so comparing it would report phantom edits.
+    /// `numericValue` is the canonical value and is stable across that step.
+    func matchesSavedData(of other: LabValue) -> Bool {
+        id == other.id
+            && code == other.code
+            && name == other.name
+            && numericValue == other.numericValue
+            && unit == other.unit
+            && isSelected == other.isSelected
+    }
 }

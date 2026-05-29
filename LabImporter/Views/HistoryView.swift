@@ -17,7 +17,7 @@ struct HistoryView: View {
                 reportList
             }
         }
-        .navigationTitle("History")
+        .navigationTitle("Reports")
         .navigationBarTitleDisplayMode(.large)
         .background { CategoryBackground(colors: backgroundColors) }
         .onAppear { Task { await loadReports() } }
@@ -198,8 +198,10 @@ private struct ReportRow: View {
         return ordered
     }
 
+    // The dominant category drives the icon color, matching ReportDetailView so
+    // the same report reads consistently in the list and on its detail screen.
     private var accentColor: Color {
-        categories.first?.color ?? .accentColor
+        report.dominantCategory?.color ?? .accentColor
     }
 
     private var meta: String {
