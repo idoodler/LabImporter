@@ -78,6 +78,26 @@ struct SettingsView: View {
                     }
                 }
 
+                Section("LOINC") {
+                    NavigationLink {
+                        LoincCatalogView()
+                    } label: {
+                        Label("Browse Catalog", systemImage: "magnifyingglass")
+                    }
+                    NavigationLink {
+                        LoincLicenseView()
+                    } label: {
+                        Label("LOINC License", systemImage: "doc.text")
+                    }
+                    if !LoincDirectory.shared.version.isEmpty {
+                        LabeledContent {
+                            Text(verbatim: LoincDirectory.shared.version)
+                        } label: {
+                            Label("Version", systemImage: "number.square")
+                        }
+                    }
+                }
+
                 Section("About") {
                     LabeledContent {
                         Text(AppInfo.branch)
@@ -153,13 +173,13 @@ struct SettingsView: View {
 // MARK: - In-app browser
 
 /// Wraps a `URL` so it can drive a `.sheet(item:)` presentation.
-private struct IdentifiedURL: Identifiable {
+struct IdentifiedURL: Identifiable {
     let id = UUID()
     let url: URL
 }
 
 /// SwiftUI wrapper around `SFSafariViewController` for in-app web browsing.
-private struct SafariView: UIViewControllerRepresentable {
+struct SafariView: UIViewControllerRepresentable {
     let url: URL
 
     func makeUIViewController(context: Context) -> SFSafariViewController {

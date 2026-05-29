@@ -15,6 +15,8 @@ struct TrendsView: View {
     @AppStorage("trendsSelectedCode") private var selectedCode: String = ""
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
     @State private var selectedDate: Date?
+    @State private var selectedTerm: LoincTerm?
+    @State private var valueColor: Color = .accentColor
     private let selectionFeedback = UISelectionFeedbackGenerator()
     private let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
 
@@ -106,6 +108,12 @@ struct TrendsView: View {
             } else if selectedCode.isEmpty || !codes.contains(selectedCode) {
                 selectedCode = codes.first ?? ""
             }
+            selectedTerm = LoincDirectory.shared.term(for: selectedCode)
+            valueColor = LabCategory.forCode(selectedCode).color
+        }
+        .onChange(of: selectedCode) { _, code in
+            selectedTerm = LoincDirectory.shared.term(for: code)
+            valueColor = LabCategory.forCode(code).color
         }
     }
 
@@ -138,14 +146,31 @@ struct TrendsView: View {
     @ViewBuilder
     private var trendContent: some View {
         if dataPoints.count < 2 {
-            ContentUnavailableView(
-                "Not Enough Data",
-                systemImage: "chart.xyaxis.line",
-                description: Text("Import at least two reports containing this value to see a trend.")
-            )
+            VStack(spacing: 16) {
+                ContentUnavailableView(
+                    "Not Enough Data",
+                    systemImage: "chart.xyaxis.line",
+                    description: Text("Import at least two reports containing this value to see a trend.")
+                )
+                descriptionCard
+            }
         } else {
-            trendChart
+            ScrollView {
+                VStack(spacing: 16) {
+                    trendChart
+                    descriptionCard
+                }
                 .padding()
+            }
+        }
+    }
+
+    // Description of the selected LOINC value, shown below the graph, linking to
+    // the full LOINC details. Tapping a metric on the dashboard opens this sheet.
+    @ViewBuilder
+    private var descriptionCard: some View {
+        if let term = selectedTerm {
+            ValueDescriptionCard(term: term)
         }
     }
 
@@ -156,19 +181,19 @@ struct TrendsView: View {
                     x: .value(String(localized: "Date"), point.date),
                     y: .value(currentUnit, point.value)
                 )
-                .foregroundStyle(Color.accentColor.opacity(0.9))
+                .foregroundStyle(valueColor.opacity(0.9))
 
                 PointMark(
                     x: .value(String(localized: "Date"), point.date),
                     y: .value(currentUnit, point.value)
                 )
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(valueColor)
 
                 AreaMark(
                     x: .value(String(localized: "Date"), point.date),
                     y: .value(currentUnit, point.value)
                 )
-                .foregroundStyle(Color.accentColor.opacity(0.15))
+                .foregroundStyle(valueColor.opacity(0.15))
             }
 
             if let selected = selectedDataPoint {
@@ -256,15 +281,15 @@ struct TrendsView: View {
 
     private var selectedPointBubble: some View {
         Circle()
-            .fill(Color.accentColor)
+            .fill(valueColor)
             .frame(width: 10, height: 10)
             .padding(4)
             .glassEffect(.regular.interactive(), in: Circle())
             .overlay(
                 Circle()
-                    .stroke(Color.accentColor.opacity(0.6), lineWidth: 1)
+                    .stroke(valueColor.opacity(0.6), lineWidth: 1)
             )
-            .shadow(color: Color.accentColor.opacity(0.45), radius: 6, x: 0, y: 0)
+            .shadow(color: valueColor.opacity(0.45), radius: 6, x: 0, y: 0)
     }
 
     // MARK: - Helpers
@@ -289,5 +314,54 @@ struct TrendsView: View {
         }
         prefs = updated
         impactFeedback.impactOccurred()
+    }
+}
+
+// MARK: - ValueDescriptionCard
+
+/// Tappable summary of the selected value's LOINC term shown beneath the trend
+/// chart; navigates to the full structured details (and the loinc.org link).
+private struct ValueDescriptionCard: View {
+    let term: LoincTerm
+
+    var body: some View {
+        NavigationLink {
+            LoincTermDetailView(term: term)
+        } label: {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack {
+                    Text("About this value")
+                        .font(.subheadline.weight(.semibold))
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                }
+                if let description {
+                    Text(description)
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                Text(verbatim: "LOINC \(term.code)")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
+            .overlay(
+                RoundedRectangle(cornerRadius: 20)
+                    .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
+            )
+            .padding(.horizontal)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var description: String? {
+        if let description = term.description, !description.isEmpty { return description }
+        // Fall back to the English name when it adds detail beyond the title.
+        return term.englishName == term.name ? nil : term.englishName
     }
 }

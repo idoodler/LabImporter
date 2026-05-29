@@ -10,6 +10,10 @@ struct LabValue: Identifiable, Equatable, @unchecked Sendable {
     var numericValue: Double?
     var unit: String
     var isSelected: Bool
+    /// True when `code` was resolved by fuzzy catalog search (from the AI's
+    /// normalized name) rather than a confident curated/manual mapping — the
+    /// user should confirm it before saving. Cleared once they review it.
+    var isSuggestedCode: Bool
 
     init(
         id: UUID = UUID(),
@@ -18,7 +22,8 @@ struct LabValue: Identifiable, Equatable, @unchecked Sendable {
         displayValue: String,
         numericValue: Double?,
         unit: String,
-        isSelected: Bool = true
+        isSelected: Bool = true,
+        isSuggestedCode: Bool = false
     ) {
         self.id = id
         self.code = code
@@ -27,6 +32,7 @@ struct LabValue: Identifiable, Equatable, @unchecked Sendable {
         self.numericValue = numericValue
         self.unit = unit
         self.isSelected = isSelected
+        self.isSuggestedCode = isSuggestedCode
     }
 
     var resolvedName: String {
@@ -39,5 +45,6 @@ struct LabValue: Identifiable, Equatable, @unchecked Sendable {
             && lhs.isSelected == rhs.isSelected
             && lhs.displayValue == rhs.displayValue
             && lhs.numericValue == rhs.numericValue
+            && lhs.isSuggestedCode == rhs.isSuggestedCode
     }
 }

@@ -32,6 +32,7 @@ struct DashboardView: View {
             .padding(.top, 8)
             .padding(.bottom, 24)
         }
+        .background { CategoryBackground(colors: backgroundColors) }
         .navigationTitle("Lab Results")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
@@ -58,7 +59,7 @@ struct DashboardView: View {
             NavigationStack {
                 TrendsView(reports: reports, initialCode: sheet.code, onDismiss: { trendSheet = nil })
             }
-            .presentationDetents([.medium])
+            .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
         }
     }
@@ -144,10 +145,7 @@ struct DashboardView: View {
 
         return latestEntry.values.map { item in
             let points = (allPoints[item.entry.code] ?? []).sorted { $0.date < $1.date }
-            let status = item.entry.numericValue.flatMap { value in
-                LabMapping.referenceRange(for: item.entry.code)?.status(for: value)
-            }
-            return MetricData(entry: item.entry, history: points, status: status)
+            return MetricData(entry: item.entry, history: points)
         }
     }
 
@@ -169,6 +167,21 @@ struct DashboardView: View {
                 if aOrd != bOrd { return aOrd < bOrd }
                 return lhs.entry.resolvedName < rhs.entry.resolvedName
             }
+    }
+
+    // Up to three distinct category colors from the visible metrics, used for
+    // the subtle background wash.
+    private var backgroundColors: [Color] {
+        var seen = Set<LabCategory>()
+        var result: [Color] = []
+        for metric in sortedMetrics {
+            let category = LabCategory.forCode(metric.entry.code)
+            if seen.insert(category).inserted {
+                result.append(category.color)
+            }
+            if result.count == 3 { break }
+        }
+        return result
     }
 
     // MARK: - Code names for order sheet
@@ -209,7 +222,6 @@ private struct MetricData: Identifiable {
     var id: String { entry.code }
     let entry: LabReport.Entry
     let history: [SparkPoint]
-    let status: RangeStatus?
 }
 
 // MARK: - MetricCard
@@ -218,27 +230,17 @@ private struct MetricCard: View {
     let metric: MetricData
     let isPinned: Bool
 
-    private var statusColor: Color {
-        switch metric.status {
-        case .normal:    return Color.green
-        case .borderline: return Color.orange
-        case .abnormal:  return Color.red
-        case .none:      return Color.secondary
-        }
-    }
-
-    private var statusLabel: LocalizedStringKey {
-        switch metric.status {
-        case .normal:    return "Normal"
-        case .borderline: return "Borderline"
-        case .abnormal:  return "Elevated"
-        case .none:      return ""
-        }
+    private var categoryColor: Color {
+        LabCategory.forCode(metric.entry.code).color
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            HStack(alignment: .top, spacing: 4) {
+            HStack(alignment: .top, spacing: 5) {
+                Circle()
+                    .fill(categoryColor)
+                    .frame(width: 8, height: 8)
+                    .padding(.top, 3)
                 Text(metric.entry.resolvedName)
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -271,17 +273,6 @@ private struct MetricCard: View {
             } else {
                 Spacer().frame(height: 40)
             }
-
-            if metric.status != nil {
-                HStack(spacing: 5) {
-                    Circle()
-                        .fill(statusColor)
-                        .frame(width: 7, height: 7)
-                    Text(statusLabel)
-                        .font(.caption2.weight(.medium))
-                        .foregroundStyle(statusColor)
-                }
-            }
         }
         .padding(14)
         .frame(maxWidth: .infinity, minHeight: 158, alignment: .topLeading)
@@ -298,7 +289,7 @@ private struct MetricCard: View {
                 x: .value("Date", point.date),
                 y: .value("Value", point.value)
             )
-            .foregroundStyle(statusColor.opacity(0.85))
+            .foregroundStyle(categoryColor.opacity(0.85))
 
             AreaMark(
                 x: .value("Date", point.date),
@@ -306,7 +297,7 @@ private struct MetricCard: View {
             )
             .foregroundStyle(
                 LinearGradient(
-                    colors: [statusColor.opacity(0.3), statusColor.opacity(0.05)],
+                    colors: [categoryColor.opacity(0.3), categoryColor.opacity(0.05)],
                     startPoint: .top,
                     endPoint: .bottom
                 )
@@ -316,11 +307,41 @@ private struct MetricCard: View {
                 x: .value("Date", point.date),
                 y: .value("Value", point.value)
             )
-            .foregroundStyle(statusColor)
+            .foregroundStyle(categoryColor)
             .symbolSize(20)
         }
         .chartXAxis(.hidden)
         .chartYAxis(.hidden)
         .frame(height: 40)
+    }
+}
+
+// MARK: - CategoryBackground
+
+/// A soft, low-opacity wash of the dashboard's metric category colors — a subtle
+/// tint behind the content in the spirit of the Health app. Falls back to a
+/// gentle accent tint when there are no metrics yet.
+private struct CategoryBackground: View {
+    let colors: [Color]
+
+    private let anchors: [UnitPoint] = [.topLeading, .topTrailing, .bottomLeading]
+
+    var body: some View {
+        ZStack {
+            ForEach(Array(palette.enumerated()), id: \.offset) { index, color in
+                RadialGradient(
+                    colors: [color.opacity(0.16), .clear],
+                    center: anchors[index % anchors.count],
+                    startRadius: 0,
+                    endRadius: 480
+                )
+            }
+        }
+        .ignoresSafeArea()
+        .allowsHitTesting(false)
+    }
+
+    private var palette: [Color] {
+        colors.isEmpty ? [Color.accentColor.opacity(0.6)] : colors
     }
 }
