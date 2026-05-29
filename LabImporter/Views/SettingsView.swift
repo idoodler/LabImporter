@@ -161,6 +161,12 @@ struct SettingsView: View {
         } label: {
             Label(titleKey, systemImage: systemImage)
                 .font(.subheadline)
+                // Keep both pills the same size regardless of title length: split the
+                // row evenly and shrink-to-fit on one line so a longer localized title
+                // never wraps to two lines and leaves the buttons mismatched in height.
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+                .frame(maxWidth: .infinity)
         }
         .buttonStyle(.bordered)
         .buttonBorderShape(.capsule)
