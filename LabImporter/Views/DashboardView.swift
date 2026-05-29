@@ -15,7 +15,6 @@ struct DashboardView: View {
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
     @State private var showSettings = false
     @State private var trendSheet: TrendSheet?
-    @State private var isEditing = false
 
     private struct TrendSheet: Identifiable {
         var id: String { code }
@@ -28,7 +27,6 @@ struct DashboardView: View {
                 MetricsHomescreenGrid(
                     metrics: metrics,
                     prefs: $prefs,
-                    isEditing: $isEditing,
                     onOpenTrend: { trendSheet = TrendSheet(code: $0) }
                 )
                 footer
@@ -36,8 +34,6 @@ struct DashboardView: View {
             .padding(.horizontal, 16)
             .padding(.top, 8)
             .padding(.bottom, 24)
-            .contentShape(Rectangle())
-            .onTapGesture { if isEditing { isEditing = false } }
         }
         .background { CategoryBackground(colors: backgroundColors) }
         .navigationTitle("Lab Results")
@@ -59,28 +55,21 @@ struct DashboardView: View {
 
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
-        if isEditing {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Done") { isEditing = false }
-                    .fontWeight(.semibold)
+        ToolbarItem(placement: .topBarLeading) {
+            NavigationLink(destination: HistoryView()) {
+                Image(systemName: "doc.text")
             }
-        } else {
-            ToolbarItem(placement: .topBarLeading) {
-                NavigationLink(destination: HistoryView()) {
-                    Image(systemName: "doc.text")
-                }
-                .accessibilityLabel("Reports")
+            .accessibilityLabel("Reports")
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+            Button {
+                showSettings = true
+            } label: {
+                Image(systemName: "gearshape")
             }
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showSettings = true
-                } label: {
-                    Image(systemName: "gearshape")
-                }
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                importMenu
-            }
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+            importMenu
         }
     }
 

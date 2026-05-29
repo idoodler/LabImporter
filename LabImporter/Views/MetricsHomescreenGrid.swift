@@ -3,13 +3,13 @@ import Charts
 
 // MARK: - MetricsHomescreenGrid
 
-/// The dashboard's metric grid with iOS-homescreen-style arranging:
-/// long-press a card to enter edit mode (cards jiggle), drag with live reflow,
-/// remove (✕) and pin badges, and tap to open a trend when not arranging.
+/// The dashboard's metric grid with iOS-homescreen-style drag-to-reorder:
+/// press-and-hold a card briefly to pick it up (a little "sticky"), then drag
+/// it around and the rest of the grid reflows live to make room. A quick tap
+/// still opens the card's trend.
 struct MetricsHomescreenGrid: View {
     let metrics: [MetricData]
     @Binding var prefs: LabDisplayPreferences
-    @Binding var isEditing: Bool
     let onOpenTrend: (String) -> Void
 
     @State private var workingOrder: [String] = []
@@ -30,13 +30,6 @@ struct MetricsHomescreenGrid: View {
             }
         }
         .coordinateSpace(.named(gridSpace))
-        .onChange(of: isEditing) { _, editing in
-            if editing {
-                if workingOrder.isEmpty { workingOrder = sortedMetrics.map(\.entry.code) }
-            } else {
-                commit()
-            }
-        }
     }
 
     // MARK: - Card
@@ -48,64 +41,25 @@ struct MetricsHomescreenGrid: View {
         let dragging = draggingCode == code
         MetricCard(metric: metric, isPinned: pinned)
             .contentShape(RoundedRectangle(cornerRadius: 20))
-            .overlay(alignment: .topLeading) {
-                if isEditing { removeBadge(code) }
-            }
-            .overlay(alignment: .topTrailing) {
-                if isEditing { pinBadge(code, pinned: pinned) }
-            }
-            .modifier(JiggleEffect(active: isEditing && !dragging, code: code))
-            .scaleEffect(dragging ? 1.06 : 1)
+            .scaleEffect(dragging ? 1.05 : 1)
             .offset(dragging ? dragOffset(for: code) : .zero)
-            .opacity(dragging ? 0.92 : 1)
+            .opacity(dragging ? 0.95 : 1)
             .shadow(color: .black.opacity(dragging ? 0.22 : 0), radius: dragging ? 12 : 0, y: dragging ? 6 : 0)
-            .zIndex(dragging ? 2 : (isEditing ? 1 : 0))
+            .zIndex(dragging ? 1 : 0)
+            .animation(.interactiveSpring(response: 0.25, dampingFraction: 0.86), value: dragLocation)
             .onGeometryChange(for: CGRect.self) {
                 $0.frame(in: .named(gridSpace))
             } action: { cellFrames[code] = $0 }
-            .onTapGesture { handleTap(code) }
+            .onTapGesture { onOpenTrend(code) }
             .gesture(reorderGesture(for: code))
     }
 
-    // MARK: - Edit-mode badges
+    // MARK: - Sticky drag gesture
 
-    private func removeBadge(_ code: String) -> some View {
-        Button { hideCode(code) } label: {
-            Image(systemName: "xmark")
-                .font(.system(size: 11, weight: .bold))
-                .foregroundStyle(.white)
-                .frame(width: 22, height: 22)
-                .background(Circle().fill(Color.black.opacity(0.55)))
-        }
-        .buttonStyle(.plain)
-        .offset(x: -7, y: -7)
-        .accessibilityLabel("Remove from Dashboard")
-        .transition(.scale.combined(with: .opacity))
-    }
-
-    private func pinBadge(_ code: String, pinned: Bool) -> some View {
-        Button { togglePin(code) } label: {
-            Image(systemName: pinned ? "pin.fill" : "pin")
-                .font(.system(size: 11, weight: .bold))
-                .foregroundStyle(pinned ? Color.yellow : .white)
-                .frame(width: 22, height: 22)
-                .background(Circle().fill(Color.black.opacity(0.55)))
-        }
-        .buttonStyle(.plain)
-        .offset(x: 7, y: -7)
-        .accessibilityLabel(pinned ? "Unpin" : "Pin to Top")
-        .transition(.scale.combined(with: .opacity))
-    }
-
-    // MARK: - Tap & reorder gesture
-
-    private func handleTap(_ code: String) {
-        guard !isEditing else { return }
-        onOpenTrend(code)
-    }
-
+    /// A short long-press "grabs" the card (so it doesn't fight the scroll view
+    /// or a quick tap), then the drag moves it with live reflow.
     private func reorderGesture(for code: String) -> some Gesture {
-        LongPressGesture(minimumDuration: 0.35)
+        LongPressGesture(minimumDuration: 0.22)
             .sequenced(before: DragGesture(coordinateSpace: .named(gridSpace)))
             .onChanged { value in
                 switch value {
@@ -120,15 +74,11 @@ struct MetricsHomescreenGrid: View {
             .onEnded { _ in drop() }
     }
 
-    // MARK: - Drag lifecycle
-
-    /// Long press recognized: enter edit mode (if needed) and lift the card.
+    /// Long press recognized: lift the card and snapshot the current order.
     private func pickUp(_ code: String) {
-        if !isEditing {
+        if draggingCode == nil {
             workingOrder = sortedMetrics.map(\.entry.code)
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { isEditing = true }
         }
-        if workingOrder.isEmpty { workingOrder = sortedMetrics.map(\.entry.code) }
         draggingCode = code
         if let frame = cellFrames[code] {
             dragLocation = CGPoint(x: frame.midX, y: frame.midY)
@@ -162,14 +112,6 @@ struct MetricsHomescreenGrid: View {
         }
     }
 
-    private func commit() {
-        persistOrder(workingOrder)
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            draggingCode = nil
-            dragLocation = nil
-        }
-    }
-
     /// Offset that keeps the lifted card glued under the finger, regardless of
     /// how the grid has reflowed beneath it.
     private func dragOffset(for code: String) -> CGSize {
@@ -183,10 +125,10 @@ struct MetricsHomescreenGrid: View {
         dashboardSortedMetrics(metrics, prefs: prefs)
     }
 
-    /// What the grid actually renders. While arranging, follow the live
-    /// `workingOrder` so reflow is immediate; otherwise use the persisted sort.
+    /// While dragging, follow the live `workingOrder` so reflow is immediate;
+    /// otherwise use the persisted sort.
     private var displayedMetrics: [MetricData] {
-        guard isEditing else { return sortedMetrics }
+        guard draggingCode != nil else { return sortedMetrics }
         let byCode = Dictionary(metrics.map { ($0.entry.code, $0) }, uniquingKeysWith: { first, _ in first })
         return workingOrder.compactMap { byCode[$0] }
     }
@@ -202,29 +144,6 @@ struct MetricsHomescreenGrid: View {
         var updated = prefs
         updated.orderedCodes = result
         prefs = updated
-    }
-
-    private func togglePin(_ code: String) {
-        var updated = prefs
-        if updated.pinnedCodes.contains(code) {
-            updated.pinnedCodes.removeAll { $0 == code }
-        } else {
-            updated.pinnedCodes.append(code)
-        }
-        prefs = updated
-        haptics.impactOccurred(intensity: 0.5)
-    }
-
-    private func hideCode(_ code: String) {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            workingOrder.removeAll { $0 == code }
-        }
-        var updated = prefs
-        if !updated.hiddenCodes.contains(code) { updated.hiddenCodes.append(code) }
-        updated.pinnedCodes.removeAll { $0 == code }
-        prefs = updated
-        persistOrder(workingOrder)
-        haptics.impactOccurred()
     }
 }
 
@@ -247,36 +166,6 @@ func dashboardSortedMetrics(_ metrics: [MetricData], prefs: LabDisplayPreference
             if aOrd != bOrd { return aOrd < bOrd }
             return lhs.entry.resolvedName < rhs.entry.resolvedName
         }
-}
-
-// MARK: - JiggleEffect
-
-/// The iOS-homescreen wobble applied to every card while arranging. Each card
-/// uses a slightly different period so the grid doesn't jiggle in lockstep.
-private struct JiggleEffect: ViewModifier {
-    let active: Bool
-    let code: String
-    @State private var wobble = false
-
-    private var amplitude: Double { 1.6 }
-    private var period: Double { 0.13 + Double(abs(code.hashValue) % 5) * 0.012 }
-
-    func body(content: Content) -> some View {
-        content
-            .rotationEffect(.degrees(active ? (wobble ? amplitude : -amplitude) : 0))
-            .onAppear { updateWobble(active) }
-            .onChange(of: active) { _, now in updateWobble(now) }
-    }
-
-    private func updateWobble(_ active: Bool) {
-        if active {
-            withAnimation(.easeInOut(duration: period).repeatForever(autoreverses: true)) {
-                wobble = true
-            }
-        } else {
-            withAnimation(.easeInOut(duration: 0.1)) { wobble = false }
-        }
-    }
 }
 
 // MARK: - MetricData
