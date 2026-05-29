@@ -174,9 +174,7 @@ struct TrendsView: View {
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                Text(verbatim: "LOINC \(term.code)")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
+                LoincCodeText(code: term.code)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding()

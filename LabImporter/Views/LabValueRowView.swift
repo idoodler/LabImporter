@@ -54,6 +54,7 @@ struct LabValueRowView: View {
                     }
                 }
                 .buttonStyle(.plain)
+                .loincLinkContextMenu(for: value.code)
             }
 
             Spacer()

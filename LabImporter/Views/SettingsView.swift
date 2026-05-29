@@ -415,6 +415,7 @@ struct LoincCatalogView: View {
                             .foregroundStyle(.tertiary)
                     }
                 }
+                .loincLinkContextMenu(for: term.code)
                 .onAppear {
                     if term.id == results.last?.id { loadMore() }
                 }
@@ -472,12 +473,21 @@ struct LoincTermDetailView: View {
                 }
             }
             Section {
-                LabeledContent(String(localized: "LOINC Code"), value: term.code)
+                LabeledContent(String(localized: "LOINC Code")) {
+                    Text(term.code)
+                }
                 if !term.ucum.isEmpty {
                     LabeledContent(String(localized: "Units"), value: term.ucum)
                 }
                 if term.englishName != term.name {
                     LabeledContent(String(localized: "English"), value: term.englishName)
+                }
+            }
+            if let url = LabMapping.loincURL(for: term.code) {
+                Section {
+                    Link(destination: url) {
+                        Label("View on loinc.org", systemImage: "safari")
+                    }
                 }
             }
         }

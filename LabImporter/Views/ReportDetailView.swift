@@ -69,10 +69,7 @@ struct ReportDetailView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(entry.resolvedName)
                     .font(.body)
-                Text(entry.code)
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
-                    .textCase(.uppercase)
+                LoincCodeText(code: entry.code)
             }
 
             Spacer()
