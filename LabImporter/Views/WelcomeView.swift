@@ -20,7 +20,7 @@ struct WelcomeView: View {
                     Text("Welcome to")
                         .font(.title3)
                         .foregroundStyle(.secondary)
-                    Text("LabImporter")
+                    Text(verbatim: "LabImporter")
                         .font(.largeTitle.bold())
                 }
             }

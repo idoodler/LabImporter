@@ -206,7 +206,11 @@ struct TrendsView: View {
                     y: .value(currentUnit, selected.value)
                 )
                 .symbolSize(0)
-                .annotation(position: .overlay, spacing: 0) {
+                // Let the bubble overflow the plot at the first/last point instead
+                // of letting Charts pad the scale to fit it — that padding resized
+                // the plot and made the whole graph jump when scrubbing to an edge.
+                .annotation(position: .overlay, spacing: 0,
+                            overflowResolution: .init(x: .disabled, y: .disabled)) {
                     selectedPointBubble
                 }
             }
