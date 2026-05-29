@@ -84,11 +84,12 @@ Config.xcconfig  # BUNDLE_IDENTIFIER = dev.idoodler.$(DEVELOPMENT_TEAM).labimpor
   Health. Use `report.asLabValues` to convert for editing.
 - **`LoincDirectory`** wraps the full LOINC catalog. `tools/build_loinc_resource.py`
   (run by the "Generate LOINC resource" Xcode build phase) distills the official
-  release zip under `Vendor/LOINC/*.zip` into a bundled `loinc_common.json` — the
-  ~18.5k common laboratory terms, each with a name + description localized into
-  every language the app ships. The generated JSON is a build product (not in git);
-  only the source zip is committed. `LabMapping` falls back to `LoincDirectory` for
-  any code that is already a raw LOINC number (e.g. picked in `CodePickerSheet`).
+  release zip under `Vendor/LOINC/*.zip` into a bundled SQLite database `loinc.db`
+  (FTS5) — the ~18.5k common laboratory terms, each with a name + description
+  localized into every language the app ships. The DB is a build product (not in
+  git); only the source zip is committed. `LabMapping` falls back to
+  `LoincDirectory` for any code that is already a raw LOINC number (e.g. picked in
+  `CodePickerSheet`).
 - **`LabMapping`** is the single source of truth for the curated German abbreviations:
   - `displayName(for:)` — human name (localized), tolerant of OCR variants (e.g. `DIAB0L`/`DIABOL`).
   - `loincCode(for:)` — LOINC code + display for CDA export; **returns nil → value is not exportable**.

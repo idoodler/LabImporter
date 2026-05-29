@@ -4,8 +4,13 @@
 This runs as an Xcode build phase (see the "Generate LOINC resource" script
 phase on the LabImporter target). It reads the LOINC release archive committed
 under Vendor/LOINC/*.zip, keeps only the common laboratory terms, and writes a
-small JSON file consumed at runtime by LoincDirectory.swift. For every term it
-emits a localized name and description in each language the app ships.
+SQLite database (loinc.db) consumed at runtime by LoincDirectory.swift. For
+every term it stores a localized name and description in each language the app
+ships, plus an FTS5 index over the names for fast search.
+
+The database is built for speed: it opens instantly (no parse), exact code
+lookups are indexed, and search uses an external-content FTS5 index so the text
+is not duplicated. See LoincDirectory.swift for the queries.
 
 Selection criteria ("common lab tests only"):
   * CLASSTYPE == 1            -> Laboratory class
@@ -21,7 +26,7 @@ Languages:
   LOINC release (if LOINC publishes one for it).
 
 Usage:
-  build_loinc_resource.py <zip-path-or-dir> <output-json>
+  build_loinc_resource.py <zip-path-or-dir> <output-db>
 
 The base table is read once into the common-lab term set; each language variant
 is then streamed once and merged in, so peak memory stays bounded regardless of
@@ -34,8 +39,8 @@ from __future__ import annotations
 import csv
 import glob
 import io
-import json
 import os
+import sqlite3
 import sys
 import zipfile
 
@@ -157,6 +162,19 @@ def merge_variant(zf: zipfile.ZipFile, lang: str, filename: str, entries: dict[s
     return hits
 
 
+SCHEMA = """
+PRAGMA page_size = 4096;
+CREATE TABLE meta(key TEXT PRIMARY KEY, value TEXT);
+CREATE TABLE term(code TEXT PRIMARY KEY, ucum TEXT, rank INTEGER, english TEXT) WITHOUT ROWID;
+CREATE TABLE label(rowid INTEGER PRIMARY KEY, code TEXT, lang TEXT, name TEXT, descr TEXT);
+CREATE INDEX idx_label ON label(code, lang);
+CREATE VIRTUAL TABLE label_fts USING fts5(
+    name, content='label', content_rowid='rowid',
+    tokenize='unicode61 remove_diacritics 2'
+);
+"""
+
+
 def build(zip_path: str, out_path: str) -> None:
     with zipfile.ZipFile(zip_path) as zf:
         entries = read_base(zf)
@@ -167,27 +185,48 @@ def build(zip_path: str, out_path: str) -> None:
             print(f"LOINC: {lang} matched {hits} terms")
 
     ordered = sorted(entries.values(), key=lambda e: e["r"])
-    for entry in ordered:
-        # Drop a description that just repeats the name (common where the name
-        # itself was composed from the parts), then drop empty maps entirely.
-        names = entry["n"]
-        entry["d"] = {lang: text for lang, text in entry["d"].items() if names.get(lang) != text}
-        if not entry["d"]:
-            del entry["d"]
+    write_db(ordered, _release_version(zip_path), out_path)
 
-    payload = {
-        "version": _release_version(zip_path),
-        "languages": list(LANGS.keys()),
-        "count": len(ordered),
-        "entries": ordered,
-    }
 
+def write_db(ordered: list[dict], version: str, out_path: str) -> None:
     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
-    with open(out_path, "w", encoding="utf-8") as out:
-        json.dump(payload, out, ensure_ascii=False, separators=(",", ":"))
+    if os.path.exists(out_path):
+        os.remove(out_path)
+
+    con = sqlite3.connect(out_path)
+    try:
+        con.execute("PRAGMA journal_mode = OFF")
+        con.execute("PRAGMA synchronous = OFF")
+        con.executescript(SCHEMA)
+        con.execute("INSERT INTO meta VALUES('version', ?)", (version,))
+        con.execute("INSERT INTO meta VALUES('languages', ?)", (",".join(LANGS.keys()),))
+
+        rowid = 0
+        labels = 0
+        for entry in ordered:
+            names = entry["n"]
+            descs = entry["d"]
+            con.execute("INSERT INTO term VALUES(?,?,?,?)",
+                        (entry["c"], entry["u"], entry["r"], names.get("en", "")))
+            for lang, name in names.items():
+                rowid += 1
+                labels += 1
+                descr = descs.get(lang, "")
+                # Drop a description that merely repeats the name.
+                if descr == name:
+                    descr = ""
+                con.execute("INSERT INTO label VALUES(?,?,?,?,?)",
+                            (rowid, entry["c"], lang, name, descr))
+        # Build the external-content FTS index from the populated label table.
+        con.execute("INSERT INTO label_fts(label_fts) VALUES('rebuild')")
+        con.commit()
+        con.execute("VACUUM")
+        con.commit()
+    finally:
+        con.close()
 
     size_kb = os.path.getsize(out_path) // 1024
-    print(f"LOINC: wrote {len(ordered)} common lab terms "
+    print(f"LOINC: wrote {len(ordered)} terms / {labels} labels "
           f"[{','.join(LANGS.keys())}] -> {out_path} ({size_kb} KB)")
 
 

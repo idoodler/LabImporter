@@ -22,6 +22,7 @@
 		AABB000000000000000080AA /* DocumentScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000081AA /* DocumentScannerView.swift */; };
 		AABB000000000000000082AA /* VisionKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AABB000000000000000083AA /* VisionKit.framework */; };
 		AABB000000000000000084AA /* PDFKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AABB000000000000000085AA /* PDFKit.framework */; };
+		AABB000000000000000093AA /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AABB000000000000000092AA /* libsqlite3.tbd */; };
 		AABB000000000000000052AA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000032AA /* Assets.xcassets */; };
 		AABB000000000000000053AA /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AABB000000000000000035AA /* HealthKit.framework */; };
 		AABB000000000000000054AA /* Vision.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AABB000000000000000036AA /* Vision.framework */; };
@@ -57,6 +58,7 @@
 		AABB000000000000000081AA /* DocumentScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentScannerView.swift; sourceTree = "<group>"; };
 		AABB000000000000000083AA /* VisionKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VisionKit.framework; path = System/Library/Frameworks/VisionKit.framework; sourceTree = SDKROOT; };
 		AABB000000000000000085AA /* PDFKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PDFKit.framework; path = System/Library/Frameworks/PDFKit.framework; sourceTree = SDKROOT; };
+		AABB000000000000000092AA /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		AABB000000000000000032AA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AABB000000000000000033AA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AABB000000000000000034AA /* LabImporter.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LabImporter.entitlements; sourceTree = "<group>"; };
@@ -89,6 +91,7 @@
 				AABB000000000000000056AA /* PhotosUI.framework in Frameworks */,
 				AABB000000000000000082AA /* VisionKit.framework in Frameworks */,
 				AABB000000000000000084AA /* PDFKit.framework in Frameworks */,
+				AABB000000000000000093AA /* libsqlite3.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -180,6 +183,7 @@
 				AABB000000000000000038AA /* PhotosUI.framework */,
 				AABB000000000000000083AA /* VisionKit.framework */,
 				AABB000000000000000085AA /* PDFKit.framework */,
+				AABB000000000000000092AA /* libsqlite3.tbd */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -265,7 +269,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\nRES_DIR=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"\nOUT=\"${RES_DIR}/loinc_common.json\"\nZIP=$(ls -t \"${SRCROOT}\"/Vendor/LOINC/*.zip 2>/dev/null | head -1)\nif [ -z \"$ZIP\" ]; then echo \"warning: no LOINC release zip in Vendor/LOINC; LOINC catalog will be empty\"; exit 0; fi\nmkdir -p \"$RES_DIR\"\nif [ -f \"$OUT\" ] && [ \"$OUT\" -nt \"$ZIP\" ] && [ \"$OUT\" -nt \"${SRCROOT}/tools/build_loinc_resource.py\" ]; then echo \"LOINC resource up to date\"; exit 0; fi\nPYTHON=$(command -v python3 || echo /usr/bin/python3)\n\"$PYTHON\" \"${SRCROOT}/tools/build_loinc_resource.py\" \"$ZIP\" \"$OUT\"\n";
+			shellScript = "set -e\nRES_DIR=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"\nOUT=\"${RES_DIR}/loinc.db\"\nZIP=$(ls -t \"${SRCROOT}\"/Vendor/LOINC/*.zip 2>/dev/null | head -1)\nif [ -z \"$ZIP\" ]; then echo \"warning: no LOINC release zip in Vendor/LOINC; LOINC catalog will be empty\"; exit 0; fi\nmkdir -p \"$RES_DIR\"\nif [ -f \"$OUT\" ] && [ \"$OUT\" -nt \"$ZIP\" ] && [ \"$OUT\" -nt \"${SRCROOT}/tools/build_loinc_resource.py\" ]; then echo \"LOINC resource up to date\"; exit 0; fi\nPYTHON=$(command -v python3 || echo /usr/bin/python3)\n\"$PYTHON\" \"${SRCROOT}/tools/build_loinc_resource.py\" \"$ZIP\" \"$OUT\"\n";
 		};
 		AABB000000000000000088AA /* Embed Git Branch */ = {
 			isa = PBXShellScriptBuildPhase;

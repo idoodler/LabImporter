@@ -7,7 +7,7 @@ the most recent `*.zip` automatically.
 This is the **raw source data**, not the file that ships in the app. The Xcode
 "Generate LOINC resource" build phase runs `tools/build_loinc_resource.py`,
 which distills `LoincTable/Loinc.csv` plus the German/Spanish/French/… linguistic
-variants into a compact, multilingual `loinc_common.json` bundled into the app.
+variants into a compact, multilingual SQLite database (`loinc.db`) bundled into the app.
 See `tools/README.md` for details. The full uncompressed table (~80 MB+) is far
 too large to embed verbatim.
 
