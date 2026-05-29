@@ -167,7 +167,7 @@ final class LoincDirectory: @unchecked Sendable {
         return tokens.map { "\"\($0)\"*" }.joined(separator: " ")
     }
 
-    private static func scalar(_ handle: OpaquePointer, _ sql: String) -> String? {
+    private static func scalar(_ handle: OpaquePointer?, _ sql: String) -> String? {
         var statement: OpaquePointer?
         guard sqlite3_prepare_v2(handle, sql, -1, &statement, nil) == SQLITE_OK else { return nil }
         defer { sqlite3_finalize(statement) }

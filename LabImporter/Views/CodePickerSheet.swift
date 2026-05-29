@@ -18,11 +18,17 @@ private struct LabTestPickerList: View {
 
     var body: some View {
         List {
-            Section(query.isEmpty ? Text("Common tests") : Text("Matches")) {
+            Section {
                 ForEach(loincResults) { term in
                     row(rowCode: term.code, title: term.name, subtitle: term.description) {
                         select(term.code, term.name)
                     }
+                }
+            } header: {
+                if query.isEmpty {
+                    Text("Common tests")
+                } else {
+                    Text("Matches")
                 }
             }
         }
