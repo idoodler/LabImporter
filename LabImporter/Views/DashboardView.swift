@@ -374,7 +374,7 @@ private struct MetricCard: View {
 /// A soft, low-opacity wash of the dashboard's metric category colors — a subtle
 /// tint behind the content in the spirit of the Health app. Falls back to a
 /// gentle accent tint when there are no metrics yet.
-private struct CategoryBackground: View {
+struct CategoryBackground: View {
     let colors: [Color]
 
     private let anchors: [UnitPoint] = [.topLeading, .topTrailing, .bottomLeading]
