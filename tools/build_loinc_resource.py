@@ -135,8 +135,28 @@ def read_base(zf: zipfile.ZipFile) -> dict[str, dict]:
                 "r": rank,
                 "n": names,
                 "d": descs,
+                "a": _attributes(row),
             }
     return entries
+
+
+def _attributes(row: dict) -> dict:
+    """Structured LOINC attributes (the six-part name + class/status/names) as
+    shown on a loinc.org details page. English, stored once per code."""
+    def value(key: str) -> str:
+        return (row.get(key) or "").strip()
+    return {
+        "component": value("COMPONENT"),
+        "property": value("PROPERTY"),
+        "timing": value("TIME_ASPCT"),
+        "system": value("SYSTEM"),
+        "scale": value("SCALE_TYP"),
+        "method": value("METHOD_TYP"),
+        "class": value("CLASS"),
+        "status": value("STATUS"),
+        "long": value("LONG_COMMON_NAME"),
+        "short": value("SHORTNAME"),
+    }
 
 
 def merge_variant(zf: zipfile.ZipFile, lang: str, filename: str, entries: dict[str, dict]) -> int:
@@ -165,7 +185,12 @@ def merge_variant(zf: zipfile.ZipFile, lang: str, filename: str, entries: dict[s
 SCHEMA = """
 PRAGMA page_size = 4096;
 CREATE TABLE meta(key TEXT PRIMARY KEY, value TEXT);
-CREATE TABLE term(code TEXT PRIMARY KEY, ucum TEXT, rank INTEGER, english TEXT) WITHOUT ROWID;
+CREATE TABLE term(
+    code TEXT PRIMARY KEY, ucum TEXT, rank INTEGER, english TEXT,
+    component TEXT, property TEXT, timing TEXT, system TEXT,
+    scale TEXT, method TEXT, loinc_class TEXT, status TEXT,
+    long_name TEXT, short_name TEXT
+) WITHOUT ROWID;
 CREATE TABLE label(rowid INTEGER PRIMARY KEY, code TEXT, lang TEXT, name TEXT, descr TEXT);
 CREATE INDEX idx_label ON label(code, lang);
 CREATE VIRTUAL TABLE label_fts USING fts5(
@@ -219,8 +244,12 @@ def write_db(ordered: list[dict], version: str, license_text: str, out_path: str
         for entry in ordered:
             names = entry["n"]
             descs = entry["d"]
-            con.execute("INSERT INTO term VALUES(?,?,?,?)",
-                        (entry["c"], entry["u"], entry["r"], names.get("en", "")))
+            attr = entry["a"]
+            con.execute("INSERT INTO term VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                        (entry["c"], entry["u"], entry["r"], names.get("en", ""),
+                         attr["component"], attr["property"], attr["timing"], attr["system"],
+                         attr["scale"], attr["method"], attr["class"], attr["status"],
+                         attr["long"], attr["short"]))
             for lang, name in names.items():
                 rowid += 1
                 labels += 1

@@ -17,6 +17,26 @@ struct LoincTerm: Identifiable, Sendable {
     var id: String { code }
 }
 
+// The full structured attributes of a LOINC term, as shown on a loinc.org
+// details page. The headline name/description are localized; the six-part name
+// and other attributes are LOINC's standard English values.
+struct LoincDetail: Sendable {
+    let code: String
+    let name: String          // localized
+    let description: String?  // localized
+    let component: String
+    let property: String
+    let timing: String        // time aspect
+    let system: String
+    let scale: String
+    let method: String
+    let loincClass: String
+    let status: String
+    let longName: String
+    let shortName: String
+    let ucum: String
+}
+
 // Read-only index over the bundled LOINC catalog (loinc.db, produced by
 // tools/build_loinc_resource.py).
 //
@@ -39,6 +59,7 @@ final class LoincDirectory: @unchecked Sendable {
     private var termStatement: OpaquePointer?
     private var searchStatement: OpaquePointer?
     private var topStatement: OpaquePointer?
+    private var detailStatement: OpaquePointer?
 
     private init() {
         language = Bundle.main.preferredLocalizations.first ?? "en"
@@ -85,6 +106,14 @@ final class LoincDirectory: @unchecked Sendable {
             FROM term t ORDER BY t.rank LIMIT ?2 OFFSET ?3
             """, -1, &topStatement, nil)
 
+        sqlite3_prepare_v2(handle, """
+            SELECT (SELECT name FROM label WHERE code = ?1 AND lang = ?2),
+                   (SELECT descr FROM label WHERE code = ?1 AND lang = ?2),
+                   t.english, t.ucum, t.component, t.property, t.timing, t.system,
+                   t.scale, t.method, t.loinc_class, t.status, t.long_name, t.short_name
+            FROM term t WHERE t.code = ?1
+            """, -1, &detailStatement, nil)
+
         version = LoincDirectory.scalar(handle, "SELECT value FROM meta WHERE key = 'version'") ?? ""
         count = Int(LoincDirectory.scalar(handle, "SELECT count(*) FROM term") ?? "0") ?? 0
         license = LoincDirectory.scalar(handle, "SELECT value FROM meta WHERE key = 'license'") ?? ""
@@ -105,6 +134,37 @@ final class LoincDirectory: @unchecked Sendable {
 
     func isKnownLoinc(_ code: String) -> Bool {
         term(for: code) != nil
+    }
+
+    // Full structured attributes for a code (for the term detail screen).
+    func detail(for code: String) -> LoincDetail? {
+        let trimmed = code.trimmingCharacters(in: .whitespaces)
+        guard let statement = detailStatement else { return nil }
+        lock.lock(); defer { lock.unlock() }
+        defer { sqlite3_reset(statement); sqlite3_clear_bindings(statement) }
+        sqlite3_bind_text(statement, 1, trimmed, -1, sqliteTransient)
+        sqlite3_bind_text(statement, 2, language, -1, sqliteTransient)
+        guard sqlite3_step(statement) == SQLITE_ROW else { return nil }
+        let english = column(statement, 2) ?? trimmed
+        let name = column(statement, 0) ?? english
+        let localizedDescr = column(statement, 1)
+        let description = (localizedDescr?.isEmpty == false && localizedDescr != name) ? localizedDescr : nil
+        return LoincDetail(
+            code: trimmed,
+            name: name,
+            description: description,
+            component: column(statement, 4) ?? "",
+            property: column(statement, 5) ?? "",
+            timing: column(statement, 6) ?? "",
+            system: column(statement, 7) ?? "",
+            scale: column(statement, 8) ?? "",
+            method: column(statement, 9) ?? "",
+            loincClass: column(statement, 10) ?? "",
+            status: column(statement, 11) ?? "",
+            longName: column(statement, 12) ?? "",
+            shortName: column(statement, 13) ?? "",
+            ucum: column(statement, 3) ?? ""
+        )
     }
 
     func search(_ query: String, limit: Int = 80, offset: Int = 0) -> [LoincTerm] {
