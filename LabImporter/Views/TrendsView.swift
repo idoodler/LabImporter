@@ -16,6 +16,7 @@ struct TrendsView: View {
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
     @State private var selectedDate: Date?
     @State private var selectedTerm: LoincTerm?
+    @State private var valueColor: Color = .accentColor
     private let selectionFeedback = UISelectionFeedbackGenerator()
     private let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
 
@@ -108,9 +109,11 @@ struct TrendsView: View {
                 selectedCode = codes.first ?? ""
             }
             selectedTerm = LoincDirectory.shared.term(for: selectedCode)
+            valueColor = LabCategory.forCode(selectedCode).color
         }
         .onChange(of: selectedCode) { _, code in
             selectedTerm = LoincDirectory.shared.term(for: code)
+            valueColor = LabCategory.forCode(code).color
         }
     }
 
@@ -178,19 +181,19 @@ struct TrendsView: View {
                     x: .value(String(localized: "Date"), point.date),
                     y: .value(currentUnit, point.value)
                 )
-                .foregroundStyle(Color.accentColor.opacity(0.9))
+                .foregroundStyle(valueColor.opacity(0.9))
 
                 PointMark(
                     x: .value(String(localized: "Date"), point.date),
                     y: .value(currentUnit, point.value)
                 )
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(valueColor)
 
                 AreaMark(
                     x: .value(String(localized: "Date"), point.date),
                     y: .value(currentUnit, point.value)
                 )
-                .foregroundStyle(Color.accentColor.opacity(0.15))
+                .foregroundStyle(valueColor.opacity(0.15))
             }
 
             if let selected = selectedDataPoint {
@@ -278,15 +281,15 @@ struct TrendsView: View {
 
     private var selectedPointBubble: some View {
         Circle()
-            .fill(Color.accentColor)
+            .fill(valueColor)
             .frame(width: 10, height: 10)
             .padding(4)
             .glassEffect(.regular.interactive(), in: Circle())
             .overlay(
                 Circle()
-                    .stroke(Color.accentColor.opacity(0.6), lineWidth: 1)
+                    .stroke(valueColor.opacity(0.6), lineWidth: 1)
             )
-            .shadow(color: Color.accentColor.opacity(0.45), radius: 6, x: 0, y: 0)
+            .shadow(color: valueColor.opacity(0.45), radius: 6, x: 0, y: 0)
     }
 
     // MARK: - Helpers

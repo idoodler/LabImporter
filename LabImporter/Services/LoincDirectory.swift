@@ -60,6 +60,7 @@ final class LoincDirectory: @unchecked Sendable {
     private var searchStatement: OpaquePointer?
     private var topStatement: OpaquePointer?
     private var detailStatement: OpaquePointer?
+    private var classificationStatement: OpaquePointer?
 
     private init() {
         language = Bundle.main.preferredLocalizations.first ?? "en"
@@ -114,6 +115,10 @@ final class LoincDirectory: @unchecked Sendable {
             FROM term t WHERE t.code = ?1
             """, -1, &detailStatement, nil)
 
+        sqlite3_prepare_v2(handle,
+            "SELECT loinc_class, component FROM term WHERE code = ?1",
+            -1, &classificationStatement, nil)
+
         version = LoincDirectory.scalar(handle, "SELECT value FROM meta WHERE key = 'version'") ?? ""
         count = Int(LoincDirectory.scalar(handle, "SELECT count(*) FROM term") ?? "0") ?? 0
         license = LoincDirectory.scalar(handle, "SELECT value FROM meta WHERE key = 'license'") ?? ""
@@ -134,6 +139,17 @@ final class LoincDirectory: @unchecked Sendable {
 
     func isKnownLoinc(_ code: String) -> Bool {
         term(for: code) != nil
+    }
+
+    // LOINC class + component for a code, used to derive a display category/color.
+    func classification(for code: String) -> (loincClass: String, component: String)? {
+        let trimmed = code.trimmingCharacters(in: .whitespaces)
+        guard let statement = classificationStatement else { return nil }
+        lock.lock(); defer { lock.unlock() }
+        defer { sqlite3_reset(statement); sqlite3_clear_bindings(statement) }
+        sqlite3_bind_text(statement, 1, trimmed, -1, sqliteTransient)
+        guard sqlite3_step(statement) == SQLITE_ROW else { return nil }
+        return (column(statement, 0) ?? "", column(statement, 1) ?? "")
     }
 
     // Full structured attributes for a code (for the term detail screen).
