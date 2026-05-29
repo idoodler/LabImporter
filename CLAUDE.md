@@ -108,6 +108,13 @@ Config.xcconfig  # BUNDLE_IDENTIFIER = dev.idoodler.$(DEVELOPMENT_TEAM).labimpor
   source filter restricts to this app's bundle ID + the default source.
 - Document author/custodian are stamped as `LabImporter`; the parser ignores
   those sentinel values when reconstructing patient/author names.
+- **Versioning:** every exported document carries a schema version in the
+  authoring device — `manufacturerModelName` = `LabImporter <version> (<build>)`
+  (provenance) and `softwareName` = `LabImporter CDA v<N>` where `N` is
+  `CDAExportService.schemaVersion`. On read-back, `CDADocumentParser` parses `N`;
+  `CDAMigrator.upgrade(_:fromSchemaVersion:)` **ignores** documents with no
+  recognized version (legacy exports) and chains migrations up to the current
+  schema. See "Migrating the exported CDA" below before changing the export.
 
 ### UI patterns
 - All user-facing text uses `String(localized:)` / SwiftUI auto-localization and
@@ -174,12 +181,30 @@ Required secrets: `GH_PAT`, `TEAMID`, `FASTLANE_ISSUER_ID`, `FASTLANE_KEY_ID`,
 
 - **Branch & commits:** never push to `main` unless explicitly told. Commit with
   clear messages; push with `git push -u origin <branch>`.
-- **Adding a lab metric:** update every relevant switch in `LabMapping.swift`
-  (`displayName`, `loincCode`, `referenceRange`, `internalCode` candidate list,
-  and `allKnownCodes`), then localize the new display name in `Localizable.xcstrings`.
+- **Adding a lab metric:** LOINC is the canonical identity, and names come from
+  the bundled catalog (`LoincDirectory`) — there is no per-metric name curation.
+  To teach the parser a printed abbreviation, add a `case` to
+  `LabMapping.loinc(forPrinted:)` returning the LOINC code (which must exist in
+  the catalog). To give a metric dashboard status colours, add a
+  `LOINC: ReferenceRange` entry to `LabMapping.referenceRanges` (LOINC carries no
+  ranges, so these are hand-tuned). No `Localizable.xcstrings` change is needed —
+  the catalog supplies localized names.
 - **Touching the AI parse:** prompts and `@Generable`/`@Guide` schemas live in
   `LabParserService.swift`. Keep `@Guide` descriptions concrete and example-driven —
   they directly steer extraction quality.
+- **Migrating the exported CDA:** the read-back is version-gated (see "CDA
+  round-trip"). Whenever you change what the export *means* — remap a LOINC code,
+  change a unit convention, restructure observations — do all of:
+  1. Bump `CDAExportService.schemaVersion` (e.g. `1` → `2`).
+  2. Add a `CDAMigration` conformer (in `HealthKitService.swift`) whose
+     `fromVersion` is the *old* version and whose `migrate(_:)` upgrades a parsed
+     `LabReport` one step (e.g. rewrite an entry's `code`/`name`). Migrations run
+     on the reconstructed `LabReport`, not raw XML.
+  3. Register it in `CDAMigrator.migrations` (the runner chains steps in order
+     from a document's version up to the current `schemaVersion`).
+  4. Optionally raise `CDAMigrator.minimumSupportedVersion` to drop very old
+     schemas. Documents below the minimum — and unversioned legacy exports — are
+     ignored on read-back by design (no implicit data migration).
 - **New user-facing text:** always `String(localized:)`; add to `Localizable.xcstrings`.
 - **Before pushing:** make sure `swiftlint lint --strict` passes (the hook enforces it).
 - **No tests exist** in the project today; verify changes by building in Xcode on
