@@ -226,7 +226,10 @@ struct ReviewView: View {
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(value.resolvedName).font(.body)
-                            LoincCodeText(code: value.code)
+                            Text(value.code)
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                                .textCase(.uppercase)
                         }
                         Spacer()
                         HStack(spacing: 6) {

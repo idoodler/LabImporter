@@ -46,15 +46,6 @@ enum LabMapping {
         referenceRanges[code.trimmingCharacters(in: .whitespaces)]
     }
 
-    // The loinc.org details page for a code, e.g. https://loinc.org/2160-0/.
-    // Returns nil for anything that isn't shaped like a LOINC number (so raw,
-    // as-yet-unmapped printed codes don't link to a 404).
-    static func loincURL(for code: String) -> URL? {
-        let trimmed = code.trimmingCharacters(in: .whitespaces)
-        guard trimmed.range(of: #"^\d+-\d$"#, options: .regularExpression) != nil else { return nil }
-        return URL(string: "https://loinc.org/\(trimmed)/")
-    }
-
     // Validates that `code` is a real LOINC code and returns it with an English
     // display name for CDA export. Returns nil for unmapped/unknown codes, which
     // is how the UI decides a value cannot yet be saved to Health.

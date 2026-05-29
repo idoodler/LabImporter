@@ -1,47 +1,5 @@
 import SwiftUI
 
-// MARK: - LoincCodeText
-// Renders a LOINC code; when it's a real LOINC number it links to the code's
-// explanation page on loinc.org. Falls back to plain text otherwise (e.g. an
-// as-yet-unmapped printed code). Used everywhere a code is displayed.
-
-struct LoincCodeText: View {
-    let code: String
-
-    var body: some View {
-        if let url = LabMapping.loincURL(for: code) {
-            Link(destination: url) {
-                HStack(spacing: 2) {
-                    Text(code).textCase(.uppercase)
-                    Image(systemName: "arrow.up.forward.app").font(.system(size: 8))
-                }
-                .font(.caption2)
-            }
-        } else {
-            Text(code)
-                .font(.caption2)
-                .foregroundStyle(.tertiary)
-                .textCase(.uppercase)
-        }
-    }
-}
-
-// A context-menu item that opens a code's loinc.org page; no-op for non-LOINC.
-extension View {
-    @ViewBuilder
-    func loincLinkContextMenu(for code: String) -> some View {
-        if let url = LabMapping.loincURL(for: code) {
-            contextMenu {
-                Link(destination: url) {
-                    Label("View on loinc.org", systemImage: "safari")
-                }
-            }
-        } else {
-            self
-        }
-    }
-}
-
 // MARK: - LabTestPickerList
 // Shared lab-test chooser: live search over the full bundled LOINC catalog
 // (LoincDirectory). With no query it shows the most commonly ordered tests.
@@ -108,7 +66,6 @@ private struct LabTestPickerList: View {
             }
         }
         .foregroundStyle(.primary)
-        .loincLinkContextMenu(for: rowCode)
     }
 
     private func select(_ newCode: String, _ newName: String) {
