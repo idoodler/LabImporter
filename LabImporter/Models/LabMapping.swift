@@ -1,6 +1,12 @@
 import Foundation
 
 // Maps German lab report codes to human-readable names, LOINC codes, and reference ranges.
+//
+// The curated tables below cover the common German abbreviations that the AI
+// parser emits (KREA, HB-A1C, …) and carry the hand-tuned reference ranges and
+// localized display names. For any code that is already a LOINC number — e.g.
+// one chosen from the catalog in CodePickerSheet — the lookups fall back to
+// LoincDirectory (the full ~18k common-lab LOINC catalog bundled at build time).
 enum LabMapping {
 
     static var allKnownCodes: [(code: String, name: String)] {
@@ -41,7 +47,10 @@ enum LabMapping {
         case "TSH-0", "TSH":           return String(localized: "TSH (Thyroid)")
         case "BZ", "GLUCOSE", "GLU":   return String(localized: "Blood Glucose")
         case "KREA-GFR", "CKD-EPI":    return String(localized: "eGFR (CKD-EPI)")
-        default:                        return code
+        default:
+            // Fall back to the full LOINC catalog for raw LOINC codes (e.g. "2160-0").
+            if let term = LoincDirectory.shared.term(for: code) { return term.name }
+            return code
         }
     }
 
@@ -80,6 +89,10 @@ enum LabMapping {
         case "DIABOL", "DIAB0L":
             return ("14647-2", "Glucose [Mass/volume] in Serum or Plasma --fasting")
         default:
+            // Codes picked straight from the LOINC catalog are already LOINC numbers.
+            if let term = LoincDirectory.shared.term(for: code) {
+                return (term.code, term.englishName)
+            }
             return nil
         }
     }

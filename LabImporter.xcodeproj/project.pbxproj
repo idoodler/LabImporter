@@ -13,6 +13,7 @@
 		AABB000000000000000043AA /* OCRService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000023AA /* OCRService.swift */; };
 		AABB000000000000000044AA /* LabParserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000024AA /* LabParserService.swift */; };
 		AABB000000000000000045AA /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000025AA /* HealthKitService.swift */; };
+		AABB000000000000000091AA /* LoincDirectory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000090AA /* LoincDirectory.swift */; };
 		AABB000000000000000057AA /* CDAExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000058AA /* CDAExportService.swift */; };
 		AABB000000000000000046AA /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000026AA /* HomeView.swift */; };
 		AABB000000000000000047AA /* ReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000027AA /* ReviewView.swift */; };
@@ -47,6 +48,7 @@
 		AABB000000000000000023AA /* OCRService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRService.swift; sourceTree = "<group>"; };
 		AABB000000000000000024AA /* LabParserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabParserService.swift; sourceTree = "<group>"; };
 		AABB000000000000000025AA /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
+		AABB000000000000000090AA /* LoincDirectory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoincDirectory.swift; sourceTree = "<group>"; };
 		AABB000000000000000058AA /* CDAExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDAExportService.swift; sourceTree = "<group>"; };
 		AABB000000000000000026AA /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		AABB000000000000000027AA /* ReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewView.swift; sourceTree = "<group>"; };
@@ -144,6 +146,7 @@
 				AABB000000000000000024AA /* LabParserService.swift */,
 				AABB000000000000000025AA /* HealthKitService.swift */,
 				AABB000000000000000058AA /* CDAExportService.swift */,
+				AABB000000000000000090AA /* LoincDirectory.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -191,6 +194,7 @@
 				AABB000000000000000016AA /* Sources */,
 				AABB000000000000000017AA /* Frameworks */,
 				AABB000000000000000018AA /* Resources */,
+				AABB000000000000000089AA /* Generate LOINC resource */,
 				AABB000000000000000088AA /* Embed Git Branch */,
 			);
 			buildRules = (
@@ -248,6 +252,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		AABB000000000000000089AA /* Generate LOINC resource */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Generate LOINC resource";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\nRES_DIR=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"\nOUT=\"${RES_DIR}/loinc_common.json\"\nZIP=$(ls -t \"${SRCROOT}\"/Vendor/LOINC/*.zip 2>/dev/null | head -1)\nif [ -z \"$ZIP\" ]; then echo \"warning: no LOINC release zip in Vendor/LOINC; LOINC catalog will be empty\"; exit 0; fi\nmkdir -p \"$RES_DIR\"\nif [ -f \"$OUT\" ] && [ \"$OUT\" -nt \"$ZIP\" ] && [ \"$OUT\" -nt \"${SRCROOT}/tools/build_loinc_resource.py\" ]; then echo \"LOINC resource up to date\"; exit 0; fi\nPYTHON=$(command -v python3 || echo /usr/bin/python3)\n\"$PYTHON\" \"${SRCROOT}/tools/build_loinc_resource.py\" \"$ZIP\" \"$OUT\"\n";
+		};
 		AABB000000000000000088AA /* Embed Git Branch */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -276,6 +295,7 @@
 				AABB000000000000000043AA /* OCRService.swift in Sources */,
 				AABB000000000000000044AA /* LabParserService.swift in Sources */,
 				AABB000000000000000045AA /* HealthKitService.swift in Sources */,
+				AABB000000000000000091AA /* LoincDirectory.swift in Sources */,
 				AABB000000000000000057AA /* CDAExportService.swift in Sources */,
 				AABB000000000000000046AA /* HomeView.swift in Sources */,
 				AABB000000000000000047AA /* ReviewView.swift in Sources */,
