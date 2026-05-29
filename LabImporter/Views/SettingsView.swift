@@ -392,23 +392,31 @@ struct LoincLicenseView: View {
 struct LoincCatalogView: View {
     @State private var query = ""
     @State private var results: [LoincTerm] = []
+    @State private var reachedEnd = false
+
+    private let pageSize = 100
 
     var body: some View {
-        List(results) { term in
-            NavigationLink {
-                LoincTermDetailView(term: term)
-            } label: {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(term.name)
-                    if let description = term.description, !description.isEmpty {
-                        Text(description)
+        List {
+            ForEach(results) { term in
+                NavigationLink {
+                    LoincTermDetailView(term: term)
+                } label: {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(term.name)
+                        if let description = term.description, !description.isEmpty {
+                            Text(description)
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(2)
+                        }
+                        Text(term.code)
                             .font(.caption2)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(2)
+                            .foregroundStyle(.tertiary)
                     }
-                    Text(term.code)
-                        .font(.caption2)
-                        .foregroundStyle(.tertiary)
+                }
+                .onAppear {
+                    if term.id == results.last?.id { loadMore() }
                 }
             }
         }
@@ -420,12 +428,32 @@ struct LoincCatalogView: View {
                 ContentUnavailableView.search(text: query)
             }
         }
-        .task(id: query) {
-            let current = query
-            let found = await Task.detached(priority: .userInitiated) {
-                LoincDirectory.shared.search(current)
+        .task(id: query) { await reload() }
+    }
+
+    private func reload() async {
+        let current = query
+        let size = pageSize
+        let page = await Task.detached(priority: .userInitiated) {
+            LoincDirectory.shared.search(current, limit: size, offset: 0)
+        }.value
+        guard current == query else { return }
+        results = page
+        reachedEnd = page.count < size
+    }
+
+    private func loadMore() {
+        guard !reachedEnd else { return }
+        let current = query
+        let size = pageSize
+        let offset = results.count
+        Task {
+            let page = await Task.detached(priority: .userInitiated) {
+                LoincDirectory.shared.search(current, limit: size, offset: offset)
             }.value
-            if current == query { results = found }
+            guard current == query, offset == results.count else { return }
+            results.append(contentsOf: page)
+            reachedEnd = page.count < size
         }
     }
 }

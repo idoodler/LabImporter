@@ -74,7 +74,7 @@ final class LoincDirectory: @unchecked Sendable {
             WHERE label_fts MATCH ?1 AND l.lang IN (?2, 'en')
             GROUP BY l.code
             ORDER BY t.rank
-            LIMIT ?3
+            LIMIT ?3 OFFSET ?4
             """, -1, &searchStatement, nil)
 
         sqlite3_prepare_v2(handle, """
@@ -82,7 +82,7 @@ final class LoincDirectory: @unchecked Sendable {
                    (SELECT name FROM label WHERE code = t.code AND lang = ?1),
                    (SELECT descr FROM label WHERE code = t.code AND lang = ?1),
                    t.english, t.ucum, t.rank
-            FROM term t ORDER BY t.rank LIMIT ?2
+            FROM term t ORDER BY t.rank LIMIT ?2 OFFSET ?3
             """, -1, &topStatement, nil)
 
         version = LoincDirectory.scalar(handle, "SELECT value FROM meta WHERE key = 'version'") ?? ""
@@ -107,7 +107,7 @@ final class LoincDirectory: @unchecked Sendable {
         term(for: code) != nil
     }
 
-    func search(_ query: String, limit: Int = 80) -> [LoincTerm] {
+    func search(_ query: String, limit: Int = 80, offset: Int = 0) -> [LoincTerm] {
         guard database != nil else { return [] }
         if let match = ftsQuery(query) {
             guard let statement = searchStatement else { return [] }
@@ -116,6 +116,7 @@ final class LoincDirectory: @unchecked Sendable {
             sqlite3_bind_text(statement, 1, match, -1, sqliteTransient)
             sqlite3_bind_text(statement, 2, language, -1, sqliteTransient)
             sqlite3_bind_int(statement, 3, Int32(limit))
+            sqlite3_bind_int(statement, 4, Int32(offset))
             return collect(statement)
         }
         guard let statement = topStatement else { return [] }
@@ -123,6 +124,7 @@ final class LoincDirectory: @unchecked Sendable {
         defer { sqlite3_reset(statement); sqlite3_clear_bindings(statement) }
         sqlite3_bind_text(statement, 1, language, -1, sqliteTransient)
         sqlite3_bind_int(statement, 2, Int32(limit))
+        sqlite3_bind_int(statement, 3, Int32(offset))
         return collect(statement)
     }
 
