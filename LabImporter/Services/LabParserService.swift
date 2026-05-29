@@ -23,6 +23,10 @@ struct AILabEntry {
     @Guide(description: "Lab test code or abbreviation as printed (e.g. KREA, HB-A1C, G-GT)")
     var code: String
 
+    // swiftlint:disable:next line_length
+    @Guide(description: "The test's standard name in English, translated from the printed language (e.g. 'Creatinine', 'Ferritin', 'Vitamin D 25-Hydroxy', 'Thyroid stimulating hormone'). Used to look up the standard LOINC code.")
+    var name: String
+
     @Guide(description: "Value exactly as printed — use '-' for negative/not-detected results")
     var rawValue: String
 
@@ -58,20 +62,35 @@ actor LabParserService {
             let numericValue: Double? = entry.rawValue == "-" ? nil : Double(normalizedValue)
 
             // Resolve the printed code to LOINC, the app's canonical identity.
-            // Unresolved codes keep the printed text so the user can map them in
-            // the review sheet before saving.
-            let code = LabMapping.loinc(forPrinted: entry.code) ?? entry.code
+            let (code, suggested) = resolveLoinc(printed: entry.code, name: entry.name)
 
             return LabValue(
                 code: code,
                 name: LabMapping.displayName(for: code),
                 displayValue: entry.rawValue,
                 numericValue: numericValue,
-                unit: entry.unit
+                unit: entry.unit,
+                isSuggestedCode: suggested
             )
         }
 
         return ParseResult(values: values, reportDate: reportDate, patientName: patientName, authorName: authorName)
+    }
+
+    // Resolves a parsed entry to a LOINC code. A confident curated/abbreviation
+    // match (or an already-LOINC code) is returned as-is; otherwise the AI's
+    // normalized English name is looked up in the catalog and the top hit is
+    // returned as a *suggestion* the user confirms. Unresolved entries keep the
+    // printed text so they can be mapped manually in the review sheet.
+    private func resolveLoinc(printed: String, name: String) -> (code: String, suggested: Bool) {
+        if let loinc = LabMapping.loinc(forPrinted: printed) {
+            return (loinc, false)
+        }
+        let query = (name.isEmpty ? printed : name).trimmingCharacters(in: .whitespaces)
+        if !query.isEmpty, let match = LoincDirectory.shared.search(query, limit: 1).first {
+            return (match.code, true)
+        }
+        return (printed, false)
     }
 
     // MARK: - Foundation Models path
@@ -81,7 +100,9 @@ actor LabParserService {
             instructions: """
             You are a medical lab report parser. Extract every lab test entry from the provided text.
             Lab reports follow the pattern: CODE: value unit; CODE2: value2 unit2; ...
-            Preserve codes exactly as printed. Use '-' as rawValue when the result is negative or not detected.
+            Preserve codes exactly as printed. For each entry, also give the test's standard name in English
+            (translate from the report's language) so it can be matched to a coding system.
+            Use '-' as rawValue when the result is negative or not detected.
             If you can see a report date or blood draw date, return it in yyyy-MM-dd format; otherwise return an empty string.
             Extract the patient's full name if visible; otherwise return an empty string for patientName.
             Extract the lab or doctor name if visible; otherwise return an empty string for authorName.

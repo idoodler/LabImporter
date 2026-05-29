@@ -27,7 +27,14 @@ struct LabValueRowView: View {
                     Text(value.resolvedName)
                         .font(.body)
 
-                    if !hasLoincCode {
+                    if value.isSuggestedCode {
+                        Text("Suggested")
+                            .font(.caption2.weight(.medium))
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color.accentColor.opacity(0.15), in: Capsule())
+                            .foregroundStyle(Color.accentColor)
+                    } else if !hasLoincCode {
                         Image(systemName: "doc.badge.minus")
                             .font(.caption2)
                             .foregroundStyle(.tertiary)
@@ -64,9 +71,9 @@ struct LabValueRowView: View {
             }
         }
         .padding(.vertical, 2)
-        .sheet(isPresented: $showCodePicker) {
+        .sheet(isPresented: $showCodePicker, onDismiss: { value.isSuggestedCode = false }, content: {
             CodePickerSheet(code: $value.code, name: $value.name)
-        }
+        })
         .onAppear { editedValue = strippedDisplayValue }
         .onChange(of: value.displayValue) { _, new in
             let stripped = strippedValue(new)
