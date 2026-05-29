@@ -24,6 +24,8 @@
 	<string>unknown</string>
 	<key>GitCommit</key>
 	<string>unknown</string>
+	<key>GitRepositoryURL</key>
+	<string></string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSRequiresIPhoneOS</key>

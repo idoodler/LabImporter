@@ -40,6 +40,20 @@ jobs:
             exit 1
           fi
 
+      - name: Stamp Git metadata into Info.plist
+        run: |
+          PLIST="LabImporter/Info.plist"
+          REPO_URL="${{ github.server_url }}/${{ github.repository }}"
+          for entry in \
+            "GitBranch:${{ github.ref_name }}" \
+            "GitCommit:${GITHUB_SHA:0:7}" \
+            "GitRepositoryURL:${REPO_URL}"; do
+            key="${entry%%:*}"
+            value="${entry#*:}"
+            /usr/libexec/PlistBuddy -c "Set :${key} ${value}" "$PLIST" \
+              || /usr/libexec/PlistBuddy -c "Add :${key} string ${value}" "$PLIST"
+          done
+
       - name: Install Project Dependencies
         run: bundle install
 

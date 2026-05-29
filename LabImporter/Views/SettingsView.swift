@@ -1,3 +1,4 @@
+import SafariServices
 import SwiftUI
 
 // MARK: - App info
@@ -13,6 +14,49 @@ enum AppInfo {
     static var build: String { string("CFBundleVersion") ?? "—" }
     static var branch: String { string("GitBranch") ?? "unknown" }
     static var commit: String { string("GitCommit") ?? "unknown" }
+
+    /// Web URL of the repository this build came from, stamped into `Info.plist`
+    /// at build time (`GitRepositoryURL`) so forks open their own repo. Returns
+    /// `nil` when the build did not stamp a URL (e.g. local Xcode builds), in
+    /// which case the GitHub buttons are hidden.
+    static var repositoryURL: URL? {
+        guard let value = string("GitRepositoryURL") else { return nil }
+        return webURL(from: value)
+    }
+
+    /// URL that opens the "new issue" composer for `repositoryURL`, pre-filling
+    /// the body with build metadata to help triage reports.
+    static var newIssueURL: URL? {
+        guard let base = repositoryURL?.appendingPathComponent("issues/new"),
+              var components = URLComponents(url: base, resolvingAgainstBaseURL: false) else { return nil }
+        let body = """
+
+
+        ---
+        Version: \(version) (\(build))
+        Branch: \(branch)
+        Commit: \(commit)
+        """
+        components.queryItems = [URLQueryItem(name: "body", value: body)]
+        return components.url
+    }
+
+    /// Normalizes a git remote string (`https`, `.git` suffix, or `git@host:owner/repo`
+    /// SSH form) into a browsable `https` web URL.
+    private static func webURL(from remote: String) -> URL? {
+        var value = remote.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !value.isEmpty else { return nil }
+
+        if let range = value.range(of: "git@") {
+            // git@github.com:owner/repo(.git) -> https://github.com/owner/repo
+            let hostAndPath = value[range.upperBound...].replacingOccurrences(of: ":", with: "/")
+            value = "https://" + hostAndPath
+        }
+        if value.hasSuffix(".git") {
+            value = String(value.dropLast(4))
+        }
+        return URL(string: value)
+    }
 }
 
 // MARK: - SettingsView
@@ -21,6 +65,7 @@ struct SettingsView: View {
     @Binding var prefs: LabDisplayPreferences
     let allCodes: [CodeName]
     @Environment(\.dismiss) private var dismiss
+    @State private var browserURL: IdentifiedURL?
 
     var body: some View {
         NavigationStack {
@@ -34,15 +79,46 @@ struct SettingsView: View {
                 }
 
                 Section("About") {
-                    LabeledContent("Version", value: "\(AppInfo.version) (\(AppInfo.build))")
-                    LabeledContent("Branch", value: AppInfo.branch)
-                    LabeledContent("Commit", value: AppInfo.commit)
+                    LabeledContent {
+                        Text(AppInfo.branch)
+                    } label: {
+                        Label("Branch", systemImage: "arrow.triangle.branch")
+                    }
+                    LabeledContent {
+                        Text(AppInfo.commit)
+                    } label: {
+                        Label("Commit", systemImage: "number")
+                    }
                     NavigationLink {
                         LicenseView()
                     } label: {
                         Label("License", systemImage: "doc.text")
                     }
                 }
+
+                Section {
+                    VStack(spacing: 16) {
+                        HStack(spacing: 12) {
+                            if let repository = AppInfo.repositoryURL {
+                                pillButton("View on GitHub",
+                                           systemImage: "chevron.left.forwardslash.chevron.right",
+                                           url: repository)
+                            }
+                            if let newIssue = AppInfo.newIssueURL {
+                                pillButton("Report an Issue",
+                                           systemImage: "exclamationmark.bubble",
+                                           url: newIssue)
+                            }
+                        }
+                        Text("Version \(AppInfo.version) (\(AppInfo.build))")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                }
+                .listSectionSpacing(8)
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
@@ -52,8 +128,45 @@ struct SettingsView: View {
                         .fontWeight(.semibold)
                 }
             }
+            .sheet(item: $browserURL) { item in
+                SafariView(url: item.url)
+                    .ignoresSafeArea()
+            }
         }
     }
+
+    /// A pill-shaped button that opens a web URL in an in-app browser.
+    private func pillButton(_ titleKey: LocalizedStringKey, systemImage: String, url: URL) -> some View {
+        Button {
+            browserURL = IdentifiedURL(url: url)
+        } label: {
+            Label(titleKey, systemImage: systemImage)
+                .font(.subheadline)
+        }
+        .buttonStyle(.bordered)
+        .buttonBorderShape(.capsule)
+        .controlSize(.regular)
+        .tint(.primary)
+    }
+}
+
+// MARK: - In-app browser
+
+/// Wraps a `URL` so it can drive a `.sheet(item:)` presentation.
+private struct IdentifiedURL: Identifiable {
+    let id = UUID()
+    let url: URL
+}
+
+/// SwiftUI wrapper around `SFSafariViewController` for in-app web browsing.
+private struct SafariView: UIViewControllerRepresentable {
+    let url: URL
+
+    func makeUIViewController(context: Context) -> SFSafariViewController {
+        SFSafariViewController(url: url)
+    }
+
+    func updateUIViewController(_ controller: SFSafariViewController, context: Context) {}
 }
 
 // MARK: - CodeName
