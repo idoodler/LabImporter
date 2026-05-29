@@ -135,6 +135,15 @@ struct LoincTermDetailView: View {
                     attribute("Units", detail.ucum)
                 }
             }
+            if let url = LabMapping.loincURL(for: term.code) {
+                Section {
+                    Link(destination: url) {
+                        Label("View on loinc.org", systemImage: "safari")
+                    }
+                } footer: {
+                    Text("Opens the full description and references on loinc.org.")
+                }
+            }
         }
         .navigationTitle(Text(verbatim: term.code))
         .navigationBarTitleDisplayMode(.inline)
