@@ -2,7 +2,7 @@ import SwiftUI
 
 /// Wraps `UIActivityViewController` so the review screen can share an exported
 /// CDA file via the standard share sheet.
-struct ShareSheet: UIViewControllerRepresentable {
+struct CDAShareSheet: UIViewControllerRepresentable {
     let url: URL
 
     func makeUIViewController(context: Context) -> UIActivityViewController {

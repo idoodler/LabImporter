@@ -122,7 +122,7 @@ struct ReviewView: View {
             set: { if !$0 { cdaShareURL = nil } }
         )) {
             if let url = cdaShareURL {
-                ShareSheet(url: url)
+                CDAShareSheet(url: url)
                     .ignoresSafeArea()
             }
         }
