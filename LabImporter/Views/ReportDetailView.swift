@@ -252,7 +252,7 @@ struct ReportDetailView: View {
     }
 
     private var dominantColor: Color {
-        categoryGroups.max(by: { $0.entries.count < $1.entries.count })?.category.color ?? .accentColor
+        report.dominantCategory?.color ?? .accentColor
     }
 
     private var backgroundColors: [Color] {

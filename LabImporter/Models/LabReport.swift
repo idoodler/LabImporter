@@ -31,4 +31,17 @@ extension LabReport {
                      unit: $0.unit)
         }
     }
+
+    /// The clinical category that the most values belong to. Ties break by the
+    /// canonical `LabCategory` order. Single source of truth for the report's
+    /// representative color, so the list row and the detail screen agree.
+    var dominantCategory: LabCategory? {
+        var counts: [LabCategory: Int] = [:]
+        for entry in entries {
+            counts[LabCategory.forCode(entry.code), default: 0] += 1
+        }
+        return LabCategory.allCases
+            .filter { counts[$0] != nil }
+            .max { (counts[$0] ?? 0) < (counts[$1] ?? 0) }
+    }
 }
