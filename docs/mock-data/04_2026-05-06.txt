@@ -1,0 +1,20 @@
+MVZ Labor Berlin GmbH
+Befundbericht — Klinische Chemie
+
+Patient: Max Mustermann
+Geburtsdatum: 14.03.1979
+Probenentnahme: 06.05.2026
+Auftrag: Dr. med. A. Schmidt
+
+Parameter          Ergebnis    Einheit             Referenzbereich
+HBA1C              5,5         %                   < 5,7
+BZ                 92          mg/dl               74 - 99
+CHOL               185         mg/dl               < 200
+LDL                112         mg/dl               < 130
+HDL                54          mg/dl               > 40
+TRIG               122         mg/dl               < 150
+KREA               0,95        mg/dl               0,70 - 1,20
+EGFR               90          ml/min/1,73m2KOF    > 90
+GPT                26          U/l                 < 41
+G-GT               31          U/l                 < 60
+TSH                2,0         mU/l                0,27 - 4,20

@@ -20,6 +20,45 @@ Scan, import, or paste your lab report — the app uses Vision OCR and the on-de
 
 ---
 
+## Screenshots
+
+> Drop your captures into `docs/screenshots/` using the file names below and
+> they will appear here automatically. Recommended device frame: iPhone 16 Pro
+> (1206 × 2622), light mode. See [shot list](#what-to-capture) below.
+
+| Import | Review & correct | Dashboard |
+|:---:|:---:|:---:|
+| ![Import screen](docs/screenshots/01-import.png) | ![Review parsed values](docs/screenshots/02-review.png) | ![Dashboard](docs/screenshots/03-dashboard.png) |
+| Scan, choose a file, or paste a report | On-device AI extracts the values; edit before saving | Metric cards with sparklines and status |
+
+| Trends | History | Settings |
+|:---:|:---:|:---:|
+| ![Trend chart](docs/screenshots/04-trends.png) | ![History list](docs/screenshots/05-history.png) | ![Settings](docs/screenshots/06-settings.png) |
+| Interactive per-metric chart | All imported reports | Patient details & display preferences |
+
+### What to capture
+
+To produce a consistent set, import the [mock data](docs/mock-data/) (all four
+reports, oldest first) so every screen has realistic, populated content.
+
+1. **Import** (`ImportLandingView`) — the empty-state hero with the four entry
+   points. This is the app's front door.
+2. **Review** (`ReviewView`) — the parsed values mid-correction. Shows off the
+   on-device AI step; the marquee feature.
+3. **Dashboard** (`DashboardView`) — metric cards with sparklines and
+   normal / borderline / elevated colours. Best single "what the app does" shot.
+4. **Trends** (`TrendsView`) — a per-metric chart (e.g. HbA1c) trending down
+   across the four reports, ideally with the scrubber active on a point.
+5. **History** (`HistoryView`) — the list of all four imported reports.
+6. **Settings** (`SettingsView`) — patient metadata + pin/reorder/hide
+   preferences.
+
+Optional extras worth a capture: the **first-launch onboarding**
+(`WelcomeView`), a **report detail / share** sheet (`ReportDetailView`), and the
+**document scanner** in action (`DocumentScannerView`).
+
+---
+
 ## Requirements
 
 - iOS 26.0 or later
