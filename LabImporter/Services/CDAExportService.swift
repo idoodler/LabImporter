@@ -2,6 +2,21 @@ import Foundation
 
 struct CDAExportService {
 
+    /// Version of the document conventions this app writes. Bumped whenever the
+    /// exported CDA's semantics change (e.g. a LOINC code is remapped), so a
+    /// future reader can tell which conventions a stored document followed.
+    /// Stamped into the authoring device's `softwareName`.
+    static let schemaVersion = 1
+
+    /// Human-readable provenance ("LabImporter 1.0 (33)") for the authoring
+    /// device's `manufacturerModelName`.
+    private var softwareIdentity: String {
+        let info = Bundle.main.infoDictionary
+        let version = info?["CFBundleShortVersionString"] as? String ?? "?"
+        let build = info?["CFBundleVersion"] as? String ?? "?"
+        return "LabImporter \(version) (\(build))"
+    }
+
     // Returns a C-CDA R2.1 Lab Report XML string.
     // Values without a LOINC mapping, numeric result, or that are deselected are omitted.
     // swiftlint:disable:next function_body_length
@@ -57,7 +72,8 @@ struct CDAExportService {
     <assignedAuthor>
       <id nullFlavor="UNK"/>
       <assignedAuthoringDevice>
-        <softwareName>LabImporter</softwareName>
+        <manufacturerModelName>\(esc(softwareIdentity))</manufacturerModelName>
+        <softwareName>LabImporter CDA v\(Self.schemaVersion)</softwareName>
       </assignedAuthoringDevice>\(authorOrgXML)
     </assignedAuthor>
   </author>
