@@ -144,10 +144,7 @@ struct DashboardView: View {
 
         return latestEntry.values.map { item in
             let points = (allPoints[item.entry.code] ?? []).sorted { $0.date < $1.date }
-            let status = item.entry.numericValue.flatMap { value in
-                LabMapping.referenceRange(for: item.entry.code)?.status(for: value)
-            }
-            return MetricData(entry: item.entry, history: points, status: status)
+            return MetricData(entry: item.entry, history: points)
         }
     }
 
@@ -209,7 +206,6 @@ private struct MetricData: Identifiable {
     var id: String { entry.code }
     let entry: LabReport.Entry
     let history: [SparkPoint]
-    let status: RangeStatus?
 }
 
 // MARK: - MetricCard
@@ -218,27 +214,17 @@ private struct MetricCard: View {
     let metric: MetricData
     let isPinned: Bool
 
-    private var statusColor: Color {
-        switch metric.status {
-        case .normal:    return Color.green
-        case .borderline: return Color.orange
-        case .abnormal:  return Color.red
-        case .none:      return Color.secondary
-        }
-    }
-
-    private var statusLabel: LocalizedStringKey {
-        switch metric.status {
-        case .normal:    return "Normal"
-        case .borderline: return "Borderline"
-        case .abnormal:  return "Elevated"
-        case .none:      return ""
-        }
+    private var categoryColor: Color {
+        LabCategory.forCode(metric.entry.code).color
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            HStack(alignment: .top, spacing: 4) {
+            HStack(alignment: .top, spacing: 5) {
+                Circle()
+                    .fill(categoryColor)
+                    .frame(width: 8, height: 8)
+                    .padding(.top, 3)
                 Text(metric.entry.resolvedName)
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -271,17 +257,6 @@ private struct MetricCard: View {
             } else {
                 Spacer().frame(height: 40)
             }
-
-            if metric.status != nil {
-                HStack(spacing: 5) {
-                    Circle()
-                        .fill(statusColor)
-                        .frame(width: 7, height: 7)
-                    Text(statusLabel)
-                        .font(.caption2.weight(.medium))
-                        .foregroundStyle(statusColor)
-                }
-            }
         }
         .padding(14)
         .frame(maxWidth: .infinity, minHeight: 158, alignment: .topLeading)
@@ -298,7 +273,7 @@ private struct MetricCard: View {
                 x: .value("Date", point.date),
                 y: .value("Value", point.value)
             )
-            .foregroundStyle(statusColor.opacity(0.85))
+            .foregroundStyle(categoryColor.opacity(0.85))
 
             AreaMark(
                 x: .value("Date", point.date),
@@ -306,7 +281,7 @@ private struct MetricCard: View {
             )
             .foregroundStyle(
                 LinearGradient(
-                    colors: [statusColor.opacity(0.3), statusColor.opacity(0.05)],
+                    colors: [categoryColor.opacity(0.3), categoryColor.opacity(0.05)],
                     startPoint: .top,
                     endPoint: .bottom
                 )
@@ -316,7 +291,7 @@ private struct MetricCard: View {
                 x: .value("Date", point.date),
                 y: .value("Value", point.value)
             )
-            .foregroundStyle(statusColor)
+            .foregroundStyle(categoryColor)
             .symbolSize(20)
         }
         .chartXAxis(.hidden)

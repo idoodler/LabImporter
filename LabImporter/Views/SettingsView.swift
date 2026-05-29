@@ -173,13 +173,13 @@ struct SettingsView: View {
 // MARK: - In-app browser
 
 /// Wraps a `URL` so it can drive a `.sheet(item:)` presentation.
-private struct IdentifiedURL: Identifiable {
+struct IdentifiedURL: Identifiable {
     let id = UUID()
     let url: URL
 }
 
 /// SwiftUI wrapper around `SFSafariViewController` for in-app web browsing.
-private struct SafariView: UIViewControllerRepresentable {
+struct SafariView: UIViewControllerRepresentable {
     let url: URL
 
     func makeUIViewController(context: Context) -> SFSafariViewController {

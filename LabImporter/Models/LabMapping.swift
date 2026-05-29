@@ -1,36 +1,12 @@
 import Foundation
 
 // LOINC is the canonical identity for every lab value in the app: the parser
-// resolves printed report codes to LOINC, and storage, reference ranges and
-// display names all key off the LOINC code. The German abbreviations that lab
-// reports actually print (KREA, HB-A1C, …) only appear here as *import-time*
-// resolver inputs — see `loinc(forPrinted:)`.
-//
-// Names come entirely from the bundled catalog (`LoincDirectory`). The only
-// thing curated here is the set of clinical reference ranges, which LOINC does
-// not provide and which drive the dashboard status colors.
+// resolves printed report codes to LOINC, and storage and display names all key
+// off the LOINC code. The German abbreviations that lab reports actually print
+// (KREA, HB-A1C, …) only appear here as *import-time* resolver inputs — see
+// `loinc(forPrinted:)`. Names come entirely from the bundled catalog
+// (`LoincDirectory`); this type holds no curated clinical data.
 enum LabMapping {
-
-    // MARK: - Reference ranges (LOINC-keyed)
-
-    // Clinical normal/borderline bands keyed by LOINC code. LOINC carries no
-    // reference ranges, so these are hand-tuned; every code here exists in the
-    // bundled catalog (so it also has a name). Codes without a range simply get
-    // no dashboard status — that is fine.
-    static let referenceRanges: [String: ReferenceRange] = [
-        "2345-7": ReferenceRange(normalLow: 70, normalHigh: 100, borderlineLow: nil, borderlineHigh: 125),
-        "2160-0": ReferenceRange(normalLow: 0.5, normalHigh: 1.2, borderlineLow: nil, borderlineHigh: nil),
-        "77147-7": ReferenceRange(normalLow: 90, normalHigh: nil, borderlineLow: 60, borderlineHigh: nil),
-        "62238-1": ReferenceRange(normalLow: 90, normalHigh: nil, borderlineLow: 60, borderlineHigh: nil),
-        "2093-3": ReferenceRange(normalLow: nil, normalHigh: 200, borderlineLow: nil, borderlineHigh: 239),
-        "2085-9": ReferenceRange(normalLow: 40, normalHigh: nil, borderlineLow: nil, borderlineHigh: nil),
-        "2089-1": ReferenceRange(normalLow: nil, normalHigh: 100, borderlineLow: nil, borderlineHigh: 159),
-        "2571-8": ReferenceRange(normalLow: nil, normalHigh: 150, borderlineLow: nil, borderlineHigh: 199),
-        "1742-6": ReferenceRange(normalLow: nil, normalHigh: 40, borderlineLow: nil, borderlineHigh: nil),
-        "2324-2": ReferenceRange(normalLow: nil, normalHigh: 55, borderlineLow: nil, borderlineHigh: nil),
-        "4548-4": ReferenceRange(normalLow: nil, normalHigh: 5.7, borderlineLow: nil, borderlineHigh: 6.4),
-        "3016-3": ReferenceRange(normalLow: 0.4, normalHigh: 4.0, borderlineLow: nil, borderlineHigh: nil),
-    ]
 
     // MARK: - LOINC lookups
 
@@ -39,11 +15,6 @@ enum LabMapping {
     static func displayName(for code: String) -> String {
         let trimmed = code.trimmingCharacters(in: .whitespaces)
         return LoincDirectory.shared.term(for: trimmed)?.name ?? code
-    }
-
-    // Clinical reference range for a LOINC code, if one is curated.
-    static func referenceRange(for code: String) -> ReferenceRange? {
-        referenceRanges[code.trimmingCharacters(in: .whitespaces)]
     }
 
     // The loinc.org details page for a code, e.g. https://loinc.org/2160-0/.
@@ -92,30 +63,5 @@ enum LabMapping {
             let trimmed = printed.trimmingCharacters(in: .whitespaces)
             return LoincDirectory.shared.isKnownLoinc(trimmed) ? trimmed : nil
         }
-    }
-}
-
-// MARK: - Reference range types
-
-enum RangeStatus: Equatable {
-    case normal, borderline, abnormal
-}
-
-struct ReferenceRange {
-    let normalLow: Double?       // nil = no lower bound
-    let normalHigh: Double?      // nil = no upper bound
-    let borderlineLow: Double?   // low boundary of borderline zone (e.g. eGFR 60–89)
-    let borderlineHigh: Double?  // high boundary of borderline zone (e.g. HbA1c 5.7–6.4)
-
-    func status(for value: Double) -> RangeStatus {
-        if let low = normalLow, value < low {
-            if let bLow = borderlineLow, value >= bLow { return .borderline }
-            return .abnormal
-        }
-        if let high = normalHigh, value > high {
-            if let bHigh = borderlineHigh, value <= bHigh { return .borderline }
-            return .abnormal
-        }
-        return .normal
     }
 }

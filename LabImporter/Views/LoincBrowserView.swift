@@ -108,6 +108,7 @@ struct LoincCatalogView: View {
 struct LoincTermDetailView: View {
     let term: LoincTerm
     @State private var detail: LoincDetail?
+    @State private var browserURL: IdentifiedURL?
 
     var body: some View {
         List {
@@ -137,7 +138,9 @@ struct LoincTermDetailView: View {
             }
             if let url = LabMapping.loincURL(for: term.code) {
                 Section {
-                    Link(destination: url) {
+                    Button {
+                        browserURL = IdentifiedURL(url: url)
+                    } label: {
                         Label("View on loinc.org", systemImage: "safari")
                     }
                 } footer: {
@@ -148,6 +151,10 @@ struct LoincTermDetailView: View {
         .navigationTitle(Text(verbatim: term.code))
         .navigationBarTitleDisplayMode(.inline)
         .task { detail = LoincDirectory.shared.detail(for: term.code) }
+        .sheet(item: $browserURL) { item in
+            SafariView(url: item.url)
+                .ignoresSafeArea()
+        }
     }
 
     @ViewBuilder
