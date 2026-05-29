@@ -169,8 +169,8 @@ struct TrendsView: View {
         }
     }
 
-    // Destructive action to remove this value from the dashboard. Hiding is
-    // reversible from Settings → Sort & Visibility, so no confirmation is needed.
+    // Destructive action to remove this value from the dashboard. Confirms
+    // first and points to Settings → Sort & Visibility for showing it again.
     @ViewBuilder
     private var hideButton: some View {
         if !selectedCode.isEmpty {
@@ -344,10 +344,13 @@ private struct HideFromDashboardButton: View {
     let code: String
     let onHidden: () -> Void
 
+    @State private var showConfirmation = false
     private let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
 
     var body: some View {
-        Button(role: .destructive, action: hide) {
+        Button(role: .destructive) {
+            showConfirmation = true
+        } label: {
             Label("Hide from Dashboard", systemImage: "eye.slash")
                 .font(.body.weight(.medium))
                 .frame(maxWidth: .infinity)
@@ -357,6 +360,12 @@ private struct HideFromDashboardButton: View {
         .tint(.red)
         .padding(.horizontal)
         .padding(.top, 4)
+        .confirmationDialog("Hide from Dashboard", isPresented: $showConfirmation, titleVisibility: .visible) {
+            Button("Hide", role: .destructive, action: hide)
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("You can show this value again anytime in Settings → Sort & Visibility.")
+        }
     }
 
     private func hide() {

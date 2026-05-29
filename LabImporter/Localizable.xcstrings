@@ -4666,6 +4666,83 @@
         }
       }
     },
+    "Hide": {
+      "comment": "Destructive confirmation action that hides the value",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ausblenden"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ocultar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masquer"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nascondi"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "非表示"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verberg"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ukryj"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ocultar"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Скрыть"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gizle"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сховати"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "隐藏"
+          }
+        }
+      }
+    },
     "Hide from Dashboard": {
       "comment": "Destructive button in the value detail sheet that removes the value from the dashboard",
       "localizations": {
@@ -12341,6 +12418,83 @@
           "stringUnit": {
             "state": "translated",
             "value": "欢迎使用"
+          }
+        }
+      }
+    },
+    "You can show this value again anytime in Settings → Sort & Visibility.": {
+      "comment": "Explanation shown in the hide confirmation dialog telling the user where to re-enable the value",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du kannst diesen Wert jederzeit unter Einstellungen → Sortierung & Sichtbarkeit wieder einblenden."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Puedes volver a mostrar este valor cuando quieras en Ajustes → Orden y visibilidad."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vous pouvez réafficher cette valeur à tout moment dans Réglages → Tri et visibilité."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Puoi mostrare di nuovo questo valore in qualsiasi momento in Impostazioni → Ordine e visibilità."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この検査値は、設定 → 並び替えと表示 でいつでも再表示できます。"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je kunt deze waarde later weer tonen via Instellingen → Sorteren en zichtbaarheid."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Możesz ponownie pokazać tę wartość w Ustawienia → Sortowanie i widoczność."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Você pode exibir este valor novamente em Ajustes → Ordem e visibilidade."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вы можете снова показать это значение в Настройки → Сортировка и видимость."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu değeri istediğin zaman Ayarlar → Sıralama ve Görünürlük bölümünden yeniden gösterebilirsin."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ви можете знову показати це значення в Налаштування → Сортування та видимість."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "你可以随时在设置 → 排序与可见性中重新显示该检验值。"
           }
         }
       }
