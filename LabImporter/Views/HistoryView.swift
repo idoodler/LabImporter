@@ -19,6 +19,7 @@ struct HistoryView: View {
         }
         .navigationTitle("History")
         .navigationBarTitleDisplayMode(.large)
+        .background { CategoryBackground(colors: backgroundColors) }
         .onAppear { Task { await loadReports() } }
         .sheet(item: $reportToEdit, onDismiss: { Task { await loadReports() } }, content: { report in
             NavigationStack {
@@ -37,44 +38,128 @@ struct HistoryView: View {
         }
     }
 
+    // MARK: - List
+
     private var reportList: some View {
         List {
-            ForEach(reports) { report in
-                NavigationLink(destination: ReportDetailView(report: report, onDeleted: deleteReport)) {
-                    reportRow(report)
-                }
-                .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                    Button { reportToEdit = report } label: {
-                        Label("Edit", systemImage: "pencil")
+            Section {
+                summaryCard
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+            }
+
+            ForEach(groupedByYear, id: \.year) { group in
+                Section(String(group.year)) {
+                    ForEach(group.reports) { report in
+                        NavigationLink(destination: ReportDetailView(report: report, onDeleted: deleteReport)) {
+                            ReportRow(report: report)
+                        }
+                        .listRowBackground(Rectangle().fill(.ultraThinMaterial))
+                        .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                            Button { reportToEdit = report } label: {
+                                Label("Edit", systemImage: "pencil")
+                            }
+                            .tint(.blue)
+                        }
                     }
-                    .tint(.blue)
+                    .onDelete { offsets in deleteReports(in: group.reports, at: offsets) }
                 }
             }
-            .onDelete(perform: deleteReports)
         }
-        .navigationTitle("History")
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
     }
 
-    private func reportRow(_ report: LabReport) -> some View {
-        VStack(alignment: .leading, spacing: 3) {
-            Text(report.date.formatted(date: .abbreviated, time: .omitted))
-                .font(.headline)
+    // MARK: - Summary card
 
-            let meta = [report.patientName, report.authorName]
-                .filter { !$0.isEmpty }
-                .joined(separator: " · ")
-            if !meta.isEmpty {
-                Text(meta)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+    private var summaryCard: some View {
+        let totalValues = reports.reduce(0) { $0 + $1.entries.count }
+        let latest = reports.map(\.date).max()
+        return VStack(spacing: 14) {
+            HStack(spacing: 0) {
+                stat(value: "\(reports.count)", label: String(localized: "Reports"))
+                Divider().frame(height: 34)
+                stat(value: "\(totalValues)", label: String(localized: "Lab Values"))
+                Divider().frame(height: 34)
+                stat(value: "\(distinctCategories.count)", label: String(localized: "Categories"))
             }
 
-            Text("\(report.entries.count) values")
+            if let latest {
+                HStack(spacing: 6) {
+                    Image(systemName: "clock.arrow.circlepath")
+                        .font(.caption2)
+                    Text("Last updated \(latest.formatted(date: .abbreviated, time: .omitted))")
+                        .font(.caption)
+                }
+                .foregroundStyle(.secondary)
+            }
+        }
+        .padding(.vertical, 18)
+        .padding(.horizontal, 12)
+        .frame(maxWidth: .infinity)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22))
+        .overlay(
+            RoundedRectangle(cornerRadius: 22)
+                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
+        )
+    }
+
+    private func stat(value: String, label: String) -> some View {
+        VStack(spacing: 3) {
+            Text(value)
+                .font(.title2.bold().monospacedDigit())
+                .foregroundStyle(.primary)
+            Text(label)
                 .font(.caption2)
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
         }
-        .padding(.vertical, 4)
+        .frame(maxWidth: .infinity)
     }
+
+    // MARK: - Grouping & derived data
+
+    private struct YearGroup {
+        let year: Int
+        let reports: [LabReport]
+    }
+
+    private var groupedByYear: [YearGroup] {
+        let calendar = Calendar.current
+        let grouped = Dictionary(grouping: reports) { calendar.component(.year, from: $0.date) }
+        return grouped
+            .map { YearGroup(year: $0.key, reports: $0.value.sorted { $0.date > $1.date }) }
+            .sorted { $0.year > $1.year }
+    }
+
+    private var distinctCategories: Set<LabCategory> {
+        var set = Set<LabCategory>()
+        for report in reports {
+            for entry in report.entries {
+                set.insert(LabCategory.forCode(entry.code))
+            }
+        }
+        return set
+    }
+
+    // Up to three category colors for the subtle background wash, ordered by how
+    // often they appear across all reports.
+    private var backgroundColors: [Color] {
+        var counts: [LabCategory: Int] = [:]
+        for report in reports {
+            for entry in report.entries {
+                counts[LabCategory.forCode(entry.code), default: 0] += 1
+            }
+        }
+        return counts
+            .sorted { $0.value > $1.value }
+            .prefix(3)
+            .map { $0.key.color }
+    }
+
+    // MARK: - Data
 
     private func loadReports() async {
         do {
@@ -89,11 +174,98 @@ struct HistoryView: View {
         Task { try? await HealthKitService.shared.deleteCDADocument(id: id) }
     }
 
-    private func deleteReports(at offsets: IndexSet) {
-        let ids = offsets.map { reports[$0].id }
-        reports.remove(atOffsets: offsets)
+    private func deleteReports(in groupReports: [LabReport], at offsets: IndexSet) {
+        let ids = offsets.map { groupReports[$0].id }
+        reports.removeAll { ids.contains($0.id) }
         Task {
             for id in ids { try? await HealthKitService.shared.deleteCDADocument(id: id) }
+        }
+    }
+}
+
+// MARK: - ReportRow
+
+private struct ReportRow: View {
+    let report: LabReport
+
+    private var categories: [LabCategory] {
+        var seen = Set<LabCategory>()
+        var ordered: [LabCategory] = []
+        for entry in report.entries {
+            let category = LabCategory.forCode(entry.code)
+            if seen.insert(category).inserted { ordered.append(category) }
+        }
+        return ordered
+    }
+
+    private var accentColor: Color {
+        categories.first?.color ?? .accentColor
+    }
+
+    private var meta: String {
+        [report.patientName, report.authorName]
+            .filter { !$0.isEmpty }
+            .joined(separator: " · ")
+    }
+
+    var body: some View {
+        HStack(spacing: 14) {
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [accentColor, accentColor.opacity(0.65)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                Image(systemName: "doc.text.fill")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(.white)
+            }
+            .frame(width: 44, height: 44)
+            .shadow(color: accentColor.opacity(0.35), radius: 4, x: 0, y: 2)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(report.date.formatted(date: .abbreviated, time: .omitted))
+                    .font(.headline)
+
+                if !meta.isEmpty {
+                    Text(meta)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+
+                HStack(spacing: 6) {
+                    CategoryDots(colors: categories.prefix(5).map(\.color))
+                    Text("\(report.entries.count) values")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .padding(.vertical, 6)
+    }
+}
+
+// MARK: - CategoryDots
+
+/// A compact row of overlapping colored dots representing the clinical
+/// categories present in a report.
+private struct CategoryDots: View {
+    let colors: [Color]
+
+    var body: some View {
+        HStack(spacing: -4) {
+            ForEach(Array(colors.enumerated()), id: \.offset) { _, color in
+                Circle()
+                    .fill(color)
+                    .frame(width: 9, height: 9)
+                    .overlay(
+                        Circle().stroke(Color(.systemBackground), lineWidth: 1.2)
+                    )
+            }
         }
     }
 }

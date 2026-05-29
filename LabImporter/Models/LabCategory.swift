@@ -44,6 +44,28 @@ enum LabCategory: String, CaseIterable, Sendable {
         }
     }
 
+    /// Human-readable, localized name for the category — used as section headers
+    /// when lab values are grouped by clinical panel.
+    var displayName: String {
+        switch self {
+        case .glycemic:     return String(localized: "Glucose")
+        case .lipids:       return String(localized: "Lipids")
+        case .cardiac:      return String(localized: "Cardiac")
+        case .renal:        return String(localized: "Kidney")
+        case .hepatic:      return String(localized: "Liver")
+        case .endocrine:    return String(localized: "Hormones")
+        case .electrolytes: return String(localized: "Electrolytes")
+        case .bloodGas:     return String(localized: "Blood Gas")
+        case .hematology:   return String(localized: "Blood Count")
+        case .coagulation:  return String(localized: "Coagulation")
+        case .nutrition:    return String(localized: "Vitamins & Minerals")
+        case .microbiology: return String(localized: "Microbiology")
+        case .urinalysis:   return String(localized: "Urinalysis")
+        case .drug:         return String(localized: "Medication")
+        case .other:        return String(localized: "Other")
+        }
+    }
+
     /// Best-effort category for a LOINC code, resolved via the bundled catalog.
     static func forCode(_ code: String) -> LabCategory {
         guard let info = LoincDirectory.shared.classification(for: code) else { return .other }
