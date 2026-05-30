@@ -119,6 +119,7 @@ struct ReviewView: View {
                 Button(role: .close) {
                     if hasEdits { showDiscardAlert = true } else { dismiss() }
                 }
+                .disabled(importEngine.isProcessing) // HUD overlay can't cover this bar.
             }
         }
         .alert("Discard Report?", isPresented: $showDiscardAlert) {

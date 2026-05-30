@@ -19,8 +19,11 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             content
-                .labImport(engine: importEngine)
         }
+        // Attach the import overlay outside the NavigationStack so the processing
+        // HUD's scrim also covers the navigation bar — otherwise the toolbar
+        // buttons (history/settings/import) stay tappable behind the HUD.
+        .labImport(engine: importEngine)
         .sheet(isPresented: $showReview) {
             NavigationStack {
                 ReviewView(

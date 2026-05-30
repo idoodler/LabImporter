@@ -272,6 +272,11 @@ struct ProcessingHUD: View {
             .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 28))
             .transition(.scale(scale: 0.92).combined(with: .opacity))
         }
+        // Fill the whole display and ignore the safe area so the card is centered
+        // in the device's screen rather than in the host view's safe-area content
+        // region (which would push it below the navigation bar).
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .ignoresSafeArea()
         .animation(.easeInOut(duration: 0.3), value: phase)
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.updatesFrequently)
