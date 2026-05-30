@@ -288,6 +288,53 @@ private struct MetricCard: View {
         LabCategory.forCode(metric.entry.code).color
     }
 
+    /// Direction of the latest reading relative to the previous one, used to show
+    /// a small trend arrow in the overview. `nil` when there is no prior value to
+    /// compare against.
+    private enum Trend {
+        case rising, falling, steady
+    }
+
+    private var trend: Trend? {
+        guard metric.history.count > 1 else { return nil }
+        let latest = metric.history[metric.history.count - 1].value
+        let previous = metric.history[metric.history.count - 2].value
+        if latest > previous { return .rising }
+        if latest < previous { return .falling }
+        return .steady
+    }
+
+    @ViewBuilder
+    private func trendBadge(_ trend: Trend) -> some View {
+        let symbol: String
+        let color: Color
+        switch trend {
+        case .rising:
+            symbol = "arrow.up.right"
+            color = .orange
+        case .falling:
+            symbol = "arrow.down.right"
+            color = .blue
+        case .steady:
+            symbol = "arrow.right"
+            color = .secondary
+        }
+        Image(systemName: symbol)
+            .font(.caption2.weight(.bold))
+            .foregroundStyle(color)
+            .padding(4)
+            .background(color.opacity(0.15), in: Circle())
+            .accessibilityLabel(accessibilityLabel(for: trend))
+    }
+
+    private func accessibilityLabel(for trend: Trend) -> Text {
+        switch trend {
+        case .rising: return Text("Trending up")
+        case .falling: return Text("Trending down")
+        case .steady: return Text("No change")
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(alignment: .top, spacing: 5) {
@@ -319,6 +366,10 @@ private struct MetricCard: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
+                }
+                Spacer(minLength: 0)
+                if let trend {
+                    trendBadge(trend)
                 }
             }
 
