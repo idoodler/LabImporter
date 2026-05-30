@@ -17,6 +17,7 @@ struct TrendsView: View {
     @State private var selectedDate: Date?
     @State private var selectedTerm: LoincTerm?
     @State private var valueColor: Color = .accentColor
+    @State private var showHideConfirmation = false
     private let selectionFeedback = UISelectionFeedbackGenerator()
     private let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
 
@@ -97,9 +98,19 @@ struct TrendsView: View {
             }
             if !selectedCode.isEmpty {
                 ToolbarItem(placement: .topBarTrailing) {
-                    pinButton
+                    moreMenu
                 }
             }
+        }
+        .confirmationDialog(
+            "Hide \(selectedName)?",
+            isPresented: $showHideConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Hide", role: .destructive) { hideSelected() }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This metric will no longer appear on your dashboard. You can show it again from Settings.")
         }
         .onAppear {
             let codes = availableCodes.map(\.code)
@@ -119,18 +130,28 @@ struct TrendsView: View {
 
     // MARK: - Toolbar
 
-    private var pinButton: some View {
-        Button {
-            togglePin(selectedCode)
+    private var moreMenu: some View {
+        Menu {
+            Button {
+                togglePin(selectedCode)
+            } label: {
+                Label(
+                    isPinned ? "Unpin" : "Pin to Top",
+                    systemImage: isPinned ? "pin.slash" : "pin"
+                )
+            }
+            Button(role: .destructive) {
+                showHideConfirmation = true
+            } label: {
+                Label("Hide", systemImage: "eye.slash")
+            }
         } label: {
-            Image(systemName: isPinned ? "pin.fill" : "pin")
+            Image(systemName: "ellipsis")
                 .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(isPinned ? Color.yellow : .primary)
+                .foregroundStyle(.primary)
                 .frame(width: 32, height: 32)
                 .glassEffect(in: Circle())
         }
-        .buttonStyle(.plain)
-        .animation(.spring(duration: 0.2), value: isPinned)
     }
 
     // MARK: - Subviews
@@ -296,8 +317,11 @@ struct TrendsView: View {
             .shadow(color: valueColor.opacity(0.45), radius: 6, x: 0, y: 0)
     }
 
-    // MARK: - Helpers
+}
 
+// MARK: - Helpers
+
+extension TrendsView {
     private func clampedX(_ xPos: CGFloat, in frame: CGRect) -> CGFloat {
         let halfBubble: CGFloat = 60
         return min(max(xPos, frame.minX + halfBubble), frame.maxX - halfBubble)
@@ -318,6 +342,20 @@ struct TrendsView: View {
         }
         prefs = updated
         impactFeedback.impactOccurred()
+    }
+
+    /// Hides the selected metric from the dashboard and dismisses the trend view,
+    /// since the value is no longer surfaced in the overview after hiding.
+    private func hideSelected() {
+        var updated = prefs
+        if !updated.hiddenCodes.contains(selectedCode) {
+            updated.hiddenCodes.append(selectedCode)
+        }
+        // Keep a hidden metric from also occupying a pinned slot.
+        updated.pinnedCodes.removeAll { $0 == selectedCode }
+        prefs = updated
+        impactFeedback.impactOccurred()
+        onDismiss?()
     }
 }
 

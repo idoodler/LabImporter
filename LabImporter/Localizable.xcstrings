@@ -4742,6 +4742,38 @@
         }
       }
     },
+    "Hide": {
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Ausblenden" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Ocultar" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Masquer" } },
+        "it": { "stringUnit": { "state": "translated", "value": "Nascondi" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "非表示" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Verberg" } },
+        "pl": { "stringUnit": { "state": "translated", "value": "Ukryj" } },
+        "pt-BR": { "stringUnit": { "state": "translated", "value": "Ocultar" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Скрыть" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Gizle" } },
+        "uk": { "stringUnit": { "state": "translated", "value": "Приховати" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "隐藏" } }
+      }
+    },
+    "Hide %@?": {
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "%@ ausblenden?" } },
+        "es": { "stringUnit": { "state": "translated", "value": "¿Ocultar %@?" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Masquer %@ ?" } },
+        "it": { "stringUnit": { "state": "translated", "value": "Nascondere %@?" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "%@を非表示にしますか？" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "%@ verbergen?" } },
+        "pl": { "stringUnit": { "state": "translated", "value": "Ukryć %@?" } },
+        "pt-BR": { "stringUnit": { "state": "translated", "value": "Ocultar %@?" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Скрыть %@?" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "%@ gizlensin mi?" } },
+        "uk": { "stringUnit": { "state": "translated", "value": "Приховати %@?" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "隐藏 %@？" } }
+      }
+    },
     "Hidden": {
       "localizations": {
         "de": {
@@ -7477,6 +7509,22 @@
             "value": "名称"
           }
         }
+      }
+    },
+    "No change": {
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Unverändert" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Sin cambios" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Stable" } },
+        "it": { "stringUnit": { "state": "translated", "value": "Nessuna variazione" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "変化なし" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Geen verandering" } },
+        "pl": { "stringUnit": { "state": "translated", "value": "Bez zmian" } },
+        "pt-BR": { "stringUnit": { "state": "translated", "value": "Sem alteração" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Без изменений" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Değişiklik yok" } },
+        "uk": { "stringUnit": { "state": "translated", "value": "Без змін" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "无变化" } }
       }
     },
     "No LOINC code — excluded from CDA export": {
@@ -10976,6 +11024,22 @@
         }
       }
     },
+    "This metric will no longer appear on your dashboard. You can show it again from Settings.": {
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Dieser Wert wird nicht mehr im Dashboard angezeigt. Du kannst ihn in den Einstellungen wieder einblenden." } },
+        "es": { "stringUnit": { "state": "translated", "value": "Esta métrica ya no aparecerá en tu panel. Puedes volver a mostrarla desde Ajustes." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Cette mesure n'apparaîtra plus sur votre tableau de bord. Vous pouvez l'afficher à nouveau depuis les Réglages." } },
+        "it": { "stringUnit": { "state": "translated", "value": "Questo valore non apparirà più nella dashboard. Puoi mostrarlo di nuovo dalle Impostazioni." } },
+        "ja": { "stringUnit": { "state": "translated", "value": "この指標はダッシュボードに表示されなくなります。設定から再表示できます。" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Deze meting verschijnt niet langer op je dashboard. Je kunt deze opnieuw tonen via Instellingen." } },
+        "pl": { "stringUnit": { "state": "translated", "value": "Ten wskaźnik nie będzie już wyświetlany na pulpicie. Możesz go ponownie pokazać w Ustawieniach." } },
+        "pt-BR": { "stringUnit": { "state": "translated", "value": "Esta métrica não aparecerá mais no seu painel. Você pode exibi-la novamente nos Ajustes." } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Этот показатель больше не будет отображаться на панели. Вы можете снова показать его в Настройках." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Bu ölçüm artık panonuzda görünmeyecek. Ayarlar'dan tekrar gösterebilirsiniz." } },
+        "uk": { "stringUnit": { "state": "translated", "value": "Цей показник більше не відображатиметься на панелі. Ви можете знову показати його в Налаштуваннях." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "此指标将不再显示在仪表板上。你可以在“设置”中重新显示它。" } }
+      }
+    },
     "This report will be permanently removed from Apple Health.": {
       "localizations": {
         "de": {
@@ -11430,6 +11494,38 @@
             "value": "单位"
           }
         }
+      }
+    },
+    "Trending down": {
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Fallend" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Tendencia a la baja" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "En baisse" } },
+        "it": { "stringUnit": { "state": "translated", "value": "In diminuzione" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "下降傾向" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Dalend" } },
+        "pl": { "stringUnit": { "state": "translated", "value": "Trend malejący" } },
+        "pt-BR": { "stringUnit": { "state": "translated", "value": "Em baixa" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Снижается" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Düşüyor" } },
+        "uk": { "stringUnit": { "state": "translated", "value": "Спадає" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "下降趋势" } }
+      }
+    },
+    "Trending up": {
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Steigend" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Tendencia al alza" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "En hausse" } },
+        "it": { "stringUnit": { "state": "translated", "value": "In aumento" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "上昇傾向" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Stijgend" } },
+        "pl": { "stringUnit": { "state": "translated", "value": "Trend rosnący" } },
+        "pt-BR": { "stringUnit": { "state": "translated", "value": "Em alta" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Растёт" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Yükseliyor" } },
+        "uk": { "stringUnit": { "state": "translated", "value": "Зростає" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "上升趋势" } }
       }
     },
     "Unpin": {

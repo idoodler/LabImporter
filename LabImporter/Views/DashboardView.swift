@@ -288,6 +288,47 @@ private struct MetricCard: View {
         LabCategory.forCode(metric.entry.code).color
     }
 
+    /// Direction of the latest reading relative to the previous one, used to show
+    /// a small trend arrow in the overview. `nil` when there is no prior value to
+    /// compare against.
+    private enum Trend {
+        case rising, falling, steady
+
+        var symbol: String {
+            switch self {
+            case .rising: return "arrow.up.right"
+            case .falling: return "arrow.down.right"
+            case .steady: return "arrow.right"
+            }
+        }
+
+        var accessibilityLabel: Text {
+            switch self {
+            case .rising: return Text("Trending up")
+            case .falling: return Text("Trending down")
+            case .steady: return Text("No change")
+            }
+        }
+    }
+
+    private var trend: Trend? {
+        guard metric.history.count > 1 else { return nil }
+        let latest = metric.history[metric.history.count - 1].value
+        let previous = metric.history[metric.history.count - 2].value
+        if latest > previous { return .rising }
+        if latest < previous { return .falling }
+        return .steady
+    }
+
+    private func trendBadge(_ trend: Trend) -> some View {
+        Image(systemName: trend.symbol)
+            .font(.caption2.weight(.bold))
+            .foregroundStyle(categoryColor)
+            .padding(4)
+            .background(categoryColor.opacity(0.15), in: Circle())
+            .accessibilityLabel(trend.accessibilityLabel)
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(alignment: .top, spacing: 5) {
@@ -319,6 +360,10 @@ private struct MetricCard: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
+                }
+                Spacer(minLength: 0)
+                if let trend {
+                    trendBadge(trend)
                 }
             }
 
