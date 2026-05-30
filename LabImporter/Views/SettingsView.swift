@@ -64,6 +64,10 @@ enum AppInfo {
 struct SettingsView: View {
     @Binding var prefs: LabDisplayPreferences
     let allCodes: [CodeName]
+    /// `true` when presented as a sheet (iPhone) — shows a Close button. `false`
+    /// when hosted as the detail pane of the iPad sidebar, where the split view
+    /// owns dismissal and a Close button would be out of place.
+    var isModal = true
     @Environment(\.dismiss) private var dismiss
     @State private var browserURL: IdentifiedURL?
 
@@ -74,7 +78,8 @@ struct SettingsView: View {
                     NavigationLink {
                         LabSortEditor(prefs: $prefs, allCodes: allCodes)
                     } label: {
-                        Label("Sort & Visibility", systemImage: "arrow.up.arrow.down")
+                        SettingsRowLabel("Sort & Visibility",
+                                         systemImage: "arrow.up.arrow.down", color: .blue)
                     }
                 }
 
@@ -82,18 +87,19 @@ struct SettingsView: View {
                     NavigationLink {
                         LoincCatalogView()
                     } label: {
-                        Label("Browse Catalog", systemImage: "magnifyingglass")
+                        SettingsRowLabel("Browse Catalog",
+                                         systemImage: "magnifyingglass", color: .indigo)
                     }
                     NavigationLink {
                         LoincLicenseView()
                     } label: {
-                        Label("LOINC License", systemImage: "doc.text")
+                        SettingsRowLabel("LOINC License", systemImage: "doc.text", color: .teal)
                     }
                     if !LoincDirectory.shared.version.isEmpty {
                         LabeledContent {
                             Text(verbatim: LoincDirectory.shared.version)
                         } label: {
-                            Label("Version", systemImage: "number.square")
+                            SettingsRowLabel("Version", systemImage: "number.square", color: .gray)
                         }
                     }
                 }
@@ -102,49 +108,45 @@ struct SettingsView: View {
                     LabeledContent {
                         Text(AppInfo.branch)
                     } label: {
-                        Label("Branch", systemImage: "arrow.triangle.branch")
+                        SettingsRowLabel("Branch",
+                                         systemImage: "arrow.triangle.branch", color: .orange)
                     }
                     LabeledContent {
                         Text(AppInfo.commit)
                     } label: {
-                        Label("Commit", systemImage: "number")
+                        SettingsRowLabel("Commit", systemImage: "number", color: .purple)
                     }
                     NavigationLink {
                         LicenseView()
                     } label: {
-                        Label("License", systemImage: "doc.text")
+                        SettingsRowLabel("License", systemImage: "doc.text", color: .pink)
                     }
                 }
 
                 Section {
-                    VStack(spacing: 16) {
-                        HStack(spacing: 12) {
-                            if let repository = AppInfo.repositoryURL {
-                                pillButton("View on GitHub",
-                                           systemImage: "chevron.left.forwardslash.chevron.right",
-                                           url: repository)
-                            }
-                            if let newIssue = AppInfo.newIssueURL {
-                                pillButton("Report an Issue",
-                                           systemImage: "exclamationmark.bubble",
-                                           url: newIssue)
-                            }
-                        }
-                        Text("Version \(AppInfo.version) (\(AppInfo.build))")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
+                    if let repository = AppInfo.repositoryURL {
+                        linkRow("View on GitHub",
+                                systemImage: "chevron.left.forwardslash.chevron.right",
+                                color: .primary, url: repository)
                     }
-                    .frame(maxWidth: .infinity)
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
+                    if let newIssue = AppInfo.newIssueURL {
+                        linkRow("Report an Issue",
+                                systemImage: "exclamationmark.bubble",
+                                color: .red, url: newIssue)
+                    }
+                } footer: {
+                    Text("Version \(AppInfo.version) (\(AppInfo.build))")
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.top, 8)
                 }
-                .listSectionSpacing(8)
             }
             .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.large)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button(role: .close) { dismiss() }
+                if isModal {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button(role: .close) { dismiss() }
+                    }
                 }
             }
             .sheet(item: $browserURL) { item in
@@ -154,24 +156,52 @@ struct SettingsView: View {
         }
     }
 
-    /// A pill-shaped button that opens a web URL in an in-app browser.
-    private func pillButton(_ titleKey: LocalizedStringKey, systemImage: String, url: URL) -> some View {
+    /// A standard settings row that opens a web URL in the in-app browser, with a
+    /// trailing external-link glyph to signal it leaves the app.
+    private func linkRow(_ titleKey: LocalizedStringKey,
+                         systemImage: String,
+                         color: Color,
+                         url: URL) -> some View {
         Button {
             browserURL = IdentifiedURL(url: url)
         } label: {
-            Label(titleKey, systemImage: systemImage)
-                .font(.subheadline)
-                // Keep both pills the same size regardless of title length: split the
-                // row evenly and shrink-to-fit on one line so a longer localized title
-                // never wraps to two lines and leaves the buttons mismatched in height.
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
-                .frame(maxWidth: .infinity)
+            HStack {
+                SettingsRowLabel(titleKey, systemImage: systemImage, color: color)
+                Spacer()
+                Image(systemName: "arrow.up.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            }
         }
-        .buttonStyle(.bordered)
-        .buttonBorderShape(.capsule)
-        .controlSize(.regular)
-        .tint(.primary)
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - SettingsRowLabel
+
+/// A list-row label with a rounded, color-filled icon tile in the style of the
+/// iOS Settings app — used to give the otherwise plain settings screens some life.
+struct SettingsRowLabel: View {
+    let title: LocalizedStringKey
+    let systemImage: String
+    let color: Color
+
+    init(_ title: LocalizedStringKey, systemImage: String, color: Color) {
+        self.title = title
+        self.systemImage = systemImage
+        self.color = color
+    }
+
+    var body: some View {
+        Label {
+            Text(title)
+        } icon: {
+            Image(systemName: systemImage)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(.white)
+                .frame(width: 28, height: 28)
+                .background(color.gradient, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+        }
     }
 }
 
@@ -259,6 +289,9 @@ struct LabSortEditor: View {
                             .frame(width: 20)
                     }
                     .buttonStyle(.plain)
+                    Circle()
+                        .fill(LabCategory.forCode(item.code).color.gradient)
+                        .frame(width: 9, height: 9)
                     Text(item.name)
                     Spacer()
                     Button { hideCode(item.code) } label: {
@@ -278,7 +311,10 @@ struct LabSortEditor: View {
         if !hiddenItems.isEmpty {
             Section("Hidden") {
                 ForEach(hiddenItems) { item in
-                    HStack {
+                    HStack(spacing: 12) {
+                        Circle()
+                            .fill(LabCategory.forCode(item.code).color.opacity(0.4))
+                            .frame(width: 9, height: 9)
                         Text(item.name)
                             .foregroundStyle(.secondary)
                         Spacer()

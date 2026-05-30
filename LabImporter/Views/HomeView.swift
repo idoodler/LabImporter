@@ -16,13 +16,51 @@ struct HomeView: View {
     @State private var clipboardHasContent = false
     @AppStorage("hasSeenWelcome") private var hasSeenWelcome = false
 
-    var body: some View {
-        NavigationStack {
-            content
+    // iPad sidebar state
+    @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
+    @State private var sidebarSelection: SidebarSection? = .dashboard
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
+    /// Sections shown in the iPad sidebar. On compact widths (iPhone) these are
+    /// reached through the dashboard's own toolbar instead, so the sidebar is
+    /// only built when the layout is regular-width.
+    private enum SidebarSection: String, CaseIterable, Identifiable {
+        case dashboard, reports, settings
+        var id: String { rawValue }
+
+        var title: LocalizedStringKey {
+            switch self {
+            case .dashboard: return "Lab Results"
+            case .reports: return "Reports"
+            case .settings: return "Settings"
+            }
         }
-        // Attach the import overlay outside the NavigationStack so the processing
-        // HUD's scrim also covers the navigation bar — otherwise the toolbar
-        // buttons (history/settings/import) stay tappable behind the HUD.
+
+        var icon: String {
+            switch self {
+            case .dashboard: return "square.grid.2x2"
+            case .reports: return "doc.text"
+            case .settings: return "gearshape"
+            }
+        }
+    }
+
+    var body: some View {
+        // The layout adapts to width — a sidebar split view on regular-width
+        // devices (iPad, large iPhones in landscape) and the original stack on
+        // compact widths — while the import overlay, review sheet, report
+        // loading and onboarding stay shared across both so behavior is
+        // identical no matter how the content is presented.
+        Group {
+            if horizontalSizeClass == .regular {
+                splitRoot
+            } else {
+                compactRoot
+            }
+        }
+        // Attach the import overlay outside the navigation containers so the
+        // processing HUD's scrim also covers the navigation bar — otherwise the
+        // toolbar buttons (history/settings/import) stay tappable behind the HUD.
         .labImport(engine: importEngine)
         .sheet(isPresented: $showReview) {
             NavigationStack {
@@ -57,10 +95,58 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Content routing
+    // MARK: - Compact layout (iPhone)
+
+    private var compactRoot: some View {
+        NavigationStack {
+            mainContent(showsLibraryToolbarItems: true)
+        }
+    }
+
+    // MARK: - Regular layout (iPad)
+
+    private var splitRoot: some View {
+        NavigationSplitView {
+            List(selection: $sidebarSelection) {
+                ForEach(SidebarSection.allCases) { section in
+                    Label(section.title, systemImage: section.icon)
+                        .tag(section)
+                }
+            }
+            .navigationTitle("Lab Importer")
+            .navigationSplitViewColumnWidth(min: 240, ideal: 280)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    importMenu
+                }
+            }
+        } detail: {
+            detailColumn
+        }
+        .navigationSplitViewStyle(.balanced)
+    }
 
     @ViewBuilder
-    private var content: some View {
+    private var detailColumn: some View {
+        switch sidebarSelection ?? .dashboard {
+        case .dashboard:
+            NavigationStack {
+                mainContent(showsLibraryToolbarItems: false)
+            }
+        case .reports:
+            NavigationStack {
+                HistoryView()
+            }
+        case .settings:
+            SettingsView(prefs: $prefs, allCodes: allCodeNames, isModal: false)
+        }
+    }
+
+    /// The landing-or-dashboard content shared by both layouts. `showsLibraryToolbarItems`
+    /// hides the dashboard's History/Settings toolbar buttons when the sidebar
+    /// already provides those destinations.
+    @ViewBuilder
+    private func mainContent(showsLibraryToolbarItems: Bool) -> some View {
         if !isLoaded {
             ProgressView()
                 .scaleEffect(1.4)
@@ -83,9 +169,48 @@ struct HomeView: View {
                 onManual: createManually,
                 scannerAvailable: VNDocumentCameraViewController.isSupported,
                 clipboardAvailable: clipboardHasContent,
-                isProcessing: importEngine.isProcessing
+                isProcessing: importEngine.isProcessing,
+                showsLibraryToolbarItems: showsLibraryToolbarItems
             )
         }
+    }
+
+    // MARK: - Sidebar import menu
+
+    private var importMenu: some View {
+        Menu {
+            Button { importEngine.scan() } label: {
+                Label("Scan Document", systemImage: "doc.viewfinder")
+            }
+            .disabled(!VNDocumentCameraViewController.isSupported)
+            Button { importEngine.pickFile() } label: {
+                Label("Choose File", systemImage: "folder")
+            }
+            Button { importEngine.paste() } label: {
+                Label("Paste from Clipboard", systemImage: "doc.on.clipboard")
+            }
+            .disabled(!clipboardHasContent)
+            Button(action: createManually) {
+                Label("Create Report Manually", systemImage: "square.and.pencil")
+            }
+        } label: {
+            Image(systemName: "plus")
+                .fontWeight(.semibold)
+        }
+        .accessibilityLabel("Import Report")
+    }
+
+    /// Distinct lab codes across all reports, used to populate the Settings
+    /// sort/visibility editor when Settings is shown as a sidebar detail.
+    private var allCodeNames: [CodeName] {
+        var seen = Set<String>()
+        var result: [CodeName] = []
+        for report in reports {
+            for entry in report.entries where seen.insert(entry.code).inserted {
+                result.append(CodeName(code: entry.code, name: entry.resolvedName))
+            }
+        }
+        return result
     }
 
     // MARK: - Import engine

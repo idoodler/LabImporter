@@ -15,6 +15,9 @@ struct ImportLandingView: View {
             heroSection
             Spacer()
             importCard
+                // Keep the card from stretching across an iPad's width — it stays
+                // a centered, readable column on large screens.
+                .frame(maxWidth: 480)
                 .padding(.horizontal, 24)
                 .opacity(isProcessing ? 0.4 : 1)
                 .allowsHitTesting(!isProcessing)

@@ -6,10 +6,22 @@ struct CDAShareSheet: UIViewControllerRepresentable {
     let url: URL
 
     func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        let controller = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        // On iPad the share sheet is a popover and requires a non-nil source view
+        // or it traps; anchor it to its own view so it presents centered.
+        if let popover = controller.popoverPresentationController {
+            popover.sourceView = controller.view
+            popover.permittedArrowDirections = []
+        }
+        return controller
     }
 
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {
+        if let popover = uiViewController.popoverPresentationController,
+           let source = popover.sourceView {
+            popover.sourceRect = CGRect(x: source.bounds.midX, y: source.bounds.midY, width: 0, height: 0)
+        }
+    }
 }
 
 /// The pinned bottom action bar on the review screen: a prominent "save to

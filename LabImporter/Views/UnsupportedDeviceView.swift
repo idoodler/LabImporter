@@ -52,16 +52,16 @@ struct UnsupportedDeviceView: View {
 
             VStack(alignment: .leading, spacing: 24) {
                 RequirementRow(
-                    icon: "iphone",
+                    icon: "cpu",
                     color: .blue,
                     title: "Apple Intelligence Device",
-                    description: "An iPhone with an A17 Pro or M-series chip is required."
+                    description: "An iPhone with A17 Pro or an iPad/Mac with Apple silicon (M1 or later) is required."
                 )
                 RequirementRow(
                     icon: "arrow.up.circle",
                     color: .green,
-                    title: "iOS 26 or Later",
-                    description: "Make sure your device is running the latest version of iOS."
+                    title: "Latest OS",
+                    description: "Make sure your device is running iOS or iPadOS 26 or later."
                 )
             }
             .padding(.horizontal, 32)

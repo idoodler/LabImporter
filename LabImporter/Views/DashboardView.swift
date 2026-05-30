@@ -12,8 +12,14 @@ struct DashboardView: View {
     let scannerAvailable: Bool
     let clipboardAvailable: Bool
     let isProcessing: Bool
+    /// When the dashboard is the detail pane of an iPad sidebar, the sidebar
+    /// already hosts the Reports/Settings/Import entry points, so the dashboard
+    /// hides its own toolbar chrome to avoid duplicating them. Defaults to `true`
+    /// so the standalone (iPhone) presentation is unchanged.
+    var showsLibraryToolbarItems = true
 
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var showSettings = false
     @State private var trendSheet: TrendSheet?
     @State private var dropTargetCode: String?
@@ -37,21 +43,23 @@ struct DashboardView: View {
         .navigationTitle("Lab Results")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                NavigationLink(destination: HistoryView()) {
-                    Image(systemName: "doc.text")
+            if showsLibraryToolbarItems {
+                ToolbarItem(placement: .topBarLeading) {
+                    NavigationLink(destination: HistoryView()) {
+                        Image(systemName: "doc.text")
+                    }
+                    .accessibilityLabel("Reports")
                 }
-                .accessibilityLabel("Reports")
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showSettings = true
-                } label: {
-                    Image(systemName: "gearshape")
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showSettings = true
+                    } label: {
+                        Image(systemName: "gearshape")
+                    }
                 }
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                importMenu
+                ToolbarItem(placement: .topBarTrailing) {
+                    importMenu
+                }
             }
         }
         .sheet(isPresented: $showSettings) {
@@ -94,14 +102,21 @@ struct DashboardView: View {
     // MARK: - Metrics grid
 
     private var metricsGrid: some View {
-        LazyVGrid(
-            columns: [GridItem(.flexible()), GridItem(.flexible())],
-            spacing: 14
-        ) {
+        LazyVGrid(columns: gridColumns, spacing: 14) {
             ForEach(sortedMetrics) { metric in
                 metricCard(for: metric)
             }
         }
+    }
+
+    /// Two fixed columns on compact widths (iPhone); on regular widths (iPad) the
+    /// cards flow to fill the wider canvas with a sensible minimum so they don't
+    /// stretch into a sparse two-up grid.
+    private var gridColumns: [GridItem] {
+        if horizontalSizeClass == .regular {
+            return [GridItem(.adaptive(minimum: 200, maximum: 280), spacing: 14)]
+        }
+        return [GridItem(.flexible()), GridItem(.flexible())]
     }
 
     @ViewBuilder
@@ -320,27 +335,38 @@ private struct MetricCard: View {
         return .steady
     }
 
-    private func trendBadge(_ trend: Trend) -> some View {
-        Image(systemName: trend.symbol)
-            .font(.caption2.weight(.bold))
-            .foregroundStyle(categoryColor)
-            .padding(4)
-            .background(categoryColor.opacity(0.15), in: Circle())
-            .accessibilityLabel(trend.accessibilityLabel)
+    /// The colored category "dock" at the card's top-left. When a trend is
+    /// available it doubles as the trend indicator and hosts a directional
+    /// arrow; otherwise it is a simple category-color dot. Both variants reserve
+    /// the same footprint so the title alignment stays put.
+    @ViewBuilder
+    private var dock: some View {
+        if let trend {
+            Image(systemName: trend.symbol)
+                .font(.system(size: 9, weight: .heavy))
+                .foregroundStyle(.white)
+                .frame(width: 18, height: 18)
+                .background(categoryColor.gradient, in: Circle())
+                .accessibilityLabel(trend.accessibilityLabel)
+        } else {
+            Circle()
+                .fill(categoryColor)
+                .frame(width: 9, height: 9)
+                .frame(width: 18, height: 18)
+                .accessibilityHidden(true)
+        }
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            HStack(alignment: .top, spacing: 5) {
-                Circle()
-                    .fill(categoryColor)
-                    .frame(width: 8, height: 8)
-                    .padding(.top, 3)
+            HStack(alignment: .top, spacing: 7) {
+                dock
                 Text(metric.entry.resolvedName)
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, 1)
                 Spacer(minLength: 0)
                 if isPinned {
                     Image(systemName: "pin.fill")
@@ -362,9 +388,6 @@ private struct MetricCard: View {
                         .lineLimit(1)
                 }
                 Spacer(minLength: 0)
-                if let trend {
-                    trendBadge(trend)
-                }
             }
 
             if metric.history.count > 1 {

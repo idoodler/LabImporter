@@ -102,13 +102,9 @@ struct TrendsView: View {
                 }
             }
         }
-        .confirmationDialog(
-            "Hide \(selectedName)?",
-            isPresented: $showHideConfirmation,
-            titleVisibility: .visible
-        ) {
-            Button("Hide", role: .destructive) { hideSelected() }
+        .alert("Hide \(selectedName)?", isPresented: $showHideConfirmation) {
             Button("Cancel", role: .cancel) {}
+            Button("Hide", role: .destructive) { hideSelected() }
         } message: {
             Text("This metric will no longer appear on your dashboard. You can show it again from Settings.")
         }
@@ -146,11 +142,7 @@ struct TrendsView: View {
                 Label("Hide", systemImage: "eye.slash")
             }
         } label: {
-            Image(systemName: "ellipsis")
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(.primary)
-                .frame(width: 32, height: 32)
-                .glassEffect(in: Circle())
+            Label("More", systemImage: "ellipsis")
         }
     }
 
@@ -256,18 +248,20 @@ struct TrendsView: View {
         }
         .chartXAxis {
             AxisMarks(values: .automatic) { _ in
-                AxisGridLine().foregroundStyle(Color.primary.opacity(0.15))
+                AxisGridLine().foregroundStyle(valueColor.opacity(0.12))
                 AxisValueLabel(format: .dateTime.month(.abbreviated).day())
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(valueColor.opacity(0.8))
             }
         }
         .chartYAxis {
             AxisMarks { _ in
-                AxisGridLine().foregroundStyle(Color.primary.opacity(0.15))
-                AxisValueLabel().foregroundStyle(.secondary)
+                AxisGridLine().foregroundStyle(valueColor.opacity(0.12))
+                AxisValueLabel().foregroundStyle(valueColor.opacity(0.8))
             }
         }
-        .chartYAxisLabel(currentUnit)
+        .chartYAxisLabel {
+            Text(currentUnit).foregroundStyle(valueColor.opacity(0.8))
+        }
         .frame(minHeight: 260)
         .padding()
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))

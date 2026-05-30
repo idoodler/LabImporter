@@ -48,7 +48,21 @@ struct AddValueSheet: View {
                         .disabled(name.isEmpty || displayValue.isEmpty)
                 }
             }
+            .onChange(of: code) { _, newCode in
+                fillUnit(for: newCode)
+            }
         }
+    }
+
+    /// Prefills the unit from the LOINC catalog's example UCUM unit when a lab
+    /// test is chosen, so manual entries inherit the canonical unit. A previously
+    /// entered unit is kept when the catalog has no example unit for the code.
+    private func fillUnit(for code: String) {
+        let trimmed = code.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty,
+              let term = LoincDirectory.shared.term(for: trimmed),
+              !term.ucum.isEmpty else { return }
+        unit = term.ucum
     }
 
     private func commit() {
