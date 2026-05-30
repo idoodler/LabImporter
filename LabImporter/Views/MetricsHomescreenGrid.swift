@@ -38,7 +38,7 @@ struct MetricsHomescreenGrid: View {
         .onDrop(of: [.text], delegate: GridResetDropDelegate(
             draggingCode: $draggingCode,
             liveOrder: $liveOrder,
-            onFinalize: finalizeDrag
+            onCommit: commitOrder
         ))
     }
 
@@ -54,18 +54,19 @@ struct MetricsHomescreenGrid: View {
         .buttonStyle(.plain)
         .opacity(draggingCode == code ? 0 : 1)
         .onDrag {
-            draggingCode = code
-            liveOrder = displayedCodes
+            beginDrag(code)
             return NSItemProvider(object: code as NSString)
         } preview: {
             MetricCard(metric: metric, isPinned: pinned)
                 .frame(width: 180)
+                // Match the card's corners so the lift platter isn't a square.
+                .contentShape(.dragPreview, RoundedRectangle(cornerRadius: 20))
         }
         .onDrop(of: [.text], delegate: ReorderDropDelegate(
             targetCode: code,
             draggingCode: $draggingCode,
             liveOrder: $liveOrder,
-            onFinalize: finalizeDrag
+            onCommit: commitOrder
         ))
     }
 
@@ -83,14 +84,18 @@ struct MetricsHomescreenGrid: View {
         return displayedCodes.compactMap { lookup[$0] }
     }
 
-    /// Persists the final drag order and clears the transient drag state. Called
-    /// when a drop completes (on a card or in a gutter).
-    private func finalizeDrag() {
-        if let liveOrder {
-            persistOrder(liveOrder)
-        }
-        draggingCode = nil
-        liveOrder = nil
+    /// Starts a drag, first clearing any state left behind by a previous drag
+    /// that ended without a drop (e.g. released over the navigation bar), so a
+    /// stale hidden card can never persist into the next gesture.
+    private func beginDrag(_ code: String) {
+        draggingCode = code
+        liveOrder = displayedCodes
+    }
+
+    /// Persists the final drag order. The drop delegates clear the transient drag
+    /// state via their bindings; this only writes the result through `prefs`.
+    private func commitOrder(_ order: [String]) {
+        persistOrder(order)
     }
 
     /// Persists `codes` as the leading entries of `orderedCodes`, preserving any
@@ -116,7 +121,7 @@ private struct ReorderDropDelegate: DropDelegate {
     let targetCode: String
     @Binding var draggingCode: String?
     @Binding var liveOrder: [String]?
-    let onFinalize: () -> Void
+    let onCommit: ([String]) -> Void
 
     func dropEntered(info: DropInfo) {
         guard let dragging = draggingCode, dragging != targetCode,
@@ -135,7 +140,9 @@ private struct ReorderDropDelegate: DropDelegate {
     }
 
     func performDrop(info: DropInfo) -> Bool {
-        onFinalize()
+        if let order = liveOrder { onCommit(order) }
+        draggingCode = nil
+        liveOrder = nil
         return true
     }
 }
@@ -145,14 +152,16 @@ private struct ReorderDropDelegate: DropDelegate {
 private struct GridResetDropDelegate: DropDelegate {
     @Binding var draggingCode: String?
     @Binding var liveOrder: [String]?
-    let onFinalize: () -> Void
+    let onCommit: ([String]) -> Void
 
     func dropUpdated(info: DropInfo) -> DropProposal? {
         DropProposal(operation: .move)
     }
 
     func performDrop(info: DropInfo) -> Bool {
-        onFinalize()
+        if let order = liveOrder { onCommit(order) }
+        draggingCode = nil
+        liveOrder = nil
         return true
     }
 }
