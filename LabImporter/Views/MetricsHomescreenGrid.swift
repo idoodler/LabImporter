@@ -100,6 +100,7 @@ struct MetricsHomescreenGrid: View {
     private func beginDrag(_ code: String) {
         draggingCode = code
         liveOrder = displayedCodes
+        grabOffset = nil
         let frame = cardFrames[code] ?? .zero
         floatingOrigin = CGPoint(x: frame.minX, y: frame.minY)
         withAnimation(.snappy) { floatingScale = 1.05 }
@@ -107,11 +108,14 @@ struct MetricsHomescreenGrid: View {
 
     private func updateDrag(_ drag: DragGesture.Value) {
         guard let dragging = draggingCode else { return }
-        let base = cardFrames[dragging] ?? .zero
-        floatingOrigin = CGPoint(
-            x: base.minX + drag.translation.width,
-            y: base.minY + drag.translation.height
-        )
+        // Capture the finger's offset within the card once, from the original
+        // slot, so the float stays pinned under the finger as the grid reflows.
+        if grabOffset == nil {
+            let origin = cardFrames[dragging]?.origin ?? .zero
+            grabOffset = CGSize(width: drag.location.x - origin.x, height: drag.location.y - origin.y)
+        }
+        let offset = grabOffset ?? .zero
+        floatingOrigin = CGPoint(x: drag.location.x - offset.width, y: drag.location.y - offset.height)
         relocate(to: drag.location)
     }
 
