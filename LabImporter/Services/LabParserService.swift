@@ -16,6 +16,9 @@ struct AILabReport {
 
     @Guide(description: "Lab or doctor name as printed on the report. Empty string if not visible.")
     var authorName: String
+
+    @Guide(description: "BCP-47 language code of the report text, e.g. 'de' or 'en'. Empty string if unsure.")
+    var reportLanguage: String
 }
 
 @Generable
@@ -24,7 +27,7 @@ struct AILabEntry {
     var code: String
 
     // swiftlint:disable:next line_length
-    @Guide(description: "The test's standard name in English, translated from the printed language (e.g. 'Creatinine', 'Ferritin', 'Vitamin D 25-Hydroxy', 'Thyroid stimulating hormone'). Used to look up the standard LOINC code.")
+    @Guide(description: "The test's standard name in the report's own language — do NOT translate (e.g. for a German report 'Kreatinin', 'Ferritin', 'Vitamin D 25-Hydroxy', 'Thyreotropin'). Used to look up the standard LOINC code in that language.")
     var name: String
 
     @Guide(description: "Value exactly as printed — use '-' for negative/not-detected results")
@@ -62,7 +65,7 @@ actor LabParserService {
             let numericValue: Double? = entry.rawValue == "-" ? nil : Double(normalizedValue)
 
             // Resolve the printed code to LOINC, the app's canonical identity.
-            let (code, suggested) = resolveLoinc(printed: entry.code, name: entry.name)
+            let (code, suggested) = resolveLoinc(printed: entry.code, name: entry.name, language: report.reportLanguage)
 
             return LabValue(
                 code: code,
@@ -77,18 +80,25 @@ actor LabParserService {
         return ParseResult(values: values, reportDate: reportDate, patientName: patientName, authorName: authorName)
     }
 
-    // Resolves a parsed entry to a LOINC code. A confident curated/abbreviation
-    // match (or an already-LOINC code) is returned as-is; otherwise the AI's
-    // normalized English name is looked up in the catalog and the top hit is
+    // Resolves a parsed entry to a LOINC code entirely from the bundled catalog.
+    // An already-valid LOINC code (pasted in or printed verbatim) is canonical and
+    // returned as-is; otherwise the AI's test name is matched against the catalog
+    // in the report's own language (with English as a fallback) and the top hit is
     // returned as a *suggestion* the user confirms. Unresolved entries keep the
     // printed text so they can be mapped manually in the review sheet.
-    private func resolveLoinc(printed: String, name: String) -> (code: String, suggested: Bool) {
-        if let loinc = LabMapping.loinc(forPrinted: printed) {
-            return (loinc, false)
+    private func resolveLoinc(printed: String, name: String, language: String) -> (code: String, suggested: Bool) {
+        let directory = LoincDirectory.shared
+        let trimmedPrinted = printed.trimmingCharacters(in: .whitespaces)
+        if directory.isKnownLoinc(trimmedPrinted) {
+            return (trimmedPrinted, false)
         }
-        let query = (name.isEmpty ? printed : name).trimmingCharacters(in: .whitespaces)
-        if !query.isEmpty, let match = LoincDirectory.shared.search(query, limit: 1).first {
-            return (match.code, true)
+        let resolvedLanguage = directory.resolvedLanguage(for: language)
+        for query in [name, printed] {
+            let trimmed = query.trimmingCharacters(in: .whitespaces)
+            guard !trimmed.isEmpty else { continue }
+            if let match = directory.search(trimmed, language: resolvedLanguage, limit: 1).first {
+                return (match.code, true)
+            }
         }
         return (printed, false)
     }
@@ -100,8 +110,9 @@ actor LabParserService {
             instructions: """
             You are a medical lab report parser. Extract every lab test entry from the provided text.
             Lab reports follow the pattern: CODE: value unit; CODE2: value2 unit2; ...
-            Preserve codes exactly as printed. For each entry, also give the test's standard name in English
-            (translate from the report's language) so it can be matched to a coding system.
+            Preserve codes exactly as printed. For each entry, also give the test's standard name in the
+            report's own language (do NOT translate it) so it can be matched to a coding system in that language.
+            Detect the language of the report and return it as a BCP-47 code (e.g. 'de', 'en') in reportLanguage.
             Use '-' as rawValue when the result is negative or not detected.
             If you can see a report date or blood draw date, return it in yyyy-MM-dd format; otherwise return an empty string.
             Extract the patient's full name if visible; otherwise return an empty string for patientName.

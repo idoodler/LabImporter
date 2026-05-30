@@ -52,6 +52,10 @@ final class LoincDirectory: @unchecked Sendable {
     let version: String
     let count: Int
     let license: String
+    /// The app-language keys the catalog actually carries localized labels for
+    /// (e.g. "en", "de", "pt-BR"); used to normalize a parsed report language to
+    /// one the database can match. English is always available as a fallback.
+    let languages: [String]
 
     private let database: OpaquePointer?
     private let language: String
@@ -66,11 +70,11 @@ final class LoincDirectory: @unchecked Sendable {
         language = Bundle.main.preferredLocalizations.first ?? "en"
 
         guard let url = Bundle.main.url(forResource: "loinc", withExtension: "db") else {
-            database = nil; version = ""; count = 0; license = ""; return
+            database = nil; version = ""; count = 0; license = ""; languages = []; return
         }
         var handle: OpaquePointer?
         guard sqlite3_open_v2(url.path, &handle, SQLITE_OPEN_READONLY, nil) == SQLITE_OK else {
-            sqlite3_close(handle); database = nil; version = ""; count = 0; license = ""; return
+            sqlite3_close(handle); database = nil; version = ""; count = 0; license = ""; languages = []; return
         }
         database = handle
 
@@ -122,6 +126,25 @@ final class LoincDirectory: @unchecked Sendable {
         version = LoincDirectory.scalar(handle, "SELECT value FROM meta WHERE key = 'version'") ?? ""
         count = Int(LoincDirectory.scalar(handle, "SELECT count(*) FROM term") ?? "0") ?? 0
         license = LoincDirectory.scalar(handle, "SELECT value FROM meta WHERE key = 'license'") ?? ""
+        languages = (LoincDirectory.scalar(handle, "SELECT value FROM meta WHERE key = 'languages'") ?? "")
+            .split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
+    }
+
+    // Maps a free-form/BCP-47 language tag (e.g. the parser's detected report
+    // language, "de" / "de-DE" / "DE") to a language the catalog actually carries
+    // labels for, falling back to the app's language. English is always searched
+    // alongside whatever this returns, so an unmatched tag still resolves via en.
+    func resolvedLanguage(for tag: String) -> String {
+        let lower = tag.lowercased()
+        guard !lower.isEmpty else { return language }
+        if let exact = languages.first(where: { $0.lowercased() == lower }) { return exact }
+        let base = lower.split(separator: "-").first.map(String.init) ?? lower
+        if let match = languages.first(where: {
+            ($0.lowercased().split(separator: "-").first.map(String.init) ?? $0.lowercased()) == base
+        }) {
+            return match
+        }
+        return language
     }
 
     // MARK: - Lookups
@@ -183,7 +206,14 @@ final class LoincDirectory: @unchecked Sendable {
         )
     }
 
+    // Searches the catalog in the app's UI language (plus English).
     func search(_ query: String, limit: Int = 80, offset: Int = 0) -> [LoincTerm] {
+        search(query, language: language, limit: limit, offset: offset)
+    }
+
+    // Searches the catalog in an explicit language (plus English) — used by the
+    // parser to resolve a test name against the report's own localized labels.
+    func search(_ query: String, language: String, limit: Int = 80, offset: Int = 0) -> [LoincTerm] {
         guard database != nil else { return [] }
         if let match = ftsQuery(query) {
             guard let statement = searchStatement else { return [] }
