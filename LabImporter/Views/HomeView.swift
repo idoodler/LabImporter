@@ -58,9 +58,9 @@ struct HomeView: View {
                 compactRoot
             }
         }
-        // Attach the import overlay outside the navigation containers so the
-        // processing HUD's scrim also covers the navigation bar — otherwise the
-        // toolbar buttons (history/settings/import) stay tappable behind the HUD.
+        // The processing HUD is presented in its own top-level UIWindow (see
+        // `labImport`), so it floats above the navigation bar and blocks the
+        // toolbar buttons (history/settings/import) while an import is running.
         .labImport(engine: importEngine)
         .sheet(isPresented: $showReview) {
             NavigationStack {
