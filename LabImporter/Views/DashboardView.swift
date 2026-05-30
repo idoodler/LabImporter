@@ -293,6 +293,30 @@ private struct MetricCard: View {
     /// compare against.
     private enum Trend {
         case rising, falling, steady
+
+        var symbol: String {
+            switch self {
+            case .rising: return "arrow.up.right"
+            case .falling: return "arrow.down.right"
+            case .steady: return "arrow.right"
+            }
+        }
+
+        var color: Color {
+            switch self {
+            case .rising: return .orange
+            case .falling: return .blue
+            case .steady: return .secondary
+            }
+        }
+
+        var accessibilityLabel: Text {
+            switch self {
+            case .rising: return Text("Trending up")
+            case .falling: return Text("Trending down")
+            case .steady: return Text("No change")
+            }
+        }
     }
 
     private var trend: Trend? {
@@ -304,35 +328,13 @@ private struct MetricCard: View {
         return .steady
     }
 
-    @ViewBuilder
     private func trendBadge(_ trend: Trend) -> some View {
-        let symbol: String
-        let color: Color
-        switch trend {
-        case .rising:
-            symbol = "arrow.up.right"
-            color = .orange
-        case .falling:
-            symbol = "arrow.down.right"
-            color = .blue
-        case .steady:
-            symbol = "arrow.right"
-            color = .secondary
-        }
-        Image(systemName: symbol)
+        Image(systemName: trend.symbol)
             .font(.caption2.weight(.bold))
-            .foregroundStyle(color)
+            .foregroundStyle(trend.color)
             .padding(4)
-            .background(color.opacity(0.15), in: Circle())
-            .accessibilityLabel(accessibilityLabel(for: trend))
-    }
-
-    private func accessibilityLabel(for trend: Trend) -> Text {
-        switch trend {
-        case .rising: return Text("Trending up")
-        case .falling: return Text("Trending down")
-        case .steady: return Text("No change")
-        }
+            .background(trend.color.opacity(0.15), in: Circle())
+            .accessibilityLabel(trend.accessibilityLabel)
     }
 
     var body: some View {
