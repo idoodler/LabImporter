@@ -90,14 +90,18 @@ Config.xcconfig  # BUNDLE_IDENTIFIER = dev.idoodler.$(DEVELOPMENT_TEAM).labimpor
   git); only the source zip is committed. `LabMapping` falls back to
   `LoincDirectory` for any code that is already a raw LOINC number (e.g. picked in
   `CodePickerSheet`).
-- **`LabMapping`** is the single source of truth for the curated German abbreviations:
-  - `displayName(for:)` — human name (localized), tolerant of OCR variants (e.g. `DIAB0L`/`DIABOL`).
-  - `loincCode(for:)` — LOINC code + display for CDA export; **returns nil → value is not exportable**.
-  - `internalCode(forLoinc:)` — reverse lookup used when parsing CDA back from Health.
-  - `referenceRange(for:)` — clinical normal/borderline/abnormal bands (drives dashboard status colors).
-  - When adding a new lab metric, update **all** relevant switch statements here
-    (and `allKnownCodes` so it appears in the code picker). Several use
-    `// swiftlint:disable:next cyclomatic_complexity` — keep that pattern.
+- **`LabMapping`** is a thin, data-driven adapter over `LoincDirectory` (no curated
+  tables of its own):
+  - `displayName(for:)` — localized human name for a LOINC code from the catalog.
+  - `loincCode(for:)` — validates the code + returns an English display for CDA
+    export; **returns nil → value is not exportable** (unknown/unmapped code).
+  - `loincURL(for:)` — the loinc.org details page for a code.
+- **Import resolution (printed report → LOINC)** lives in
+  `LabParserService.resolveLoinc`: an already-valid LOINC code passes through;
+  otherwise the AI's test name is matched against the catalog **in the report's
+  own language** (`LoincDirectory.search(_:language:…)`, English as fallback) and
+  the top hit is offered as a suggestion (`isSuggestedCode`). There is no static
+  abbreviation table — resolution is entirely catalog/FTS driven.
 
 ### CDA round-trip
 - **Export:** `CDAExportService.generateCDA` emits a C-CDA R2.1 Lab Report. Only
@@ -182,13 +186,14 @@ Required secrets: `GH_PAT`, `TEAMID`, `FASTLANE_ISSUER_ID`, `FASTLANE_KEY_ID`,
 - **Branch & commits:** never push to `main` unless explicitly told. Commit with
   clear messages; push with `git push -u origin <branch>`.
 - **Adding a lab metric:** LOINC is the canonical identity, and names come from
-  the bundled catalog (`LoincDirectory`) — there is no per-metric name curation.
-  To teach the parser a printed abbreviation, add a `case` to
-  `LabMapping.loinc(forPrinted:)` returning the LOINC code (which must exist in
-  the catalog). To give a metric dashboard status colours, add a
-  `LOINC: ReferenceRange` entry to `LabMapping.referenceRanges` (LOINC carries no
-  ranges, so these are hand-tuned). No `Localizable.xcstrings` change is needed —
-  the catalog supplies localized names.
+  the bundled catalog (`LoincDirectory`) — there is no per-metric name curation
+  and no abbreviation table to extend. The parser resolves any test the catalog
+  knows by matching the AI's test name (in the report's language) against the FTS
+  index, so a metric is "supported" as soon as its LOINC term is in `loinc.db`.
+  If a real-world report consistently mis-resolves, prefer improving the
+  `@Guide`/instructions in `LabParserService` (or widening the catalog) over
+  reintroducing a hard-coded mapping. No `Localizable.xcstrings` change is needed
+  — the catalog supplies localized names.
 - **Touching the AI parse:** prompts and `@Generable`/`@Guide` schemas live in
   `LabParserService.swift`. Keep `@Guide` descriptions concrete and example-driven —
   they directly steer extraction quality.

@@ -24,6 +24,11 @@ final class LabImportEngine {
 
     private(set) var isProcessing = false
 
+    /// The stage the current import is in, surfaced by the processing HUD as a
+    /// description + coarse progress. There is no fine-grained progress to report
+    /// (OCR and the on-device model are opaque), so this advances by phase.
+    private(set) var phase: ImportPhase = .extractingText
+
     fileprivate var errorMessage: String?
     fileprivate var showScanner = false
     fileprivate var showFileImporter = false
@@ -76,6 +81,7 @@ final class LabImportEngine {
 
     func processImages(_ images: [UIImage]) async {
         guard !images.isEmpty else { return }
+        phase = .extractingText
         isProcessing = true
         defer { isProcessing = false }
 
@@ -88,6 +94,7 @@ final class LabImportEngine {
     }
 
     func processText(_ text: String) async {
+        phase = .analyzing
         isProcessing = true
         defer { isProcessing = false }
 
@@ -99,6 +106,7 @@ final class LabImportEngine {
     }
 
     private func processPDF(at url: URL) async {
+        phase = .extractingText
         isProcessing = true
         defer { isProcessing = false }
 
@@ -111,6 +119,8 @@ final class LabImportEngine {
     }
 
     private func handleExtractedText(_ text: String) async throws {
+        // Text is in hand; the remaining (and longest) work is the AI parse.
+        phase = .analyzing
         let result = try await parserService.parseLabValues(from: text)
         if result.values.isEmpty {
             errorMessage = emptyMessage
@@ -164,8 +174,11 @@ private struct LabImportModifier: ViewModifier {
                 Text(engine.errorMessage ?? "")
             }
             .overlay {
-                if engine.isProcessing { ProcessingHUD() }
+                if engine.isProcessing {
+                    ProcessingHUD(phase: engine.phase)
+                }
             }
+            .animation(.easeInOut(duration: 0.25), value: engine.isProcessing)
     }
 }
 
@@ -178,25 +191,99 @@ extension View {
     }
 }
 
+// MARK: - Import phases
+
+/// The coarse stages an import passes through, used to label the processing HUD
+/// and drive its progress bar. OCR and the on-device model expose no real
+/// progress, so each phase maps to an indicative fraction rather than a measured
+/// one — enough to show motion and tell the user what's happening.
+enum ImportPhase: CaseIterable {
+    case extractingText
+    case analyzing
+
+    var title: LocalizedStringKey {
+        switch self {
+        case .extractingText: "Reading document…"
+        case .analyzing: "Analyzing lab report…"
+        }
+    }
+
+    var detail: LocalizedStringKey {
+        switch self {
+        case .extractingText: "Extracting text on device"
+        case .analyzing: "Using on-device AI"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .extractingText: "doc.text.viewfinder"
+        case .analyzing: "sparkles"
+        }
+    }
+
+    var fraction: Double {
+        switch self {
+        case .extractingText: 0.45
+        case .analyzing: 0.9
+        }
+    }
+}
+
 // MARK: - Processing HUD
 
 struct ProcessingHUD: View {
+    let phase: ImportPhase
+
     var body: some View {
-        Color.clear
-            .ignoresSafeArea()
-            .overlay {
-                VStack(spacing: 16) {
-                    ProgressView()
-                        .controlSize(.large)
-                    Text("Analyzing lab report…")
+        ZStack {
+            // Dimming scrim: focuses attention on the card and, being an opaque
+            // hit-testable shape, swallows every touch so the content behind the
+            // HUD can't be interacted with while an import is in flight.
+            Rectangle()
+                .fill(.black.opacity(0.28))
+                .ignoresSafeArea()
+                .transition(.opacity)
+
+            VStack(spacing: 18) {
+                Image(systemName: phase.systemImage)
+                    .font(.system(size: 40, weight: .semibold))
+                    .foregroundStyle(.tint)
+                    .symbolEffect(.pulse, options: .repeating)
+                    .contentTransition(.symbolEffect(.replace))
+
+                VStack(spacing: 6) {
+                    Text(phase.title)
                         .font(.headline)
-                    Text("Using on-device AI")
+                    Text(phase.detail)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-                .padding(32)
-                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 24))
+                .multilineTextAlignment(.center)
+
+                ProgressView(value: phase.fraction)
+                    .progressViewStyle(.linear)
+                    .tint(.accentColor)
+                    .frame(width: 200)
+                    .animation(.easeInOut(duration: 0.5), value: phase.fraction)
             }
-            .transition(.opacity.animation(.easeInOut(duration: 0.2)))
+            .padding(28)
+            .frame(maxWidth: 280)
+            .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 28))
+            .transition(.scale(scale: 0.92).combined(with: .opacity))
+        }
+        .animation(.easeInOut(duration: 0.3), value: phase)
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.updatesFrequently)
     }
+}
+
+#Preview("Reading") {
+    Color(.systemGroupedBackground)
+        .overlay { ProcessingHUD(phase: .extractingText) }
+}
+
+#Preview("Analyzing") {
+    Color(.systemGroupedBackground)
+        .overlay { ProcessingHUD(phase: .analyzing) }
 }
