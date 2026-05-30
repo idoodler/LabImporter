@@ -1,28 +1,45 @@
 import SwiftUI
 import Charts
+import UniformTypeIdentifiers
 
 // MARK: - MetricsHomescreenGrid
 
-/// The dashboard's metric grid with drag-to-reorder. Built on SwiftUI's
-/// `.draggable`/`.dropDestination` (UIKit drag-and-drop) so it coexists with the
-/// surrounding `ScrollView`: a swipe scrolls, a long-press lifts a card so it
-/// follows the finger, a drop reorders, and a tap opens the card's trend.
+/// The dashboard's metric grid with iOS Home Screen–style drag-to-reorder.
+///
+/// There is no separate "edit"/jiggle mode: a swipe scrolls, a tap opens the
+/// card's trend, and a long-press lifts a card so it follows the finger. While a
+/// card is dragged the grid **reflows live** — the other cards animate aside to
+/// open the gap where the card will land. Built on `.onDrag` + a `DropDelegate`
+/// (UIKit drag-and-drop) so it coexists with the surrounding `ScrollView`.
 struct MetricsHomescreenGrid: View {
     let metrics: [MetricData]
     @Binding var prefs: LabDisplayPreferences
     let onOpenTrend: (String) -> Void
 
-    @State private var dropTargetCode: String?
+    /// The code currently lifted, or `nil` when no drag is in progress. The
+    /// lifted card is hidden in place so its slot reads as the open gap.
+    @State private var draggingCode: String?
+    /// The working order during an active drag. `nil` when idle, in which case
+    /// the displayed order comes from `dashboardSortedMetrics`.
+    @State private var liveOrder: [String]?
 
     var body: some View {
         LazyVGrid(
             columns: [GridItem(.flexible()), GridItem(.flexible())],
             spacing: 14
         ) {
-            ForEach(sortedMetrics) { metric in
+            ForEach(displayMetrics) { metric in
                 metricCard(for: metric)
             }
         }
+        .animation(.snappy, value: displayedCodes)
+        // Catches drops that land in the grid's gutters (not on a card) so the
+        // drag still finalizes and resets.
+        .onDrop(of: [.text], delegate: GridResetDropDelegate(
+            draggingCode: $draggingCode,
+            liveOrder: $liveOrder,
+            onFinalize: finalizeDrag
+        ))
     }
 
     // MARK: - Card
@@ -35,43 +52,45 @@ struct MetricsHomescreenGrid: View {
             MetricCard(metric: metric, isPinned: pinned)
         }
         .buttonStyle(.plain)
-        .overlay {
-            if dropTargetCode == code {
-                RoundedRectangle(cornerRadius: 20)
-                    .stroke(Color.accentColor, lineWidth: 2)
-            }
-        }
-        .draggable(code) {
+        .opacity(draggingCode == code ? 0 : 1)
+        .onDrag {
+            draggingCode = code
+            liveOrder = displayedCodes
+            return NSItemProvider(object: code as NSString)
+        } preview: {
             MetricCard(metric: metric, isPinned: pinned)
                 .frame(width: 180)
         }
-        .dropDestination(for: String.self) { items, _ in
-            dropTargetCode = nil
-            guard let dragged = items.first else { return false }
-            moveMetric(dragged, before: code)
-            return true
-        } isTargeted: { isTargeted in
-            dropTargetCode = isTargeted ? code : (dropTargetCode == code ? nil : dropTargetCode)
-        }
+        .onDrop(of: [.text], delegate: ReorderDropDelegate(
+            targetCode: code,
+            draggingCode: $draggingCode,
+            liveOrder: $liveOrder,
+            onFinalize: finalizeDrag
+        ))
     }
 
     // MARK: - Ordering
 
-    private var sortedMetrics: [MetricData] {
-        dashboardSortedMetrics(metrics, prefs: prefs)
+    /// The codes in the order they should be shown right now: the live drag order
+    /// while dragging, otherwise the persisted pinned-first order.
+    private var displayedCodes: [String] {
+        liveOrder ?? dashboardSortedMetrics(metrics, prefs: prefs).map(\.entry.code)
     }
 
-    /// Moves `dragged` to sit immediately before `target`, then persists the new
-    /// sequence. Pinned cards still float to the top per the sort rules, so this
-    /// effectively reorders within the pin groups.
-    private func moveMetric(_ dragged: String, before target: String) {
-        guard dragged != target else { return }
-        var order = sortedMetrics.map(\.entry.code)
-        guard let from = order.firstIndex(of: dragged) else { return }
-        order.remove(at: from)
-        guard let targetIndex = order.firstIndex(of: target) else { return }
-        order.insert(dragged, at: targetIndex)
-        persistOrder(order)
+    /// `displayedCodes` resolved back to their `MetricData`.
+    private var displayMetrics: [MetricData] {
+        let lookup = Dictionary(metrics.map { ($0.entry.code, $0) }) { first, _ in first }
+        return displayedCodes.compactMap { lookup[$0] }
+    }
+
+    /// Persists the final drag order and clears the transient drag state. Called
+    /// when a drop completes (on a card or in a gutter).
+    private func finalizeDrag() {
+        if let liveOrder {
+            persistOrder(liveOrder)
+        }
+        draggingCode = nil
+        liveOrder = nil
     }
 
     /// Persists `codes` as the leading entries of `orderedCodes`, preserving any
@@ -85,6 +104,56 @@ struct MetricsHomescreenGrid: View {
         var updated = prefs
         updated.orderedCodes = result
         prefs = updated
+    }
+}
+
+// MARK: - Drop delegates
+
+/// Per-card delegate that performs the live reflow: as the dragged card hovers a
+/// new target, it moves within `liveOrder` (animated), so neighbouring cards part
+/// to open the landing gap.
+private struct ReorderDropDelegate: DropDelegate {
+    let targetCode: String
+    @Binding var draggingCode: String?
+    @Binding var liveOrder: [String]?
+    let onFinalize: () -> Void
+
+    func dropEntered(info: DropInfo) {
+        guard let dragging = draggingCode, dragging != targetCode,
+              var order = liveOrder,
+              let from = order.firstIndex(of: dragging),
+              let dest = order.firstIndex(of: targetCode)
+        else { return }
+        withAnimation(.snappy) {
+            order.move(fromOffsets: IndexSet(integer: from), toOffset: dest > from ? dest + 1 : dest)
+            liveOrder = order
+        }
+    }
+
+    func dropUpdated(info: DropInfo) -> DropProposal? {
+        DropProposal(operation: .move)
+    }
+
+    func performDrop(info: DropInfo) -> Bool {
+        onFinalize()
+        return true
+    }
+}
+
+/// Grid-level fallback delegate: finalizes a drop that lands between cards, and
+/// resets the drag state so a lifted card never stays hidden.
+private struct GridResetDropDelegate: DropDelegate {
+    @Binding var draggingCode: String?
+    @Binding var liveOrder: [String]?
+    let onFinalize: () -> Void
+
+    func dropUpdated(info: DropInfo) -> DropProposal? {
+        DropProposal(operation: .move)
+    }
+
+    func performDrop(info: DropInfo) -> Bool {
+        onFinalize()
+        return true
     }
 }
 
