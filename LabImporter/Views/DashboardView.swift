@@ -302,14 +302,6 @@ private struct MetricCard: View {
             }
         }
 
-        var color: Color {
-            switch self {
-            case .rising: return .orange
-            case .falling: return .blue
-            case .steady: return .secondary
-            }
-        }
-
         var accessibilityLabel: Text {
             switch self {
             case .rising: return Text("Trending up")
@@ -331,9 +323,9 @@ private struct MetricCard: View {
     private func trendBadge(_ trend: Trend) -> some View {
         Image(systemName: trend.symbol)
             .font(.caption2.weight(.bold))
-            .foregroundStyle(trend.color)
+            .foregroundStyle(categoryColor)
             .padding(4)
-            .background(trend.color.opacity(0.15), in: Circle())
+            .background(categoryColor.opacity(0.15), in: Circle())
             .accessibilityLabel(trend.accessibilityLabel)
     }
 
