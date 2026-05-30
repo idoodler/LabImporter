@@ -173,12 +173,127 @@ private struct LabImportModifier: ViewModifier {
             } message: {
                 Text(engine.errorMessage ?? "")
             }
-            .overlay {
-                if engine.isProcessing {
-                    ProcessingHUD(phase: engine.phase)
+            // The processing HUD is hosted in its own UIWindow above the key
+            // window rather than as a SwiftUI `.overlay`. An overlay composites
+            // *inside* the navigation container's SwiftUI layer, but the toolbar
+            // buttons live in UIKit's `UINavigationBar`, which sits above that
+            // layer — so an overlay scrim can't reliably block them (the buttons
+            // still highlight and, worse, cancel taps). A dedicated window is
+            // genuinely on top of everything, navigation bar included, and
+            // swallows all touches for the duration of the import.
+            .background(
+                ProcessingHUDPresenter(isProcessing: engine.isProcessing, phase: engine.phase)
+            )
+    }
+}
+
+// MARK: - HUD window presentation
+
+/// Invisible SwiftUI anchor whose coordinator owns a top-level `UIWindow` that
+/// hosts the processing HUD. Placed via `.background` so it occupies no layout
+/// space; all it does is forward `isProcessing` / `phase` into the coordinator,
+/// which shows or tears down the window.
+private struct ProcessingHUDPresenter: UIViewRepresentable {
+    var isProcessing: Bool
+    var phase: ImportPhase
+
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView(frame: .zero)
+        view.isUserInteractionEnabled = false
+        view.isHidden = true
+        return view
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {
+        context.coordinator.update(isProcessing: isProcessing, phase: phase, anchor: uiView)
+    }
+
+    static func dismantleUIView(_ uiView: UIView, coordinator: Coordinator) {
+        coordinator.tearDownNow()
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator() }
+
+    @MainActor
+    final class Coordinator {
+        private var window: UIWindow?
+        private let model = HUDModel()
+        private var dismissTask: Task<Void, Never>?
+
+        func update(isProcessing: Bool, phase: ImportPhase, anchor: UIView) {
+            model.phase = phase
+
+            if isProcessing {
+                dismissTask?.cancel()
+                dismissTask = nil
+                presentIfNeeded(from: anchor)
+                model.isActive = true
+            } else {
+                guard window != nil else { return }
+                model.isActive = false
+                // Defer teardown so the card/scrim can animate out with the
+                // same transition they animate in with.
+                dismissTask?.cancel()
+                dismissTask = Task { [weak self] in
+                    try? await Task.sleep(for: .milliseconds(350))
+                    guard !Task.isCancelled else { return }
+                    self?.tearDownNow()
                 }
             }
-            .animation(.easeInOut(duration: 0.25), value: engine.isProcessing)
+        }
+
+        func tearDownNow() {
+            dismissTask?.cancel()
+            dismissTask = nil
+            window?.isHidden = true
+            window = nil
+        }
+
+        private func presentIfNeeded(from anchor: UIView) {
+            guard window == nil else { return }
+            guard let scene = anchor.window?.windowScene ?? Self.activeWindowScene else { return }
+
+            let host = UIHostingController(rootView: ProcessingHUDHost(model: model))
+            host.view.backgroundColor = .clear
+
+            let window = UIWindow(windowScene: scene)
+            // Above alerts so nothing in the app — navigation bar included —
+            // can sit on top of or receive touches through the HUD.
+            window.windowLevel = .alert + 1
+            window.backgroundColor = .clear
+            window.rootViewController = host
+            window.isHidden = false  // shown, but not made key — we don't steal first responder
+            self.window = window
+        }
+
+        private static var activeWindowScene: UIWindowScene? {
+            UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .first { $0.activationState == .foregroundActive }
+        }
+    }
+}
+
+/// Observable backing for the windowed HUD. Living in a persistent hosting
+/// controller (rather than re-creating the view) lets phase changes and the
+/// show/hide transition animate naturally inside SwiftUI.
+@MainActor
+@Observable
+private final class HUDModel {
+    var phase: ImportPhase = .extractingText
+    var isActive = false
+}
+
+private struct ProcessingHUDHost: View {
+    @Bindable var model: HUDModel
+
+    var body: some View {
+        ZStack {
+            if model.isActive {
+                ProcessingHUD(phase: model.phase)
+            }
+        }
+        .animation(.easeInOut(duration: 0.25), value: model.isActive)
     }
 }
 
