@@ -3,93 +3,156 @@ import SwiftUI
 struct WelcomeView: View {
     let onDismiss: () -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var appeared = false
+
+    private var features: [Feature] {
+        [
+            Feature(
+                icon: "camera.viewfinder",
+                color: LabCategory.bloodGas.color,
+                title: "Import Any Lab Report",
+                description: "Photograph, paste, or scan a report to extract your values."
+            ),
+            Feature(
+                icon: "sparkles",
+                color: LabCategory.endocrine.color,
+                title: "On-Device AI",
+                description: "Apple Intelligence reads your report privately — nothing leaves your device."
+            ),
+            Feature(
+                icon: "heart.text.square.fill",
+                color: LabCategory.cardiac.color,
+                title: "Saved to Apple Health",
+                description: "Reports are stored as clinical CDA records directly in Apple Health."
+            ),
+            Feature(
+                icon: "chart.line.uptrend.xyaxis",
+                color: LabCategory.hepatic.color,
+                title: "Track Your Trends",
+                description: "See how your values change over time with interactive charts."
+            )
+        ]
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             Spacer()
-
-            // App icon + title
-            VStack(spacing: 20) {
-                if let icon = UIImage(named: "AppIcon") {
-                    Image(uiImage: icon)
-                        .resizable()
-                        .frame(width: 110, height: 110)
-                        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-                        .shadow(color: .black.opacity(0.14), radius: 20, x: 0, y: 8)
-                }
-                VStack(spacing: 4) {
-                    Text("Welcome to")
-                        .font(.title3)
-                        .foregroundStyle(.secondary)
-                    Text(verbatim: "LabImporter")
-                        .font(.largeTitle.bold())
-                }
-            }
-
+            hero
             Spacer()
-
-            // Feature list
-            VStack(alignment: .leading, spacing: 28) {
-                FeatureRow(
-                    icon: "camera.viewfinder",
-                    color: .blue,
-                    title: "Import Any Lab Report",
-                    description: "Photograph, paste, or scan a report to extract your values."
-                )
-                FeatureRow(
-                    icon: "sparkles",
-                    color: .purple,
-                    title: "On-Device AI",
-                    description: "Apple Intelligence reads your report privately — nothing leaves your device."
-                )
-                FeatureRow(
-                    icon: "heart.text.square.fill",
-                    color: .red,
-                    title: "Saved to Apple Health",
-                    description: "Reports are stored as clinical CDA records directly in Apple Health."
-                )
-                FeatureRow(
-                    icon: "chart.line.uptrend.xyaxis",
-                    color: .green,
-                    title: "Track Your Trends",
-                    description: "See how your values change over time with interactive charts."
-                )
-            }
-            .padding(.horizontal, 32)
-
-            Spacer()
-
-            Button("Get Started", action: onDismiss)
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
-                .frame(maxWidth: .infinity)
+            featureCard
+                .frame(maxWidth: 480)
                 .padding(.horizontal, 24)
-                .padding(.bottom, 48)
+            Spacer()
+            getStartedButton
         }
+        .background { MorphingCategoryBackground() }
+        .onAppear {
+            guard !reduceMotion else { appeared = true; return }
+            withAnimation(.smooth(duration: 0.7)) { appeared = true }
+        }
+    }
+
+    // MARK: - Hero
+
+    private var hero: some View {
+        VStack(spacing: 20) {
+            appIcon
+            VStack(spacing: 4) {
+                Text("Welcome to")
+                    .font(.title3)
+                    .foregroundStyle(.secondary)
+                Text(verbatim: "LabImporter")
+                    .font(.largeTitle.bold())
+            }
+        }
+        .opacity(appeared ? 1 : 0)
+        .offset(y: appeared ? 0 : 16)
+    }
+
+    @ViewBuilder
+    private var appIcon: some View {
+        if let icon = UIImage(named: "AppIcon") {
+            Image(uiImage: icon)
+                .resizable()
+                .frame(width: 110, height: 110)
+                .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                        .stroke(Color.white.opacity(0.25), lineWidth: 0.5)
+                )
+                .shadow(color: .black.opacity(0.18), radius: 24, x: 0, y: 10)
+        }
+    }
+
+    // MARK: - Feature card
+
+    private var featureCard: some View {
+        VStack(alignment: .leading, spacing: 26) {
+            ForEach(Array(features.enumerated()), id: \.offset) { index, feature in
+                FeatureRow(feature: feature)
+                    .opacity(appeared ? 1 : 0)
+                    .offset(y: appeared ? 0 : 20)
+                    .animation(
+                        reduceMotion ? nil : .smooth(duration: 0.6).delay(0.15 + Double(index) * 0.08),
+                        value: appeared
+                    )
+            }
+        }
+        .padding(24)
+        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 28))
+        .overlay(
+            RoundedRectangle(cornerRadius: 28)
+                .stroke(Color.primary.opacity(0.08), lineWidth: 0.5)
+        )
+    }
+
+    // MARK: - Button
+
+    private var getStartedButton: some View {
+        Button("Get Started", action: onDismiss)
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 24)
+            .padding(.bottom, 48)
+            .opacity(appeared ? 1 : 0)
     }
 }
 
-// MARK: - Feature row
+// MARK: - Feature model & row
 
-private struct FeatureRow: View {
+private struct Feature {
     let icon: String
     let color: Color
     let title: LocalizedStringKey
     let description: LocalizedStringKey
+}
+
+private struct FeatureRow: View {
+    let feature: Feature
 
     var body: some View {
         HStack(alignment: .center, spacing: 18) {
             ZStack {
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(color.opacity(0.13))
+                    .fill(
+                        LinearGradient(
+                            colors: [feature.color, feature.color.opacity(0.7)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
                     .frame(width: 58, height: 58)
-                Image(systemName: icon)
+                    .shadow(color: feature.color.opacity(0.35), radius: 6, x: 0, y: 3)
+                Image(systemName: feature.icon)
                     .font(.title2)
-                    .foregroundStyle(color)
+                    .foregroundStyle(.white)
             }
             VStack(alignment: .leading, spacing: 3) {
-                Text(title)
+                Text(feature.title)
                     .font(.body.bold())
-                Text(description)
+                Text(feature.description)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
