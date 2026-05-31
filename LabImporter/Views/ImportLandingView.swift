@@ -24,6 +24,11 @@ struct ImportLandingView: View {
             Spacer()
                 .frame(height: 56)
         }
+        // Fill the whole pane so the background covers it. A VStack otherwise
+        // hugs its content width (~480pt here), which on iPad left the wash as a
+        // narrow centered strip — the Dashboard avoids this only because its
+        // background sits on a greedy ScrollView.
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         // Painted as this view's own content background — exactly like the
         // Dashboard's CategoryBackground — so it reliably fills the screen
         // (iPhone) or the detail pane (iPad).
