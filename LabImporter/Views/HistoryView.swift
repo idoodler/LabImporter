@@ -112,6 +112,7 @@ struct HistoryView: View {
                     Button("Delete", role: .destructive) {
                         pendingDeleteIDs = Array(selection)
                     }
+                    .tint(.red)
                     .disabled(selection.isEmpty)
                 }
             }
@@ -255,8 +256,12 @@ struct HistoryView: View {
                 counts[LabCategory.forCode(entry.code), default: 0] += 1
             }
         }
+        // Tiebreak by the category's raw value so equal counts always sort the
+        // same way. Swift's sort isn't stable, and this property recomputes on
+        // every re-render (e.g. each selection toggle) — without a deterministic
+        // order the wash colors would swap corners on unrelated state changes.
         return counts
-            .sorted { $0.value > $1.value }
+            .sorted { $0.value != $1.value ? $0.value > $1.value : $0.key.rawValue < $1.key.rawValue }
             .prefix(3)
             .map { $0.key.color }
     }
