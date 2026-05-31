@@ -113,3 +113,11 @@ struct CodePickerSheet: View {
         }
     }
 }
+
+// MARK: - Preview
+
+#Preview {
+    @Previewable @State var code = "2160-0"
+    @Previewable @State var name = "Creatinine"
+    CodePickerSheet(code: $code, name: $name)
+}

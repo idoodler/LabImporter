@@ -423,3 +423,29 @@ struct CategoryBackground: View {
         colors.isEmpty ? [Color.accentColor.opacity(0.6)] : colors
     }
 }
+
+// MARK: - Preview
+
+#Preview("Dashboard") {
+    NavigationStack {
+        DashboardView(
+            reports: LabReport.sampleHistory,
+            onScan: {}, onPickFile: {}, onPaste: {}, onManual: {},
+            scannerAvailable: true,
+            clipboardAvailable: true,
+            isProcessing: false
+        )
+    }
+}
+
+#Preview("Empty") {
+    NavigationStack {
+        DashboardView(
+            reports: [],
+            onScan: {}, onPickFile: {}, onPaste: {}, onManual: {},
+            scannerAvailable: true,
+            clipboardAvailable: false,
+            isProcessing: false
+        )
+    }
+}

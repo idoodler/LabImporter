@@ -407,3 +407,17 @@ struct LicenseView: View {
     SOFTWARE.
     """
 }
+
+// MARK: - Previews
+
+#Preview("Settings") {
+    @Previewable @State var prefs = LabDisplayPreferences()
+    SettingsView(prefs: $prefs, allCodes: CodeName.sampleCodes)
+}
+
+#Preview("Sort & Visibility") {
+    @Previewable @State var prefs = LabDisplayPreferences()
+    NavigationStack {
+        LabSortEditor(prefs: $prefs, allCodes: CodeName.sampleCodes)
+    }
+}

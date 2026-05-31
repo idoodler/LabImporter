@@ -81,3 +81,9 @@ struct AddValueSheet: View {
         dismiss()
     }
 }
+
+// MARK: - Preview
+
+#Preview {
+    AddValueSheet { _ in }
+}

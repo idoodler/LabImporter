@@ -401,3 +401,17 @@ private struct ValueDescriptionCard: View {
         return term.englishName == term.name ? nil : term.englishName
     }
 }
+
+// MARK: - Preview
+
+#Preview("Trends") {
+    NavigationStack {
+        TrendsView(reports: LabReport.sampleHistory, initialCode: "4548-4")
+    }
+}
+
+#Preview("No Data") {
+    NavigationStack {
+        TrendsView(reports: [])
+    }
+}
