@@ -18,6 +18,7 @@ struct HomeView: View {
     /// back so its review sheet isn't presented underneath the welcome cover.
     @State private var pendingImportURL: URL?
     @AppStorage("hasSeenWelcome") private var hasSeenWelcome = false
+    @AppStorage("hasGrantedHealthAccess") private var hasGrantedHealthAccess = false
 
     // iPad sidebar state
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
@@ -76,12 +77,25 @@ struct HomeView: View {
             }
             .interactiveDismissDisabled()
         }
-        .task { await loadReports() }
+        .task {
+            // Reinstalled apps may still have CDA write access from a previous
+            // launch — in that case skip the permission gate entirely.
+            if !hasGrantedHealthAccess,
+               HealthKitService.shared.cdaWriteAuthorizationStatus() == .sharingAuthorized {
+                hasGrantedHealthAccess = true
+            }
+            await loadReportsIfAuthorized()
+        }
+        .onChange(of: hasGrantedHealthAccess) { _, granted in
+            // Hold report loading until the user has cleared the permission
+            // gate — otherwise the system prompt fires before the explainer.
+            if granted { Task { await loadReportsIfAuthorized() } }
+        }
         .onChange(of: showReview) { _, showing in
-            if !showing { Task { await loadReports() } }
+            if !showing { Task { await loadReportsIfAuthorized() } }
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
-            Task { await loadReports() }
+            Task { await loadReportsIfAuthorized() }
         }
         .onAppear {
             refreshClipboardState()
@@ -91,13 +105,31 @@ struct HomeView: View {
             handleIncomingFile(url)
         }
         .fullScreenCover(isPresented: Binding(
-            get: { !hasSeenWelcome },
+            get: { !hasSeenWelcome || !hasGrantedHealthAccess },
             set: { _ in }
         )) {
+            onboardingFlow
+        }
+    }
+
+    /// Two-step onboarding: marketing welcome → Apple Health permission gate.
+    /// Swapping the inner view inside the same fullScreenCover keeps the cover
+    /// presented without a dismiss/re-present flash between steps.
+    @ViewBuilder
+    private var onboardingFlow: some View {
+        if !hasSeenWelcome {
             WelcomeView {
-                hasSeenWelcome = true
+                withAnimation(.smooth(duration: 0.35)) {
+                    hasSeenWelcome = true
+                }
+            }
+            .transition(.opacity)
+        } else {
+            HealthPermissionView {
+                hasGrantedHealthAccess = true
                 flushPendingImport()
             }
+            .transition(.opacity)
         }
     }
 
@@ -226,7 +258,7 @@ struct HomeView: View {
     /// stashed and replayed once `WelcomeView` is dismissed — otherwise the
     /// review sheet would present beneath the welcome cover and stay hidden.
     private func handleIncomingFile(_ url: URL) {
-        guard hasSeenWelcome else {
+        guard hasSeenWelcome, hasGrantedHealthAccess else {
             pendingImportURL = url
             return
         }
@@ -252,6 +284,15 @@ struct HomeView: View {
     }
 
     // MARK: - Report loading
+
+    /// Wraps `loadReports` so it does nothing until the user has cleared the
+    /// Apple Health permission gate. Without this guard, `.task` would call
+    /// `requestAuthorization` and surface the system prompt before the
+    /// explainer view has even appeared.
+    private func loadReportsIfAuthorized() async {
+        guard hasGrantedHealthAccess else { return }
+        await loadReports()
+    }
 
     private func loadReports() async {
         do {

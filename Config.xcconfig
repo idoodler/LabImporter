@@ -1,3 +1,7 @@
 // Customise the bundle identifier prefix here.
 // $(DEVELOPMENT_TEAM) is substituted automatically by Xcode and Fastlane.
 BUNDLE_IDENTIFIER = dev.idoodler.$(DEVELOPMENT_TEAM).labimporter
+
+// Optional local overrides (e.g. DEVELOPMENT_TEAM for signing).
+// Create Local.xcconfig next to this file; it is gitignored.
+#include? "Local.xcconfig"

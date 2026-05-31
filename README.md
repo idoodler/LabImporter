@@ -100,7 +100,14 @@ After the first manual run succeeds, builds are triggered automatically on the *
 
 2. Open `LabImporter.xcodeproj` in Xcode 17 or later (requires the iOS 26 SDK).
 
-3. Select your development team in the project settings under **Signing & Capabilities**.
+3. Configure code signing by creating a `Local.xcconfig` file next to `Config.xcconfig` at the repo root:
+
+   ```
+   DEVELOPMENT_TEAM = YOUR_TEAM_ID
+   CODE_SIGN_STYLE = Automatic
+   ```
+
+   Replace `YOUR_TEAM_ID` with your 10-character Apple Developer Team ID (from [developer.apple.com/account](https://developer.apple.com/account)). `Config.xcconfig` includes this file via `#include?`, so the team and bundle identifier resolve automatically. `Local.xcconfig` is gitignored — keep it out of the Xcode project (the include works purely on the file path) so your Team ID never lands in commits.
 
 4. Build and run on a connected device or simulator (iOS 26+).
 

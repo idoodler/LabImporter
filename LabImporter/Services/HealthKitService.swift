@@ -15,6 +15,39 @@ actor HealthKitService {
         HKObjectType.documentType(forIdentifier: .CDA)
     }
 
+    // MARK: - Authorization
+
+    /// Returns the share authorization status for the CDA document type.
+    /// HealthKit deliberately hides read-permission status, so this is the only
+    /// signal we have for whether the user has been asked / what they answered.
+    nonisolated func cdaWriteAuthorizationStatus() -> HKAuthorizationStatus {
+        guard let type = HKObjectType.documentType(forIdentifier: .CDA) else {
+            return .notDetermined
+        }
+        return store.authorizationStatus(for: type)
+    }
+
+    /// Asks for every permission the app needs up-front (CDA share+read plus the
+    /// patient characteristics used in Settings). Returns `true` only when the
+    /// CDA share authorization comes back as granted — the only authorization
+    /// state HealthKit will tell us about.
+    func requestInitialAuthorization() async throws -> Bool {
+        var typesToShare: Set<HKSampleType> = []
+        var typesToRead: Set<HKObjectType> = []
+        if let cda = HKObjectType.documentType(forIdentifier: .CDA) {
+            typesToShare.insert(cda)
+            typesToRead.insert(cda)
+        }
+        if let dob = HKObjectType.characteristicType(forIdentifier: .dateOfBirth) {
+            typesToRead.insert(dob)
+        }
+        if let sex = HKObjectType.characteristicType(forIdentifier: .biologicalSex) {
+            typesToRead.insert(sex)
+        }
+        try await store.requestAuthorization(toShare: typesToShare, read: typesToRead)
+        return cdaWriteAuthorizationStatus() == .sharingAuthorized
+    }
+
     // MARK: - Write
 
     func importCDADocument(_ xmlString: String, date: Date) async throws {
