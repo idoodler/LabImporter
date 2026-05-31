@@ -123,6 +123,18 @@ Config.xcconfig  # BUNDLE_IDENTIFIER = dev.idoodler.$(DEVELOPMENT_TEAM).labimpor
 ### UI patterns
 - All user-facing text uses `String(localized:)` / SwiftUI auto-localization and
   lives in `Localizable.xcstrings`. Add new strings there; the app ships German + English.
+- **Naming the Health app:** never leave "Apple Health" untranslated. Every
+  reference to the Health app must use the **on-device localized app name** for
+  that language, keeping the **`Apple` brand prefix**. Canonical forms:
+  `de Apple Health` · `fr Apple Santé` · `es Apple Salud` · `it Apple Salute` ·
+  `pt-BR Apple Saúde` · `nl Apple Gezondheid` · `pl Apple Zdrowie` ·
+  `ja Appleヘルスケア` · `zh-Hans Apple 健康` · `ru Apple Здоровье` ·
+  `tr Apple Sağlık` · `uk Apple Здоров'я`. Inflect the localized noun for the
+  surrounding grammar (pl/ru/uk case declensions, fr `d'Apple` elision, uk в/у
+  euphony) — the `Apple` prefix stays invariant. Where the **English source**
+  itself uses a bare "Health" (e.g. the `Save Reports to Health` toggle), mirror
+  that and use the bare localized name without the prefix. `Health Records`
+  (`Gesundheitsakte`, …) is a *different* Apple feature — leave it alone.
 - OCR recognizes German + English (`["de-DE", "en-US"]`); narrative CDA labels are German.
 - Preferences (`labDisplayPrefs`, `patientName`, `hasSeenWelcome`, etc.) are read
   via `@AppStorage`. `LabDisplayPreferences` is `RawRepresentable` over JSON — note
