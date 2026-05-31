@@ -24,6 +24,15 @@ struct ImportLandingView: View {
             Spacer()
                 .frame(height: 56)
         }
+        // Fill the whole pane so the background covers it. A VStack otherwise
+        // hugs its content width (~480pt here), which on iPad left the wash as a
+        // narrow centered strip — the Dashboard avoids this only because its
+        // background sits on a greedy ScrollView.
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        // Painted as this view's own content background — exactly like the
+        // Dashboard's CategoryBackground — so it reliably fills the screen
+        // (iPhone) or the detail pane (iPad).
+        .background { MorphingCategoryBackground() }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -34,12 +43,18 @@ struct ImportLandingView: View {
         VStack(spacing: 20) {
             ZStack {
                 Circle()
-                    .fill(Color.primary.opacity(0.08))
+                    .fill(
+                        LinearGradient(
+                            colors: [LabCategory.bloodGas.color, LabCategory.endocrine.color],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
                     .frame(width: 110, height: 110)
-                    .shadow(color: .black.opacity(0.15), radius: 24, y: 8)
+                    .shadow(color: LabCategory.endocrine.color.opacity(0.35), radius: 24, y: 10)
                 Image(systemName: "waveform.path.ecg.rectangle.fill")
                     .font(.system(size: 52))
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(.white)
             }
 
             VStack(spacing: 8) {
@@ -97,7 +112,9 @@ struct ImportLandingView: View {
             .controlSize(.large)
         }
         .padding(24)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 28))
+        // Glass (rather than plain material) so the card matches the floating
+        // progress card it morphs into during import — see `LabImportEngine`.
+        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 28))
         .overlay(
             RoundedRectangle(cornerRadius: 28)
                 .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)

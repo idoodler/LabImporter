@@ -40,6 +40,7 @@
 		AABB000000000000000068AA /* TrendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000069AA /* TrendsView.swift */; };
 		AABB000000000000000070AA /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000071AA /* DashboardView.swift */; };
 		AABB000000000000000072AA /* ImportLandingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000073AA /* ImportLandingView.swift */; };
+		AABB0000000000000000C0AA /* MorphingCategoryBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000C1AA /* MorphingCategoryBackground.swift */; };
 		AABB000000000000000074AA /* LabDisplayPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000075AA /* LabDisplayPreferences.swift */; };
 		AABB000000000000000077AA /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000076AA /* Localizable.xcstrings */; };
 		AABB000000000000000078AA /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000079AA /* WelcomeView.swift */; };
@@ -85,6 +86,7 @@
 		AABB000000000000000069AA /* TrendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendsView.swift; sourceTree = "<group>"; };
 		AABB000000000000000071AA /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		AABB000000000000000073AA /* ImportLandingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportLandingView.swift; sourceTree = "<group>"; };
+		AABB0000000000000000C1AA /* MorphingCategoryBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorphingCategoryBackground.swift; sourceTree = "<group>"; };
 		AABB000000000000000075AA /* LabDisplayPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabDisplayPreferences.swift; sourceTree = "<group>"; };
 		AABB000000000000000076AA /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		AABB000000000000000079AA /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
@@ -185,6 +187,7 @@
 				AABB000000000000000069AA /* TrendsView.swift */,
 				AABB000000000000000071AA /* DashboardView.swift */,
 				AABB000000000000000073AA /* ImportLandingView.swift */,
+				AABB0000000000000000C1AA /* MorphingCategoryBackground.swift */,
 				AABB000000000000000079AA /* WelcomeView.swift */,
 				AABB000000000000000087AA /* SettingsView.swift */,
 				AABB0000000000000000C3DE /* UnsupportedDeviceView.swift */,
@@ -336,6 +339,7 @@
 				AABB000000000000000068AA /* TrendsView.swift in Sources */,
 				AABB000000000000000070AA /* DashboardView.swift in Sources */,
 				AABB000000000000000072AA /* ImportLandingView.swift in Sources */,
+				AABB0000000000000000C0AA /* MorphingCategoryBackground.swift in Sources */,
 				AABB000000000000000074AA /* LabDisplayPreferences.swift in Sources */,
 				AABB000000000000000078AA /* WelcomeView.swift in Sources */,
 				AABB000000000000000086AA /* SettingsView.swift in Sources */,
