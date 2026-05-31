@@ -65,9 +65,17 @@ struct MorphingCategoryBackground: View {
             points: Self.points,
             colors: (0..<9).map { color(forVertex: $0, time: time) }
         )
+        // Greedily fill whatever space we're given so the wash tracks window
+        // resizes (iPad multitasking / Stage Manager) and large canvases.
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         // A wide blur melts the nine color zones into one another so the result
         // reads as an organic wash rather than a visible grid.
         .blur(radius: 60)
+        // Blurring a frame-clipped gradient fades its edges toward transparent,
+        // which on a large canvas reads as a dark vignette. Scaling the blurred
+        // result up pushes those faded margins off-screen so the color fills
+        // edge to edge.
+        .scaleEffect(1.4)
     }
 
     /// The color for a given mesh vertex at a moment in time: a continuous
