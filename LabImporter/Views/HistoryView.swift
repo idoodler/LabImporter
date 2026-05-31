@@ -5,6 +5,9 @@ struct HistoryView: View {
     @State private var loadError: String?
     @State private var deleteError: String?
     @State private var reportToEdit: LabReport?
+    // Reports the user swiped to delete, awaiting confirmation. Deletion from
+    // Apple Health is irreversible, so we verify intent before removing them.
+    @State private var pendingDeleteIDs: [UUID] = []
 
     var body: some View {
         Group {
@@ -42,6 +45,19 @@ struct HistoryView: View {
         } message: {
             Text(deleteError ?? "")
         }
+        .alert("Delete Report?", isPresented: .constant(!pendingDeleteIDs.isEmpty)) {
+            Button("Delete", role: .destructive) {
+                deleteReports(ids: pendingDeleteIDs)
+                pendingDeleteIDs = []
+            }
+            Button("Cancel", role: .cancel) { pendingDeleteIDs = [] }
+        } message: {
+            if pendingDeleteIDs.count == 1 {
+                Text("This report will be permanently removed from Apple Health.")
+            } else {
+                Text("\(pendingDeleteIDs.count) reports will be permanently removed from Apple Health.")
+            }
+        }
     }
 
     // MARK: - List
@@ -69,7 +85,7 @@ struct HistoryView: View {
                             .tint(.blue)
                         }
                     }
-                    .onDelete { offsets in deleteReports(in: group.reports, at: offsets) }
+                    .onDelete { offsets in pendingDeleteIDs = offsets.map { group.reports[$0].id } }
                 }
             }
         }
@@ -190,8 +206,7 @@ struct HistoryView: View {
         }
     }
 
-    private func deleteReports(in groupReports: [LabReport], at offsets: IndexSet) {
-        let ids = offsets.map { groupReports[$0].id }
+    private func deleteReports(ids: [UUID]) {
         reports.removeAll { ids.contains($0.id) }
         Task {
             var failed = false
@@ -296,5 +311,19 @@ private struct CategoryDots: View {
                     )
             }
         }
+    }
+}
+
+// MARK: - Preview
+
+#Preview("History") {
+    NavigationStack {
+        HistoryView()
+    }
+}
+
+#Preview("Report Row") {
+    List {
+        ReportRow(report: .sample)
     }
 }

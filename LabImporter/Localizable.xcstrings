@@ -940,13 +940,13 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apple Health-toegang toestaan"
+            "value" : "Apple Gezondheid-toegang toestaan"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zezwól na dostęp do Apple Health"
+            "value" : "Zezwól na dostęp do Apple Zdrowia"
           }
         },
         "pt-BR" : {
@@ -1325,13 +1325,13 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apple Health-toegang vereist"
+            "value" : "Apple Gezondheid-toegang vereist"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wymagany dostęp do Apple Health"
+            "value" : "Wymagany dostęp do Apple Zdrowia"
           }
         },
         "pt-BR" : {
@@ -2924,13 +2924,13 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verbinden met Apple Health"
+            "value" : "Verbinden met Apple Gezondheid"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Połącz z Apple Health"
+            "value" : "Połącz z Apple Zdrowiem"
           }
         },
         "pt-BR" : {
@@ -5863,73 +5863,73 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Importiere einen Laborbericht und speichere ihn in der Gesundheits-App, um ihn hier zu sehen."
+            "value" : "Importiere einen Laborbericht und speichere ihn in Apple Health, um ihn hier zu sehen."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Importa un informe de laboratorio y guárdalo en Salud para verlo aquí."
+            "value" : "Importa un informe de laboratorio y guárdalo en Apple Salud para verlo aquí."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Importez un rapport de laboratoire et enregistrez-le dans Santé pour le voir ici."
+            "value" : "Importez un rapport de laboratoire et enregistrez-le dans Apple Santé pour le voir ici."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Importa un referto e salvalo in Salute per vederlo qui."
+            "value" : "Importa un referto e salvalo in Apple Salute per vederlo qui."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "検査レポートをインポートしてヘルスケアに保存すると、ここに表示されます。"
+            "value" : "検査レポートをインポートしてAppleヘルスケアに保存すると、ここに表示されます。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Importeer een labrapport en sla het op in Gezondheid om het hier te zien."
+            "value" : "Importeer een labrapport en sla het op in Apple Gezondheid om het hier te zien."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zaimportuj raport z badań i zapisz go w Zdrowiu, aby zobaczyć go tutaj."
+            "value" : "Zaimportuj raport z badań i zapisz go w Apple Zdrowiu, aby zobaczyć go tutaj."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Importe um laudo e salve-o no Saúde para vê-lo aqui."
+            "value" : "Importe um laudo e salve-o no Apple Saúde para vê-lo aqui."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Импортируйте лабораторный отчёт и сохраните его в Здоровье, чтобы он появился здесь."
+            "value" : "Импортируйте лабораторный отчёт и сохраните его в Apple Здоровье, чтобы он появился здесь."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bir laboratuvar raporu içe aktarın ve burada görmek için Sağlık'a kaydedin."
+            "value" : "Bir laboratuvar raporu içe aktarın ve burada görmek için Apple Sağlık'a kaydedin."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Імпортуйте лабораторний звіт і збережіть його у Здоров'ї, щоб побачити тут."
+            "value" : "Імпортуйте лабораторний звіт і збережіть його в Apple Здоров'ї, щоб побачити тут."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "导入检验报告并保存到健康，即可在此查看。"
+            "value" : "导入检验报告并保存到 Apple 健康，即可在此查看。"
           }
         }
       }
@@ -6276,13 +6276,13 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Geïmporteerde labwaarden worden als klinische CDA-records in Apple Health opgeslagen."
+            "value" : "Geïmporteerde labwaarden worden als klinische CDA-records in Apple Gezondheid opgeslagen."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zaimportowane wyniki są zapisywane jako kliniczne dokumenty CDA w Apple Health."
+            "value" : "Zaimportowane wyniki są zapisywane jako kliniczne dokumenty CDA w Apple Zdrowiu."
           }
         },
         "pt-BR" : {
@@ -7267,13 +7267,13 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "LabImporter heeft volledige Apple Health-toegang nodig. Open Instellingen, tik op Apple Health en zet elke categorie voor LabImporter aan."
+            "value" : "LabImporter heeft volledige Apple Gezondheid-toegang nodig. Open Instellingen, tik op Apple Gezondheid en zet elke categorie voor LabImporter aan."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "LabImporter potrzebuje pełnego dostępu do Apple Health. Otwórz Ustawienia, wybierz Apple Health i włącz każdą kategorię dla LabImporter."
+            "value" : "LabImporter potrzebuje pełnego dostępu do Apple Zdrowia. Otwórz Ustawienia, wybierz Apple Zdrowie i włącz każdą kategorię dla LabImporter."
           }
         },
         "pt-BR" : {
@@ -7343,13 +7343,13 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "LabImporter bewaart alles in Apple Health — daarvoor heeft het eerst je toestemming nodig."
+            "value" : "LabImporter bewaart alles in Apple Gezondheid — daarvoor heeft het eerst je toestemming nodig."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "LabImporter zapisuje wszystko w Apple Health — dlatego najpierw potrzebuje Twojej zgody."
+            "value" : "LabImporter zapisuje wszystko w Apple Zdrowiu — dlatego najpierw potrzebuje Twojej zgody."
           }
         },
         "pt-BR" : {
@@ -9863,13 +9863,13 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eerdere rapporten worden uit Apple Health geladen zodat je ze kunt bekijken en delen."
+            "value" : "Eerdere rapporten worden uit Apple Gezondheid geladen zodat je ze kunt bekijken en delen."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wcześniejsze raporty są wczytywane z Apple Health, abyś mógł je przeglądać i udostępniać."
+            "value" : "Wcześniejsze raporty są wczytywane z Apple Zdrowia, abyś mógł je przeglądać i udostępniać."
           }
         },
         "pt-BR" : {
@@ -10138,73 +10138,73 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fotografiere deinen Laborbericht und\nspeichere ihn direkt in der Gesundheits-App."
+            "value" : "Fotografiere deinen Laborbericht und\nspeichere ihn direkt in Apple Health."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fotografía tu informe de laboratorio y\nguárdalo directamente en Salud."
+            "value" : "Fotografía tu informe de laboratorio y\nguárdalo directamente en Apple Salud."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Photographiez votre rapport de labo et\nenregistrez-le directement dans Santé."
+            "value" : "Photographiez votre rapport de labo et\nenregistrez-le directement dans Apple Santé."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fotografa il tuo referto e\nsalvalo direttamente in Salute."
+            "value" : "Fotografa il tuo referto e\nsalvalo direttamente in Apple Salute."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "検査レポートを撮影して\nヘルスケアに直接保存。"
+            "value" : "検査レポートを撮影して\nAppleヘルスケアに直接保存。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fotografeer uw labrapport en\nsla het rechtstreeks op in Gezondheid."
+            "value" : "Fotografeer uw labrapport en\nsla het rechtstreeks op in Apple Gezondheid."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sfotografuj raport z badań i\nzapisz go bezpośrednio w Zdrowiu."
+            "value" : "Sfotografuj raport z badań i\nzapisz go bezpośrednio w Apple Zdrowiu."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fotografe seu laudo e\nsalve-o diretamente no Saúde."
+            "value" : "Fotografe seu laudo e\nsalve-o diretamente no Apple Saúde."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Сфотографируйте лабораторный отчёт и\nсохраните его прямо в Здоровье."
+            "value" : "Сфотографируйте лабораторный отчёт и\nсохраните его прямо в Apple Здоровье."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Laboratuvar raporunuzu fotoğraflayın ve\ndoğrudan Sağlık'a kaydedin."
+            "value" : "Laboratuvar raporunuzu fotoğraflayın ve\ndoğrudan Apple Sağlık'a kaydedin."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Сфотографуйте лабораторний звіт і\nзбережіть його прямо у Здоров'ї."
+            "value" : "Сфотографуйте лабораторний звіт і\nзбережіть його прямо в Apple Здоров'ї."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "拍摄检验报告，\n直接保存到健康。"
+            "value" : "拍摄检验报告，\n直接保存到 Apple 健康。"
           }
         }
       }
@@ -10357,6 +10357,82 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "置顶"
+          }
+        }
+      }
+    },
+    "Pinned" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Angeheftet"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fijados"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Épinglés"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fissati"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ピン留め"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vastgezet"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przypięte"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fixados"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Закреплённые"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sabitlenenler"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Закріплені"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已置顶"
           }
         }
       }
@@ -11052,73 +11128,73 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Berichte werden als klinische CDA-Datensätze direkt in der Gesundheits-App gespeichert."
+            "value" : "Berichte werden als klinische CDA-Datensätze direkt in Apple Health gespeichert."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Los informes se almacenan como registros CDA clínicos directamente en Salud."
+            "value" : "Los informes se almacenan como registros CDA clínicos directamente en Apple Salud."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les rapports sont stockés en tant qu'enregistrements CDA cliniques directement dans Santé."
+            "value" : "Les rapports sont stockés en tant qu'enregistrements CDA cliniques directement dans Apple Santé."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "I referti sono archiviati come record CDA clinici direttamente in Salute."
+            "value" : "I referti sono archiviati come record CDA clinici direttamente in Apple Salute."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "レポートは臨床CDA記録としてヘルスケアに直接保存されます。"
+            "value" : "レポートは臨床CDA記録としてAppleヘルスケアに直接保存されます。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rapporten worden opgeslagen als klinische CDA-records rechtstreeks in Gezondheid."
+            "value" : "Rapporten worden opgeslagen als klinische CDA-records rechtstreeks in Apple Gezondheid."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Raporty są przechowywane jako kliniczne dokumenty CDA bezpośrednio w Zdrowiu."
+            "value" : "Raporty są przechowywane jako kliniczne dokumenty CDA bezpośrednio w Apple Zdrowiu."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Os laudos são armazenados como registros CDA clínicos diretamente no Saúde."
+            "value" : "Os laudos são armazenados como registros CDA clínicos diretamente no Apple Saúde."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Отчёты хранятся как клинические документы CDA непосредственно в Здоровье."
+            "value" : "Отчёты хранятся как клинические документы CDA непосредственно в Apple Здоровье."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Raporlar, klinik CDA kayıtları olarak doğrudan Sağlık'ta depolanır."
+            "value" : "Raporlar, klinik CDA kayıtları olarak doğrudan Apple Sağlık'ta depolanır."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Звіти зберігаються як клінічні документи CDA безпосередньо у Здоров'ї."
+            "value" : "Звіти зберігаються як клінічні документи CDA безпосередньо в Apple Здоров'ї."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "报告作为临床 CDA 记录直接存储在健康中。"
+            "value" : "报告作为临床 CDA 记录直接存储在 Apple 健康中。"
           }
         }
       }
@@ -11387,13 +11463,13 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rapporten in Health opslaan"
+            "value" : "Rapporten in Gezondheid opslaan"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zapisuj raporty w Health"
+            "value" : "Zapisuj raporty w Zdrowiu"
           }
         },
         "pt-BR" : {
@@ -11515,67 +11591,67 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Guardado en Salud"
+            "value" : "Guardado en Apple Salud"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enregistré dans Santé"
+            "value" : "Enregistré dans Apple Santé"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Salvato in Salute"
+            "value" : "Salvato in Apple Salute"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ヘルスケアに保存済み"
+            "value" : "Appleヘルスケアに保存済み"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Opgeslagen in Gezondheid"
+            "value" : "Opgeslagen in Apple Gezondheid"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zapisano w Zdrowiu"
+            "value" : "Zapisano w Apple Zdrowiu"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Salvo no Saúde"
+            "value" : "Salvo no Apple Saúde"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Сохранено в Здоровье"
+            "value" : "Сохранено в Apple Здоровье"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sağlık'a Kaydedildi"
+            "value" : "Apple Sağlık'a Kaydedildi"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Збережено у Здоров'ї"
+            "value" : "Збережено в Apple Здоров'ї"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已保存到健康"
+            "value" : "已保存到 Apple 健康"
           }
         }
       }
@@ -11838,7 +11914,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "検査レポートをスキャンまたは取り込んで\nそのままApple Healthに保存。"
+            "value" : "検査レポートをスキャンまたは取り込んで\nそのままAppleヘルスケアに保存。"
           }
         },
         "nl" : {
@@ -11850,7 +11926,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zeskanuj lub zaimportuj raport laboratoryjny i\nzapisz go bezpośrednio w Apple Health."
+            "value" : "Zeskanuj lub zaimportuj raport laboratoryjny i\nzapisz go bezpośrednio w Apple Zdrowiu."
           }
         },
         "pt-BR" : {
@@ -11862,7 +11938,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Сканируйте или импортируйте лабораторный отчёт и\nсохраните его прямо в Apple Health."
+            "value" : "Сканируйте или импортируйте лабораторный отчёт и\nсохраните его прямо в Apple Здоровье."
           }
         },
         "tr" : {
@@ -11874,7 +11950,7 @@
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Скануйте або імпортуйте лабораторний звіт і\nзбережіть його одразу в Apple Health."
+            "value" : "Скануйте або імпортуйте лабораторний звіт і\nзбережіть його одразу в Apple Здоров’ї."
           }
         },
         "zh-Hans" : {
@@ -12270,73 +12346,73 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Einige Berichte konnten nicht aus der Gesundheits-App entfernt werden."
+            "value" : "Einige Berichte konnten nicht aus Apple Health entfernt werden."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se pudieron eliminar algunos informes de Salud."
+            "value" : "No se pudieron eliminar algunos informes de Apple Salud."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Certains rapports n'ont pas pu être supprimés de Santé."
+            "value" : "Certains rapports n'ont pas pu être supprimés d’Apple Santé."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Non è stato possibile rimuovere alcuni referti da Salute."
+            "value" : "Non è stato possibile rimuovere alcuni referti da Apple Salute."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一部のレポートをヘルスケアから削除できませんでした。"
+            "value" : "一部のレポートをAppleヘルスケアから削除できませんでした。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sommige rapporten konden niet uit Gezondheid worden verwijderd."
+            "value" : "Sommige rapporten konden niet uit Apple Gezondheid worden verwijderd."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nie udało się usunąć niektórych raportów ze Zdrowia."
+            "value" : "Nie udało się usunąć niektórych raportów z Apple Zdrowia."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Não foi possível remover alguns laudos do Saúde."
+            "value" : "Não foi possível remover alguns laudos do Apple Saúde."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Некоторые отчёты не удалось удалить из Здоровья."
+            "value" : "Некоторые отчёты не удалось удалить из Apple Здоровья."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bazı raporlar Sağlık'tan kaldırılamadı."
+            "value" : "Bazı raporlar Apple Sağlık'tan kaldırılamadı."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Деякі звіти не вдалося видалити зі Здоров'я."
+            "value" : "Деякі звіти не вдалося видалити з Apple Здоров'я."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "部分报告无法从健康中删除。"
+            "value" : "部分报告无法从 Apple 健康中删除。"
           }
         }
       }
@@ -12728,73 +12804,73 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Der Laborbericht wurde als CDA-Dokument in der Gesundheits-App gespeichert."
+            "value" : "Der Laborbericht wurde als CDA-Dokument in Apple Health gespeichert."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El informe de laboratorio se ha guardado como documento CDA en Salud."
+            "value" : "El informe de laboratorio se ha guardado como documento CDA en Apple Salud."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le rapport de laboratoire a été enregistré en tant que document CDA dans Santé."
+            "value" : "Le rapport de laboratoire a été enregistré en tant que document CDA dans Apple Santé."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il referto è stato salvato come documento CDA in Salute."
+            "value" : "Il referto è stato salvato come documento CDA in Apple Salute."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "検査レポートがCDAドキュメントとしてヘルスケアに保存されました。"
+            "value" : "検査レポートがCDAドキュメントとしてAppleヘルスケアに保存されました。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Het labrapport is opgeslagen als CDA-document in Gezondheid."
+            "value" : "Het labrapport is opgeslagen als CDA-document in Apple Gezondheid."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Raport z badań został zapisany jako dokument CDA w Zdrowiu."
+            "value" : "Raport z badań został zapisany jako dokument CDA w Apple Zdrowiu."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O laudo foi salvo como documento CDA no Saúde."
+            "value" : "O laudo foi salvo como documento CDA no Apple Saúde."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Лабораторный отчёт сохранён как документ CDA в Здоровье."
+            "value" : "Лабораторный отчёт сохранён как документ CDA в Apple Здоровье."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Laboratuvar raporu Sağlık'ta CDA belgesi olarak kaydedildi."
+            "value" : "Laboratuvar raporu Apple Sağlık'ta CDA belgesi olarak kaydedildi."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Лабораторний звіт збережено як документ CDA у Здоров'ї."
+            "value" : "Лабораторний звіт збережено як документ CDA в Apple Здоров'ї."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "检验报告已作为 CDA 文档保存到健康。"
+            "value" : "检验报告已作为 CDA 文档保存到 Apple 健康。"
           }
         }
       }
@@ -12880,73 +12956,73 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Der aktualisierte Bericht wurde gespeichert, aber die vorherige Version konnte nicht aus der Gesundheits-App entfernt werden. Du kannst sie in der Berichtsliste löschen."
+            "value" : "Der aktualisierte Bericht wurde gespeichert, aber die vorherige Version konnte nicht aus Apple Health entfernt werden. Du kannst sie in der Berichtsliste löschen."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El informe actualizado se guardó, pero no se pudo eliminar la versión anterior de Salud. Puedes eliminarla desde la lista de informes."
+            "value" : "El informe actualizado se guardó, pero no se pudo eliminar la versión anterior de Apple Salud. Puedes eliminarla desde la lista de informes."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le rapport mis à jour a été enregistré, mais la version précédente n'a pas pu être supprimée de Santé. Vous pouvez la supprimer depuis la liste des rapports."
+            "value" : "Le rapport mis à jour a été enregistré, mais la version précédente n'a pas pu être supprimée d’Apple Santé. Vous pouvez la supprimer depuis la liste des rapports."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il referto aggiornato è stato salvato, ma non è stato possibile rimuovere la versione precedente da Salute. Puoi eliminarla dall'elenco dei referti."
+            "value" : "Il referto aggiornato è stato salvato, ma non è stato possibile rimuovere la versione precedente da Apple Salute. Puoi eliminarla dall'elenco dei referti."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "更新したレポートは保存されましたが、以前のバージョンをヘルスケアから削除できませんでした。レポート一覧から削除できます。"
+            "value" : "更新したレポートは保存されましたが、以前のバージョンをAppleヘルスケアから削除できませんでした。レポート一覧から削除できます。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Het bijgewerkte rapport is bewaard, maar de vorige versie kon niet uit Gezondheid worden verwijderd. Je kunt deze verwijderen via de rapportenlijst."
+            "value" : "Het bijgewerkte rapport is bewaard, maar de vorige versie kon niet uit Apple Gezondheid worden verwijderd. Je kunt deze verwijderen via de rapportenlijst."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zaktualizowany raport został zapisany, ale nie udało się usunąć poprzedniej wersji ze Zdrowia. Możesz ją usunąć z listy raportów."
+            "value" : "Zaktualizowany raport został zapisany, ale nie udało się usunąć poprzedniej wersji z Apple Zdrowia. Możesz ją usunąć z listy raportów."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O laudo atualizado foi salvo, mas não foi possível remover a versão anterior do Saúde. Você pode excluí-la na lista de laudos."
+            "value" : "O laudo atualizado foi salvo, mas não foi possível remover a versão anterior do Apple Saúde. Você pode excluí-la na lista de laudos."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Обновлённый отчёт сохранён, но предыдущую версию не удалось удалить из Здоровья. Вы можете удалить её из списка отчётов."
+            "value" : "Обновлённый отчёт сохранён, но предыдущую версию не удалось удалить из Apple Здоровья. Вы можете удалить её из списка отчётов."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Güncellenen rapor kaydedildi, ancak önceki sürüm Sağlık'tan kaldırılamadı. Bunu Raporlar listesinden silebilirsiniz."
+            "value" : "Güncellenen rapor kaydedildi, ancak önceki sürüm Apple Sağlık'tan kaldırılamadı. Bunu Raporlar listesinden silebilirsiniz."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Оновлений звіт збережено, але попередню версію не вдалося видалити зі Здоров'я. Ви можете видалити її зі списку звітів."
+            "value" : "Оновлений звіт збережено, але попередню версію не вдалося видалити з Apple Здоров'я. Ви можете видалити її зі списку звітів."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已保存更新后的报告，但无法从健康中删除旧版本。你可以在报告列表中删除它。"
+            "value" : "已保存更新后的报告，但无法从 Apple 健康中删除旧版本。你可以在报告列表中删除它。"
           }
         }
       }
@@ -12956,73 +13032,73 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Diese Werte haben keinen LOINC-Code und werden nicht in der Gesundheits-App gespeichert."
+            "value" : "Diese Werte haben keinen LOINC-Code und werden nicht in Apple Health gespeichert."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Estos valores no tienen código LOINC y no se guardarán en Salud."
+            "value" : "Estos valores no tienen código LOINC y no se guardarán en Apple Salud."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ces valeurs n'ont pas de code LOINC et ne seront pas enregistrées dans Santé."
+            "value" : "Ces valeurs n'ont pas de code LOINC et ne seront pas enregistrées dans Apple Santé."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Questi valori non hanno un codice LOINC e non verranno salvati in Salute."
+            "value" : "Questi valori non hanno un codice LOINC e non verranno salvati in Apple Salute."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "これらの値にはLOINCコードがないため、ヘルスケアには保存されません。"
+            "value" : "これらの値にはLOINCコードがないため、Appleヘルスケアには保存されません。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Deze waarden hebben geen LOINC-code en worden niet opgeslagen in Gezondheid."
+            "value" : "Deze waarden hebben geen LOINC-code en worden niet opgeslagen in Apple Gezondheid."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Te wartości nie mają kodu LOINC i nie zostaną zapisane w Zdrowiu."
+            "value" : "Te wartości nie mają kodu LOINC i nie zostaną zapisane w Apple Zdrowiu."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Esses valores não têm código LOINC e não serão salvos no Saúde."
+            "value" : "Esses valores não têm código LOINC e não serão salvos no Apple Saúde."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Эти значения не имеют кода LOINC и не будут сохранены в Здоровье."
+            "value" : "Эти значения не имеют кода LOINC и не будут сохранены в Apple Здоровье."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bu değerlerin LOINC kodu yok ve Sağlık'a kaydedilmeyecek."
+            "value" : "Bu değerlerin LOINC kodu yok ve Apple Sağlık'a kaydedilmeyecek."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ці значення не мають коду LOINC і не будуть збережені у Здоров'ї."
+            "value" : "Ці значення не мають коду LOINC і не будуть збережені в Apple Здоров'ї."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "这些数值没有 LOINC 代码，不会保存到健康。"
+            "value" : "这些数值没有 LOINC 代码，不会保存到 Apple 健康。"
           }
         }
       }
@@ -13103,78 +13179,154 @@
         }
       }
     },
-    "This report will be permanently removed from Apple Health." : {
+    "%lld reports will be permanently removed from Apple Health." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dieser Bericht wird dauerhaft aus der Gesundheits-App entfernt."
+            "value" : "%lld Berichte werden dauerhaft aus Apple Health entfernt."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Este informe se eliminará permanentemente de Salud."
+            "value" : "Se eliminarán permanentemente %lld informes de Apple Salud."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ce rapport sera définitivement supprimé de Santé."
+            "value" : "%lld rapports seront définitivement supprimés d’Apple Santé."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Questo referto verrà rimosso definitivamente da Salute."
+            "value" : "%lld referti verranno rimossi definitivamente da Apple Salute."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "このレポートはヘルスケアから完全に削除されます。"
+            "value" : "%lld件のレポートがAppleヘルスケアから完全に削除されます。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dit rapport wordt permanent verwijderd uit Gezondheid."
+            "value" : "%lld rapporten worden permanent verwijderd uit Apple Gezondheid."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ten raport zostanie trwale usunięty ze Zdrowia."
+            "value" : "%lld raportów zostanie trwale usuniętych z Apple Zdrowia."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Este laudo será removido permanentemente do Saúde."
+            "value" : "%lld laudos serão removidos permanentemente do Apple Saúde."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Этот отчёт будет навсегда удалён из Здоровья."
+            "value" : "%lld отчётов будет навсегда удалено из Apple Здоровья."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bu rapor Sağlık'tan kalıcı olarak kaldırılacak."
+            "value" : "%lld rapor Apple Sağlık'tan kalıcı olarak kaldırılacak."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Цей звіт буде назавжди видалено зі Здоров'я."
+            "value" : "%lld звітів буде назавжди видалено з Apple Здоров'я."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "此报告将从健康中永久删除。"
+            "value" : "%lld 份报告将从 Apple 健康中永久删除。"
+          }
+        }
+      }
+    },
+    "This report will be permanently removed from Apple Health." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieser Bericht wird dauerhaft aus Apple Health entfernt."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este informe se eliminará permanentemente de Apple Salud."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce rapport sera définitivement supprimé d’Apple Santé."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questo referto verrà rimosso definitivamente da Apple Salute."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このレポートはAppleヘルスケアから完全に削除されます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dit rapport wordt permanent verwijderd uit Apple Gezondheid."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ten raport zostanie trwale usunięty z Apple Zdrowia."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este laudo será removido permanentemente do Apple Saúde."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Этот отчёт будет навсегда удалён из Apple Здоровья."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu rapor Apple Sağlık'tan kalıcı olarak kaldırılacak."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Цей звіт буде назавжди видалено з Apple Здоров'я."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此报告将从 Apple 健康中永久删除。"
           }
         }
       }
@@ -15192,13 +15344,13 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alleen je kaartindeling wordt gesynchroniseerd. Je labwaarden blijven in Apple Health en verlaten het nooit."
+            "value" : "Alleen je kaartindeling wordt gesynchroniseerd. Je labwaarden blijven in Apple Gezondheid en verlaten het nooit."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchronizowany jest tylko układ kart. Twoje wyniki badań pozostają w Apple Health i nigdy go nie opuszczają."
+            "value" : "Synchronizowany jest tylko układ kart. Twoje wyniki badań pozostają w Apple Zdrowiu i nigdy go nie opuszczają."
           }
         },
         "pt-BR" : {
@@ -15344,13 +15496,13 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchroniseer je dashboardindeling — de kaartvolgorde plus wat je vastzet en verbergt — op al je apparaten. Je labwaarden blijven in Apple Health."
+            "value" : "Synchroniseer je dashboardindeling — de kaartvolgorde plus wat je vastzet en verbergt — op al je apparaten. Je labwaarden blijven in Apple Gezondheid."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchronizuj układ pulpitu — kolejność kart oraz to, co przypinasz i ukrywasz — między urządzeniami. Twoje wyniki badań pozostają w Apple Health."
+            "value" : "Synchronizuj układ pulpitu — kolejność kart oraz to, co przypinasz i ukrywasz — między urządzeniami. Twoje wyniki badań pozostają w Apple Zdrowiu."
           }
         },
         "pt-BR" : {
@@ -15420,13 +15572,13 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gesynchroniseerd via je privé-iCloud-account. Je labgegevens verlaten Apple Health nooit."
+            "value" : "Gesynchroniseerd via je privé-iCloud-account. Je labgegevens verlaten Apple Gezondheid nooit."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchronizacja odbywa się przez Twoje prywatne konto iCloud. Twoje dane laboratoryjne nigdy nie opuszczają Apple Health."
+            "value" : "Synchronizacja odbywa się przez Twoje prywatne konto iCloud. Twoje dane laboratoryjne nigdy nie opuszczają Apple Zdrowia."
           }
         },
         "pt-BR" : {

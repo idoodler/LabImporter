@@ -31,7 +31,7 @@ struct DashboardView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                metricsGrid
+                metricSections
                 footer
             }
             .padding(.horizontal, 16)
@@ -100,12 +100,39 @@ struct DashboardView: View {
 
     // MARK: - Metrics grid
 
-    private var metricsGrid: some View {
+    /// Pinned metrics get their own labeled section on top; the rest flow
+    /// underneath with no header. When nothing is pinned this collapses to a
+    /// single unlabeled grid — identical to the pre-sectioning layout.
+    @ViewBuilder
+    private var metricSections: some View {
+        let pinned = pinnedMetrics
+        if !pinned.isEmpty {
+            VStack(alignment: .leading, spacing: 12) {
+                pinnedHeader
+                grid(pinned)
+            }
+        }
+        grid(unpinnedMetrics)
+    }
+
+    private func grid(_ items: [MetricData]) -> some View {
         LazyVGrid(columns: gridColumns, spacing: 14) {
-            ForEach(sortedMetrics) { metric in
+            ForEach(items) { metric in
                 metricCard(for: metric)
             }
         }
+    }
+
+    private var pinnedHeader: some View {
+        HStack(spacing: 6) {
+            Image(systemName: "pin.fill")
+                .font(.caption)
+            Text("Pinned")
+                .font(.subheadline.weight(.semibold))
+            Spacer()
+        }
+        .foregroundStyle(.secondary)
+        .padding(.horizontal, 2)
     }
 
     /// Two fixed columns on compact widths (iPhone); on regular widths (iPad) the
@@ -189,6 +216,16 @@ struct DashboardView: View {
                 if aOrd != bOrd { return aOrd < bOrd }
                 return lhs.entry.resolvedName < rhs.entry.resolvedName
             }
+    }
+
+    private var pinnedMetrics: [MetricData] {
+        let pinned = prefs.pinnedSet
+        return sortedMetrics.filter { pinned.contains($0.entry.code) }
+    }
+
+    private var unpinnedMetrics: [MetricData] {
+        let pinned = prefs.pinnedSet
+        return sortedMetrics.filter { !pinned.contains($0.entry.code) }
     }
 
     // Up to three distinct category colors from the visible metrics, used for
@@ -421,5 +458,31 @@ struct CategoryBackground: View {
 
     private var palette: [Color] {
         colors.isEmpty ? [Color.accentColor.opacity(0.6)] : colors
+    }
+}
+
+// MARK: - Preview
+
+#Preview("Dashboard") {
+    NavigationStack {
+        DashboardView(
+            reports: LabReport.sampleHistory,
+            onScan: {}, onPickFile: {}, onPaste: {}, onManual: {},
+            scannerAvailable: true,
+            clipboardAvailable: true,
+            isProcessing: false
+        )
+    }
+}
+
+#Preview("Empty") {
+    NavigationStack {
+        DashboardView(
+            reports: [],
+            onScan: {}, onPickFile: {}, onPaste: {}, onManual: {},
+            scannerAvailable: true,
+            clipboardAvailable: false,
+            isProcessing: false
+        )
     }
 }
