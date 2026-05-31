@@ -277,6 +277,7 @@ struct LabSortEditor: View {
 
     var body: some View {
         List {
+            pinnedSection
             visibleSection
             hiddenSection
         }
@@ -288,30 +289,56 @@ struct LabSortEditor: View {
         .onChange(of: pinnedSet) { save() }
     }
 
+    /// Visible codes split by pin state. Both partitions preserve their relative
+    /// order within `visibleOrdered`, which is normalized pinned-first so the
+    /// editor order matches how the dashboard groups the cards.
+    private var pinnedItems: [CodeName] { visibleOrdered.filter { pinnedSet.contains($0.code) } }
+    private var unpinnedItems: [CodeName] { visibleOrdered.filter { !pinnedSet.contains($0.code) } }
+
+    @ViewBuilder
+    private var pinnedSection: some View {
+        if !pinnedItems.isEmpty {
+            Section("Pinned") {
+                ForEach(pinnedItems) { item in row(for: item) }
+                    .onMove { from, dest in
+                        var pinned = pinnedItems
+                        pinned.move(fromOffsets: from, toOffset: dest)
+                        visibleOrdered = pinned + unpinnedItems
+                    }
+            }
+        }
+    }
+
     @ViewBuilder
     private var visibleSection: some View {
         Section("Visible") {
-            ForEach(visibleOrdered) { item in
-                HStack(spacing: 12) {
-                    Button { togglePin(item.code) } label: {
-                        Image(systemName: pinnedSet.contains(item.code) ? "pin.fill" : "pin")
-                            .foregroundStyle(pinnedSet.contains(item.code) ? Color.yellow : Color.secondary)
-                            .frame(width: 20)
-                    }
-                    .buttonStyle(.plain)
-                    Circle()
-                        .fill(LabCategory.forCode(item.code).color.gradient)
-                        .frame(width: 9, height: 9)
-                    Text(item.name)
-                    Spacer()
-                    Button { hideCode(item.code) } label: {
-                        Image(systemName: "eye.slash")
-                            .foregroundStyle(Color.secondary)
-                    }
-                    .buttonStyle(.plain)
+            ForEach(unpinnedItems) { item in row(for: item) }
+                .onMove { from, dest in
+                    var unpinned = unpinnedItems
+                    unpinned.move(fromOffsets: from, toOffset: dest)
+                    visibleOrdered = pinnedItems + unpinned
                 }
+        }
+    }
+
+    private func row(for item: CodeName) -> some View {
+        HStack(spacing: 12) {
+            Button { togglePin(item.code) } label: {
+                Image(systemName: pinnedSet.contains(item.code) ? "pin.fill" : "pin")
+                    .foregroundStyle(pinnedSet.contains(item.code) ? Color.yellow : Color.secondary)
+                    .frame(width: 20)
             }
-            .onMove { from, dest in visibleOrdered.move(fromOffsets: from, toOffset: dest) }
+            .buttonStyle(.plain)
+            Circle()
+                .fill(LabCategory.forCode(item.code).color.gradient)
+                .frame(width: 9, height: 9)
+            Text(item.name)
+            Spacer()
+            Button { hideCode(item.code) } label: {
+                Image(systemName: "eye.slash")
+                    .foregroundStyle(Color.secondary)
+            }
+            .buttonStyle(.plain)
         }
     }
 
@@ -345,6 +372,9 @@ struct LabSortEditor: View {
         } else {
             pinnedSet.insert(code)
         }
+        // Keep the backing order pinned-first so a toggled row moves between the
+        // two sections in place, matching the dashboard's grouping.
+        visibleOrdered = pinnedItems + unpinnedItems
     }
 
     private func hideCode(_ code: String) {
