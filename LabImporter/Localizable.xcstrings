@@ -1,79 +1,79 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "On-device AI isn't available for your device's current language or region. Open Settings → Apple Intelligence & Siri and set your iPhone language to one Apple Intelligence supports (for example English or German), then try again." : {
+    "The on-device AI couldn't recognize the language of this report. This can happen with very short reports, or ones made up mostly of codes and numbers. Try importing or scanning the full report so there's more text to read, then try again." : {
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die geräteinterne KI ist für die aktuelle Sprache oder Region deines Geräts nicht verfügbar. Öffne „Einstellungen“ → „Apple Intelligence & Siri“ und stelle die Sprache deines iPhones auf eine von Apple Intelligence unterstützte Sprache ein (zum Beispiel Englisch oder Deutsch), und versuche es dann erneut."
+            "value" : "Die geräteinterne KI konnte die Sprache dieses Befunds nicht erkennen. Das kann bei sehr kurzen Befunden vorkommen oder bei solchen, die überwiegend aus Codes und Zahlen bestehen. Importiere oder scanne den vollständigen Befund, damit mehr Text vorhanden ist, und versuche es dann erneut."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La IA en el dispositivo no está disponible para el idioma o la región actuales de tu dispositivo. Abre Ajustes → Apple Intelligence y Siri y configura el idioma de tu iPhone en uno compatible con Apple Intelligence (por ejemplo, inglés o alemán); luego, inténtalo de nuevo."
+            "value" : "La IA en el dispositivo no pudo reconocer el idioma de este informe. Esto puede ocurrir con informes muy cortos o compuestos principalmente por códigos y números. Importa o escanea el informe completo para que haya más texto y vuelve a intentarlo."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L’IA sur l’appareil n’est pas disponible pour la langue ou la région actuelles de votre appareil. Ouvrez Réglages → Apple Intelligence et Siri, puis réglez la langue de votre iPhone sur une langue prise en charge par Apple Intelligence (par exemple l’anglais ou l’allemand) avant de réessayer."
+            "value" : "L’IA sur l’appareil n’a pas pu reconnaître la langue de ce compte rendu. Cela peut arriver avec des comptes rendus très courts ou composés principalement de codes et de chiffres. Importez ou numérisez le compte rendu complet afin d’avoir plus de texte, puis réessayez."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L’IA sul dispositivo non è disponibile per la lingua o la regione attuali del dispositivo. Apri Impostazioni → Apple Intelligence e Siri e imposta la lingua dell’iPhone su una supportata da Apple Intelligence (ad esempio inglese o tedesco), quindi riprova."
+            "value" : "L’IA sul dispositivo non è riuscita a riconoscere la lingua di questo referto. Può accadere con referti molto brevi o composti principalmente da codici e numeri. Importa o scansiona il referto completo in modo da avere più testo, quindi riprova."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "デバイス上のAIは、お使いのデバイスの現在の言語または地域では利用できません。「設定」→「Apple Intelligenceとシリ」を開き、iPhoneの言語をApple Intelligenceが対応している言語（例：英語またはドイツ語）に設定してから、もう一度お試しください。"
+            "value" : "デバイス上のAIはこのレポートの言語を認識できませんでした。これは、非常に短いレポートや、ほとんどがコードと数字で構成されているレポートで起こることがあります。テキストが増えるようレポート全体を読み込むかスキャンしてから、もう一度お試しください。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "De AI op het apparaat is niet beschikbaar voor de huidige taal of regio van je apparaat. Open Instellingen → Apple Intelligence en Siri en stel de taal van je iPhone in op een taal die door Apple Intelligence wordt ondersteund (bijvoorbeeld Engels of Duits) en probeer het opnieuw."
+            "value" : "De AI op het apparaat kon de taal van dit rapport niet herkennen. Dit kan gebeuren bij zeer korte rapporten of rapporten die vooral uit codes en cijfers bestaan. Importeer of scan het volledige rapport zodat er meer tekst is en probeer het opnieuw."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sztuczna inteligencja na urządzeniu nie jest dostępna dla bieżącego języka lub regionu Twojego urządzenia. Otwórz Ustawienia → Apple Intelligence i Siri i ustaw język iPhone’a na obsługiwany przez Apple Intelligence (na przykład angielski lub niemiecki), a następnie spróbuj ponownie."
+            "value" : "Sztuczna inteligencja na urządzeniu nie rozpoznała języka tego raportu. Może się to zdarzyć w przypadku bardzo krótkich raportów lub takich, które składają się głównie z kodów i liczb. Zaimportuj lub zeskanuj cały raport, aby było więcej tekstu, a następnie spróbuj ponownie."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A IA no dispositivo não está disponível para o idioma ou a região atuais do seu dispositivo. Abra Ajustes → Apple Intelligence e Siri e defina o idioma do seu iPhone como um compatível com a Apple Intelligence (por exemplo, inglês ou alemão); em seguida, tente novamente."
+            "value" : "A IA no dispositivo não conseguiu reconhecer o idioma deste relatório. Isso pode acontecer com relatórios muito curtos ou compostos principalmente por códigos e números. Importe ou digitalize o relatório completo para que haja mais texto e tente novamente."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ИИ на устройстве недоступен для текущего языка или региона вашего устройства. Откройте «Настройки» → «Apple Intelligence и Siri» и установите для iPhone язык, поддерживаемый Apple Intelligence (например, английский или немецкий), затем повторите попытку."
+            "value" : "ИИ на устройстве не смог распознать язык этого отчета. Это может произойти с очень короткими отчетами или с теми, что состоят в основном из кодов и цифр. Импортируйте или отсканируйте отчет целиком, чтобы было больше текста, и повторите попытку."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cihaz üzerindeki yapay zeka, cihazınızın geçerli dili veya bölgesi için kullanılamıyor. Ayarlar → Apple Intelligence ve Siri’yi açın ve iPhone’unuzun dilini Apple Intelligence’ın desteklediği bir dile (örneğin İngilizce veya Almanca) ayarlayın, ardından tekrar deneyin."
+            "value" : "Cihaz üzerindeki yapay zeka bu raporun dilini tanıyamadı. Bu durum çok kısa raporlarda veya çoğunlukla kod ve sayılardan oluşan raporlarda görülebilir. Daha fazla metin olması için raporun tamamını içe aktarın veya tarayın, ardından tekrar deneyin."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Штучний інтелект на пристрої недоступний для поточної мови або регіону вашого пристрою. Відкрийте «Параметри» → «Apple Intelligence та Siri» і встановіть для iPhone мову, яку підтримує Apple Intelligence (наприклад, англійську або німецьку), а потім повторіть спробу."
+            "value" : "Штучний інтелект на пристрої не зміг розпізнати мову цього звіту. Це може статися з дуже короткими звітами або тими, що складаються переважно з кодів і цифр. Імпортуйте або відскануйте повний звіт, щоб було більше тексту, а потім повторіть спробу."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设备端 AI 不支持您设备当前的语言或地区。请打开“设置”→“Apple Intelligence 与 Siri”，将 iPhone 的语言设置为 Apple Intelligence 支持的语言（例如英语或德语），然后重试。"
+            "value" : "设备端 AI 无法识别此报告的语言。这可能发生在非常简短的报告，或主要由代码和数字组成的报告中。请导入或扫描完整的报告以提供更多文本，然后重试。"
           }
         }
       }

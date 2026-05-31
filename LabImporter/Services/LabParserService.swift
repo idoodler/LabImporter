@@ -56,7 +56,7 @@ struct ParseResult {
 /// UI is confusing — especially in a non-English app — so we translate the
 /// cases we care about into clear, localized, actionable messages.
 enum LabParserError: LocalizedError {
-    /// Apple Intelligence won't run for the device's current language/region.
+    /// The on-device model couldn't classify the report's language as supported.
     case unsupportedLanguageOrLocale
     /// The document was too large for the model's context window.
     case documentTooLong
@@ -69,9 +69,9 @@ enum LabParserError: LocalizedError {
         switch self {
         case .unsupportedLanguageOrLocale:
             return String(localized: """
-            On-device AI isn't available for your device's current language or region. \
-            Open Settings → Apple Intelligence & Siri and set your iPhone language to one \
-            Apple Intelligence supports (for example English or German), then try again.
+            The on-device AI couldn't recognize the language of this report. This can happen \
+            with very short reports, or ones made up mostly of codes and numbers. Try importing \
+            or scanning the full report so there's more text to read, then try again.
             """)
         case .documentTooLong:
             return String(localized: """
@@ -182,9 +182,25 @@ actor LabParserService {
             """
         )
 
+        // Foundation Models detects the language of the *prompt* and refuses
+        // (`unsupportedLanguageOrLocale`) if it can't classify it as a supported
+        // language. A terse report — mostly codes, numbers and units, e.g.
+        // "KREA: 0.80 mg/dl; GPT: 59 U/l; HB-A1C: 6.5 %" — carries almost no
+        // natural-language signal, so detection can fail even on a device whose
+        // language is fully supported. Wrapping the report in a few sentences of
+        // plain English gives the detector a reliable anchor without changing
+        // what we ask it to extract (names stay in the report's own language).
+        let prompt = """
+        You are reading a laboratory test report. The report text below may be very short \
+        and consist mostly of abbreviated test codes, numbers and units. Read it carefully \
+        and extract every laboratory test value it contains. Here is the report text:
+
+        \(text)
+        """
+
         do {
             let response = try await session.respond(
-                to: "Extract all lab values from this text:\n\n\(text)",
+                to: prompt,
                 generating: AILabReport.self
             )
             return response.content
