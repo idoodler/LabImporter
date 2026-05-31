@@ -83,9 +83,13 @@ struct HistoryView: View {
                 Button {
                     withAnimation { toggleEditing() }
                 } label: {
-                    Image(systemName: editMode.isEditing ? "checkmark.circle.fill" : "checkmark.circle")
+                    if editMode.isEditing {
+                        Image(systemName: "checkmark")
+                    } else {
+                        Text("Edit")
+                    }
                 }
-                .accessibilityLabel(editMode.isEditing ? Text("Done") : Text("Select"))
+                .accessibilityLabel(editMode.isEditing ? Text("Done") : Text("Edit"))
             }
         }
 
@@ -156,6 +160,10 @@ struct HistoryView: View {
                             }
                             .tint(.blue)
                         }
+                        // While selecting, show the multi-select circles instead of
+                        // the per-row red delete control (swipe-to-delete still works
+                        // outside edit mode).
+                        .deleteDisabled(editMode.isEditing)
                     }
                     .onDelete { offsets in pendingDeleteIDs = offsets.map { group.reports[$0].id } }
                 }
