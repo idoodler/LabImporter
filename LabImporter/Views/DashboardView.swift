@@ -346,7 +346,7 @@ private struct MetricCard: View {
             if metric.history.count > 1 {
                 sparkline
             } else {
-                Spacer().frame(height: 40)
+                Spacer(minLength: 44)
             }
         }
         .padding(14)
@@ -387,7 +387,10 @@ private struct MetricCard: View {
         }
         .chartXAxis(.hidden)
         .chartYAxis(.hidden)
-        .frame(height: 40)
+        // Grow to absorb the card's remaining vertical space instead of leaving a
+        // fixed-height chart with blank padding beneath it. `minHeight` keeps a
+        // sensible floor when a card's row is short.
+        .frame(minHeight: 44, maxHeight: .infinity)
     }
 }
 
