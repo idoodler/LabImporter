@@ -15,6 +15,7 @@ Scan, import, or paste your lab report — the app uses Vision OCR and the on-de
 - **Trend charts** — interactive per-metric chart with finger-scrubbing to inspect individual values
 - **History** — full list of imported reports with edit and delete
 - **Customise** — pin metrics to the top, reorder, or hide them from the dashboard
+- **iCloud sync (opt-in)** — optionally roam your dashboard layout (card order, pins, and hidden metrics) across your devices; your lab values always stay in Apple Health and never sync
 - **Share** — export any report as a CDA file to send to a doctor or another app
 - **Privacy-first** — all data lives in Apple Health on your device; no account or server required
 
@@ -69,7 +70,7 @@ This checks that all secrets are valid, that your App Store Connect API key work
 
 Go to **Actions → 2. Add Identifiers → Run workflow**.
 
-This registers your app's bundle ID in App Store Connect and enables the **HealthKit** capability on it.
+This registers your app's bundle ID in App Store Connect and enables the **HealthKit** and **iCloud (key-value storage)** capabilities on it. The iCloud capability backs the opt-in dashboard-layout sync; if you enable it after a profile already exists, re-run **3. Create Certificates** (with `ENABLE_NUKE_CERTS` or `FORCE_NUKE_CERTS` set) so the provisioning profile is regenerated to include it.
 
 The bundle identifier is `dev.idoodler.<TEAMID>.labimporter` — the same pattern as Trio (`org.nightscout.<TEAMID>.trio`). The `<TEAMID>` placeholder is substituted automatically from the `TEAMID` secret at build time via `Config.xcconfig`.
 
@@ -127,9 +128,19 @@ After the first manual run succeeds, builds are triggered automatically on the *
 
 ---
 
+## iCloud sync
+
+iCloud sync is **opt-in** and **layout-only**. On first launch — after the welcome and Apple Health steps — onboarding asks you to make an explicit choice before you can add any reports; you can change it later under **Settings → iCloud Sync**.
+
+When enabled, only your **dashboard layout** roams across your devices through your private iCloud key-value store (`NSUbiquitousKeyValueStore`): the card order, which metrics are pinned, and which are hidden. That's the entire payload.
+
+**Your lab values never sync.** They live exclusively in Apple Health, and patient metadata (name, date of birth, biological sex) stays on the device it was entered on. No lab data is ever transmitted, with or without sync enabled.
+
+---
+
 ## Privacy
 
-All processing happens entirely on-device. No lab data is sent to any server. The Foundation Models framework runs the language model locally without any network requests.
+All processing happens entirely on-device. No lab data is sent to any server. The Foundation Models framework runs the language model locally without any network requests. The optional [iCloud sync](#icloud-sync) carries only your dashboard layout — never lab values or patient metadata.
 
 ---
 

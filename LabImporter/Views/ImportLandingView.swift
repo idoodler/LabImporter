@@ -8,6 +8,14 @@ struct ImportLandingView: View {
     let scannerAvailable: Bool
     let clipboardAvailable: Bool
     let isProcessing: Bool
+    /// When the landing view is hosted as the detail pane of the iPad sidebar,
+    /// the sidebar already exposes Settings so this view hides its own toolbar
+    /// button to avoid duplicating it. Defaults to `true` so the standalone
+    /// (iPhone) presentation still reaches Settings before any reports exist.
+    var showsLibraryToolbarItems = true
+
+    @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
+    @State private var showSettings = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -35,6 +43,21 @@ struct ImportLandingView: View {
         .background { MorphingCategoryBackground() }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if showsLibraryToolbarItems {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showSettings = true
+                    } label: {
+                        Image(systemName: "gearshape")
+                    }
+                    .accessibilityLabel("Settings")
+                }
+            }
+        }
+        .sheet(isPresented: $showSettings) {
+            SettingsView(prefs: $prefs, allCodes: [])
+        }
     }
 
     // MARK: - Hero
