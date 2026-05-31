@@ -127,7 +127,7 @@ struct SettingsView: View {
                     if let repository = AppInfo.repositoryURL {
                         linkRow("View on GitHub",
                                 systemImage: "chevron.left.forwardslash.chevron.right",
-                                color: .primary, url: repository)
+                                color: .gray, url: repository)
                     }
                     if let newIssue = AppInfo.newIssueURL {
                         linkRow("Report an Issue",
