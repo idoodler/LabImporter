@@ -8,6 +8,9 @@ struct HistoryView: View {
     // Reports the user swiped to delete, awaiting confirmation. Deletion from
     // Apple Health is irreversible, so we verify intent before removing them.
     @State private var pendingDeleteIDs: [UUID] = []
+    // Multi-select state: drives the list's checkmarks while editing.
+    @State private var editMode: EditMode = .inactive
+    @State private var selection: Set<UUID> = []
 
     var body: some View {
         Group {
@@ -21,9 +24,11 @@ struct HistoryView: View {
                 reportList
             }
         }
-        .navigationTitle("Reports")
+        .navigationTitle(navigationTitle)
         .navigationBarTitleDisplayMode(.large)
         .background { CategoryBackground(colors: backgroundColors) }
+        .environment(\.editMode, $editMode)
+        .toolbar { toolbarContent }
         .onAppear { Task { await loadReports() } }
         .sheet(item: $reportToEdit, onDismiss: { Task { await loadReports() } }, content: { report in
             NavigationStack {
@@ -49,6 +54,7 @@ struct HistoryView: View {
             Button("Delete", role: .destructive) {
                 deleteReports(ids: pendingDeleteIDs)
                 pendingDeleteIDs = []
+                exitEditing()
             }
             Button("Cancel", role: .cancel) { pendingDeleteIDs = [] }
         } message: {
@@ -60,15 +66,68 @@ struct HistoryView: View {
         }
     }
 
+    // MARK: - Toolbar
+
+    private var navigationTitle: String {
+        if editMode.isEditing && !selection.isEmpty {
+            return String(localized: "\(selection.count) Selected")
+        }
+        return String(localized: "Reports")
+    }
+
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            if !reports.isEmpty {
+                Button(editMode.isEditing ? "Done" : "Select") {
+                    withAnimation { toggleEditing() }
+                }
+            }
+        }
+
+        if editMode.isEditing {
+            ToolbarItem(placement: .bottomBar) {
+                HStack {
+                    Button(allSelected ? "Deselect All" : "Select All") {
+                        selection = allSelected ? [] : Set(reports.map(\.id))
+                    }
+                    Spacer()
+                    Button("Delete", role: .destructive) {
+                        pendingDeleteIDs = Array(selection)
+                    }
+                    .disabled(selection.isEmpty)
+                }
+            }
+        }
+    }
+
+    private var allSelected: Bool {
+        !reports.isEmpty && selection.count == reports.count
+    }
+
+    private func toggleEditing() {
+        if editMode.isEditing {
+            exitEditing()
+        } else {
+            editMode = .active
+        }
+    }
+
+    private func exitEditing() {
+        editMode = .inactive
+        selection = []
+    }
+
     // MARK: - List
 
     private var reportList: some View {
-        List {
+        List(selection: $selection) {
             Section {
                 summaryCard
                     .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
+                    .selectionDisabled()
             }
 
             ForEach(groupedByYear, id: \.year) { group in
@@ -186,6 +245,9 @@ struct HistoryView: View {
     private func loadReports() async {
         do {
             reports = try await HealthKitService.shared.loadCDADocuments()
+            // Drop selections (and leave edit mode) once nothing is left to act on.
+            selection.formIntersection(Set(reports.map(\.id)))
+            if reports.isEmpty { exitEditing() }
         } catch {
             loadError = error.localizedDescription
         }
