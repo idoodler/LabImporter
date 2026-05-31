@@ -313,3 +313,17 @@ private struct CategoryDots: View {
         }
     }
 }
+
+// MARK: - Preview
+
+#Preview("History") {
+    NavigationStack {
+        HistoryView()
+    }
+}
+
+#Preview("Report Row") {
+    List {
+        ReportRow(report: .sample)
+    }
+}

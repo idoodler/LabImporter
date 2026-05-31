@@ -282,3 +282,50 @@ struct CategorySectionHeader: View {
         .textCase(nil)
     }
 }
+
+// MARK: - Previews
+
+#Preview("Header Card") {
+    ReviewHeaderCard(
+        supportedCount: 10,
+        exportableCount: 8,
+        groups: CategoryCount.sampleGroups,
+        dominantColor: LabCategory.lipids.color
+    )
+    .padding()
+    .background(Color(.systemGroupedBackground))
+}
+
+#Preview("Action Bar") {
+    VStack {
+        Spacer()
+        ReviewActionBar(isEnabled: true, onSave: {}, onShare: {})
+    }
+}
+
+#Preview("Unsupported Values") {
+    List {
+        UnsupportedValuesSection(
+            values: [
+                LabValue(code: "CRP-X", name: "C-Reactive Protein",
+                         displayValue: "3.1", numericValue: 3.1, unit: "mg/L"),
+                LabValue(code: "FOO", name: "Unknown Marker",
+                         displayValue: "1.2", numericValue: 1.2, unit: ""),
+            ],
+            onDelete: { _ in }
+        )
+    }
+}
+
+#Preview("Category Chips") {
+    VStack(alignment: .leading, spacing: 12) {
+        CategorySectionHeader(category: .lipids, count: 4)
+        HStack {
+            ForEach(CategoryCount.sampleGroups) { group in
+                CategoryChip(category: group.category, count: group.count)
+            }
+        }
+        SuggestionRow(label: "Detected in report: \"Max Mustermann\"") {}
+    }
+    .padding()
+}

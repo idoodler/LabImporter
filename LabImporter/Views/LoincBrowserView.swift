@@ -164,3 +164,23 @@ struct LoincTermDetailView: View {
         }
     }
 }
+
+// MARK: - Previews
+
+#Preview("Term Detail") {
+    NavigationStack {
+        LoincTermDetailView(term: .sample)
+    }
+}
+
+#Preview("Catalog") {
+    NavigationStack {
+        LoincCatalogView()
+    }
+}
+
+#Preview("License") {
+    NavigationStack {
+        LoincLicenseView()
+    }
+}
