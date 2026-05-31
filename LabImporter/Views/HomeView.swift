@@ -14,6 +14,9 @@ struct HomeView: View {
     @State private var parsedAuthorName: String?
     @State private var showReview = false
     @State private var clipboardHasContent = false
+    /// An "Open With" file that arrived before onboarding was dismissed; held
+    /// back so its review sheet isn't presented underneath the welcome cover.
+    @State private var pendingImportURL: URL?
     @AppStorage("hasSeenWelcome") private var hasSeenWelcome = false
 
     // iPad sidebar state
@@ -85,13 +88,16 @@ struct HomeView: View {
             configureImportEngine()
         }
         .onOpenURL { url in
-            Task { await importEngine.processFile(at: url) }
+            handleIncomingFile(url)
         }
         .fullScreenCover(isPresented: Binding(
             get: { !hasSeenWelcome },
             set: { _ in }
         )) {
-            WelcomeView { hasSeenWelcome = true }
+            WelcomeView {
+                hasSeenWelcome = true
+                flushPendingImport()
+            }
         }
     }
 
@@ -211,6 +217,26 @@ struct HomeView: View {
             }
         }
         return result
+    }
+
+    // MARK: - Incoming files ("Open With")
+
+    /// Routes a file opened from another app (share sheet / Files) into the
+    /// import pipeline. If onboarding hasn't been completed yet the URL is
+    /// stashed and replayed once `WelcomeView` is dismissed — otherwise the
+    /// review sheet would present beneath the welcome cover and stay hidden.
+    private func handleIncomingFile(_ url: URL) {
+        guard hasSeenWelcome else {
+            pendingImportURL = url
+            return
+        }
+        Task { await importEngine.processFile(at: url) }
+    }
+
+    private func flushPendingImport() {
+        guard let url = pendingImportURL else { return }
+        pendingImportURL = nil
+        Task { await importEngine.processFile(at: url) }
     }
 
     // MARK: - Import engine
