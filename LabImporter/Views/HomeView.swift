@@ -111,6 +111,13 @@ struct HomeView: View {
             // text field in this app, or via Split View / Slide Over).
             refreshClipboardState()
         }
+        .onReceive(NotificationCenter.default.publisher(for: .labReportsDidChange)) { _ in
+            // A report was saved, edited, or deleted — possibly from the pushed
+            // Reports list, which has its own state. Reload so the Dashboard and
+            // Trends reflect the change immediately instead of staying stale until
+            // the app next becomes active.
+            Task { await loadReportsIfAuthorized() }
+        }
         .onAppear {
             refreshClipboardState()
             configureImportEngine()
