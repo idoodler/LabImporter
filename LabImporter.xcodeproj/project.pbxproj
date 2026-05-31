@@ -37,6 +37,7 @@
 		AABB000000000000000084AA /* PDFKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AABB000000000000000085AA /* PDFKit.framework */; };
 		AABB000000000000000086AA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000087AA /* SettingsView.swift */; };
 		AABB000000000000000091AA /* LoincDirectory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000090AA /* LoincDirectory.swift */; };
+		AABB0000000000000000D1AA /* CloudSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000D0AA /* CloudSyncService.swift */; };
 		AABB000000000000000093AA /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AABB000000000000000092AA /* libsqlite3.tbd */; };
 		AABB000000000000000095AA /* LoincBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000094AA /* LoincBrowserView.swift */; };
 		AABB000000000000000097AA /* LabCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000096AA /* LabCategory.swift */; };
@@ -84,6 +85,7 @@
 		AABB000000000000000085AA /* PDFKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PDFKit.framework; path = System/Library/Frameworks/PDFKit.framework; sourceTree = SDKROOT; };
 		AABB000000000000000087AA /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		AABB000000000000000090AA /* LoincDirectory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoincDirectory.swift; sourceTree = "<group>"; };
+		AABB0000000000000000D0AA /* CloudSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncService.swift; sourceTree = "<group>"; };
 		AABB000000000000000092AA /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		AABB000000000000000094AA /* LoincBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoincBrowserView.swift; sourceTree = "<group>"; };
 		AABB000000000000000096AA /* LabCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabCategory.swift; sourceTree = "<group>"; };
@@ -167,6 +169,7 @@
 				AABB000000000000000025AA /* HealthKitService.swift */,
 				AABB000000000000000058AA /* CDAExportService.swift */,
 				AABB000000000000000090AA /* LoincDirectory.swift */,
+				AABB0000000000000000D0AA /* CloudSyncService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -325,6 +328,7 @@
 				AABB000000000000000044AA /* LabParserService.swift in Sources */,
 				AABB000000000000000045AA /* HealthKitService.swift in Sources */,
 				AABB000000000000000091AA /* LoincDirectory.swift in Sources */,
+				AABB0000000000000000D1AA /* CloudSyncService.swift in Sources */,
 				AABB000000000000000057AA /* CDAExportService.swift in Sources */,
 				AABB000000000000000046AA /* HomeView.swift in Sources */,
 				AABB000000000000000047AA /* ReviewView.swift in Sources */,
