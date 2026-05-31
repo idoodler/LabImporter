@@ -24,10 +24,10 @@ struct ImportLandingView: View {
             Spacer()
                 .frame(height: 56)
         }
-        // Painted as this column's own background (which reliably renders, unlike
-        // one placed behind the split view). `seamless` aligns it to the sidebar's
-        // matching wash so the two columns read as one continuous full-window field.
-        .background { MorphingCategoryBackground(seamless: true) }
+        // Painted as this view's own content background — exactly like the
+        // Dashboard's CategoryBackground — so it reliably fills the screen
+        // (iPhone) or the detail pane (iPad).
+        .background { MorphingCategoryBackground() }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
     }
