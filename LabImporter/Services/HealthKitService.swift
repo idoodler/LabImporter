@@ -56,6 +56,7 @@ actor HealthKitService {
         try await store.requestAuthorization(toShare: [documentType], read: [documentType])
         let sample = try HKCDADocumentSample(data: data, start: date, end: date, metadata: nil)
         try await store.save(sample)
+        await Self.notifyReportsChanged()
     }
 
     // MARK: - Read
@@ -179,8 +180,24 @@ actor HealthKitService {
 
         if let sample {
             try await store.delete(sample)
+            await Self.notifyReportsChanged()
         }
     }
+
+    /// Broadcasts that the CDA store was mutated so any view showing reports can
+    /// reload from Health — the single source of truth — without waiting to
+    /// become active again. Posted on the main actor so SwiftUI observers receive
+    /// it on the expected thread.
+    private static func notifyReportsChanged() async {
+        await MainActor.run {
+            NotificationCenter.default.post(name: .labReportsDidChange, object: nil)
+        }
+    }
+}
+
+extension Notification.Name {
+    /// Posted after a lab report is saved, replaced, or deleted in Apple Health.
+    static let labReportsDidChange = Notification.Name("dev.idoodler.labimporter.labReportsDidChange")
 }
 
 // MARK: - CDA XML Parser
