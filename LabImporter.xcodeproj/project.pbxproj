@@ -49,6 +49,7 @@
 		AABB0000000000000000F1AA /* LabImportEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000F2AA /* LabImportEngine.swift */; };
 		AABB0000000000000000F3AA /* AddValueSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000F4AA /* AddValueSheet.swift */; };
 		AACC000000000000000001AA /* ReviewView+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACC000000000000000002AA /* ReviewView+Preview.swift */; };
+		AACC000000000000000003AA /* PreviewSampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACC000000000000000004AA /* PreviewSampleData.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -98,6 +99,7 @@
 		AABB0000000000000000F2AA /* LabImportEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabImportEngine.swift; sourceTree = "<group>"; };
 		AABB0000000000000000F4AA /* AddValueSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddValueSheet.swift; sourceTree = "<group>"; };
 		AACC000000000000000002AA /* ReviewView+Preview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReviewView+Preview.swift"; sourceTree = "<group>"; };
+		AACC000000000000000004AA /* PreviewSampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSampleData.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -182,6 +184,7 @@
 				AABB000000000000000026AA /* HomeView.swift */,
 				AABB000000000000000027AA /* ReviewView.swift */,
 				AACC000000000000000002AA /* ReviewView+Preview.swift */,
+				AACC000000000000000004AA /* PreviewSampleData.swift */,
 				AABB0000000000000000B0AA /* ReviewHeaderCard.swift */,
 				AABB000000000000000028AA /* LabValueRowView.swift */,
 				AABB0000000000000000C1DE /* CodePickerSheet.swift */,
@@ -336,6 +339,7 @@
 				AABB000000000000000046AA /* HomeView.swift in Sources */,
 				AABB000000000000000047AA /* ReviewView.swift in Sources */,
 				AACC000000000000000001AA /* ReviewView+Preview.swift in Sources */,
+				AACC000000000000000003AA /* PreviewSampleData.swift in Sources */,
 				AABB0000000000000000B1AA /* ReviewHeaderCard.swift in Sources */,
 				AABB000000000000000048AA /* LabValueRowView.swift in Sources */,
 				AABB0000000000000000C0DE /* CodePickerSheet.swift in Sources */,

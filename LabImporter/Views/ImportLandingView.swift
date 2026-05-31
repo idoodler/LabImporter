@@ -144,3 +144,16 @@ struct ImportLandingView: View {
         )
     }
 }
+
+// MARK: - Preview
+
+#Preview {
+    NavigationStack {
+        ImportLandingView(
+            onScan: {}, onPickFile: {}, onPaste: {}, onManual: {},
+            scannerAvailable: true,
+            clipboardAvailable: true,
+            isProcessing: false
+        )
+    }
+}
