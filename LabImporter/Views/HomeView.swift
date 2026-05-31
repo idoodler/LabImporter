@@ -101,6 +101,7 @@ struct HomeView: View {
         NavigationStack {
             mainContent(showsLibraryToolbarItems: true)
         }
+        .background { if showsLandingWash { MorphingCategoryBackground() } }
     }
 
     // MARK: - Regular layout (iPad)
@@ -113,6 +114,11 @@ struct HomeView: View {
                         .tag(section)
                 }
             }
+            // In the empty/onboarding state the morphing wash sits behind the
+            // whole split view, so the sidebar's own list background is hidden to
+            // let it show through — making the wash span the full window rather
+            // than just the detail pane.
+            .scrollContentBackground(showsLandingWash ? .hidden : .automatic)
             .navigationTitle("Lab Importer")
             .navigationSplitViewColumnWidth(min: 240, ideal: 280)
             .toolbar {
@@ -124,6 +130,16 @@ struct HomeView: View {
             detailColumn
         }
         .navigationSplitViewStyle(.balanced)
+        // A single wash behind both columns (rather than one per pane) keeps it
+        // seamless across the sidebar/detail divider.
+        .background { if showsLandingWash { MorphingCategoryBackground() } }
+    }
+
+    /// The full-window colored wash is only shown in the empty "import your first
+    /// report" state. Once reports exist, each screen uses its own background
+    /// (e.g. the dashboard's category tint).
+    private var showsLandingWash: Bool {
+        isLoaded && reports.isEmpty
     }
 
     @ViewBuilder

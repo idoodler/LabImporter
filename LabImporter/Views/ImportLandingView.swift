@@ -24,7 +24,8 @@ struct ImportLandingView: View {
             Spacer()
                 .frame(height: 56)
         }
-        .background { MorphingCategoryBackground() }
+        // The colored wash is hosted behind the whole window in `HomeView` (so it
+        // spans the sidebar too on iPad); this view stays transparent over it.
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
     }
