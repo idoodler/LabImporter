@@ -23,11 +23,11 @@ struct AILabReport {
 
 @Generable
 struct AILabEntry {
-    @Guide(description: "Lab test code or abbreviation as printed (e.g. KREA, HB-A1C, G-GT)")
+    @Guide(description: "Lab test code or abbreviation exactly as printed (e.g. KREA, HB-A1C, MALB-U, GADAAK)")
     var code: String
 
     // swiftlint:disable:next line_length
-    @Guide(description: "The test's standard name in the report's own language — do NOT translate (e.g. for a German report 'Kreatinin', 'Ferritin', 'Vitamin D 25-Hydroxy', 'Thyreotropin'). Used to look up the standard LOINC code in that language.")
+    @Guide(description: "The test's full standard name in the report's own language — do NOT translate it, but DO expand terse lab-software mnemonics into the complete clinical term so it can be matched to a coding system. German practice software (e.g. PatMed) prints cryptic codes; expand them, never echo the raw mnemonic: KREA→Kreatinin, HARNS→Harnsäure, MALB-U→Albumin im Urin, MDRD→glomeruläre Filtrationsrate (eGFR), HB-A1C→HbA1c, HB-A1→HbA1c (IFCC), C-PEPT→C-Peptid, GADAAK→Glutamatdecarboxylase-Antikörper, ICEA→Inselzell-Antikörper, ICEA2→IA-2-Antikörper, NONHDL→Non-HDL-Cholesterin, TSH-0→Thyreotropin. For names already spelled out (e.g. 'Ferritin', 'Vitamin D 25-Hydroxy'), keep them as printed.")
     var name: String
 
     @Guide(description: "Value exactly as printed — use '-' for negative/not-detected results")
@@ -110,8 +110,13 @@ actor LabParserService {
             instructions: """
             You are a medical lab report parser. Extract every lab test entry from the provided text.
             Lab reports follow the pattern: CODE: value unit; CODE2: value2 unit2; ...
-            Preserve codes exactly as printed. For each entry, also give the test's standard name in the
+            Preserve codes exactly as printed in `code`. For each entry, also give the test's standard name in the
             report's own language (do NOT translate it) so it can be matched to a coding system in that language.
+            German practice software (e.g. PatMed) prints terse vendor mnemonics like KREA, MALB-U, MDRD, HB-A1C,
+            C-PEPT, GADAAK or TSH-0 — keep the mnemonic in `code`, but always expand it to its full standard
+            clinical name in `name`; never leave `name` as the raw mnemonic.
+            Do NOT emit specimen, material, or annotation labels as entries — a "value" of 'Serum', 'EDTA-Plasma',
+            'Vollblut' or a standalone method tag (e.g. 'JDF-E.') is not a measured test and must be skipped.
             Detect the language of the report and return it as a BCP-47 code (e.g. 'de', 'en') in reportLanguage.
             Use '-' as rawValue when the result is negative or not detected.
             If you can see a report date or blood draw date, return it in yyyy-MM-dd format; otherwise return an empty string.
