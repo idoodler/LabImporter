@@ -63,6 +63,16 @@ struct LabValue: Identifiable, Equatable, @unchecked Sendable {
             && isSelected == other.isSelected
     }
 
+    /// Whether this row would collide with another exportable row on the same
+    /// LOINC, given the report's set of duplicated codes (`duplicateLoincCodes`).
+    /// Only selected, numeric, LOINC-mapped rows can collide, so the rest never
+    /// flag as duplicates. Drives the "Duplicate" badge in `LabValueRowView`.
+    func isDuplicate(in duplicateLoincCodes: Set<String>) -> Bool {
+        guard isSelected, numericValue != nil,
+              let loinc = LabMapping.loincCode(for: code)?.loinc else { return false }
+        return duplicateLoincCodes.contains(loinc)
+    }
+
     /// Dedup ranking: a value that will actually be saved (selected *and*
     /// carrying a numeric result) outranks one that won't, so when two rows
     /// share a LOINC the one holding real, exportable data survives. Ties keep
@@ -75,8 +85,30 @@ struct LabValue: Identifiable, Equatable, @unchecked Sendable {
 }
 
 extension Array where Element == LabValue {
+    /// The LOINC codes carried by more than one *exportable* entry — i.e. rows
+    /// that are selected and hold a numeric result, the exact set that would be
+    /// written to the CDA. Two such rows sharing a LOINC (the app's canonical
+    /// identity for a test) is a duplicate the user must resolve before saving;
+    /// the review screen surfaces them visually instead of silently merging.
+    ///
+    /// Only entries carrying a *valid* LOINC mapping are considered; rows whose
+    /// code is an unmapped mnemonic, `"MANUAL"`, or empty are genuinely distinct
+    /// until the user maps them, so they never count as duplicates. Deselected
+    /// or non-numeric rows won't be saved, so they don't create a conflict.
+    func duplicateLoincCodes() -> Set<String> {
+        var counts: [String: Int] = [:]
+        for value in self where value.isSelected && value.numericValue != nil {
+            guard let loinc = LabMapping.loincCode(for: value.code)?.loinc else { continue }
+            counts[loinc, default: 0] += 1
+        }
+        return Set(counts.filter { $0.value > 1 }.keys)
+    }
+
     /// Collapses entries that share the same LOINC code so a report never holds
     /// more than one value per LOINC — the app's canonical identity for a test.
+    /// This is the **last-resort guarantee** at the CDA save/share boundary: the
+    /// review UI surfaces duplicates (see `duplicateLoincCodes`) and blocks saving
+    /// until the user resolves them, so in normal use this never has to collapse.
     ///
     /// Only entries carrying a *valid* LOINC mapping are deduplicated; rows whose
     /// code is an unmapped mnemonic, `"MANUAL"`, or empty are genuinely distinct

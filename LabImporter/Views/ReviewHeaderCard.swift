@@ -29,23 +29,39 @@ struct CDAShareSheet: UIViewControllerRepresentable {
 /// above. Dimmed and non-interactive until at least one value is exportable.
 struct ReviewActionBar: View {
     let isEnabled: Bool
+    /// When true, the report still has two or more values sharing a LOINC code.
+    /// We show a warning and keep save/share dimmed until the user resolves them,
+    /// so the disabled state isn't a mystery.
+    var hasDuplicates: Bool = false
     let onSave: () -> Void
     let onShare: () -> Void
 
     var body: some View {
         VStack(spacing: 10) {
-            Button("Save to Health Records", action: onSave)
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
-                .frame(maxWidth: .infinity)
+            if hasDuplicates {
+                Label(
+                    "Some tests appear more than once. Keep one value per test before saving.",
+                    systemImage: "exclamationmark.triangle.fill"
+                )
+                .font(.footnote)
+                .foregroundStyle(.orange)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
 
-            Button("Share CDA File", action: onShare)
-                .buttonStyle(.bordered)
-                .controlSize(.large)
-                .frame(maxWidth: .infinity)
+            VStack(spacing: 10) {
+                Button("Save to Health Records", action: onSave)
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    .frame(maxWidth: .infinity)
+
+                Button("Share CDA File", action: onShare)
+                    .buttonStyle(.bordered)
+                    .controlSize(.large)
+                    .frame(maxWidth: .infinity)
+            }
+            .opacity(isEnabled ? 1 : 0.4)
+            .allowsHitTesting(isEnabled)
         }
-        .opacity(isEnabled ? 1 : 0.4)
-        .allowsHitTesting(isEnabled)
         .padding(.horizontal)
         .padding(.bottom)
         .padding(.top, 16)
@@ -101,6 +117,7 @@ struct CategoryCount: Identifiable {
 struct ReviewHeaderCard: View {
     let supportedCount: Int
     let exportableCount: Int
+    var duplicateCount: Int = 0
     let groups: [CategoryCount]
     let dominantColor: Color
 
@@ -146,6 +163,16 @@ struct ReviewHeaderCard: View {
                         }
                     }
                 }
+            }
+
+            if duplicateCount > 0 {
+                Label(
+                    "Some tests appear more than once. Keep one value per test before saving.",
+                    systemImage: "exclamationmark.triangle.fill"
+                )
+                .font(.footnote.weight(.medium))
+                .foregroundStyle(.orange)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
         .padding(18)

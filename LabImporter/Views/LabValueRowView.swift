@@ -2,6 +2,9 @@ import SwiftUI
 
 struct LabValueRowView: View {
     @Binding var value: LabValue
+    /// True when another exportable row carries the same LOINC code; surfaces a
+    /// "Duplicate" badge so the user can resolve the collision before saving.
+    var isDuplicate: Bool = false
 
     @State private var showCodePicker = false
     @FocusState private var isFocused: Bool
@@ -38,6 +41,17 @@ struct LabValueRowView: View {
                             .font(.caption2)
                             .foregroundStyle(.tertiary)
                             .help("No LOINC code — excluded from CDA export")
+                    }
+
+                    if isDuplicate {
+                        Label("Duplicate", systemImage: "exclamationmark.triangle.fill")
+                            .labelStyle(.titleAndIcon)
+                            .font(.caption2.weight(.medium))
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color.orange.opacity(0.15), in: Capsule())
+                            .foregroundStyle(.orange)
+                            .help("Another value uses the same LOINC code — keep only one")
                     }
                 }
 

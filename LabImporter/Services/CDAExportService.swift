@@ -29,9 +29,10 @@ struct CDAExportService {
         // swiftlint:disable:next line_length
         let authorOrgXML = authorTrimmed.isEmpty ? "" : "\n      <representedOrganization>\n        <name>\(esc(authorTrimmed))</name>\n      </representedOrganization>"
 
-        // Final guarantee that a saved/shared report carries one entry per LOINC,
-        // even if review-time edits (a re-mapped code, a manual add) collided two
-        // rows onto the same code after import-time dedup.
+        // Last-resort guarantee that a saved/shared report carries one entry per
+        // LOINC. The review screen surfaces duplicates and blocks saving until the
+        // user resolves them, so this guard normally has nothing to collapse — it
+        // just keeps the persisted CDA well-formed for any non-review export path.
         let exportable = labValues.deduplicatedByLoinc().filter {
             $0.isSelected && $0.numericValue != nil && LabMapping.loincCode(for: $0.code) != nil
         }
