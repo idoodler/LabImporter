@@ -62,4 +62,46 @@ struct LabValue: Identifiable, Equatable, @unchecked Sendable {
             && unit == other.unit
             && isSelected == other.isSelected
     }
+
+    /// Dedup ranking: a value that will actually be saved (selected *and*
+    /// carrying a numeric result) outranks one that won't, so when two rows
+    /// share a LOINC the one holding real, exportable data survives. Ties keep
+    /// the earlier row (see `deduplicatedByLoinc`).
+    fileprivate var dedupRank: Int {
+        if isSelected && numericValue != nil { return 2 }
+        if numericValue != nil { return 1 }
+        return 0
+    }
+}
+
+extension Array where Element == LabValue {
+    /// Collapses entries that share the same LOINC code so a report never holds
+    /// more than one value per LOINC — the app's canonical identity for a test.
+    ///
+    /// Only entries carrying a *valid* LOINC mapping are deduplicated; rows whose
+    /// code is an unmapped mnemonic, `"MANUAL"`, or empty are genuinely distinct
+    /// until the user maps them, so they pass through untouched (collapsing them
+    /// would merge unrelated tests). Codes are compared by their resolved LOINC
+    /// (`LabMapping.loincCode`) so equivalent spellings count as one. Within a
+    /// collapsed group the most useful row wins (selected + numeric beats the
+    /// rest, see `dedupRank`), and each kept row stays in its first-seen slot.
+    func deduplicatedByLoinc() -> [LabValue] {
+        var slotForLoinc: [String: Int] = [:]
+        var result: [LabValue] = []
+        for value in self {
+            guard let loinc = LabMapping.loincCode(for: value.code)?.loinc else {
+                result.append(value)
+                continue
+            }
+            if let slot = slotForLoinc[loinc] {
+                if value.dedupRank > result[slot].dedupRank {
+                    result[slot] = value
+                }
+            } else {
+                slotForLoinc[loinc] = result.count
+                result.append(value)
+            }
+        }
+        return result
+    }
 }

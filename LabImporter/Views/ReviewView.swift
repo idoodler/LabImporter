@@ -88,12 +88,12 @@ struct ReviewView: View {
         replacingReport: LabReport? = nil,
         onSaved: (() -> Void)? = nil
     ) {
-        _labValues = State(initialValue: labValues)
+        _labValues = State(initialValue: labValues.deduplicatedByLoinc())
         _reportDate = State(initialValue: reportDate)
         _extractedPatientName = State(initialValue: extractedPatientName)
         _extractedAuthorName = State(initialValue: extractedAuthorName)
         _replacingReport = State(initialValue: replacingReport)
-        _initialLabValues = State(initialValue: labValues)
+        _initialLabValues = State(initialValue: labValues.deduplicatedByLoinc())
         _initialReportDate = State(initialValue: reportDate)
         self.onSaved = onSaved
     }
@@ -399,11 +399,11 @@ private extension ReviewView {
         return zip(labValues, initialLabValues).contains { !$0.matchesSavedData(of: $1) }
     }
 
-    /// Appends freshly parsed values to the open report rather than replacing it,
-    /// so scan/file/paste add to what the user is already reviewing or editing.
+    /// Merges freshly parsed values into the open report (scan/file/paste add to
+    /// what's being reviewed), keeping one entry per LOINC so a re-scan can't duplicate.
     func configureImportEngine() {
         importEngine.onParsed = { result in
-            labValues.append(contentsOf: result.values)
+            labValues = (labValues + result.values).deduplicatedByLoinc()
         }
     }
 
