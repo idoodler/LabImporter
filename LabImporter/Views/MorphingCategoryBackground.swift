@@ -41,18 +41,37 @@ struct MorphingCategoryBackground: View {
         .init(0, 1), .init(0.5, 1), .init(1, 1)
     ]
 
+    /// Radius of the softening blur. The mesh is drawn larger than the canvas by
+    /// a comfortable multiple of this so the blur's faded edges fall outside the
+    /// visible area (see `body`).
+    private let blurRadius: CGFloat = 60
+
     var body: some View {
-        ZStack {
-            Color(.systemBackground)
-            if reduceMotion {
-                mesh(at: 0)
-                    .opacity(intensity)
-            } else {
-                TimelineView(.animation) { context in
-                    mesh(at: context.date.timeIntervalSinceReferenceDate)
-                        .opacity(intensity)
+        // Measure the actual canvas (which, thanks to `ignoresSafeArea` below,
+        // is the full screen / window pane) so we can oversize the gradient
+        // precisely instead of relying on a fixed scale factor.
+        GeometryReader { proxy in
+            let size = proxy.size
+            ZStack {
+                Color(.systemBackground)
+                if reduceMotion {
+                    mesh(at: 0)
+                } else {
+                    TimelineView(.animation) { context in
+                        mesh(at: context.date.timeIntervalSinceReferenceDate)
+                    }
                 }
             }
+            // Draw the gradient larger than the canvas on every side, then clip
+            // back to it. Blurring a gradient fades its edges toward transparent;
+            // pushing those edges well beyond the visible bounds means only the
+            // fully-saturated interior shows, so the wash reaches every edge.
+            .frame(
+                width: size.width + blurRadius * 4,
+                height: size.height + blurRadius * 4
+            )
+            .frame(width: size.width, height: size.height)
+            .clipped()
         }
         .ignoresSafeArea()
         .allowsHitTesting(false)
@@ -65,17 +84,10 @@ struct MorphingCategoryBackground: View {
             points: Self.points,
             colors: (0..<9).map { color(forVertex: $0, time: time) }
         )
-        // Greedily fill whatever space we're given so the wash tracks window
-        // resizes (iPad multitasking / Stage Manager) and large canvases.
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
         // A wide blur melts the nine color zones into one another so the result
         // reads as an organic wash rather than a visible grid.
-        .blur(radius: 60)
-        // Blurring a frame-clipped gradient fades its edges toward transparent,
-        // which on a large canvas reads as a dark vignette. Scaling the blurred
-        // result up pushes those faded margins off-screen so the color fills
-        // edge to edge.
-        .scaleEffect(1.4)
+        .blur(radius: blurRadius)
+        .opacity(intensity)
     }
 
     /// The color for a given mesh vertex at a moment in time: a continuous
