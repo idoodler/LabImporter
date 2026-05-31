@@ -38,9 +38,7 @@ struct ReviewView: View {
     private let cdaService = CDAExportService()
 
     private var exportableCount: Int {
-        labValues.filter {
-            $0.isSelected && $0.numericValue != nil && LabMapping.loincCode(for: $0.code) != nil
-        }.count
+        labValues.filter { $0.isSelected && $0.numericValue != nil && LabMapping.loincCode(for: $0.code) != nil }.count
     }
 
     private var unsupportedValues: [LabValue] {
@@ -51,6 +49,9 @@ struct ReviewView: View {
     private var supportedCount: Int {
         labValues.filter { LabMapping.loincCode(for: $0.code) != nil }.count
     }
+
+    // LOINC codes claimed by 2+ exportable rows — duplicates the user must resolve.
+    private var duplicateLoincCodes: Set<String> { labValues.duplicateLoincCodes() }
 
     private struct ValueGroup {
         let category: LabCategory
@@ -70,10 +71,8 @@ struct ReviewView: View {
 
     // Up to three category colors for the soft background wash.
     private var backgroundColors: [Color] {
-        valueGroups
-            .sorted { $0.indices.count > $1.indices.count }
-            .prefix(3)
-            .map { $0.category.color }
+        valueGroups.sorted { $0.indices.count > $1.indices.count }
+            .prefix(3).map { $0.category.color }
     }
 
     private var dominantColor: Color {
@@ -169,6 +168,7 @@ struct ReviewView: View {
             ReviewHeaderCard(
                 supportedCount: supportedCount,
                 exportableCount: exportableCount,
+                duplicateCount: duplicateLoincCodes.count,
                 groups: categoryCounts,
                 dominantColor: dominantColor
             )
@@ -266,7 +266,7 @@ struct ReviewView: View {
         ForEach(valueGroups, id: \.category) { group in
             Section {
                 ForEach(group.indices, id: \.self) { idx in
-                    LabValueRowView(value: $labValues[idx])
+                    LabValueRowView(value: $labValues[idx], isDuplicate: labValues[idx].isDuplicate(in: duplicateLoincCodes))
                         .listRowBackground(Rectangle().fill(.ultraThinMaterial))
                         .swipeActions(edge: .trailing) {
                             Button(role: .destructive) {
@@ -359,7 +359,8 @@ private extension ReviewView {
 
     var bottomButtons: some View {
         ReviewActionBar(
-            isEnabled: exportableCount > 0,
+            isEnabled: exportableCount > 0 && duplicateLoincCodes.isEmpty,
+            hasDuplicates: !duplicateLoincCodes.isEmpty,
             onSave: { Task { await performCDAImport() } },
             onShare: { shareCDA() }
         )
@@ -399,8 +400,7 @@ private extension ReviewView {
         return zip(labValues, initialLabValues).contains { !$0.matchesSavedData(of: $1) }
     }
 
-    /// Appends freshly parsed values to the open report rather than replacing it,
-    /// so scan/file/paste add to what the user is already reviewing or editing.
+    /// Appends parsed values (scan/file/paste); re-imported tests surface as flagged duplicates.
     func configureImportEngine() {
         importEngine.onParsed = { result in
             labValues.append(contentsOf: result.values)

@@ -134,7 +134,10 @@ actor LabParserService {
             )
         }
 
-        return ParseResult(values: values, reportDate: reportDate, patientName: patientName, authorName: authorName)
+        // A printed report can list the same test twice (e.g. a value and its
+        // recalculation), and two terse names can resolve to the same LOINC —
+        // keep a single entry per LOINC, the app's canonical identity.
+        return ParseResult(values: values.deduplicatedByLoinc(), reportDate: reportDate, patientName: patientName, authorName: authorName)
     }
 
     // Resolves a parsed entry to a LOINC code entirely from the bundled catalog.

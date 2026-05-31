@@ -1,6 +1,36 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Another value uses the same LOINC code — keep only one" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein anderer Wert verwendet denselben LOINC-Code – behalte nur einen"
+          }
+        }
+      }
+    },
+    "Duplicate" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplikat"
+          }
+        }
+      }
+    },
+    "Some tests appear more than once. Keep one value per test before saving." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einige Tests kommen mehrfach vor. Behalte vor dem Speichern pro Test nur einen Wert."
+          }
+        }
+      }
+    },
     "The on-device AI couldn't recognize the language of this report. This can happen with very short reports, or ones made up mostly of codes and numbers. Try importing or scanning the full report so there's more text to read, then try again." : {
       "extractionState" : "manual",
       "localizations" : {
