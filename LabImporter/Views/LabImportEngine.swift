@@ -65,6 +65,11 @@ final class LabImportEngine {
         let accessing = url.startAccessingSecurityScopedResource()
         defer {
             if accessing { url.stopAccessingSecurityScopedResource() }
+            // Files handed over via "Copy to App" (share sheet) are duplicated
+            // into our Documents/Inbox; once parsed they're dead weight, so we
+            // remove them. Files opened in place (the user's own document in
+            // Files) live outside our container and are left untouched.
+            removeInboxCopy(at: url)
         }
 
         let isPDF = url.pathExtension.lowercased() == "pdf"
@@ -77,6 +82,18 @@ final class LabImportEngine {
         } else {
             errorMessage = String(localized: "Could not load the selected file.")
         }
+    }
+
+    /// Deletes `url` only if it sits inside this app's `Documents/Inbox`, the
+    /// drop box iOS uses when another app copies a document to us. In-place URLs
+    /// (security-scoped references to the user's own files) are never deleted.
+    private func removeInboxCopy(at url: URL) {
+        guard url.isFileURL,
+              let inbox = try? FileManager.default.url(
+                for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false
+              ).appendingPathComponent("Inbox") else { return }
+        guard url.standardizedFileURL.path.hasPrefix(inbox.standardizedFileURL.path) else { return }
+        try? FileManager.default.removeItem(at: url)
     }
 
     func processImages(_ images: [UIImage]) async {

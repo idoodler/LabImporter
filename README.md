@@ -8,7 +8,7 @@ Scan, import, or paste your lab report — the app uses Vision OCR and the on-de
 
 ## Features
 
-- **Import** by scanning multi-page documents with the camera, picking PDFs or images from Files, or pasting from the clipboard
+- **Import** by scanning multi-page documents with the camera, picking PDFs or images from Files, pasting from the clipboard, or sending a PDF/image to LabImporter from any app via the share sheet ("Open With")
 - **On-device AI parsing** — Foundation Models + Vision OCR extract lab values without sending any data to a server
 - **Review & correct** — edit values, change codes, add or remove entries before saving
 - **Dashboard** — metric cards with current value, sparkline, and a trend-direction indicator (rising / falling / steady)
@@ -112,7 +112,7 @@ After the first manual run succeeds, builds are triggered automatically on the *
 
 | Step | Technology |
 |---|---|
-| Document input | `VisionKit` document scanner (multi-page), `UIDocumentPicker` for PDFs / images, or Clipboard |
+| Document input | `VisionKit` document scanner (multi-page), `UIDocumentPicker` for PDFs / images, Clipboard, or files opened from other apps (`CFBundleDocumentTypes` + `onOpenURL`) |
 | PDF rendering | `PDFKit` — extracts embedded text or renders pages for OCR |
 | Text extraction | `Vision` — `VNRecognizeTextRequest` (German + English) |
 | Lab value parsing | `FoundationModels` — `@Generable` structured output via `LanguageModelSession` |
