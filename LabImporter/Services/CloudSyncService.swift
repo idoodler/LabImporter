@@ -1,72 +1,115 @@
 import Foundation
 
-/// Roams a small allow-list of preference values across the user's devices via
-/// the iCloud key-value store (`NSUbiquitousKeyValueStore`).
+/// Roams the dashboard card layout (sorting / pinning / hiding) across the
+/// user's devices via the iCloud key-value store (`NSUbiquitousKeyValueStore`).
 ///
-/// **What syncs:** the dashboard card layout (sorting / pinning / hiding) and
-/// the patient metadata entered in Settings. **What never syncs:** lab values
-/// themselves — those live in Apple Health by design (see CLAUDE.md), and no
-/// network call ever carries lab data. The iCloud KVS holds only the same tiny
-/// preference values that already live in `UserDefaults` behind `@AppStorage`.
+/// **Opt-in.** Nothing syncs until the user turns it on — the persisted flag
+/// `iCloudSyncEnabled` gates everything. The onboarding flow forces an explicit
+/// decision (see `CloudSyncOptInView`) and Settings lets the user change it.
+///
+/// **What syncs:** only `labDisplayPrefs` (the dashboard card layout).
+/// **What never syncs:** lab values — those live in Apple Health by design (see
+/// CLAUDE.md) — and patient metadata, which stays device-local. No network call
+/// here ever carries lab data; the iCloud KVS holds only the tiny layout blob.
 ///
 /// ### Mechanism
-/// Every synced value already lives in `UserDefaults.standard` behind an
-/// `@AppStorage` key, so we keep `UserDefaults.standard` and the iCloud store
-/// in lock-step in both directions:
+/// The synced value lives in `UserDefaults.standard` behind an `@AppStorage`
+/// key, so while enabled we keep `UserDefaults.standard` and the iCloud store in
+/// lock-step in both directions:
 /// - local edit  → `UserDefaults.didChangeNotification`            → push up.
 /// - remote edit → `NSUbiquitousKeyValueStore.didChangeExternallyNotification`
 ///   → write into `UserDefaults.standard`, which refreshes every `@AppStorage`
 ///   view live.
 ///
-/// `isApplyingRemoteChange` breaks the feedback loop between the two directions.
-/// Conflicts resolve last-writer-wins per key (the KVS default); on a fresh
-/// device any values iCloud already knows win over local defaults at launch.
+/// The same local-defaults observer also watches `iCloudSyncEnabled` and
+/// activates/deactivates the remote half when the user flips the toggle, so the
+/// UI only has to write the flag. `isApplyingRemoteChange` breaks the feedback
+/// loop. Conflicts resolve last-writer-wins per key (the KVS default); on a
+/// fresh device any value iCloud already knows wins over local defaults when
+/// sync is first switched on.
 @MainActor
 final class CloudSyncService {
     static let shared = CloudSyncService()
 
-    /// The exact `@AppStorage` keys we roam. Mirror any future *preference* key
-    /// here to have it sync — never add keys that reference lab data.
+    /// The `@AppStorage` flag that gates syncing. Written by onboarding/Settings.
+    static let enabledKey = "iCloudSyncEnabled"
+
+    /// The exact `@AppStorage` keys we roam. Layout only — never lab data or
+    /// patient metadata.
     static let syncedKeys: Set<String> = [
-        "labDisplayPrefs",          // dashboard card sorting / pinning / hiding
-        "patientName",
-        "authorName",
-        "patientBirthdateInterval",
-        "patientSexRaw"
+        "labDisplayPrefs"           // dashboard card sorting / pinning / hiding
     ]
 
     private let store = NSUbiquitousKeyValueStore.default
     private let defaults = UserDefaults.standard
-    private var observers: [NSObjectProtocol] = []
+    private var remoteObserver: NSObjectProtocol?
+    private var localObserver: NSObjectProtocol?
     private var isApplyingRemoteChange = false
+    private var isActive = false
     private var started = false
 
     private init() {}
 
-    /// Begin syncing. Safe to call repeatedly; only the first call wires up.
+    /// Begin observing local defaults. Safe to call repeatedly; only the first
+    /// call wires up. Reflects the persisted opt-in state, so a user who enabled
+    /// sync on a previous launch keeps syncing without re-deciding.
     func start() {
         guard !started else { return }
         started = true
 
-        observers.append(NotificationCenter.default.addObserver(
-            forName: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
-            object: store, queue: .main
-        ) { [weak self] note in
-            MainActor.assumeIsolated { self?.remoteStoreChanged(note) }
-        })
-
-        observers.append(NotificationCenter.default.addObserver(
+        localObserver = NotificationCenter.default.addObserver(
             forName: UserDefaults.didChangeNotification,
             object: defaults, queue: .main
         ) { [weak self] _ in
             MainActor.assumeIsolated { self?.localDefaultsChanged() }
-        })
+        }
+
+        reconcileEnabledState()
+    }
+
+    // MARK: Enable / disable
+
+    private var isEnabled: Bool { defaults.bool(forKey: Self.enabledKey) }
+
+    private func localDefaultsChanged() {
+        guard !isApplyingRemoteChange else { return }
+        reconcileEnabledState()
+        if isActive { pushLocalValues() }
+    }
+
+    /// Brings the remote half in line with the persisted `iCloudSyncEnabled`
+    /// flag — activating on opt-in, tearing down on opt-out.
+    private func reconcileEnabledState() {
+        switch (isEnabled, isActive) {
+        case (true, false): activateRemoteSync()
+        case (false, true): deactivateRemoteSync()
+        default: break
+        }
+    }
+
+    private func activateRemoteSync() {
+        isActive = true
+        remoteObserver = NotificationCenter.default.addObserver(
+            forName: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
+            object: store, queue: .main
+        ) { [weak self] note in
+            MainActor.assumeIsolated { self?.remoteStoreChanged(note) }
+        }
 
         // Pull what iCloud already has, then push anything that only exists
         // locally. `synchronize()` schedules the initial download.
         store.synchronize()
         applyRemoteValues(for: Self.syncedKeys)
         pushLocalValues()
+    }
+
+    private func deactivateRemoteSync() {
+        isActive = false
+        if let remoteObserver {
+            NotificationCenter.default.removeObserver(remoteObserver)
+        }
+        remoteObserver = nil
+        // Leave whatever is already in the KVS untouched; re-enabling re-syncs.
     }
 
     // MARK: iCloud → local
@@ -94,11 +137,6 @@ final class CloudSyncService {
     }
 
     // MARK: local → iCloud
-
-    private func localDefaultsChanged() {
-        guard !isApplyingRemoteChange else { return }
-        pushLocalValues()
-    }
 
     private func pushLocalValues() {
         var didChange = false

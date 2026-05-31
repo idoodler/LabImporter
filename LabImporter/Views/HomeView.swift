@@ -19,6 +19,10 @@ struct HomeView: View {
     @State private var pendingImportURL: URL?
     @AppStorage("hasSeenWelcome") private var hasSeenWelcome = false
     @AppStorage("hasGrantedHealthAccess") private var hasGrantedHealthAccess = false
+    /// Whether the user has made the required up-front iCloud sync decision.
+    /// Gates entry into the app so no reports can be added before deciding.
+    @AppStorage("hasChosenICloudSync") private var hasChosenICloudSync = false
+    @AppStorage(CloudSyncService.enabledKey) private var iCloudSyncEnabled = false
 
     // iPad sidebar state
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
@@ -105,16 +109,19 @@ struct HomeView: View {
             handleIncomingFile(url)
         }
         .fullScreenCover(isPresented: Binding(
-            get: { !hasSeenWelcome || !hasGrantedHealthAccess },
+            get: { !hasSeenWelcome || !hasGrantedHealthAccess || !hasChosenICloudSync },
             set: { _ in }
         )) {
             onboardingFlow
         }
     }
 
-    /// Two-step onboarding: marketing welcome → Apple Health permission gate.
-    /// Swapping the inner view inside the same fullScreenCover keeps the cover
-    /// presented without a dismiss/re-present flash between steps.
+    /// Three-step onboarding: marketing welcome → Apple Health permission gate →
+    /// required iCloud sync decision. Swapping the inner view inside the same
+    /// fullScreenCover keeps the cover presented without a dismiss/re-present
+    /// flash between steps. The iCloud decision is mandatory, so the cover stays
+    /// up — and the dashboard / import entry points stay unreachable — until the
+    /// user picks an option.
     @ViewBuilder
     private var onboardingFlow: some View {
         if !hasSeenWelcome {
@@ -124,9 +131,19 @@ struct HomeView: View {
                 }
             }
             .transition(.opacity)
-        } else {
+        } else if !hasGrantedHealthAccess {
             HealthPermissionView {
-                hasGrantedHealthAccess = true
+                withAnimation(.smooth(duration: 0.35)) {
+                    hasGrantedHealthAccess = true
+                }
+            }
+            .transition(.opacity)
+        } else {
+            CloudSyncOptInView { enabled in
+                iCloudSyncEnabled = enabled
+                withAnimation(.smooth(duration: 0.35)) {
+                    hasChosenICloudSync = true
+                }
                 flushPendingImport()
             }
             .transition(.opacity)
@@ -258,7 +275,7 @@ struct HomeView: View {
     /// stashed and replayed once `WelcomeView` is dismissed — otherwise the
     /// review sheet would present beneath the welcome cover and stay hidden.
     private func handleIncomingFile(_ url: URL) {
-        guard hasSeenWelcome, hasGrantedHealthAccess else {
+        guard hasSeenWelcome, hasGrantedHealthAccess, hasChosenICloudSync else {
             pendingImportURL = url
             return
         }

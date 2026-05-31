@@ -70,6 +70,7 @@ struct SettingsView: View {
     var isModal = true
     @Environment(\.dismiss) private var dismiss
     @State private var browserURL: IdentifiedURL?
+    @AppStorage(CloudSyncService.enabledKey) private var iCloudSyncEnabled = false
 
     var body: some View {
         NavigationStack {
@@ -81,6 +82,15 @@ struct SettingsView: View {
                         SettingsRowLabel("Sort & Visibility",
                                          systemImage: "arrow.up.arrow.down", color: .blue)
                     }
+                }
+
+                Section {
+                    Toggle(isOn: $iCloudSyncEnabled) {
+                        SettingsRowLabel("iCloud Sync",
+                                         systemImage: "arrow.triangle.2.circlepath", color: .blue)
+                    }
+                } footer: {
+                    Text("Sync your dashboard layout — the card order plus what you pin and hide — across your devices. Your lab values stay in Apple Health.")
                 }
 
                 Section("LOINC") {
