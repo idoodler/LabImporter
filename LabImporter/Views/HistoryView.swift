@@ -11,6 +11,10 @@ struct HistoryView: View {
     // Multi-select state: drives the list's checkmarks while editing.
     @State private var editMode: EditMode = .inactive
     @State private var selection: Set<UUID> = []
+    @State private var shareURL: IdentifiedURL?
+    @State private var exportError: String?
+
+    private let pdfService = PDFExportService()
 
     var body: some View {
         Group {
@@ -50,6 +54,14 @@ struct HistoryView: View {
             Button("OK") { deleteError = nil }
         } message: {
             Text(deleteError ?? "")
+        }
+        .alert("Export Failed", isPresented: .constant(exportError != nil)) {
+            Button("OK") { exportError = nil }
+        } message: {
+            Text(exportError ?? "")
+        }
+        .sheet(item: $shareURL) { item in
+            ShareSheet(url: item.url)
         }
         .alert("Delete Report?", isPresented: .constant(!pendingDeleteIDs.isEmpty)) {
             Button("Delete", role: .destructive) {
@@ -108,6 +120,13 @@ struct HistoryView: View {
                     Button(allSelected ? "Deselect All" : "Select All") {
                         selection = allSelected ? [] : Set(reports.map(\.id))
                     }
+                    Spacer()
+                    Button {
+                        exportPDF(ids: selection)
+                    } label: {
+                        Label("Export PDF", systemImage: "arrow.up.doc")
+                    }
+                    .disabled(selection.isEmpty)
                     Spacer()
                     Button("Delete", role: .destructive) {
                         pendingDeleteIDs = Array(selection)
@@ -168,6 +187,10 @@ struct HistoryView: View {
                                 Label("Edit", systemImage: "pencil")
                             }
                             .tint(.blue)
+                            Button { exportPDF([report]) } label: {
+                                Label("Export PDF", systemImage: "arrow.up.doc")
+                            }
+                            .tint(.indigo)
                         }
                         // While selecting, show the multi-select circles instead of
                         // the per-row red delete control (swipe-to-delete still works
@@ -317,6 +340,25 @@ struct HistoryView: View {
             if failed {
                 deleteError = String(localized: "Some reports couldn't be removed from Apple Health.")
             }
+        }
+    }
+}
+
+// MARK: - PDF export
+
+private extension HistoryView {
+    func exportPDF(ids: Set<UUID>) {
+        // Preserve the on-screen ordering (newest first) for the combined document.
+        exportPDF(reports.filter { ids.contains($0.id) })
+        exitEditing()
+    }
+
+    func exportPDF(_ list: [LabReport]) {
+        guard !list.isEmpty else { return }
+        do {
+            shareURL = IdentifiedURL(url: try pdfService.exportToTempFile(reports: list))
+        } catch {
+            exportError = error.localizedDescription
         }
     }
 }

@@ -50,6 +50,9 @@
 		AABB0000000000000000F3AA /* AddValueSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000F4AA /* AddValueSheet.swift */; };
 		AACC000000000000000001AA /* ReviewView+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACC000000000000000002AA /* ReviewView+Preview.swift */; };
 		AACC000000000000000003AA /* PreviewSampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACC000000000000000004AA /* PreviewSampleData.swift */; };
+		AABB0000000000000000E1AA /* PDFExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000E0AA /* PDFExportService.swift */; };
+		AABB0000000000000000E3AA /* PDFReportDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000E2AA /* PDFReportDocument.swift */; };
+		AABB0000000000000000E5AA /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000E4AA /* ShareSheet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -100,6 +103,9 @@
 		AABB0000000000000000F4AA /* AddValueSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddValueSheet.swift; sourceTree = "<group>"; };
 		AACC000000000000000002AA /* ReviewView+Preview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReviewView+Preview.swift"; sourceTree = "<group>"; };
 		AACC000000000000000004AA /* PreviewSampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSampleData.swift; sourceTree = "<group>"; };
+		AABB0000000000000000E0AA /* PDFExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFExportService.swift; sourceTree = "<group>"; };
+		AABB0000000000000000E2AA /* PDFReportDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFReportDocument.swift; sourceTree = "<group>"; };
+		AABB0000000000000000E4AA /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -172,6 +178,7 @@
 				AABB000000000000000024AA /* LabParserService.swift */,
 				AABB000000000000000025AA /* HealthKitService.swift */,
 				AABB000000000000000058AA /* CDAExportService.swift */,
+				AABB0000000000000000E0AA /* PDFExportService.swift */,
 				AABB000000000000000090AA /* LoincDirectory.swift */,
 				AABB0000000000000000D0AA /* CloudSyncService.swift */,
 			);
@@ -194,6 +201,8 @@
 				AABB0000000000000000F4AA /* AddValueSheet.swift */,
 				AABB000000000000000065AA /* HistoryView.swift */,
 				AABB000000000000000067AA /* ReportDetailView.swift */,
+				AABB0000000000000000E2AA /* PDFReportDocument.swift */,
+				AABB0000000000000000E4AA /* ShareSheet.swift */,
 				AABB000000000000000069AA /* TrendsView.swift */,
 				AABB000000000000000071AA /* DashboardView.swift */,
 				AABB000000000000000073AA /* ImportLandingView.swift */,
@@ -336,6 +345,9 @@
 				AABB000000000000000091AA /* LoincDirectory.swift in Sources */,
 				AABB0000000000000000D1AA /* CloudSyncService.swift in Sources */,
 				AABB000000000000000057AA /* CDAExportService.swift in Sources */,
+				AABB0000000000000000E1AA /* PDFExportService.swift in Sources */,
+				AABB0000000000000000E3AA /* PDFReportDocument.swift in Sources */,
+				AABB0000000000000000E5AA /* ShareSheet.swift in Sources */,
 				AABB000000000000000046AA /* HomeView.swift in Sources */,
 				AABB000000000000000047AA /* ReviewView.swift in Sources */,
 				AACC000000000000000001AA /* ReviewView+Preview.swift in Sources */,
