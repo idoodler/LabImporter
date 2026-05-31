@@ -3,6 +3,7 @@ import SwiftUI
 struct HistoryView: View {
     @State private var reports: [LabReport] = []
     @State private var loadError: String?
+    @State private var deleteError: String?
     @State private var reportToEdit: LabReport?
 
     var body: some View {
@@ -35,6 +36,11 @@ struct HistoryView: View {
             Button("OK") { loadError = nil }
         } message: {
             Text(loadError ?? "")
+        }
+        .alert("Delete Failed", isPresented: .constant(deleteError != nil)) {
+            Button("OK") { deleteError = nil }
+        } message: {
+            Text(deleteError ?? "")
         }
     }
 
@@ -170,15 +176,36 @@ struct HistoryView: View {
     }
 
     private func deleteReport(_ id: UUID) {
+        // Remove optimistically for instant feedback, then reconcile with
+        // Health (the source of truth) once the delete resolves. A failed
+        // delete reappears on reload and surfaces an error.
         reports.removeAll { $0.id == id }
-        Task { try? await HealthKitService.shared.deleteCDADocument(id: id) }
+        Task {
+            do {
+                try await HealthKitService.shared.deleteCDADocument(id: id)
+            } catch {
+                deleteError = error.localizedDescription
+            }
+            await loadReports()
+        }
     }
 
     private func deleteReports(in groupReports: [LabReport], at offsets: IndexSet) {
         let ids = offsets.map { groupReports[$0].id }
         reports.removeAll { ids.contains($0.id) }
         Task {
-            for id in ids { try? await HealthKitService.shared.deleteCDADocument(id: id) }
+            var failed = false
+            for id in ids {
+                do {
+                    try await HealthKitService.shared.deleteCDADocument(id: id)
+                } catch {
+                    failed = true
+                }
+            }
+            await loadReports()
+            if failed {
+                deleteError = String(localized: "Some reports couldn't be removed from Apple Health.")
+            }
         }
     }
 }

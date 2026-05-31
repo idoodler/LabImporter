@@ -117,6 +117,11 @@ actor HealthKitService {
 
         let sample: HKDocumentSample? = try await withCheckedThrowingContinuation { continuation in
             var finished = false
+            // HKDocumentQuery may deliver results across several handler
+            // invocations, with `done` only set on the last one. Capture the
+            // match as it arrives instead of relying on the final callback's
+            // `samples` (which can be nil once everything was already delivered).
+            var match: HKDocumentSample?
             let query = HKDocumentQuery(
                 documentType: documentType,
                 predicate: predicate,
@@ -130,9 +135,10 @@ actor HealthKitService {
                     continuation.resume(throwing: error)
                     return
                 }
+                if let first = samples?.first { match = first }
                 if done {
                     finished = true
-                    continuation.resume(returning: samples?.first)
+                    continuation.resume(returning: match)
                 }
             }
             store.execute(query)

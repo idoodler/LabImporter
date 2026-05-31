@@ -15,6 +15,7 @@ struct ReviewView: View {
 
     @State private var cdaShareURL: URL?
     @State private var cdaError: String?
+    @State private var replaceWarning: String?
     @State private var showDiscardAlert = false
     @State private var replacingReport: LabReport?
 
@@ -151,9 +152,10 @@ struct ReviewView: View {
         }
         .alert("Export Error", isPresented: .constant(cdaError != nil)) {
             Button("OK") { cdaError = nil }
-        } message: {
-            Text(cdaError ?? "")
-        }
+        } message: { Text(cdaError ?? "") }
+        .alert("Report Saved", isPresented: .constant(replaceWarning != nil)) {
+            Button("OK") { finishSave() }
+        } message: { Text(replaceWarning ?? "") }
     }
 
     // MARK: - Sections
@@ -470,31 +472,29 @@ private extension ReviewView {
             patientName: patientName,
             authorName: authorName
         )
+        // Save first so a failure here never loses data (the old version stays intact).
         do {
             try await HealthKitService.shared.importCDADocument(xml, date: reportDate)
-            if let old = replacingReport {
-                try? await HealthKitService.shared.deleteCDADocument(id: old.id)
-            }
-            onSaved?()
-            dismiss()
         } catch {
             cdaError = error.localizedDescription
+            return
         }
+        // Then remove the replaced document; a failed delete would leave a duplicate.
+        if let old = replacingReport {
+            do {
+                try await HealthKitService.shared.deleteCDADocument(id: old.id)
+            } catch {
+                replaceWarning = String(localized:
+                    "The updated report was saved, but the previous version couldn't be removed from Apple Health. You can delete it from the Reports list.")
+                return
+            }
+        }
+        finishSave()
     }
-}
 
-// MARK: - Preview
-
-#Preview {
-    NavigationStack {
-        ReviewView(
-            labValues: [
-                LabValue(code: "2345-7", name: "Blood Glucose", displayValue: "95", numericValue: 95, unit: "mg/dl"),
-                LabValue(code: "2160-0", name: "Creatinine", displayValue: "0.91", numericValue: 0.91, unit: "mg/dl"),
-                LabValue(code: "4548-4", name: "HbA1c (%)", displayValue: "6.5", numericValue: 6.5, unit: "%"),
-                LabValue(code: "2093-3", name: "Total Cholesterol", displayValue: "162", numericValue: 162, unit: "mg/dl"),
-            ],
-            extractedPatientName: "Max Mustermann"
-        )
+    func finishSave() {
+        replaceWarning = nil
+        onSaved?()
+        dismiss()
     }
 }
