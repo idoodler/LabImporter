@@ -1,419 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "%lld Selected" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld ausgewählt"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld seleccionados"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld sélectionnés"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld selezionati"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld件選択中"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld geselecteerd"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zaznaczono %lld"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld selecionados"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Выбрано: %lld"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld seçildi"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Вибрано: %lld"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已选择 %lld 项"
-          }
-        }
-      }
-    },
-    "Deselect All" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Auswahl aufheben"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deseleccionar todo"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tout désélectionner"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deseleziona tutto"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "すべて選択解除"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deselecteer alles"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Odznacz wszystko"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desmarcar tudo"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Снять выбор"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Seçimi kaldır"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Скасувати вибір"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "取消全选"
-          }
-        }
-      }
-    },
-    "Another value uses the same LOINC code — keep only one" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ein anderer Wert verwendet denselben LOINC-Code – behalte nur einen"
-          }
-        }
-      }
-    },
-    "Duplicate" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Duplikat"
-          }
-        }
-      }
-    },
-    "Some tests appear more than once. Keep one value per test before saving." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einige Tests kommen mehrfach vor. Behalte vor dem Speichern pro Test nur einen Wert."
-          }
-        }
-      }
-    },
-    "The on-device AI couldn't recognize the language of this report. This can happen with very short reports, or ones made up mostly of codes and numbers. Try importing or scanning the full report so there's more text to read, then try again." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Die geräteinterne KI konnte die Sprache dieses Befunds nicht erkennen. Das kann bei sehr kurzen Befunden vorkommen oder bei solchen, die überwiegend aus Codes und Zahlen bestehen. Importiere oder scanne den vollständigen Befund, damit mehr Text vorhanden ist, und versuche es dann erneut."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La IA en el dispositivo no pudo reconocer el idioma de este informe. Esto puede ocurrir con informes muy cortos o compuestos principalmente por códigos y números. Importa o escanea el informe completo para que haya más texto y vuelve a intentarlo."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L’IA sur l’appareil n’a pas pu reconnaître la langue de ce compte rendu. Cela peut arriver avec des comptes rendus très courts ou composés principalement de codes et de chiffres. Importez ou numérisez le compte rendu complet afin d’avoir plus de texte, puis réessayez."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L’IA sul dispositivo non è riuscita a riconoscere la lingua di questo referto. Può accadere con referti molto brevi o composti principalmente da codici e numeri. Importa o scansiona il referto completo in modo da avere più testo, quindi riprova."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "デバイス上のAIはこのレポートの言語を認識できませんでした。これは、非常に短いレポートや、ほとんどがコードと数字で構成されているレポートで起こることがあります。テキストが増えるようレポート全体を読み込むかスキャンしてから、もう一度お試しください。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "De AI op het apparaat kon de taal van dit rapport niet herkennen. Dit kan gebeuren bij zeer korte rapporten of rapporten die vooral uit codes en cijfers bestaan. Importeer of scan het volledige rapport zodat er meer tekst is en probeer het opnieuw."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sztuczna inteligencja na urządzeniu nie rozpoznała języka tego raportu. Może się to zdarzyć w przypadku bardzo krótkich raportów lub takich, które składają się głównie z kodów i liczb. Zaimportuj lub zeskanuj cały raport, aby było więcej tekstu, a następnie spróbuj ponownie."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A IA no dispositivo não conseguiu reconhecer o idioma deste relatório. Isso pode acontecer com relatórios muito curtos ou compostos principalmente por códigos e números. Importe ou digitalize o relatório completo para que haja mais texto e tente novamente."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ИИ на устройстве не смог распознать язык этого отчета. Это может произойти с очень короткими отчетами или с теми, что состоят в основном из кодов и цифр. Импортируйте или отсканируйте отчет целиком, чтобы было больше текста, и повторите попытку."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cihaz üzerindeki yapay zeka bu raporun dilini tanıyamadı. Bu durum çok kısa raporlarda veya çoğunlukla kod ve sayılardan oluşan raporlarda görülebilir. Daha fazla metin olması için raporun tamamını içe aktarın veya tarayın, ardından tekrar deneyin."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Штучний інтелект на пристрої не зміг розпізнати мову цього звіту. Це може статися з дуже короткими звітами або тими, що складаються переважно з кодів і цифр. Імпортуйте або відскануйте повний звіт, щоб було більше тексту, а потім повторіть спробу."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "设备端 AI 无法识别此报告的语言。这可能发生在非常简短的报告，或主要由代码和数字组成的报告中。请导入或扫描完整的报告以提供更多文本，然后重试。"
-          }
-        }
-      }
-    },
-    "The on-device AI couldn't process this document. Make sure it's a lab report and try again." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Die geräteinterne KI konnte dieses Dokument nicht verarbeiten. Stelle sicher, dass es sich um einen Laborbefund handelt, und versuche es erneut."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La IA en el dispositivo no pudo procesar este documento. Asegúrate de que sea un informe de laboratorio e inténtalo de nuevo."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L’IA sur l’appareil n’a pas pu traiter ce document. Assurez-vous qu’il s’agit d’un compte rendu de laboratoire, puis réessayez."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L’IA sul dispositivo non è riuscita a elaborare questo documento. Assicurati che sia un referto di laboratorio e riprova."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "デバイス上のAIはこの書類を処理できませんでした。検査報告書であることを確認して、もう一度お試しください。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "De AI op het apparaat kon dit document niet verwerken. Controleer of het een laboratoriumrapport is en probeer het opnieuw."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sztuczna inteligencja na urządzeniu nie mogła przetworzyć tego dokumentu. Upewnij się, że to wynik badań laboratoryjnych, i spróbuj ponownie."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A IA no dispositivo não conseguiu processar este documento. Verifique se é um laudo laboratorial e tente novamente."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ИИ на устройстве не смог обработать этот документ. Убедитесь, что это лабораторный отчет, и повторите попытку."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cihaz üzerindeki yapay zeka bu belgeyi işleyemedi. Bunun bir laboratuvar raporu olduğundan emin olun ve tekrar deneyin."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Штучний інтелект на пристрої не зміг обробити цей документ. Переконайтеся, що це лабораторний звіт, і повторіть спробу."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "设备端 AI 无法处理此文档。请确认这是一份化验报告，然后重试。"
-          }
-        }
-      }
-    },
-    "This report is too long for the on-device AI to read at once. Try importing fewer pages, or one report at a time." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dieser Befund ist zu lang, als dass ihn die geräteinterne KI auf einmal lesen könnte. Versuche, weniger Seiten oder jeweils einen Befund zu importieren."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Este informe es demasiado largo para que la IA en el dispositivo lo lea de una vez. Intenta importar menos páginas o un informe a la vez."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ce rapport est trop long pour que l’IA sur l’appareil puisse le lire en une seule fois. Essayez d’importer moins de pages, ou un rapport à la fois."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Questo referto è troppo lungo perché l’IA sul dispositivo possa leggerlo in una volta sola. Prova a importare meno pagine o un referto alla volta."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "このレポートは長すぎるため、デバイス上のAIで一度に読み取ることができません。ページ数を減らすか、レポートを1件ずつ読み込んでみてください。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dit rapport is te lang om in één keer door de AI op het apparaat te laten lezen. Probeer minder pagina’s of één rapport tegelijk te importeren."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ten raport jest zbyt długi, aby sztuczna inteligencja na urządzeniu mogła go odczytać za jednym razem. Spróbuj zaimportować mniej stron lub po jednym raporcie naraz."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Este relatório é longo demais para a IA no dispositivo ler de uma vez. Tente importar menos páginas ou um relatório por vez."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Этот отчет слишком длинный, чтобы ИИ на устройстве мог прочитать его за один раз. Попробуйте импортировать меньше страниц или по одному отчету за раз."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bu rapor, cihaz üzerindeki yapay zekanın bir kerede okuyamayacağı kadar uzun. Daha az sayfa veya her seferinde bir rapor içe aktarmayı deneyin."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Цей звіт надто довгий, щоб штучний інтелект на пристрої міг прочитати його за один раз. Спробуйте імпортувати менше сторінок або по одному звіту за раз."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此报告太长，设备端 AI 无法一次性读取。请尝试导入较少的页面，或一次导入一份报告。"
-          }
-        }
-      }
-    },
     "" : {
 
     },
@@ -495,6 +82,158 @@
     },
     "%lld" : {
 
+    },
+    "%lld reports will be permanently removed from Apple Health." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Berichte werden dauerhaft aus Apple Health entfernt."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se eliminarán permanentemente %lld informes de Apple Salud."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld rapports seront définitivement supprimés d’Apple Santé."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld referti verranno rimossi definitivamente da Apple Salute."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld件のレポートがAppleヘルスケアから完全に削除されます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld rapporten worden permanent verwijderd uit Apple Gezondheid."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld raportów zostanie trwale usuniętych z Apple Zdrowia."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld laudos serão removidos permanentemente do Apple Saúde."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld отчётов будет навсегда удалено из Apple Здоровья."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld rapor Apple Sağlık'tan kalıcı olarak kaldırılacak."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld звітів буде назавжди видалено з Apple Здоров'я."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 份报告将从 Apple 健康中永久删除。"
+          }
+        }
+      }
+    },
+    "%lld Selected" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld ausgewählt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld seleccionados"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld sélectionnés"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld selezionati"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld件選択中"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld geselecteerd"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zaznaczono %lld"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld selecionados"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выбрано: %lld"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld seçildi"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вибрано: %lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已选择 %lld 项"
+          }
+        }
+      }
     },
     "%lld values" : {
       "comment" : "Count of lab values in a report",
@@ -1285,6 +1024,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在分析检验报告…"
+          }
+        }
+      }
+    },
+    "Another value uses the same LOINC code — keep only one" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein anderer Wert verwendet denselben LOINC-Code – behalte nur einen"
           }
         }
       }
@@ -2350,6 +2099,82 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "类别"
+          }
+        }
+      }
+    },
+    "Change It Anytime" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jederzeit änderbar"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cámbialo cuando quieras"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modifiable à tout moment"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambialo quando vuoi"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "いつでも変更可能"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Altijd aan te passen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zmień to w każdej chwili"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mude quando quiser"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Можно изменить в любой момент"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İstediğiniz zaman değiştirin"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Змінюйте будь-коли"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "随时可更改"
           }
         }
       }
@@ -3880,82 +3705,6 @@
         }
       }
     },
-    "Delete Failed" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Löschen fehlgeschlagen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Error al eliminar"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Échec de la suppression"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eliminazione non riuscita"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "削除に失敗しました"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verwijderen mislukt"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Usuwanie nie powiodło się"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Falha na exclusão"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Не удалось удалить"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Silme başarısız"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Не вдалося видалити"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "删除失败"
-          }
-        }
-      }
-    },
     "Delete All" : {
       "localizations" : {
         "de" : {
@@ -4032,6 +3781,82 @@
         }
       }
     },
+    "Delete Failed" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Löschen fehlgeschlagen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al eliminar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de la suppression"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminazione non riuscita"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "削除に失敗しました"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verwijderen mislukt"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usuwanie nie powiodło się"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falha na exclusão"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось удалить"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Silme başarısız"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не вдалося видалити"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除失败"
+          }
+        }
+      }
+    },
     "Delete Report?" : {
       "localizations" : {
         "de" : {
@@ -4104,6 +3929,82 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "删除报告？"
+          }
+        }
+      }
+    },
+    "Deselect All" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auswahl aufheben"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deseleccionar todo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tout désélectionner"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deseleziona tutto"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべて選択解除"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deselecteer alles"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Odznacz wszystko"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desmarcar tudo"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Снять выбор"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seçimi kaldır"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скасувати вибір"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取消全选"
           }
         }
       }
@@ -4716,6 +4617,16 @@
         }
       }
     },
+    "Duplicate" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplikat"
+          }
+        }
+      }
+    },
     "Edit" : {
       "localizations" : {
         "de" : {
@@ -4864,6 +4775,82 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "电解质"
+          }
+        }
+      }
+    },
+    "Enable iCloud Sync" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud-Sync aktivieren"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activar sincronización con iCloud"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activer la synchronisation iCloud"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attiva sincronizzazione iCloud"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud同期を有効にする"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud-synchronisatie inschakelen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Włącz synchronizację iCloud"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ativar sincronização do iCloud"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Включить синхронизацию iCloud"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud senkronizasyonunu aç"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Увімкнути синхронізацію iCloud"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启用 iCloud 同步"
           }
         }
       }
@@ -6086,6 +6073,82 @@
         }
       }
     },
+    "iCloud Sync" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud-Sync"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronización con iCloud"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronisation iCloud"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronizzazione iCloud"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud同期"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud-synchronisatie"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronizacja iCloud"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronização do iCloud"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Синхронизация iCloud"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud Senkronizasyonu"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Синхронізація iCloud"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud 同步"
+          }
+        }
+      }
+    },
     "Import a lab report and save it to Apple Health to see it here." : {
       "localizations" : {
         "de" : {
@@ -6618,6 +6681,82 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "iOS 26 或更高版本"
+          }
+        }
+      }
+    },
+    "Keep your dashboard layout in sync across your devices with iCloud." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Halte dein Dashboard-Layout mit iCloud auf allen Geräten synchron."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantén el diseño de tu panel sincronizado entre tus dispositivos con iCloud."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gardez la disposition de votre tableau de bord synchronisée sur tous vos appareils avec iCloud."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantieni il layout della dashboard sincronizzato su tutti i tuoi dispositivi con iCloud."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloudでダッシュボードのレイアウトをすべてのデバイス間で同期できます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Houd je dashboardindeling gesynchroniseerd op al je apparaten met iCloud."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronizuj układ pulpitu na wszystkich urządzeniach dzięki iCloud."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantenha o layout do seu painel sincronizado entre seus dispositivos com o iCloud."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Синхронизируйте оформление панели на всех устройствах через iCloud."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pano düzeninizi iCloud ile tüm cihazlarınızda senkron tutun."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Синхронізуйте вигляд панелі на всіх пристроях за допомогою iCloud."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过 iCloud 让仪表板布局在你的设备间保持同步。"
           }
         }
       }
@@ -7690,6 +7829,82 @@
     },
     "Latest OS" : {
 
+    },
+    "Layout Only" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nur das Layout"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo el diseño"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La disposition uniquement"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo il layout"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レイアウトのみ"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alleen de indeling"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tylko układ"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apenas o layout"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Только оформление"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yalnızca düzen"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Лише вигляд"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仅布局"
+          }
+        }
+      }
     },
     "License" : {
       "localizations" : {
@@ -9600,6 +9815,82 @@
         }
       }
     },
+    "Not Now" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jetzt nicht"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ahora no"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas maintenant"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non ora"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今はしない"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niet nu"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie teraz"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agora não"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не сейчас"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Şimdi değil"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не зараз"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暂不"
+          }
+        }
+      }
+    },
     "Not supported for export" : {
       "localizations" : {
         "de" : {
@@ -9824,6 +10115,82 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "设备端 AI"
+          }
+        }
+      }
+    },
+    "Only your card layout syncs. Your lab values stay in Apple Health and never leave it." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nur dein Karten-Layout wird synchronisiert. Deine Laborwerte bleiben in Apple Health und verlassen es nie."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo se sincroniza el diseño de tus tarjetas. Tus valores de laboratorio permanecen en Apple Salud y nunca salen de ahí."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seule la disposition de vos cartes est synchronisée. Vos valeurs de laboratoire restent dans Apple Santé et n’en sortent jamais."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si sincronizza solo il layout delle schede. I tuoi valori di laboratorio restano in Apple Salute e non ne escono mai."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同期されるのはカードのレイアウトだけです。検査値はAppleヘルスケアに残り、外に出ることはありません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alleen je kaartindeling wordt gesynchroniseerd. Je labwaarden blijven in Apple Gezondheid en verlaten het nooit."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronizowany jest tylko układ kart. Twoje wyniki badań pozostają w Apple Zdrowiu i nigdy go nie opuszczają."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apenas o layout dos seus cartões é sincronizado. Seus valores de exames ficam no Apple Saúde e nunca saem de lá."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Синхронизируется только оформление карточек. Ваши лабораторные значения остаются в Apple Здоровье и никогда его не покидают."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yalnızca kart düzeniniz senkronlanır. Laboratuvar değerleriniz Apple Sağlık’ta kalır ve oradan asla çıkmaz."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Синхронізується лише вигляд карток. Ваші лабораторні значення залишаються в Apple Здоров’я й ніколи його не покидають."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "只有卡片布局会同步。你的化验数值保留在 Apple 健康中，绝不会离开。"
           }
         }
       }
@@ -12342,6 +12709,7 @@
       }
     },
     "Select" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -12797,6 +13165,16 @@
         }
       }
     },
+    "Some tests appear more than once. Keep one value per test before saving." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einige Tests kommen mehrfach vor. Behalte vor dem Speichern pro Test nur einen Wert."
+          }
+        }
+      }
+    },
     "Sort & Visibility" : {
       "localizations" : {
         "de" : {
@@ -13021,6 +13399,234 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "建议"
+          }
+        }
+      }
+    },
+    "Sync your dashboard layout — the card order plus what you pin and hide — across your devices. Your lab values stay in Apple Health." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronisiere dein Dashboard-Layout – die Kartenreihenfolge sowie was du anheftest und ausblendest – über deine Geräte hinweg. Deine Laborwerte bleiben in Apple Health."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincroniza el diseño de tu panel —el orden de las tarjetas y lo que fijas y ocultas— entre tus dispositivos. Tus valores de laboratorio permanecen en Apple Salud."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronisez la disposition de votre tableau de bord — l’ordre des cartes ainsi que ce que vous épinglez et masquez — sur tous vos appareils. Vos valeurs de laboratoire restent dans Apple Santé."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronizza il layout della dashboard — l’ordine delle schede e ciò che fissi e nascondi — su tutti i tuoi dispositivi. I tuoi valori di laboratorio restano in Apple Salute."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダッシュボードのレイアウト（カードの順序と固定・非表示の設定）をデバイス間で同期します。検査値はAppleヘルスケアに残ります。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchroniseer je dashboardindeling — de kaartvolgorde plus wat je vastzet en verbergt — op al je apparaten. Je labwaarden blijven in Apple Gezondheid."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronizuj układ pulpitu — kolejność kart oraz to, co przypinasz i ukrywasz — między urządzeniami. Twoje wyniki badań pozostają w Apple Zdrowiu."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronize o layout do seu painel — a ordem dos cartões e o que você fixa e oculta — entre seus dispositivos. Seus valores de exames ficam no Apple Saúde."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Синхронизируйте оформление панели — порядок карточек, а также что закреплено и скрыто — между устройствами. Ваши лабораторные значения остаются в Apple Здоровье."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pano düzeninizi — kart sırası ile sabitlediğiniz ve gizlediğiniz öğeleri — cihazlarınız arasında senkronlayın. Laboratuvar değerleriniz Apple Sağlık’ta kalır."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Синхронізуйте вигляд панелі — порядок карток, а також що закріплено й приховано — між пристроями. Ваші лабораторні значення залишаються в Apple Здоров’я."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在你的设备间同步仪表板布局——卡片顺序以及置顶和隐藏的设置。你的化验数值保留在 Apple 健康中。"
+          }
+        }
+      }
+    },
+    "Sync Your Dashboard?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dashboard synchronisieren?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Sincronizar tu panel?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchroniser votre tableau de bord ?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronizzare la dashboard?"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダッシュボードを同期しますか？"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je dashboard synchroniseren?"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zsynchronizować pulpit?"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronizar seu painel?"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Синхронизировать панель?"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Panonuz senkronize edilsin mi?"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Синхронізувати панель?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步你的仪表板？"
+          }
+        }
+      }
+    },
+    "Synced through your private iCloud account. Your lab data never leaves Apple Health." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronisiert über deinen privaten iCloud-Account. Deine Labordaten verlassen Apple Health nie."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se sincroniza a través de tu cuenta privada de iCloud. Tus datos de laboratorio nunca salen de Apple Salud."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronisé via votre compte iCloud privé. Vos données de laboratoire ne quittent jamais Apple Santé."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronizzato tramite il tuo account iCloud privato. I tuoi dati di laboratorio non lasciano mai Apple Salute."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "あなた専用のiCloudアカウントを通じて同期します。検査データがAppleヘルスケアから出ることはありません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gesynchroniseerd via je privé-iCloud-account. Je labgegevens verlaten Apple Gezondheid nooit."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronizacja odbywa się przez Twoje prywatne konto iCloud. Twoje dane laboratoryjne nigdy nie opuszczają Apple Zdrowia."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronizado pela sua conta privada do iCloud. Seus dados de exames nunca saem do Apple Saúde."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Синхронизация через ваш личный аккаунт iCloud. Ваши лабораторные данные никогда не покидают Apple Здоровье."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Özel iCloud hesabınız üzerinden senkronlanır. Laboratuvar verileriniz Apple Sağlık’tan asla çıkmaz."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Синхронізується через ваш приватний обліковий запис iCloud. Ваші лабораторні дані ніколи не покидають Apple Здоров’я."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过你的私人 iCloud 账户同步。你的化验数据绝不会离开 Apple 健康。"
           }
         }
       }
@@ -13331,6 +13937,236 @@
         }
       }
     },
+    "The on-device AI couldn't process this document. Make sure it's a lab report and try again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die geräteinterne KI konnte dieses Dokument nicht verarbeiten. Stelle sicher, dass es sich um einen Laborbefund handelt, und versuche es erneut."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La IA en el dispositivo no pudo procesar este documento. Asegúrate de que sea un informe de laboratorio e inténtalo de nuevo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’IA sur l’appareil n’a pas pu traiter ce document. Assurez-vous qu’il s’agit d’un compte rendu de laboratoire, puis réessayez."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’IA sul dispositivo non è riuscita a elaborare questo documento. Assicurati che sia un referto di laboratorio e riprova."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイス上のAIはこの書類を処理できませんでした。検査報告書であることを確認して、もう一度お試しください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De AI op het apparaat kon dit document niet verwerken. Controleer of het een laboratoriumrapport is en probeer het opnieuw."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sztuczna inteligencja na urządzeniu nie mogła przetworzyć tego dokumentu. Upewnij się, że to wynik badań laboratoryjnych, i spróbuj ponownie."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A IA no dispositivo não conseguiu processar este documento. Verifique se é um laudo laboratorial e tente novamente."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ИИ на устройстве не смог обработать этот документ. Убедитесь, что это лабораторный отчет, и повторите попытку."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cihaz üzerindeki yapay zeka bu belgeyi işleyemedi. Bunun bir laboratuvar raporu olduğundan emin olun ve tekrar deneyin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Штучний інтелект на пристрої не зміг обробити цей документ. Переконайтеся, що це лабораторний звіт, і повторіть спробу."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设备端 AI 无法处理此文档。请确认这是一份化验报告，然后重试。"
+          }
+        }
+      }
+    },
+    "The on-device AI couldn't recognize the language of this report. This can happen with very short reports, or ones made up mostly of codes and numbers. Try importing or scanning the full report so there's more text to read, then try again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die geräteinterne KI konnte die Sprache dieses Befunds nicht erkennen. Das kann bei sehr kurzen Befunden vorkommen oder bei solchen, die überwiegend aus Codes und Zahlen bestehen. Importiere oder scanne den vollständigen Befund, damit mehr Text vorhanden ist, und versuche es dann erneut."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La IA en el dispositivo no pudo reconocer el idioma de este informe. Esto puede ocurrir con informes muy cortos o compuestos principalmente por códigos y números. Importa o escanea el informe completo para que haya más texto y vuelve a intentarlo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’IA sur l’appareil n’a pas pu reconnaître la langue de ce compte rendu. Cela peut arriver avec des comptes rendus très courts ou composés principalement de codes et de chiffres. Importez ou numérisez le compte rendu complet afin d’avoir plus de texte, puis réessayez."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’IA sul dispositivo non è riuscita a riconoscere la lingua di questo referto. Può accadere con referti molto brevi o composti principalmente da codici e numeri. Importa o scansiona il referto completo in modo da avere più testo, quindi riprova."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイス上のAIはこのレポートの言語を認識できませんでした。これは、非常に短いレポートや、ほとんどがコードと数字で構成されているレポートで起こることがあります。テキストが増えるようレポート全体を読み込むかスキャンしてから、もう一度お試しください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De AI op het apparaat kon de taal van dit rapport niet herkennen. Dit kan gebeuren bij zeer korte rapporten of rapporten die vooral uit codes en cijfers bestaan. Importeer of scan het volledige rapport zodat er meer tekst is en probeer het opnieuw."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sztuczna inteligencja na urządzeniu nie rozpoznała języka tego raportu. Może się to zdarzyć w przypadku bardzo krótkich raportów lub takich, które składają się głównie z kodów i liczb. Zaimportuj lub zeskanuj cały raport, aby było więcej tekstu, a następnie spróbuj ponownie."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A IA no dispositivo não conseguiu reconhecer o idioma deste relatório. Isso pode acontecer com relatórios muito curtos ou compostos principalmente por códigos e números. Importe ou digitalize o relatório completo para que haja mais texto e tente novamente."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ИИ на устройстве не смог распознать язык этого отчета. Это может произойти с очень короткими отчетами или с теми, что состоят в основном из кодов и цифр. Импортируйте или отсканируйте отчет целиком, чтобы было больше текста, и повторите попытку."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cihaz üzerindeki yapay zeka bu raporun dilini tanıyamadı. Bu durum çok kısa raporlarda veya çoğunlukla kod ve sayılardan oluşan raporlarda görülebilir. Daha fazla metin olması için raporun tamamını içe aktarın veya tarayın, ardından tekrar deneyin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Штучний інтелект на пристрої не зміг розпізнати мову цього звіту. Це може статися з дуже короткими звітами або тими, що складаються переважно з кодів і цифр. Імпортуйте або відскануйте повний звіт, щоб було більше тексту, а потім повторіть спробу."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设备端 AI 无法识别此报告的语言。这可能发生在非常简短的报告，或主要由代码和数字组成的报告中。请导入或扫描完整的报告以提供更多文本，然后重试。"
+          }
+        }
+      }
+    },
+    "The order you arrange cards in — plus what you pin and hide — follows you to your other devices." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Reihenfolge deiner Karten – sowie was du anheftest und ausblendest – folgt dir auf deine anderen Geräte."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El orden en que organizas las tarjetas —y lo que fijas y ocultas— te acompaña en tus otros dispositivos."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’ordre dans lequel vous classez les cartes — ainsi que ce que vous épinglez et masquez — vous suit sur vos autres appareils."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’ordine in cui disponi le schede — oltre a ciò che fissi e nascondi — ti segue sugli altri dispositivi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カードの並び順、固定・非表示の設定が、ほかのデバイスにも引き継がれます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De volgorde van je kaarten — plus wat je vastzet en verbergt — gaat met je mee naar je andere apparaten."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kolejność kart oraz to, co przypinasz i ukrywasz, podąża za Tobą na inne urządzenia."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A ordem em que você organiza os cartões — além do que fixa e oculta — acompanha você nos seus outros dispositivos."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Порядок карточек, а также что закреплено и скрыто, переносится на другие ваши устройства."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kartları dizdiğiniz sıra ile sabitlediğiniz ve gizlediğiniz öğeler diğer cihazlarınıza taşınır."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Порядок розташування карток, а також що закріплено й приховано, переходить на інші ваші пристрої."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你排列卡片的顺序，以及置顶和隐藏的设置，都会同步到你的其他设备。"
+          }
+        }
+      }
+    },
     "The updated report was saved, but the previous version couldn't be removed from Apple Health. You can delete it from the Reports list." : {
       "localizations" : {
         "de" : {
@@ -13559,78 +14395,79 @@
         }
       }
     },
-    "%lld reports will be permanently removed from Apple Health." : {
+    "This report is too long for the on-device AI to read at once. Try importing fewer pages, or one report at a time." : {
+      "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld Berichte werden dauerhaft aus Apple Health entfernt."
+            "value" : "Dieser Befund ist zu lang, als dass ihn die geräteinterne KI auf einmal lesen könnte. Versuche, weniger Seiten oder jeweils einen Befund zu importieren."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se eliminarán permanentemente %lld informes de Apple Salud."
+            "value" : "Este informe es demasiado largo para que la IA en el dispositivo lo lea de una vez. Intenta importar menos páginas o un informe a la vez."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld rapports seront définitivement supprimés d’Apple Santé."
+            "value" : "Ce rapport est trop long pour que l’IA sur l’appareil puisse le lire en une seule fois. Essayez d’importer moins de pages, ou un rapport à la fois."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld referti verranno rimossi definitivamente da Apple Salute."
+            "value" : "Questo referto è troppo lungo perché l’IA sul dispositivo possa leggerlo in una volta sola. Prova a importare meno pagine o un referto alla volta."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld件のレポートがAppleヘルスケアから完全に削除されます。"
+            "value" : "このレポートは長すぎるため、デバイス上のAIで一度に読み取ることができません。ページ数を減らすか、レポートを1件ずつ読み込んでみてください。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld rapporten worden permanent verwijderd uit Apple Gezondheid."
+            "value" : "Dit rapport is te lang om in één keer door de AI op het apparaat te laten lezen. Probeer minder pagina’s of één rapport tegelijk te importeren."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld raportów zostanie trwale usuniętych z Apple Zdrowia."
+            "value" : "Ten raport jest zbyt długi, aby sztuczna inteligencja na urządzeniu mogła go odczytać za jednym razem. Spróbuj zaimportować mniej stron lub po jednym raporcie naraz."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld laudos serão removidos permanentemente do Apple Saúde."
+            "value" : "Este relatório é longo demais para a IA no dispositivo ler de uma vez. Tente importar menos páginas ou um relatório por vez."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld отчётов будет навсегда удалено из Apple Здоровья."
+            "value" : "Этот отчет слишком длинный, чтобы ИИ на устройстве мог прочитать его за один раз. Попробуйте импортировать меньше страниц или по одному отчету за раз."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld rapor Apple Sağlık'tan kalıcı olarak kaldırılacak."
+            "value" : "Bu rapor, cihaz üzerindeki yapay zekanın bir kerede okuyamayacağı kadar uzun. Daha az sayfa veya her seferinde bir rapor içe aktarmayı deneyin."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld звітів буде назавжди видалено з Apple Здоров'я."
+            "value" : "Цей звіт надто довгий, щоб штучний інтелект на пристрої міг прочитати його за один раз. Спробуйте імпортувати менше сторінок або по одному звіту за раз."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld 份报告将从 Apple 健康中永久删除。"
+            "value" : "此报告太长，设备端 AI 无法一次性读取。请尝试导入较少的页面，或一次导入一份报告。"
           }
         }
       }
@@ -15309,766 +16146,6 @@
         }
       }
     },
-    "Change It Anytime" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jederzeit änderbar"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cámbialo cuando quieras"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modifiable à tout moment"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cambialo quando vuoi"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "いつでも変更可能"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Altijd aan te passen"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zmień to w każdej chwili"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mude quando quiser"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Можно изменить в любой момент"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "İstediğiniz zaman değiştirin"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Змінюйте будь-коли"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "随时可更改"
-          }
-        }
-      }
-    },
-    "Enable iCloud Sync" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iCloud-Sync aktivieren"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Activar sincronización con iCloud"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Activer la synchronisation iCloud"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Attiva sincronizzazione iCloud"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iCloud同期を有効にする"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iCloud-synchronisatie inschakelen"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Włącz synchronizację iCloud"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ativar sincronização do iCloud"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Включить синхронизацию iCloud"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iCloud senkronizasyonunu aç"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Увімкнути синхронізацію iCloud"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "启用 iCloud 同步"
-          }
-        }
-      }
-    },
-    "Keep your dashboard layout in sync across your devices with iCloud." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Halte dein Dashboard-Layout mit iCloud auf allen Geräten synchron."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mantén el diseño de tu panel sincronizado entre tus dispositivos con iCloud."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gardez la disposition de votre tableau de bord synchronisée sur tous vos appareils avec iCloud."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mantieni il layout della dashboard sincronizzato su tutti i tuoi dispositivi con iCloud."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iCloudでダッシュボードのレイアウトをすべてのデバイス間で同期できます。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Houd je dashboardindeling gesynchroniseerd op al je apparaten met iCloud."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Synchronizuj układ pulpitu na wszystkich urządzeniach dzięki iCloud."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mantenha o layout do seu painel sincronizado entre seus dispositivos com o iCloud."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Синхронизируйте оформление панели на всех устройствах через iCloud."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pano düzeninizi iCloud ile tüm cihazlarınızda senkron tutun."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Синхронізуйте вигляд панелі на всіх пристроях за допомогою iCloud."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "通过 iCloud 让仪表板布局在你的设备间保持同步。"
-          }
-        }
-      }
-    },
-    "Layout Only" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nur das Layout"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Solo el diseño"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La disposition uniquement"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Solo il layout"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "レイアウトのみ"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alleen de indeling"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tylko układ"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apenas o layout"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Только оформление"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Yalnızca düzen"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Лише вигляд"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "仅布局"
-          }
-        }
-      }
-    },
-    "Not Now" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jetzt nicht"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ahora no"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pas maintenant"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Non ora"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "今はしない"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Niet nu"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nie teraz"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Agora não"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Не сейчас"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Şimdi değil"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Не зараз"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "暂不"
-          }
-        }
-      }
-    },
-    "Only your card layout syncs. Your lab values stay in Apple Health and never leave it." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nur dein Karten-Layout wird synchronisiert. Deine Laborwerte bleiben in Apple Health und verlassen es nie."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Solo se sincroniza el diseño de tus tarjetas. Tus valores de laboratorio permanecen en Apple Salud y nunca salen de ahí."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Seule la disposition de vos cartes est synchronisée. Vos valeurs de laboratoire restent dans Apple Santé et n’en sortent jamais."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Si sincronizza solo il layout delle schede. I tuoi valori di laboratorio restano in Apple Salute e non ne escono mai."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "同期されるのはカードのレイアウトだけです。検査値はAppleヘルスケアに残り、外に出ることはありません。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alleen je kaartindeling wordt gesynchroniseerd. Je labwaarden blijven in Apple Gezondheid en verlaten het nooit."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Synchronizowany jest tylko układ kart. Twoje wyniki badań pozostają w Apple Zdrowiu i nigdy go nie opuszczają."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apenas o layout dos seus cartões é sincronizado. Seus valores de exames ficam no Apple Saúde e nunca saem de lá."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Синхронизируется только оформление карточек. Ваши лабораторные значения остаются в Apple Здоровье и никогда его не покидают."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Yalnızca kart düzeniniz senkronlanır. Laboratuvar değerleriniz Apple Sağlık’ta kalır ve oradan asla çıkmaz."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Синхронізується лише вигляд карток. Ваші лабораторні значення залишаються в Apple Здоров’я й ніколи його не покидають."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "只有卡片布局会同步。你的化验数值保留在 Apple 健康中，绝不会离开。"
-          }
-        }
-      }
-    },
-    "Sync Your Dashboard?" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dashboard synchronisieren?"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¿Sincronizar tu panel?"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Synchroniser votre tableau de bord ?"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sincronizzare la dashboard?"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ダッシュボードを同期しますか？"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Je dashboard synchroniseren?"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zsynchronizować pulpit?"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sincronizar seu painel?"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Синхронизировать панель?"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Panonuz senkronize edilsin mi?"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Синхронізувати панель?"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "同步你的仪表板？"
-          }
-        }
-      }
-    },
-    "Sync your dashboard layout — the card order plus what you pin and hide — across your devices. Your lab values stay in Apple Health." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Synchronisiere dein Dashboard-Layout – die Kartenreihenfolge sowie was du anheftest und ausblendest – über deine Geräte hinweg. Deine Laborwerte bleiben in Apple Health."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sincroniza el diseño de tu panel —el orden de las tarjetas y lo que fijas y ocultas— entre tus dispositivos. Tus valores de laboratorio permanecen en Apple Salud."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Synchronisez la disposition de votre tableau de bord — l’ordre des cartes ainsi que ce que vous épinglez et masquez — sur tous vos appareils. Vos valeurs de laboratoire restent dans Apple Santé."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sincronizza il layout della dashboard — l’ordine delle schede e ciò che fissi e nascondi — su tutti i tuoi dispositivi. I tuoi valori di laboratorio restano in Apple Salute."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ダッシュボードのレイアウト（カードの順序と固定・非表示の設定）をデバイス間で同期します。検査値はAppleヘルスケアに残ります。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Synchroniseer je dashboardindeling — de kaartvolgorde plus wat je vastzet en verbergt — op al je apparaten. Je labwaarden blijven in Apple Gezondheid."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Synchronizuj układ pulpitu — kolejność kart oraz to, co przypinasz i ukrywasz — między urządzeniami. Twoje wyniki badań pozostają w Apple Zdrowiu."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sincronize o layout do seu painel — a ordem dos cartões e o que você fixa e oculta — entre seus dispositivos. Seus valores de exames ficam no Apple Saúde."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Синхронизируйте оформление панели — порядок карточек, а также что закреплено и скрыто — между устройствами. Ваши лабораторные значения остаются в Apple Здоровье."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pano düzeninizi — kart sırası ile sabitlediğiniz ve gizlediğiniz öğeleri — cihazlarınız arasında senkronlayın. Laboratuvar değerleriniz Apple Sağlık’ta kalır."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Синхронізуйте вигляд панелі — порядок карток, а також що закріплено й приховано — між пристроями. Ваші лабораторні значення залишаються в Apple Здоров’я."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在你的设备间同步仪表板布局——卡片顺序以及置顶和隐藏的设置。你的化验数值保留在 Apple 健康中。"
-          }
-        }
-      }
-    },
-    "Synced through your private iCloud account. Your lab data never leaves Apple Health." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Synchronisiert über deinen privaten iCloud-Account. Deine Labordaten verlassen Apple Health nie."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se sincroniza a través de tu cuenta privada de iCloud. Tus datos de laboratorio nunca salen de Apple Salud."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Synchronisé via votre compte iCloud privé. Vos données de laboratoire ne quittent jamais Apple Santé."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sincronizzato tramite il tuo account iCloud privato. I tuoi dati di laboratorio non lasciano mai Apple Salute."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "あなた専用のiCloudアカウントを通じて同期します。検査データがAppleヘルスケアから出ることはありません。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gesynchroniseerd via je privé-iCloud-account. Je labgegevens verlaten Apple Gezondheid nooit."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Synchronizacja odbywa się przez Twoje prywatne konto iCloud. Twoje dane laboratoryjne nigdy nie opuszczają Apple Zdrowia."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sincronizado pela sua conta privada do iCloud. Seus dados de exames nunca saem do Apple Saúde."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Синхронизация через ваш личный аккаунт iCloud. Ваши лабораторные данные никогда не покидают Apple Здоровье."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Özel iCloud hesabınız üzerinden senkronlanır. Laboratuvar verileriniz Apple Sağlık’tan asla çıkmaz."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Синхронізується через ваш приватний обліковий запис iCloud. Ваші лабораторні дані ніколи не покидають Apple Здоров’я."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "通过你的私人 iCloud 账户同步。你的化验数据绝不会离开 Apple 健康。"
-          }
-        }
-      }
-    },
-    "The order you arrange cards in — plus what you pin and hide — follows you to your other devices." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Die Reihenfolge deiner Karten – sowie was du anheftest und ausblendest – folgt dir auf deine anderen Geräte."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El orden en que organizas las tarjetas —y lo que fijas y ocultas— te acompaña en tus otros dispositivos."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L’ordre dans lequel vous classez les cartes — ainsi que ce que vous épinglez et masquez — vous suit sur vos autres appareils."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L’ordine in cui disponi le schede — oltre a ciò che fissi e nascondi — ti segue sugli altri dispositivi."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "カードの並び順、固定・非表示の設定が、ほかのデバイスにも引き継がれます。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "De volgorde van je kaarten — plus wat je vastzet en verbergt — gaat met je mee naar je andere apparaten."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kolejność kart oraz to, co przypinasz i ukrywasz, podąża za Tobą na inne urządzenia."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A ordem em que você organiza os cartões — além do que fixa e oculta — acompanha você nos seus outros dispositivos."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Порядок карточек, а также что закреплено и скрыто, переносится на другие ваши устройства."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kartları dizdiğiniz sıra ile sabitlediğiniz ve gizlediğiniz öğeler diğer cihazlarınıza taşınır."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Порядок розташування карток, а також що закріплено й приховано, переходить на інші ваші пристрої."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "你排列卡片的顺序，以及置顶和隐藏的设置，都会同步到你的其他设备。"
-          }
-        }
-      }
-    },
     "You can turn iCloud sync on or off later in Settings." : {
       "localizations" : {
         "de" : {
@@ -16217,82 +16294,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "随处可用的仪表板"
-          }
-        }
-      }
-    },
-    "iCloud Sync" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iCloud-Sync"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sincronización con iCloud"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Synchronisation iCloud"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sincronizzazione iCloud"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iCloud同期"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iCloud-synchronisatie"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Synchronizacja iCloud"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sincronização do iCloud"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Синхронизация iCloud"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iCloud Senkronizasyonu"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Синхронізація iCloud"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iCloud 同步"
           }
         }
       }
