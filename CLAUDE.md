@@ -36,7 +36,7 @@ LabImporter/
 ├── Models/
 │   ├── LabValue.swift          # editable in-memory value (used in Review flow)
 │   ├── LabReport.swift         # a saved report (Codable); .asLabValues bridges to LabValue
-│   ├── LabMapping.swift        # CODE ↔ display name ↔ LOINC ↔ reference range tables
+│   ├── LabMapping.swift        # thin catalog adapter: LOINC code ↔ display name ↔ CDA export / loinc.org URL
 │   └── LabDisplayPreferences.swift  # pinned/ordered/hidden codes (RawRepresentable for @AppStorage)
 ├── Services/
 │   ├── OCRService.swift        # actor; Vision text recognition + PDFKit rendering

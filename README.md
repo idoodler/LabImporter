@@ -11,7 +11,7 @@ Scan, import, or paste your lab report — the app uses Vision OCR and the on-de
 - **Import** by scanning multi-page documents with the camera, picking PDFs or images from Files, or pasting from the clipboard
 - **On-device AI parsing** — Foundation Models + Vision OCR extract lab values without sending any data to a server
 - **Review & correct** — edit values, change codes, add or remove entries before saving
-- **Dashboard** — metric cards with current value, sparkline trend, and normal / borderline / elevated status
+- **Dashboard** — metric cards with current value, sparkline, and a trend-direction indicator (rising / falling / steady)
 - **Trend charts** — interactive per-metric chart with finger-scrubbing to inspect individual values
 - **History** — full list of imported reports with edit and delete
 - **Customise** — pin metrics to the top, reorder, or hide them from the dashboard
