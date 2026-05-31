@@ -249,7 +249,7 @@ struct TrendsView: View {
         .chartXAxis {
             AxisMarks(values: .automatic) { _ in
                 AxisGridLine().foregroundStyle(valueColor.opacity(0.12))
-                AxisValueLabel(format: .dateTime.month(.abbreviated).day())
+                AxisValueLabel(format: .dateTime.day().month(.abbreviated))
                     .foregroundStyle(valueColor.opacity(0.8))
             }
         }
