@@ -27,7 +27,19 @@ struct HomeView: View {
     // iPad sidebar state
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
     @State private var sidebarSelection: SidebarSection? = .dashboard
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
+    /// Whether to present the iPad sidebar split view. Keyed off the device
+    /// idiom rather than `horizontalSizeClass` on purpose: a large iPhone flips
+    /// between compact (portrait) and regular (landscape) on every rotation, and
+    /// driving the root layout off that swaps the whole navigation container —
+    /// tearing down any pushed screen and dumping the user back on the
+    /// dashboard. The idiom is stable across rotation, so the iPhone keeps its
+    /// `NavigationStack` (and its navigation state) and only the iPad gets the
+    /// sidebar. `NavigationSplitView` still collapses itself when an iPad is
+    /// horizontally compact (Slide Over), so no behavior is lost there.
+    private var usesSidebarLayout: Bool {
+        UIDevice.current.userInterfaceIdiom == .pad
+    }
 
     /// Sections shown in the iPad sidebar. On compact widths (iPhone) these are
     /// reached through the dashboard's own toolbar instead, so the sidebar is
@@ -54,13 +66,14 @@ struct HomeView: View {
     }
 
     var body: some View {
-        // The layout adapts to width — a sidebar split view on regular-width
-        // devices (iPad, large iPhones in landscape) and the original stack on
-        // compact widths — while the import overlay, review sheet, report
-        // loading and onboarding stay shared across both so behavior is
-        // identical no matter how the content is presented.
+        // The layout adapts to the device — a sidebar split view on iPad and the
+        // original stack on iPhone — while the import overlay, review sheet,
+        // report loading and onboarding stay shared across both so behavior is
+        // identical no matter how the content is presented. See
+        // `usesSidebarLayout` for why this is keyed off the idiom, not the size
+        // class, so rotating an iPhone doesn't reset navigation.
         Group {
-            if horizontalSizeClass == .regular {
+            if usesSidebarLayout {
                 splitRoot
             } else {
                 compactRoot
