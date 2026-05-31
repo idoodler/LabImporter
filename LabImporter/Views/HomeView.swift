@@ -51,47 +51,55 @@ struct HomeView: View {
         // compact widths — while the import overlay, review sheet, report
         // loading and onboarding stay shared across both so behavior is
         // identical no matter how the content is presented.
-        Group {
-            if horizontalSizeClass == .regular {
-                splitRoot
-            } else {
-                compactRoot
+        //
+        // The outer GeometryReader publishes the window size and a shared
+        // coordinate space so the empty-state wash (painted as each split-view
+        // column's own background) can align into one seamless full-window field.
+        GeometryReader { proxy in
+            Group {
+                if horizontalSizeClass == .regular {
+                    splitRoot
+                } else {
+                    compactRoot
+                }
             }
-        }
-        // The processing HUD is presented in its own top-level UIWindow (see
-        // `labImport`), so it floats above the navigation bar and blocks the
-        // toolbar buttons (history/settings/import) while an import is running.
-        .labImport(engine: importEngine)
-        .sheet(isPresented: $showReview) {
-            NavigationStack {
-                ReviewView(
-                    labValues: labValues,
-                    reportDate: parsedReportDate ?? Date(),
-                    extractedPatientName: parsedPatientName,
-                    extractedAuthorName: parsedAuthorName
-                )
+            .environment(\.appWindowSize, proxy.size)
+            .coordinateSpace(.named(MorphingCategoryBackground.windowSpace))
+            // The processing HUD is presented in its own top-level UIWindow (see
+            // `labImport`), so it floats above the navigation bar and blocks the
+            // toolbar buttons (history/settings/import) while an import is running.
+            .labImport(engine: importEngine)
+            .sheet(isPresented: $showReview) {
+                NavigationStack {
+                    ReviewView(
+                        labValues: labValues,
+                        reportDate: parsedReportDate ?? Date(),
+                        extractedPatientName: parsedPatientName,
+                        extractedAuthorName: parsedAuthorName
+                    )
+                }
+                .interactiveDismissDisabled()
             }
-            .interactiveDismissDisabled()
-        }
-        .task { await loadReports() }
-        .onChange(of: showReview) { _, showing in
-            if !showing { Task { await loadReports() } }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
-            Task { await loadReports() }
-        }
-        .onAppear {
-            refreshClipboardState()
-            configureImportEngine()
-        }
-        .onOpenURL { url in
-            Task { await importEngine.processFile(at: url) }
-        }
-        .fullScreenCover(isPresented: Binding(
-            get: { !hasSeenWelcome },
-            set: { _ in }
-        )) {
-            WelcomeView { hasSeenWelcome = true }
+            .task { await loadReports() }
+            .onChange(of: showReview) { _, showing in
+                if !showing { Task { await loadReports() } }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+                Task { await loadReports() }
+            }
+            .onAppear {
+                refreshClipboardState()
+                configureImportEngine()
+            }
+            .onOpenURL { url in
+                Task { await importEngine.processFile(at: url) }
+            }
+            .fullScreenCover(isPresented: Binding(
+                get: { !hasSeenWelcome },
+                set: { _ in }
+            )) {
+                WelcomeView { hasSeenWelcome = true }
+            }
         }
     }
 
@@ -101,7 +109,6 @@ struct HomeView: View {
         NavigationStack {
             mainContent(showsLibraryToolbarItems: true)
         }
-        .background { if showsLandingWash { MorphingCategoryBackground() } }
     }
 
     // MARK: - Regular layout (iPad)
@@ -114,11 +121,15 @@ struct HomeView: View {
                         .tag(section)
                 }
             }
-            // In the empty/onboarding state the morphing wash sits behind the
-            // whole split view, so the sidebar's own list background is hidden to
-            // let it show through — making the wash span the full window rather
-            // than just the detail pane.
+            // In the empty/onboarding state the wash spans the whole window. The
+            // sidebar can't show a background placed *behind* the split view
+            // (the column is opaque), so it paints the wash as its own content
+            // background — hiding the list background to reveal it. `seamless`
+            // aligns it to the detail pane's copy so there's no divider seam.
             .scrollContentBackground(showsLandingWash ? .hidden : .automatic)
+            .background {
+                if showsLandingWash { MorphingCategoryBackground(seamless: true) }
+            }
             .navigationTitle("Lab Importer")
             .navigationSplitViewColumnWidth(min: 240, ideal: 280)
             .toolbar {
@@ -130,9 +141,6 @@ struct HomeView: View {
             detailColumn
         }
         .navigationSplitViewStyle(.balanced)
-        // A single wash behind both columns (rather than one per pane) keeps it
-        // seamless across the sidebar/detail divider.
-        .background { if showsLandingWash { MorphingCategoryBackground() } }
     }
 
     /// The full-window colored wash is only shown in the empty "import your first

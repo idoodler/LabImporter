@@ -12,15 +12,36 @@ import SwiftUI
 /// low-opacity over `Color(.systemBackground)` — in the same restrained spirit
 /// as `CategoryBackground` on the Dashboard.
 ///
+/// ## Seamless mode
+/// `NavigationSplitView` paints its columns opaquely, so a single background
+/// placed *behind* the split view never shows through the detail column. To span
+/// the whole window (sidebar **and** detail) the wash is instead painted as each
+/// column's own content background. To keep those independent instances looking
+/// like one continuous field — with no seam at the sidebar/detail divider — pass
+/// `seamless: true`: the gradient is then sized to the whole window
+/// (`\.appWindowSize`) and offset by the view's position within a shared
+/// `"appWindow"` coordinate space, so every instance samples the same field.
+///
 /// Respects Reduce Motion: when enabled, it renders a single static frame of the
 /// same gradient (no `TimelineView`), so the look stays consistent while the
 /// animation is dropped.
 struct MorphingCategoryBackground: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.appWindowSize) private var windowSize
 
     /// How wide the wash reads. Onboarding can afford a touch more presence than
     /// the content-dense Dashboard, but it stays subtle by design.
     var intensity: Double = 0.20
+
+    /// When true, align the field to the shared window coordinate space so
+    /// instances in different panes (sidebar / detail) line up seamlessly. When
+    /// false (the default), the gradient simply fills its own bounds — correct
+    /// for a single full-screen host like the Welcome cover.
+    var seamless = false
+
+    /// Name of the coordinate space (declared by `HomeView`) the seamless layout
+    /// measures against.
+    static let windowSpace = "appWindow"
 
     /// A curated, color-wheel-ordered subset of the clinical palette so adjacent
     /// frames blend smoothly (blue → teal → green → orange → pink → purple).
@@ -43,38 +64,44 @@ struct MorphingCategoryBackground: View {
 
     /// Radius of the softening blur. The mesh is drawn larger than the canvas by
     /// a comfortable multiple of this so the blur's faded edges fall outside the
-    /// visible area (see `body`).
+    /// visible area (see `layout`).
     private let blurRadius: CGFloat = 60
 
     var body: some View {
-        // Measure the actual canvas (which, thanks to `ignoresSafeArea` below,
-        // is the full screen / window pane) so we can oversize the gradient
-        // precisely instead of relying on a fixed scale factor.
         GeometryReader { proxy in
-            let size = proxy.size
-            ZStack {
-                Color(.systemBackground)
-                if reduceMotion {
-                    mesh(at: 0)
-                } else {
-                    TimelineView(.animation) { context in
-                        mesh(at: context.date.timeIntervalSinceReferenceDate)
-                    }
-                }
-            }
-            // Draw the gradient larger than the canvas on every side, then clip
-            // back to it. Blurring a gradient fades its edges toward transparent;
-            // pushing those edges well beyond the visible bounds means only the
-            // fully-saturated interior shows, so the wash reaches every edge.
-            .frame(
-                width: size.width + blurRadius * 4,
-                height: size.height + blurRadius * 4
-            )
-            .frame(width: size.width, height: size.height)
-            .clipped()
+            // In seamless mode size the gradient to the whole window and offset
+            // it by this view's origin within the window, so separate instances
+            // (sidebar + detail) sample one shared field. Otherwise just fill the
+            // local bounds.
+            let useWindow = seamless && windowSize != .zero
+            let canvas = useWindow ? windowSize : proxy.size
+            let origin = useWindow ? proxy.frame(in: .named(Self.windowSpace)).origin : .zero
+            layout(canvas: canvas, origin: origin, pane: proxy.size)
         }
         .ignoresSafeArea()
         .allowsHitTesting(false)
+    }
+
+    /// Draws the (oversized, blurred) gradient for a `canvas`-sized field, shifted
+    /// so the window origin lands at `origin` within this pane, then clips to the
+    /// pane. Oversizing by the blur radius keeps the faded blur edges off the
+    /// visible area so the color reaches every edge.
+    private func layout(canvas: CGSize, origin: CGPoint, pane: CGSize) -> some View {
+        let margin = blurRadius * 4
+        return ZStack {
+            Color(.systemBackground)
+            if reduceMotion {
+                mesh(at: 0)
+            } else {
+                TimelineView(.animation) { context in
+                    mesh(at: context.date.timeIntervalSinceReferenceDate)
+                }
+            }
+        }
+        .frame(width: canvas.width + margin, height: canvas.height + margin)
+        .offset(x: -origin.x - margin / 2, y: -origin.y - margin / 2)
+        .frame(width: pane.width, height: pane.height, alignment: .topLeading)
+        .clipped()
     }
 
     private func mesh(at time: TimeInterval) -> some View {
@@ -104,6 +131,22 @@ struct MorphingCategoryBackground: View {
         let upper = (lower + 1) % count
         let fraction = pos - pos.rounded(.down)
         return palette[lower].mix(with: palette[upper], by: fraction)
+    }
+}
+
+// MARK: - Window size environment
+
+/// The size of the app's top-level window, published by `HomeView` so the
+/// seamless background can size itself to the whole window from within an
+/// individual split-view column.
+private struct AppWindowSizeKey: EnvironmentKey {
+    static let defaultValue: CGSize = .zero
+}
+
+extension EnvironmentValues {
+    var appWindowSize: CGSize {
+        get { self[AppWindowSizeKey.self] }
+        set { self[AppWindowSizeKey.self] = newValue }
     }
 }
 

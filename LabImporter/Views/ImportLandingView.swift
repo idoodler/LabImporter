@@ -24,8 +24,10 @@ struct ImportLandingView: View {
             Spacer()
                 .frame(height: 56)
         }
-        // The colored wash is hosted behind the whole window in `HomeView` (so it
-        // spans the sidebar too on iPad); this view stays transparent over it.
+        // Painted as this column's own background (which reliably renders, unlike
+        // one placed behind the split view). `seamless` aligns it to the sidebar's
+        // matching wash so the two columns read as one continuous full-window field.
+        .background { MorphingCategoryBackground(seamless: true) }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
     }
