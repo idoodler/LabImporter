@@ -28,6 +28,7 @@ struct HistoryView: View {
         .navigationBarTitleDisplayMode(.large)
         .background { CategoryBackground(colors: backgroundColors) }
         .environment(\.editMode, $editMode)
+        .navigationBarBackButtonHidden(editMode.isEditing)
         .toolbar { toolbarContent }
         .onAppear { Task { await loadReports() } }
         .sheet(item: $reportToEdit, onDismiss: { Task { await loadReports() } }, content: { report in
@@ -79,13 +80,25 @@ struct HistoryView: View {
     private var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
             if !reports.isEmpty {
-                Button(editMode.isEditing ? "Done" : "Select") {
+                Button {
                     withAnimation { toggleEditing() }
+                } label: {
+                    Image(systemName: editMode.isEditing ? "checkmark.circle.fill" : "checkmark.circle")
                 }
+                .accessibilityLabel(editMode.isEditing ? Text("Done") : Text("Select"))
             }
         }
 
         if editMode.isEditing {
+            // Replaces the back button while selecting: a one-tap path to clear
+            // every report (still gated behind the confirmation alert).
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Delete All", role: .destructive) {
+                    pendingDeleteIDs = reports.map(\.id)
+                }
+                .tint(.red)
+            }
+
             ToolbarItem(placement: .bottomBar) {
                 HStack {
                     Button(allSelected ? "Deselect All" : "Select All") {
