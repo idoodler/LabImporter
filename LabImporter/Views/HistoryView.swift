@@ -151,8 +151,16 @@ struct HistoryView: View {
             ForEach(groupedByYear, id: \.year) { group in
                 Section(String(group.year)) {
                     ForEach(group.reports) { report in
-                        NavigationLink(destination: ReportDetailView(report: report, onDeleted: deleteReport)) {
-                            ReportRow(report: report)
+                        // Drop the NavigationLink (and its disclosure chevron) while
+                        // selecting — tapping a row toggles its checkmark, not navigation.
+                        Group {
+                            if editMode.isEditing {
+                                ReportRow(report: report)
+                            } else {
+                                NavigationLink(destination: ReportDetailView(report: report, onDeleted: deleteReport)) {
+                                    ReportRow(report: report)
+                                }
+                            }
                         }
                         .listRowBackground(Rectangle().fill(.ultraThinMaterial))
                         .swipeActions(edge: .leading, allowsFullSwipe: false) {
