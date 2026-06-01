@@ -17,8 +17,9 @@ struct AddValueSheet: View {
             Form {
                 Section {
                     // A LOINC code must be chosen first — every value is LOINC-based,
-                    // so the picker drives the name (the user's alias when set, else
-                    // the catalog name) and the canonical unit.
+                    // so the picker drives the name and the canonical unit. The name
+                    // is shown read-only (the user's alias when set, else the catalog
+                    // name); renaming lives in Sort & Visibility, not here.
                     NavigationLink {
                         AddCodePickerPage(code: $code, name: $name)
                     } label: {
@@ -29,9 +30,9 @@ struct AddValueSheet: View {
                                 .foregroundStyle(code.isEmpty ? .secondary : .primary)
                         }
                     }
-                    TextField("Name", text: $name)
-                        .autocorrectionDisabled()
-                        .disabled(code.isEmpty)
+                    if !code.isEmpty {
+                        LabeledContent("Name", value: LabMapping.displayName(for: code))
+                    }
                 }
                 Section {
                     TextField("Value", text: $displayValue)
