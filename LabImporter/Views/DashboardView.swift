@@ -174,25 +174,22 @@ struct DashboardView: View {
 
     // MARK: - Metrics computation
 
-    /// Trailing window (in months) of readings charted by the overview
-    /// sparklines. Older historic values stay saved and fully visible in Trends —
-    /// they're excluded here only so a single very old reading can't stretch the
-    /// time axis and squish the recent points into a corner. The headline value
-    /// still reflects the true latest reading regardless of its age.
+    /// Trailing window (in months) each overview sparkline charts, measured back
+    /// from that metric's *own* latest reading (not "today"), so a metric whose
+    /// most recent reading is itself old still draws its recent trend. Older
+    /// historic values stay saved and fully visible in Trends — they're excluded
+    /// here only so a single very old reading can't stretch the time axis and
+    /// squish the recent points into a corner.
     private static let sparklineWindowMonths = 12
 
     private var metrics: [MetricData] {
-        let cutoff = Calendar.current.date(byAdding: .month, value: -Self.sparklineWindowMonths, to: Date()) ?? .distantPast
-
         var latestEntry: [String: (entry: LabReport.Entry, date: Date)] = [:]
         var allPoints: [String: [SparkPoint]] = [:]
 
         for report in reports {
             for entry in report.entries {
                 guard let value = entry.numericValue else { continue }
-                if report.date >= cutoff {
-                    allPoints[entry.code, default: []].append(SparkPoint(date: report.date, value: value))
-                }
+                allPoints[entry.code, default: []].append(SparkPoint(date: report.date, value: value))
                 if let existing = latestEntry[entry.code] {
                     if report.date > existing.date {
                         latestEntry[entry.code] = (entry: entry, date: report.date)
@@ -204,7 +201,10 @@ struct DashboardView: View {
         }
 
         return latestEntry.values.map { item in
-            let points = (allPoints[item.entry.code] ?? []).sorted { $0.date < $1.date }
+            let cutoff = Calendar.current.date(byAdding: .month, value: -Self.sparklineWindowMonths, to: item.date) ?? .distantPast
+            let points = (allPoints[item.entry.code] ?? [])
+                .filter { $0.date >= cutoff }
+                .sorted { $0.date < $1.date }
             return MetricData(entry: item.entry, history: points)
         }
     }
