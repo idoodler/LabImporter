@@ -281,11 +281,9 @@ struct TrendsView: View {
                 AxisValueLabel().foregroundStyle(valueColor.opacity(0.8))
             }
         }
-        .chartYAxisLabel {
-            Text(currentUnit).foregroundStyle(valueColor.opacity(0.8))
-        }
         .frame(minHeight: 260)
         .padding()
+        .overlay(alignment: .topLeading) { unitBadge }
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
         .overlay(
             RoundedRectangle(cornerRadius: 20)
@@ -338,10 +336,7 @@ struct TrendsView: View {
 // MARK: - Helpers
 
 extension TrendsView {
-    /// Selectable time window for the trend chart. A finite window fixes the
-    /// visible x-span and lets the user scroll horizontally through history at
-    /// that zoom; `.all` widens the span to the full data range so everything
-    /// fits without scrolling.
+    /// Selectable time window; a finite case fixes the visible x-span, `.all` fits everything.
     enum TrendWindow: String, CaseIterable, Identifiable {
         case month3, month6, year1, all
         var id: Self { self }
@@ -366,6 +361,18 @@ extension TrendsView {
         }
     }
 
+    /// Static unit caption pinned to the card (`chartYAxisLabel` rides the scrollable plot).
+    @ViewBuilder
+    var unitBadge: some View {
+        if !currentUnit.isEmpty {
+            Text(currentUnit)
+                .font(.caption.weight(.medium))
+                .foregroundStyle(valueColor.opacity(0.8))
+                .padding(EdgeInsets(top: 8, leading: 12, bottom: 0, trailing: 0))
+                .allowsHitTesting(false)
+        }
+    }
+
     var windowPicker: some View {
         Picker("Time Range", selection: $window) {
             ForEach(TrendWindow.allCases) { option in
@@ -375,9 +382,7 @@ extension TrendsView {
         .pickerStyle(.segmented)
     }
 
-    /// Width of the visible x-axis window, in seconds. For `.all` this is the
-    /// full data span padded by 10% so the first/last points aren't flush to the
-    /// edges (and the chart effectively doesn't scroll).
+    /// Visible x-axis window width in seconds; for `.all`, the full span padded 10%.
     var visibleDomainSeconds: TimeInterval {
         if let days = window.days {
             return Double(days) * 86_400
@@ -386,8 +391,7 @@ extension TrendsView {
         return max(last.timeIntervalSince(first) * 1.1, 86_400)
     }
 
-    /// Anchors the scroll position so the most recent reading is in view (with a
-    /// little breathing room), or shows the whole range for `.all`.
+    /// Anchors the scroll so the latest reading is in view (whole range for `.all`).
     func anchorScroll() {
         guard let first = dataPoints.first?.date, let last = dataPoints.last?.date else { return }
         if window.days == nil {
@@ -403,9 +407,7 @@ extension TrendsView {
     }
 
     private func formatValue(_ value: Double) -> String {
-        value.truncatingRemainder(dividingBy: 1) == 0
-            ? String(format: "%.0f", value)
-            : String(format: "%.4g", value)
+        value.truncatingRemainder(dividingBy: 1) == 0 ? String(format: "%.0f", value) : String(format: "%.4g", value)
     }
 
     private func togglePin(_ code: String) {
