@@ -11,10 +11,15 @@ enum LabMapping {
 
     // MARK: - LOINC lookups
 
-    // Localized display name for a LOINC code from the catalog; falls back to the
-    // raw code (e.g. an as-yet-unmapped value).
+    // Display name for a LOINC code: a user's custom name (set in Sort &
+    // Visibility) wins, then the localized catalog name, finally the raw code
+    // (e.g. an as-yet-unmapped value). The custom-name override is cosmetic only —
+    // CDA export keeps the standard LOINC English display (see `loincCode(for:)`).
     static func displayName(for code: String) -> String {
         let trimmed = code.trimmingCharacters(in: .whitespaces)
+        if let custom = LabDisplayPreferences.current().customName(for: trimmed) {
+            return custom
+        }
         return LoincDirectory.shared.term(for: trimmed)?.name ?? code
     }
 

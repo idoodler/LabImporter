@@ -37,7 +37,7 @@ LabImporter/
 │   ├── LabValue.swift          # editable in-memory value (used in Review flow)
 │   ├── LabReport.swift         # a saved report (Codable); .asLabValues bridges to LabValue
 │   ├── LabMapping.swift        # thin catalog adapter: LOINC code ↔ display name ↔ CDA export / loinc.org URL
-│   └── LabDisplayPreferences.swift  # pinned/ordered/hidden codes (RawRepresentable for @AppStorage)
+│   └── LabDisplayPreferences.swift  # pinned/ordered/hidden + custom per-code names (RawRepresentable for @AppStorage)
 ├── Services/
 │   ├── OCRService.swift        # actor; Vision text recognition + PDFKit rendering
 │   ├── LabParserService.swift  # actor; Foundation Models @Generable structured parse
@@ -92,7 +92,10 @@ Config.xcconfig  # BUNDLE_IDENTIFIER = dev.idoodler.$(DEVELOPMENT_TEAM).labimpor
   `CodePickerSheet`).
 - **`LabMapping`** is a thin, data-driven adapter over `LoincDirectory` (no curated
   tables of its own):
-  - `displayName(for:)` — localized human name for a LOINC code from the catalog.
+  - `displayName(for:)` — the user's custom name for a code if they set one (in
+    Sort & Visibility), else the localized catalog name, else the raw code. The
+    custom name is a cosmetic display preference (`LabDisplayPreferences.customNames`,
+    synced via iCloud) — it never reaches the exported CDA.
   - `loincCode(for:)` — validates the code + returns an English display for CDA
     export; **returns nil → value is not exportable** (unknown/unmapped code).
   - `loincURL(for:)` — the loinc.org details page for a code.
