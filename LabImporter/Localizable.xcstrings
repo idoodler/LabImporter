@@ -4,766 +4,6 @@
     "" : {
 
     },
-    "A quick note on how to use LabImporter safely." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ein kurzer Hinweis, wie du LabImporter sicher nutzt."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Una nota rápida sobre cómo usar LabImporter de forma segura."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Une note rapide sur l'utilisation de LabImporter en toute sécurité."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Una breve nota su come usare LabImporter in sicurezza."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter を安全に使うための簡単な説明です。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Een korte opmerking over hoe je LabImporter veilig gebruikt."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Krótka informacja, jak bezpiecznie korzystać z LabImporter."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Uma nota rápida sobre como usar o LabImporter com segurança."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Краткое примечание о том, как безопасно пользоваться LabImporter."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter'ı güvenli kullanmaya dair kısa bir not."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Коротка примітка про те, як безпечно користуватися LabImporter."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "关于如何安全使用 LabImporter 的简要说明。"
-          }
-        }
-      }
-    },
-    "Always Verify" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Immer überprüfen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verifica siempre"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vérifiez toujours"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verifica sempre"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "必ず確認してください"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Controleer altijd"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zawsze sprawdzaj"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sempre verifique"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Всегда проверяйте"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Her zaman doğrulayın"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Завжди перевіряйте"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "务必核对"
-          }
-        }
-      }
-    },
-    "Automated, Not Perfect" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Automatisch, nicht perfekt"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Automático, no perfecto"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Automatisé, pas parfait"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Automatico, non perfetto"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "自動処理であり、完璧ではありません"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Geautomatiseerd, niet perfect"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Automatycznie, ale nie bezbłędnie"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Automático, não perfeito"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Автоматически, но не идеально"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Otomatik, ama kusursuz değil"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Автоматично, але не ідеально"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "自动识别，并非完美"
-          }
-        }
-      }
-    },
-    "Before You Start" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bevor du startest"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Antes de empezar"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Avant de commencer"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Prima di iniziare"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "始める前に"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Voordat je begint"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zanim zaczniesz"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Antes de começar"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Прежде чем начать"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Başlamadan önce"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Перш ніж почати"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "开始之前"
-          }
-        }
-      }
-    },
-    "Check every value against your original lab report before relying on it." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Überprüfe jeden Wert anhand deines Originalbefunds, bevor du dich darauf verlässt."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Comprueba cada valor con tu informe de laboratorio original antes de confiar en él."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vérifiez chaque valeur par rapport à votre rapport de laboratoire d'origine avant de vous y fier."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verifica ogni valore con il referto di laboratorio originale prima di farvi affidamento."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "値を信頼する前に、必ず元の検査結果と照合してください。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Controleer elke waarde aan de hand van je oorspronkelijke labrapport voordat je erop vertrouwt."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zanim zaufasz wynikowi, porównaj każdą wartość z oryginalnym wynikiem badania."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verifique cada valor com o seu laudo laboratorial original antes de confiar nele."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Сверяйте каждое значение с оригинальным результатом анализа, прежде чем полагаться на него."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bir değere güvenmeden önce her birini orijinal laboratuvar raporunuzla karşılaştırın."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Перш ніж довіряти значенню, звіряйте кожне з оригінальним результатом аналізу."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在依赖任何数值之前，请先与原始化验报告核对。"
-          }
-        }
-      }
-    },
-    "I Understand" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ich habe verstanden"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Entendido"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "J'ai compris"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ho capito"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "理解しました"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ik begrijp het"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rozumiem"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Entendi"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Я понимаю"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Anladım"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Я розумію"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "我已了解"
-          }
-        }
-      }
-    },
-    "LabImporter isn't a medical device. For decisions about your health, consult a qualified professional." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter ist kein Medizinprodukt. Wende dich bei Entscheidungen über deine Gesundheit an qualifiziertes Fachpersonal."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter no es un dispositivo médico. Para decisiones sobre tu salud, consulta a un profesional cualificado."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter n'est pas un dispositif médical. Pour les décisions concernant votre santé, consultez un professionnel qualifié."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter non è un dispositivo medico. Per le decisioni sulla tua salute, consulta un professionista qualificato."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter は医療機器ではありません。健康に関する判断は、資格のある専門家に相談してください。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter is geen medisch hulpmiddel. Raadpleeg voor beslissingen over je gezondheid een gekwalificeerde professional."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter nie jest wyrobem medycznym. W sprawach dotyczących zdrowia skonsultuj się z wykwalifikowanym specjalistą."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "O LabImporter não é um dispositivo médico. Para decisões sobre a sua saúde, consulte um profissional qualificado."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter не является медицинским устройством. Решения о здоровье принимайте после консультации с квалифицированным специалистом."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter bir tıbbi cihaz değildir. Sağlığınızla ilgili kararlar için nitelikli bir uzmana danışın."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter не є медичним пристроєм. Щодо рішень про здоров'я звертайтеся до кваліфікованого фахівця."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter 不是医疗设备。有关健康的决定，请咨询合格的专业人员。"
-          }
-        }
-      }
-    },
-    "Values are extracted by on-device AI and OCR, which can misread or miss results." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Werte werden durch geräteinterne KI und OCR erfasst, die Ergebnisse falsch lesen oder übersehen können."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Los valores se extraen mediante IA en el dispositivo y OCR, que pueden leer mal u omitir resultados."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les valeurs sont extraites par l'IA sur l'appareil et l'OCR, qui peuvent mal lire ou omettre des résultats."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "I valori vengono estratti dall'IA sul dispositivo e dall'OCR, che possono leggere male o tralasciare dei risultati."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "値はデバイス内蔵の AI と OCR によって抽出されるため、誤読や見落としが起こることがあります。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Waarden worden geëxtraheerd door AI op het apparaat en OCR, die resultaten verkeerd kunnen lezen of missen."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wartości są odczytywane przez AI na urządzeniu i OCR, które mogą błędnie odczytać lub pominąć wyniki."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Os valores são extraídos por IA no dispositivo e OCR, que podem ler errado ou omitir resultados."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Значения распознаются ИИ на устройстве и OCR, которые могут ошибиться или пропустить результаты."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Değerler, sonuçları yanlış okuyabilen veya atlayabilen cihaz içi yapay zekâ ve OCR ile çıkarılır."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Значення розпізнаються ШІ на пристрої та OCR, які можуть помилитися або пропустити результати."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "数值由设备端 AI 和 OCR 提取，可能出现误读或遗漏。"
-          }
-        }
-      }
-    },
-    "LabImporter is not a medical device and does not provide medical advice, diagnosis, or treatment. Extracted values may be inaccurate or incomplete — always verify them against your original report. Never make medical decisions based on this app; consult a qualified healthcare professional about your results." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter ist kein Medizinprodukt und bietet keine medizinische Beratung, Diagnose oder Behandlung. Erfasste Werte können ungenau oder unvollständig sein – überprüfe sie immer anhand deines Originalbefunds. Triff niemals medizinische Entscheidungen auf Grundlage dieser App; wende dich bezüglich deiner Werte an qualifiziertes medizinisches Fachpersonal."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter no es un dispositivo médico y no ofrece asesoramiento, diagnóstico ni tratamiento médico. Los valores extraídos pueden ser inexactos o incompletos: verifícalos siempre con tu informe original. Nunca tomes decisiones médicas basándote en esta app; consulta a un profesional sanitario cualificado sobre tus resultados."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter n'est pas un dispositif médical et ne fournit ni avis médical, ni diagnostic, ni traitement. Les valeurs extraites peuvent être inexactes ou incomplètes : vérifiez-les toujours par rapport à votre rapport d'origine. Ne prenez jamais de décisions médicales en vous fondant sur cette app ; consultez un professionnel de santé qualifié au sujet de vos résultats."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter non è un dispositivo medico e non fornisce pareri medici, diagnosi o trattamenti. I valori estratti possono essere imprecisi o incompleti: verificali sempre con il referto originale. Non prendere mai decisioni mediche basandoti su questa app; consulta un professionista sanitario qualificato riguardo ai tuoi risultati."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter は医療機器ではなく、医療上の助言・診断・治療を提供するものではありません。抽出された値は不正確または不完全な場合があります。必ず元の検査結果と照合してください。このアプリに基づいて医療上の判断を行わないでください。結果については資格のある医療専門家に相談してください。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter is geen medisch hulpmiddel en biedt geen medisch advies, diagnose of behandeling. Geëxtraheerde waarden kunnen onnauwkeurig of onvolledig zijn — controleer ze altijd aan de hand van je oorspronkelijke rapport. Neem nooit medische beslissingen op basis van deze app; raadpleeg een gekwalificeerde zorgverlener over je resultaten."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter nie jest wyrobem medycznym i nie zapewnia porad medycznych, diagnozy ani leczenia. Odczytane wartości mogą być niedokładne lub niekompletne — zawsze porównuj je z oryginalnym wynikiem. Nigdy nie podejmuj decyzji medycznych na podstawie tej aplikacji; skonsultuj swoje wyniki z wykwalifikowanym pracownikiem ochrony zdrowia."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "O LabImporter não é um dispositivo médico e não oferece aconselhamento, diagnóstico ou tratamento médico. Os valores extraídos podem estar imprecisos ou incompletos — verifique-os sempre com o seu laudo original. Nunca tome decisões médicas com base neste app; consulte um profissional de saúde qualificado sobre os seus resultados."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter не является медицинским устройством и не предоставляет медицинских консультаций, диагнозов или лечения. Распознанные значения могут быть неточными или неполными — всегда сверяйте их с оригинальным результатом анализа. Никогда не принимайте медицинские решения на основе этого приложения; обсудите свои результаты с квалифицированным медицинским специалистом."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter bir tıbbi cihaz değildir ve tıbbi tavsiye, teşhis veya tedavi sağlamaz. Çıkarılan değerler hatalı veya eksik olabilir; bunları her zaman orijinal raporunuzla karşılaştırın. Bu uygulamaya dayanarak asla tıbbi karar vermeyin; sonuçlarınız hakkında nitelikli bir sağlık uzmanına danışın."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter не є медичним пристроєм і не надає медичних консультацій, діагнозів чи лікування. Розпізнані значення можуть бути неточними або неповними — завжди звіряйте їх з оригінальним результатом аналізу. Ніколи не ухвалюйте медичних рішень на основі цього застосунку; щодо своїх результатів зверніться до кваліфікованого медичного фахівця."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LabImporter 不是医疗设备，也不提供医疗建议、诊断或治疗。提取的数值可能不准确或不完整——请务必与原始报告核对。切勿根据本 App 做出医疗决定；请就您的结果咨询合格的医疗专业人员。"
-          }
-        }
-      }
-    },
-    "Not Medical Advice" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keine medizinische Beratung"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No es asesoramiento médico"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pas un avis médical"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Non è un parere medico"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "医療アドバイスではありません"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Geen medisch advies"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "To nie porada medyczna"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Não é aconselhamento médico"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Не медицинская консультация"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tıbbi tavsiye değildir"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Не є медичною порадою"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "非医疗建议"
-          }
-        }
-      }
-    },
     "–" : {
       "localizations" : {
         "de" : {
@@ -1252,6 +492,82 @@
         }
       }
     },
+    "A quick note on how to use LabImporter safely." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein kurzer Hinweis, wie du LabImporter sicher nutzt."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una nota rápida sobre cómo usar LabImporter de forma segura."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une note rapide sur l'utilisation de LabImporter en toute sécurité."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una breve nota su come usare LabImporter in sicurezza."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter を安全に使うための簡単な説明です。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Een korte opmerking over hoe je LabImporter veilig gebruikt."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Krótka informacja, jak bezpiecznie korzystać z LabImporter."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uma nota rápida sobre como usar o LabImporter com segurança."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Краткое примечание о том, как безопасно пользоваться LabImporter."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter'ı güvenli kullanmaya dair kısa bir not."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Коротка примітка про те, як безпечно користуватися LabImporter."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关于如何安全使用 LabImporter 的简要说明。"
+          }
+        }
+      }
+    },
     "About" : {
       "localizations" : {
         "de" : {
@@ -1628,6 +944,82 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "允许访问 Apple 健康"
+          }
+        }
+      }
+    },
+    "Always Verify" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Immer überprüfen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verifica siempre"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifiez toujours"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verifica sempre"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "必ず確認してください"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controleer altijd"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zawsze sprawdzaj"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sempre verifique"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Всегда проверяйте"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Her zaman doğrulayın"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Завжди перевіряйте"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "务必核对"
           }
         }
       }
@@ -2394,6 +1786,158 @@
         }
       }
     },
+    "Automated, Not Perfect" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatisch, nicht perfekt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automático, no perfecto"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatisé, pas parfait"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatico, non perfetto"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自動処理であり、完璧ではありません"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geautomatiseerd, niet perfect"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatycznie, ale nie bezbłędnie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automático, não perfeito"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Автоматически, но не идеально"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otomatik, ama kusursuz değil"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Автоматично, але не ідеально"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自动识别，并非完美"
+          }
+        }
+      }
+    },
+    "Before You Start" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bevor du startest"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Antes de empezar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avant de commencer"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prima di iniziare"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "始める前に"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voordat je begint"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zanim zaczniesz"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Antes de começar"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прежде чем начать"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Başlamadan önce"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Перш ніж почати"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开始之前"
+          }
+        }
+      }
+    },
     "Birthday" : {
       "localizations" : {
         "de" : {
@@ -3074,6 +2618,82 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "随时可更改"
+          }
+        }
+      }
+    },
+    "Check every value against your original lab report before relying on it." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Überprüfe jeden Wert anhand deines Originalbefunds, bevor du dich darauf verlässt."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comprueba cada valor con tu informe de laboratorio original antes de confiar en él."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifiez chaque valeur par rapport à votre rapport de laboratoire d'origine avant de vous y fier."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verifica ogni valore con il referto di laboratorio originale prima di farvi affidamento."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "値を信頼する前に、必ず元の検査結果と照合してください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controleer elke waarde aan de hand van je oorspronkelijke labrapport voordat je erop vertrouwt."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zanim zaufasz wynikowi, porównaj każdą wartość z oryginalnym wynikiem badania."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verifique cada valor com o seu laudo laboratorial original antes de confiar nele."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сверяйте каждое значение с оригинальным результатом анализа, прежде чем полагаться на него."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bir değere güvenmeden önce her birini orijinal laboratuvar raporunuzla karşılaştırın."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Перш ніж довіряти значенню, звіряйте кожне з оригінальним результатом аналізу."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在依赖任何数值之前，请先与原始化验报告核对。"
           }
         }
       }
@@ -7114,6 +6734,82 @@
         }
       }
     },
+    "I Understand" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ich habe verstanden"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entendido"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "J'ai compris"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ho capito"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "理解しました"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ik begrijp het"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rozumiem"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entendi"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Я понимаю"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anladım"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Я розумію"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我已了解"
+          }
+        }
+      }
+    },
     "iCloud Sync" : {
       "localizations" : {
         "de" : {
@@ -8633,6 +8329,158 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "检验值 — 点击以修正"
+          }
+        }
+      }
+    },
+    "LabImporter is not a medical device and does not provide medical advice, diagnosis, or treatment. Extracted values may be inaccurate or incomplete — always verify them against your original report. Never make medical decisions based on this app; consult a qualified healthcare professional about your results." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter ist kein Medizinprodukt und bietet keine medizinische Beratung, Diagnose oder Behandlung. Erfasste Werte können ungenau oder unvollständig sein – überprüfe sie immer anhand deines Originalbefunds. Triff niemals medizinische Entscheidungen auf Grundlage dieser App; wende dich bezüglich deiner Werte an qualifiziertes medizinisches Fachpersonal."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter no es un dispositivo médico y no ofrece asesoramiento, diagnóstico ni tratamiento médico. Los valores extraídos pueden ser inexactos o incompletos: verifícalos siempre con tu informe original. Nunca tomes decisiones médicas basándote en esta app; consulta a un profesional sanitario cualificado sobre tus resultados."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter n'est pas un dispositif médical et ne fournit ni avis médical, ni diagnostic, ni traitement. Les valeurs extraites peuvent être inexactes ou incomplètes : vérifiez-les toujours par rapport à votre rapport d'origine. Ne prenez jamais de décisions médicales en vous fondant sur cette app ; consultez un professionnel de santé qualifié au sujet de vos résultats."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter non è un dispositivo medico e non fornisce pareri medici, diagnosi o trattamenti. I valori estratti possono essere imprecisi o incompleti: verificali sempre con il referto originale. Non prendere mai decisioni mediche basandoti su questa app; consulta un professionista sanitario qualificato riguardo ai tuoi risultati."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter は医療機器ではなく、医療上の助言・診断・治療を提供するものではありません。抽出された値は不正確または不完全な場合があります。必ず元の検査結果と照合してください。このアプリに基づいて医療上の判断を行わないでください。結果については資格のある医療専門家に相談してください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter is geen medisch hulpmiddel en biedt geen medisch advies, diagnose of behandeling. Geëxtraheerde waarden kunnen onnauwkeurig of onvolledig zijn — controleer ze altijd aan de hand van je oorspronkelijke rapport. Neem nooit medische beslissingen op basis van deze app; raadpleeg een gekwalificeerde zorgverlener over je resultaten."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter nie jest wyrobem medycznym i nie zapewnia porad medycznych, diagnozy ani leczenia. Odczytane wartości mogą być niedokładne lub niekompletne — zawsze porównuj je z oryginalnym wynikiem. Nigdy nie podejmuj decyzji medycznych na podstawie tej aplikacji; skonsultuj swoje wyniki z wykwalifikowanym pracownikiem ochrony zdrowia."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O LabImporter não é um dispositivo médico e não oferece aconselhamento, diagnóstico ou tratamento médico. Os valores extraídos podem estar imprecisos ou incompletos — verifique-os sempre com o seu laudo original. Nunca tome decisões médicas com base neste app; consulte um profissional de saúde qualificado sobre os seus resultados."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter не является медицинским устройством и не предоставляет медицинских консультаций, диагнозов или лечения. Распознанные значения могут быть неточными или неполными — всегда сверяйте их с оригинальным результатом анализа. Никогда не принимайте медицинские решения на основе этого приложения; обсудите свои результаты с квалифицированным медицинским специалистом."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter bir tıbbi cihaz değildir ve tıbbi tavsiye, teşhis veya tedavi sağlamaz. Çıkarılan değerler hatalı veya eksik olabilir; bunları her zaman orijinal raporunuzla karşılaştırın. Bu uygulamaya dayanarak asla tıbbi karar vermeyin; sonuçlarınız hakkında nitelikli bir sağlık uzmanına danışın."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter не є медичним пристроєм і не надає медичних консультацій, діагнозів чи лікування. Розпізнані значення можуть бути неточними або неповними — завжди звіряйте їх з оригінальним результатом аналізу. Ніколи не ухвалюйте медичних рішень на основі цього застосунку; щодо своїх результатів зверніться до кваліфікованого медичного фахівця."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter 不是医疗设备，也不提供医疗建议、诊断或治疗。提取的数值可能不准确或不完整——请务必与原始报告核对。切勿根据本 App 做出医疗决定；请就您的结果咨询合格的医疗专业人员。"
+          }
+        }
+      }
+    },
+    "LabImporter isn't a medical device. For decisions about your health, consult a qualified professional." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter ist kein Medizinprodukt. Wende dich bei Entscheidungen über deine Gesundheit an qualifiziertes Fachpersonal."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter no es un dispositivo médico. Para decisiones sobre tu salud, consulta a un profesional cualificado."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter n'est pas un dispositif médical. Pour les décisions concernant votre santé, consultez un professionnel qualifié."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter non è un dispositivo medico. Per le decisioni sulla tua salute, consulta un professionista qualificato."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter は医療機器ではありません。健康に関する判断は、資格のある専門家に相談してください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter is geen medisch hulpmiddel. Raadpleeg voor beslissingen over je gezondheid een gekwalificeerde professional."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter nie jest wyrobem medycznym. W sprawach dotyczących zdrowia skonsultuj się z wykwalifikowanym specjalistą."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O LabImporter não é um dispositivo médico. Para decisões sobre a sua saúde, consulte um profissional qualificado."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter не является медицинским устройством. Решения о здоровье принимайте после консультации с квалифицированным специалистом."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter bir tıbbi cihaz değildir. Sağlığınızla ilgili kararlar için nitelikli bir uzmana danışın."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter не є медичним пристроєм. Щодо рішень про здоров'я звертайтеся до кваліфікованого фахівця."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter 不是医疗设备。有关健康的决定，请咨询合格的专业人员。"
           }
         }
       }
@@ -11148,6 +10996,82 @@
         }
       }
     },
+    "Not Medical Advice" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine medizinische Beratung"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No es asesoramiento médico"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas un avis médical"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non è un parere medico"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "医療アドバイスではありません"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geen medisch advies"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To nie porada medyczna"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não é aconselhamento médico"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не медицинская консультация"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tıbbi tavsiye değildir"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не є медичною порадою"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "非医疗建议"
+          }
+        }
+      }
+    },
     "Not Now" : {
       "localizations" : {
         "de" : {
@@ -13280,6 +13204,7 @@
       }
     },
     "Required" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -17236,6 +17161,82 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "数值"
+          }
+        }
+      }
+    },
+    "Values are extracted by on-device AI and OCR, which can misread or miss results." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Werte werden durch geräteinterne KI und OCR erfasst, die Ergebnisse falsch lesen oder übersehen können."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los valores se extraen mediante IA en el dispositivo y OCR, que pueden leer mal u omitir resultados."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les valeurs sont extraites par l'IA sur l'appareil et l'OCR, qui peuvent mal lire ou omettre des résultats."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I valori vengono estratti dall'IA sul dispositivo e dall'OCR, che possono leggere male o tralasciare dei risultati."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "値はデバイス内蔵の AI と OCR によって抽出されるため、誤読や見落としが起こることがあります。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waarden worden geëxtraheerd door AI op het apparaat en OCR, die resultaten verkeerd kunnen lezen of missen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wartości są odczytywane przez AI na urządzeniu i OCR, które mogą błędnie odczytać lub pominąć wyniki."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os valores são extraídos por IA no dispositivo e OCR, que podem ler errado ou omitir resultados."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Значения распознаются ИИ на устройстве и OCR, которые могут ошибиться или пропустить результаты."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Değerler, sonuçları yanlış okuyabilen veya atlayabilen cihaz içi yapay zekâ ve OCR ile çıkarılır."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Значення розпізнаються ШІ на пристрої та OCR, які можуть помилитися або пропустити результати."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "数值由设备端 AI 和 OCR 提取，可能出现误读或遗漏。"
           }
         }
       }
