@@ -18,6 +18,9 @@ struct HomeView: View {
     /// back so its review sheet isn't presented underneath the welcome cover.
     @State private var pendingImportURL: URL?
     @AppStorage("hasSeenWelcome") private var hasSeenWelcome = false
+    /// Whether the user has acknowledged the medical disclaimer shown after the
+    /// welcome screen and before the Apple Health permission gate.
+    @AppStorage("hasAcknowledgedDisclaimer") private var hasAcknowledgedDisclaimer = false
     @AppStorage("hasGrantedHealthAccess") private var hasGrantedHealthAccess = false
     /// Whether the user has made the required up-front iCloud sync decision.
     /// Gates entry into the app so no reports can be added before deciding.
@@ -139,25 +142,32 @@ struct HomeView: View {
             handleIncomingFile(url)
         }
         .fullScreenCover(isPresented: Binding(
-            get: { !hasSeenWelcome || !hasGrantedHealthAccess || !hasChosenICloudSync },
+            get: { !hasSeenWelcome || !hasAcknowledgedDisclaimer || !hasGrantedHealthAccess || !hasChosenICloudSync },
             set: { _ in }
         )) {
             onboardingFlow
         }
     }
 
-    /// Three-step onboarding: marketing welcome → Apple Health permission gate →
-    /// required iCloud sync decision. Swapping the inner view inside the same
-    /// fullScreenCover keeps the cover presented without a dismiss/re-present
-    /// flash between steps. The iCloud decision is mandatory, so the cover stays
-    /// up — and the dashboard / import entry points stay unreachable — until the
-    /// user picks an option.
+    /// Four-step onboarding: marketing welcome → medical disclaimer →
+    /// Apple Health permission gate → required iCloud sync decision. Swapping the
+    /// inner view inside the same fullScreenCover keeps the cover presented
+    /// without a dismiss/re-present flash between steps. The iCloud decision is
+    /// mandatory, so the cover stays up — and the dashboard / import entry points
+    /// stay unreachable — until the user picks an option.
     @ViewBuilder
     private var onboardingFlow: some View {
         if !hasSeenWelcome {
             WelcomeView {
                 withAnimation(.smooth(duration: 0.35)) {
                     hasSeenWelcome = true
+                }
+            }
+            .transition(.opacity)
+        } else if !hasAcknowledgedDisclaimer {
+            DisclaimerView {
+                withAnimation(.smooth(duration: 0.35)) {
+                    hasAcknowledgedDisclaimer = true
                 }
             }
             .transition(.opacity)
@@ -306,7 +316,7 @@ struct HomeView: View {
     /// stashed and replayed once `WelcomeView` is dismissed — otherwise the
     /// review sheet would present beneath the welcome cover and stay hidden.
     private func handleIncomingFile(_ url: URL) {
-        guard hasSeenWelcome, hasGrantedHealthAccess, hasChosenICloudSync else {
+        guard hasSeenWelcome, hasAcknowledgedDisclaimer, hasGrantedHealthAccess, hasChosenICloudSync else {
             pendingImportURL = url
             return
         }

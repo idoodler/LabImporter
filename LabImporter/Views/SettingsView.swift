@@ -134,6 +134,18 @@ struct SettingsView: View {
                 }
 
                 Section {
+                    SettingsRowLabel("Not Medical Advice",
+                                     systemImage: "cross.case", color: .red)
+                } footer: {
+                    Text("""
+                    LabImporter is not a medical device and does not provide medical advice, \
+                    diagnosis, or treatment. Extracted values may be inaccurate or incomplete — \
+                    always verify them against your original report. Never make medical decisions \
+                    based on this app; consult a qualified healthcare professional about your results.
+                    """)
+                }
+
+                Section {
                     if let repository = AppInfo.repositoryURL {
                         linkRow("View on GitHub",
                                 systemImage: "chevron.left.forwardslash.chevron.right",

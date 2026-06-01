@@ -4,6 +4,9 @@ A native iOS app that imports lab report values into Apple Health using on-devic
 
 Scan, import, or paste your lab report — the app uses Vision OCR and the on-device Foundation Models framework to extract values, lets you review and correct them, then saves them directly into Apple Health as a CDA clinical document.
 
+> [!IMPORTANT]
+> **Not medical advice.** LabImporter is not a medical device and does not provide medical advice, diagnosis, or treatment. Extracted values may be inaccurate or incomplete — always verify them against your original report and never make medical decisions based on this app. See the [Medical disclaimer](#medical-disclaimer) below.
+
 ---
 
 ## Features
@@ -153,6 +156,16 @@ Lab value extraction is powered by Apple's on-device Foundation Models framework
 ### Built with AI assistance
 
 This app was designed and built with the assistance of [Claude Code](https://claude.ai/code) by Anthropic. AI-assisted development was used throughout: app architecture, Swift/SwiftUI implementation, HealthKit and CDA integration, on-device model prompting, and the dashboard, trends, and history features.
+
+---
+
+## Medical disclaimer
+
+LabImporter is **not a medical device** and does **not** provide medical advice, diagnosis, or treatment. It is a convenience tool for importing and visualising your own lab values.
+
+Values are extracted automatically — including by on-device AI and OCR — and may be **inaccurate or incomplete**. Always verify every value against your original lab report before relying on it. **Never make medical decisions based on this app.** For any questions about your results, consult a qualified healthcare professional.
+
+The software is provided "as is", without warranty of any kind, as described in the [LICENSE](LICENSE).
 
 ---
 
