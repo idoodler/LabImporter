@@ -175,11 +175,8 @@ struct DashboardView: View {
     // MARK: - Metrics computation
 
     /// Trailing window (in months) each overview sparkline charts, measured back
-    /// from that metric's *own* latest reading (not "today"), so a metric whose
-    /// most recent reading is itself old still draws its recent trend. Older
-    /// historic values stay saved and fully visible in Trends — they're excluded
-    /// here only so a single very old reading can't stretch the time axis and
-    /// squish the recent points into a corner.
+    /// from that metric's *own* latest reading (not "today"). Keeps an old
+    /// outlier from stretching the axis; older readings stay visible in Trends.
     private static let sparklineWindowMonths = 12
 
     private var metrics: [MetricData] {
@@ -202,9 +199,13 @@ struct DashboardView: View {
 
         return latestEntry.values.map { item in
             let cutoff = Calendar.current.date(byAdding: .month, value: -Self.sparklineWindowMonths, to: item.date) ?? .distantPast
-            let points = (allPoints[item.entry.code] ?? [])
-                .filter { $0.date >= cutoff }
-                .sorted { $0.date < $1.date }
+            let all = (allPoints[item.entry.code] ?? []).sorted { $0.date < $1.date }
+            var points = all.filter { $0.date >= cutoff }
+            // Never let the window collapse a real trend to a single point: with
+            // two+ readings keep the two most recent so a sparkline still draws.
+            if points.count < 2 && all.count >= 2 {
+                points = Array(all.suffix(2))
+            }
             return MetricData(entry: item.entry, history: points)
         }
     }
