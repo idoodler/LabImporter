@@ -4,6 +4,91 @@
     "" : {
 
     },
+    "1Y" : {
+      "comment" : "Segmented control: trend chart time window of one year",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "1 J" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "1 A" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "1 A" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "1 A" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "1年" } },
+        "nl" : { "stringUnit" : { "state" : "translated", "value" : "1 jr" } },
+        "pl" : { "stringUnit" : { "state" : "translated", "value" : "1 rok" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "1 A" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "1 год" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "1 Yıl" } },
+        "uk" : { "stringUnit" : { "state" : "translated", "value" : "1 рік" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "1年" } }
+      }
+    },
+    "3M" : {
+      "comment" : "Segmented control: trend chart time window of three months",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "3 M" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "3 M" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "3 M" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "3 M" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "3か月" } },
+        "nl" : { "stringUnit" : { "state" : "translated", "value" : "3 mnd" } },
+        "pl" : { "stringUnit" : { "state" : "translated", "value" : "3 mies." } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "3 M" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "3 мес" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "3 Ay" } },
+        "uk" : { "stringUnit" : { "state" : "translated", "value" : "3 міс" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "3个月" } }
+      }
+    },
+    "6M" : {
+      "comment" : "Segmented control: trend chart time window of six months",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "6 M" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "6 M" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "6 M" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "6 M" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "6か月" } },
+        "nl" : { "stringUnit" : { "state" : "translated", "value" : "6 mnd" } },
+        "pl" : { "stringUnit" : { "state" : "translated", "value" : "6 mies." } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "6 M" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "6 мес" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "6 Ay" } },
+        "uk" : { "stringUnit" : { "state" : "translated", "value" : "6 міс" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "6个月" } }
+      }
+    },
+    "All" : {
+      "comment" : "Segmented control: trend chart shows the full history",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Alle" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Todo" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tout" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Tutto" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "すべて" } },
+        "nl" : { "stringUnit" : { "state" : "translated", "value" : "Alles" } },
+        "pl" : { "stringUnit" : { "state" : "translated", "value" : "Wszystko" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Tudo" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Все" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Tümü" } },
+        "uk" : { "stringUnit" : { "state" : "translated", "value" : "Усе" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "全部" } }
+      }
+    },
+    "Time Range" : {
+      "comment" : "Accessibility label for the trend chart time-window picker",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zeitraum" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo de tiempo" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Période" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Intervallo di tempo" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "期間" } },
+        "nl" : { "stringUnit" : { "state" : "translated", "value" : "Periode" } },
+        "pl" : { "stringUnit" : { "state" : "translated", "value" : "Zakres czasu" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo de tempo" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Период" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Zaman aralığı" } },
+        "uk" : { "stringUnit" : { "state" : "translated", "value" : "Період" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "时间范围" } }
+      }
+    },
     "–" : {
       "localizations" : {
         "de" : {
