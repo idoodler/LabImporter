@@ -18,7 +18,7 @@
           {
             "type": "command",
             "if": "Bash(git push *)",
-            "command": "if ! command -v swiftlint >/dev/null 2>&1; then echo 'swiftlint not installed locally; skipping pre-push lint (CI will still run it)' >&2; exit 0; fi; swiftlint lint --strict --quiet >&2 || { echo 'SwiftLint failed — fix violations before pushing' >&2; exit 2; }",
+            "command": "if ! command -v swiftlint >/dev/null 2>&1; then echo 'swiftlint not installed locally; skipping pre-push lint (CI will still run it)' >&2; exit 0; fi; cd \"$CLAUDE_PROJECT_DIR\" && swiftlint lint --strict --quiet --config \"$CLAUDE_PROJECT_DIR/.swiftlint.yml\" >&2 || { echo 'SwiftLint failed — fix violations before pushing' >&2; exit 2; }",
             "timeout": 90,
             "statusMessage": "Running SwiftLint before push…"
           }
