@@ -129,7 +129,7 @@ struct ReviewView: View {
             Text("Any entered values will not be saved.")
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            bottomButtons
+            bottomButtons.hiddenWhileKeyboardVisible()
         }
         .labImport(engine: importEngine)
         .task { await loadHKCharacteristics() }
