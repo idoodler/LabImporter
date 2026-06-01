@@ -41,7 +41,7 @@ struct WelcomeView: View {
         } card: {
             featureCard
         } footer: {
-            getStartedButton
+            footer
         }
         .background { MorphingCategoryBackground() }
         .onAppear {
@@ -85,7 +85,7 @@ struct WelcomeView: View {
     // MARK: - Feature card
 
     private var featureCard: some View {
-        VStack(alignment: .leading, spacing: 26) {
+        VStack(alignment: .leading, spacing: 22) {
             ForEach(Array(features.enumerated()), id: \.offset) { index, feature in
                 FeatureRow(feature: feature)
                     .opacity(appeared ? 1 : 0)
@@ -104,9 +104,9 @@ struct WelcomeView: View {
         )
     }
 
-    // MARK: - Button
+    // MARK: - Footer
 
-    private var getStartedButton: some View {
+    private var footer: some View {
         Button("Get Started", action: onDismiss)
             .buttonStyle(.borderedProminent)
             .controlSize(.large)

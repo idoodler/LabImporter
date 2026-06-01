@@ -39,7 +39,7 @@ struct DisclaimerView: View {
         } card: {
             pointCard
         } footer: {
-            continueButton
+            footer
         }
         .background { MorphingCategoryBackground() }
         .onAppear {
@@ -110,9 +110,9 @@ struct DisclaimerView: View {
         )
     }
 
-    // MARK: - Button
+    // MARK: - Footer
 
-    private var continueButton: some View {
+    private var footer: some View {
         Button("I Understand", action: onAcknowledge)
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
