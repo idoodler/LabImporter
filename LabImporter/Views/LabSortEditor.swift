@@ -52,28 +52,7 @@ struct LabSortEditor: View {
         .onChange(of: visibleOrdered.map(\.code)) { save() }
         .onChange(of: hiddenSet) { save() }
         .onChange(of: pinnedSet) { save() }
-        .alert("Rename", isPresented: isRenaming, presenting: renamingCode) { code in
-            TextField(defaultName(for: code), text: $renameDraft)
-            Button("Save") { prefs.setCustomName(renameDraft, for: code) }
-            if prefs.customName(for: code) != nil {
-                Button("Reset to Default", role: .destructive) { prefs.setCustomName(nil, for: code) }
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: { code in
-            Text("Choose a short name to show everywhere instead of “\(defaultName(for: code))”.")
-        }
-    }
-
-    /// Drives the rename alert from `renamingCode`; dismissing clears the selection.
-    private var isRenaming: Binding<Bool> {
-        Binding(get: { renamingCode != nil }, set: { if !$0 { renamingCode = nil } })
-    }
-
-    /// The catalog (non-overridden) name for a code, used as the rename field's
-    /// placeholder and in the alert message so the user sees the default they are
-    /// replacing.
-    private func defaultName(for code: String) -> String {
-        LoincDirectory.shared.term(for: code)?.name ?? code
+        .renameLabAlert(code: $renamingCode, draft: $renameDraft, prefs: $prefs)
     }
 
     private func startRename(_ code: String) {
@@ -129,7 +108,7 @@ struct LabSortEditor: View {
             VStack(alignment: .leading, spacing: 1) {
                 Text(LabMapping.displayName(for: item.code))
                 if prefs.customName(for: item.code) != nil {
-                    Text(defaultName(for: item.code))
+                    Text(LabMapping.catalogName(for: item.code))
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                 }
