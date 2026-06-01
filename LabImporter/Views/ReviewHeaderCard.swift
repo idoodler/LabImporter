@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// Wraps `UIActivityViewController` so the review screen can share an exported
 /// CDA file via the standard share sheet.
@@ -77,6 +78,42 @@ struct ReviewActionBar: View {
                 }
                 .ignoresSafeArea(edges: .bottom)
         }
+    }
+}
+
+/// Removes the view from the layout while the software keyboard is on screen.
+///
+/// The review screen pins `ReviewActionBar` to the bottom via `safeAreaInset`, so
+/// SwiftUI lifts it to sit just above the keyboard when a field is focused — the
+/// exact spot the keyboard's own "Done" accessory toolbar docks to, leaving the two
+/// overlapping. Dropping the action bar during editing hands that strip to the
+/// keyboard toolbar; it animates back in when editing ends. We watch the keyboard
+/// notifications (rather than a `FocusState`) so this also covers the per-row value
+/// fields, whose focus is private to `LabValueRowView`. The `onReceive` lives on an
+/// always-present container so the hide notification still arrives once the content
+/// has been removed.
+private struct HideWhileKeyboardVisible: ViewModifier {
+    @State private var keyboardVisible = false
+
+    func body(content: Content) -> some View {
+        Group {
+            if !keyboardVisible {
+                content.transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
+            withAnimation(.easeInOut(duration: 0.25)) { keyboardVisible = true }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+            withAnimation(.easeInOut(duration: 0.25)) { keyboardVisible = false }
+        }
+    }
+}
+
+extension View {
+    /// Hides the view while the software keyboard is visible — see `HideWhileKeyboardVisible`.
+    func hiddenWhileKeyboardVisible() -> some View {
+        modifier(HideWhileKeyboardVisible())
     }
 }
 
