@@ -50,18 +50,23 @@ struct OnboardingScaffold<Hero: View, Card: View, Footer: View>: View {
     // MARK: - Portrait (regular height)
 
     private var portraitLayout: some View {
-        VStack(spacing: 0) {
-            Spacer(minLength: 16)
-            hero
-            Spacer(minLength: 16)
-            card
-                .frame(maxWidth: 480)
-                .padding(.horizontal, 24)
-            Spacer(minLength: 16)
-            footer
-                .frame(maxWidth: 480)
-                .padding(.horizontal, 24)
-                .padding(.bottom, 48)
+        GeometryReader { proxy in
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: 0) {
+                    Spacer(minLength: 16)
+                    hero
+                    Spacer(minLength: 16)
+                    card
+                        .frame(maxWidth: 480)
+                        .padding(.horizontal, 24)
+                    Spacer(minLength: 16)
+                    footer
+                        .frame(maxWidth: 480)
+                        .padding(.horizontal, 24)
+                        .padding(.bottom, 48)
+                }
+                .frame(maxWidth: .infinity, minHeight: proxy.size.height)
+            }
         }
     }
 
