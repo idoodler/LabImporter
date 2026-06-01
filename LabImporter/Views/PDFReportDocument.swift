@@ -7,7 +7,7 @@ import SwiftUI
 // MARK: - Page
 
 struct PDFPageView: View {
-    let page: PDFPage
+    let page: PDFReportPage
     let pageNumber: Int
     let pageCount: Int
     let generatedOn: String
@@ -288,6 +288,10 @@ private struct PDFFooterView: View {
     let pageCount: Int
     let generatedOn: String
 
+    private var pageLabel: String {
+        String(localized: "Page \(pageNumber) of \(pageCount)")
+    }
+
     var body: some View {
         VStack(spacing: 4) {
             Rectangle().fill(Color.primary.opacity(0.12)).frame(height: 0.5)
@@ -298,7 +302,7 @@ private struct PDFFooterView: View {
                 .font(.system(size: 8, weight: .semibold))
                 .foregroundStyle(.secondary)
                 Spacer()
-                (Text("Page \(pageNumber) of \(pageCount)") + Text(verbatim: " · \(generatedOn)"))
+                Text("\(pageLabel) · \(generatedOn)")
                     .font(.system(size: 8))
                     .foregroundStyle(.secondary)
             }

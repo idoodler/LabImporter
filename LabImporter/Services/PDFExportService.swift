@@ -117,7 +117,7 @@ struct PDFExportService {
 
     // MARK: - Rendering
 
-    private func render(pages: [PDFPage], fileName: String) throws -> URL {
+    private func render(pages: [PDFReportPage], fileName: String) throws -> URL {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
         var mediaBox = CGRect(origin: .zero, size: Self.pageSize)
         guard let consumer = CGDataConsumer(url: url as CFURL),
@@ -172,7 +172,7 @@ enum PDFExportError: LocalizedError {
 // MARK: - Page model
 
 /// One laid-out page: an ordered list of fixed-height blocks, top-aligned.
-struct PDFPage {
+struct PDFReportPage {
     let blocks: [PDFBlock]
 }
 
@@ -266,13 +266,17 @@ struct PDFRowInfo {
 private struct PDFPageBuilder {
     let usableHeight: CGFloat
 
-    private var pages: [PDFPage] = []
+    private var pages: [PDFReportPage] = []
     private var current: [PDFBlock] = []
     private var cursor: CGFloat = 0
 
+    init(usableHeight: CGFloat) {
+        self.usableHeight = usableHeight
+    }
+
     mutating func startNewPage() {
         if !current.isEmpty {
-            pages.append(PDFPage(blocks: current))
+            pages.append(PDFReportPage(blocks: current))
             current = []
         }
         cursor = 0
@@ -304,7 +308,7 @@ private struct PDFPageBuilder {
         }
     }
 
-    mutating func finish() -> [PDFPage] {
+    mutating func finish() -> [PDFReportPage] {
         startNewPage()
         return pages
     }
