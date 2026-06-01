@@ -22,9 +22,7 @@ enum DeviceSupport {
 
 struct UnsupportedDeviceView: View {
     var body: some View {
-        VStack(spacing: 0) {
-            Spacer()
-
+        OnboardingScaffold {
             VStack(spacing: 20) {
                 ZStack {
                     Circle()
@@ -47,9 +45,7 @@ struct UnsupportedDeviceView: View {
                 }
                 .padding(.horizontal, 32)
             }
-
-            Spacer()
-
+        } card: {
             VStack(alignment: .leading, spacing: 24) {
                 RequirementRow(
                     icon: "cpu",
@@ -64,11 +60,7 @@ struct UnsupportedDeviceView: View {
                     description: "Make sure your device is running iOS or iPadOS 26 or later."
                 )
             }
-            .padding(.horizontal, 32)
-
-            Spacer()
         }
-        .padding(.bottom, 48)
     }
 }
 

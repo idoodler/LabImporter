@@ -34,14 +34,11 @@ struct DisclaimerView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            Spacer()
+        OnboardingScaffold {
             hero
-            Spacer()
+        } card: {
             pointCard
-                .frame(maxWidth: 480)
-                .padding(.horizontal, 24)
-            Spacer()
+        } footer: {
             continueButton
         }
         .background { MorphingCategoryBackground() }
@@ -120,8 +117,6 @@ struct DisclaimerView: View {
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
             .frame(maxWidth: .infinity)
-            .padding(.horizontal, 24)
-            .padding(.bottom, 48)
             .opacity(appeared ? 1 : 0)
     }
 }

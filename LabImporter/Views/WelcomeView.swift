@@ -36,14 +36,11 @@ struct WelcomeView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            Spacer()
+        OnboardingScaffold {
             hero
-            Spacer()
+        } card: {
             featureCard
-                .frame(maxWidth: 480)
-                .padding(.horizontal, 24)
-            Spacer()
+        } footer: {
             getStartedButton
         }
         .background { MorphingCategoryBackground() }
@@ -114,8 +111,6 @@ struct WelcomeView: View {
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
             .frame(maxWidth: .infinity)
-            .padding(.horizontal, 24)
-            .padding(.bottom, 48)
             .opacity(appeared ? 1 : 0)
     }
 }
