@@ -44,6 +44,7 @@ struct WelcomeView: View {
                 .frame(maxWidth: 480)
                 .padding(.horizontal, 24)
             Spacer()
+            disclaimer
             getStartedButton
         }
         .background { MorphingCategoryBackground() }
@@ -105,6 +106,25 @@ struct WelcomeView: View {
             RoundedRectangle(cornerRadius: 28)
                 .stroke(Color.primary.opacity(0.08), lineWidth: 0.5)
         )
+    }
+
+    // MARK: - Disclaimer
+
+    private var disclaimer: some View {
+        Text("""
+        LabImporter is not a medical device and does not provide medical advice, \
+        diagnosis, or treatment. Extracted values may be inaccurate or incomplete — \
+        always verify them against your original report. Never make medical decisions \
+        based on this app; consult a qualified healthcare professional about your results.
+        """)
+            .font(.caption2)
+            .foregroundStyle(.secondary)
+            .multilineTextAlignment(.center)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: 480)
+            .padding(.horizontal, 32)
+            .padding(.bottom, 16)
+            .opacity(appeared ? 1 : 0)
     }
 
     // MARK: - Button

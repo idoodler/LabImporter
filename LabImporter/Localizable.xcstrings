@@ -4,6 +4,158 @@
     "" : {
 
     },
+    "LabImporter is not a medical device and does not provide medical advice, diagnosis, or treatment. Extracted values may be inaccurate or incomplete — always verify them against your original report. Never make medical decisions based on this app; consult a qualified healthcare professional about your results." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter ist kein Medizinprodukt und bietet keine medizinische Beratung, Diagnose oder Behandlung. Erfasste Werte können ungenau oder unvollständig sein – überprüfe sie immer anhand deines Originalbefunds. Triff niemals medizinische Entscheidungen auf Grundlage dieser App; wende dich bezüglich deiner Werte an qualifiziertes medizinisches Fachpersonal."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter no es un dispositivo médico y no ofrece asesoramiento, diagnóstico ni tratamiento médico. Los valores extraídos pueden ser inexactos o incompletos: verifícalos siempre con tu informe original. Nunca tomes decisiones médicas basándote en esta app; consulta a un profesional sanitario cualificado sobre tus resultados."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter n'est pas un dispositif médical et ne fournit ni avis médical, ni diagnostic, ni traitement. Les valeurs extraites peuvent être inexactes ou incomplètes : vérifiez-les toujours par rapport à votre rapport d'origine. Ne prenez jamais de décisions médicales en vous fondant sur cette app ; consultez un professionnel de santé qualifié au sujet de vos résultats."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter non è un dispositivo medico e non fornisce pareri medici, diagnosi o trattamenti. I valori estratti possono essere imprecisi o incompleti: verificali sempre con il referto originale. Non prendere mai decisioni mediche basandoti su questa app; consulta un professionista sanitario qualificato riguardo ai tuoi risultati."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter は医療機器ではなく、医療上の助言・診断・治療を提供するものではありません。抽出された値は不正確または不完全な場合があります。必ず元の検査結果と照合してください。このアプリに基づいて医療上の判断を行わないでください。結果については資格のある医療専門家に相談してください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter is geen medisch hulpmiddel en biedt geen medisch advies, diagnose of behandeling. Geëxtraheerde waarden kunnen onnauwkeurig of onvolledig zijn — controleer ze altijd aan de hand van je oorspronkelijke rapport. Neem nooit medische beslissingen op basis van deze app; raadpleeg een gekwalificeerde zorgverlener over je resultaten."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter nie jest wyrobem medycznym i nie zapewnia porad medycznych, diagnozy ani leczenia. Odczytane wartości mogą być niedokładne lub niekompletne — zawsze porównuj je z oryginalnym wynikiem. Nigdy nie podejmuj decyzji medycznych na podstawie tej aplikacji; skonsultuj swoje wyniki z wykwalifikowanym pracownikiem ochrony zdrowia."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O LabImporter não é um dispositivo médico e não oferece aconselhamento, diagnóstico ou tratamento médico. Os valores extraídos podem estar imprecisos ou incompletos — verifique-os sempre com o seu laudo original. Nunca tome decisões médicas com base neste app; consulte um profissional de saúde qualificado sobre os seus resultados."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter не является медицинским устройством и не предоставляет медицинских консультаций, диагнозов или лечения. Распознанные значения могут быть неточными или неполными — всегда сверяйте их с оригинальным результатом анализа. Никогда не принимайте медицинские решения на основе этого приложения; обсудите свои результаты с квалифицированным медицинским специалистом."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter bir tıbbi cihaz değildir ve tıbbi tavsiye, teşhis veya tedavi sağlamaz. Çıkarılan değerler hatalı veya eksik olabilir; bunları her zaman orijinal raporunuzla karşılaştırın. Bu uygulamaya dayanarak asla tıbbi karar vermeyin; sonuçlarınız hakkında nitelikli bir sağlık uzmanına danışın."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter не є медичним пристроєм і не надає медичних консультацій, діагнозів чи лікування. Розпізнані значення можуть бути неточними або неповними — завжди звіряйте їх з оригінальним результатом аналізу. Ніколи не ухвалюйте медичних рішень на основі цього застосунку; щодо своїх результатів зверніться до кваліфікованого медичного фахівця."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter 不是医疗设备，也不提供医疗建议、诊断或治疗。提取的数值可能不准确或不完整——请务必与原始报告核对。切勿根据本 App 做出医疗决定；请就您的结果咨询合格的医疗专业人员。"
+          }
+        }
+      }
+    },
+    "Not Medical Advice" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine medizinische Beratung"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No es asesoramiento médico"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas un avis médical"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non è un parere medico"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "医療アドバイスではありません"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geen medisch advies"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To nie porada medyczna"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não é aconselhamento médico"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не медицинская консультация"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tıbbi tavsiye değildir"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не є медичною порадою"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "非医疗建议"
+          }
+        }
+      }
+    },
     "–" : {
       "localizations" : {
         "de" : {
