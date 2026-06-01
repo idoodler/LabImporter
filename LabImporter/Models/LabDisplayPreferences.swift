@@ -4,6 +4,13 @@ struct LabDisplayPreferences: RawRepresentable {
     var pinnedCodes: [String] = []
     var orderedCodes: [String] = []
     var hiddenCodes: [String] = []
+    /// User-chosen display names that override the catalog name for a LOINC code,
+    /// keyed by code (e.g. `"4548-8"` → `"HbA1c %"`). Empty until the user renames
+    /// something. Applied centrally in `LabMapping.displayName(for:)`, so a rename
+    /// flows to every screen (dashboard, trends, detail, review, history) — but it
+    /// is purely cosmetic and never reaches the exported CDA, which keeps the
+    /// standard LOINC English display (see `LabMapping.loincCode(for:)`).
+    var customNames: [String: String] = [:]
 
     init() {}
 
@@ -14,15 +21,39 @@ struct LabDisplayPreferences: RawRepresentable {
         pinnedCodes = decoded.pinnedCodes
         orderedCodes = decoded.orderedCodes
         hiddenCodes = decoded.hiddenCodes
+        customNames = decoded.customNames ?? [:]
     }
 
     var rawValue: String {
-        let payload = Payload(pinnedCodes: pinnedCodes, orderedCodes: orderedCodes, hiddenCodes: hiddenCodes)
+        let payload = Payload(pinnedCodes: pinnedCodes, orderedCodes: orderedCodes,
+                              hiddenCodes: hiddenCodes, customNames: customNames)
         return (try? JSONEncoder().encode(payload)).flatMap { String(data: $0, encoding: .utf8) } ?? ""
     }
 
     var pinnedSet: Set<String> { Set(pinnedCodes) }
     var hiddenSet: Set<String> { Set(hiddenCodes) }
+
+    /// The user's custom display name for `code`, or `nil` if they haven't set one
+    /// (or set it to blank). Whitespace is trimmed so a stray space never masks a
+    /// catalog name.
+    func customName(for code: String) -> String? {
+        let trimmed = code.trimmingCharacters(in: .whitespaces)
+        guard let name = customNames[trimmed]?.trimmingCharacters(in: .whitespaces),
+              !name.isEmpty else { return nil }
+        return name
+    }
+
+    /// Sets (or, when `name` is `nil`/blank, clears) the custom display name for
+    /// `code`. Clearing falls the display back to the catalog name.
+    mutating func setCustomName(_ name: String?, for code: String) {
+        let trimmedCode = code.trimmingCharacters(in: .whitespaces)
+        let trimmedName = name?.trimmingCharacters(in: .whitespaces)
+        if let trimmedName, !trimmedName.isEmpty {
+            customNames[trimmedCode] = trimmedName
+        } else {
+            customNames.removeValue(forKey: trimmedCode)
+        }
+    }
 
     // Separate Codable type breaks the Codable+RawRepresentable encoding cycle.
     // If LabDisplayPreferences itself were Codable, the stdlib's RawRepresentable
@@ -31,5 +62,36 @@ struct LabDisplayPreferences: RawRepresentable {
         var pinnedCodes: [String]
         var orderedCodes: [String]
         var hiddenCodes: [String]
+        // Optional so blobs written before custom names existed — or synced from a
+        // device on an older build — still decode (older builds likewise ignore
+        // this unknown key, so the layout keeps roaming both ways).
+        var customNames: [String: String]?
     }
+}
+
+extension LabDisplayPreferences {
+    /// The `@AppStorage` key the dashboard preferences are persisted under. Shared
+    /// so non-View code (e.g. `LabMapping`) can read the same blob the UI binds to,
+    /// keeping custom names in lockstep with the binding — including iCloud sync.
+    static let storageKey = "labDisplayPrefs"
+
+    /// Loads the current preferences from `UserDefaults` — the very blob the
+    /// `@AppStorage("labDisplayPrefs")` views bind to. A one-entry cache keyed on
+    /// the raw string avoids re-decoding on every `displayName` lookup (called per
+    /// row and inside sort comparators). Thread-safe via `cacheLock`: lab names are
+    /// resolved both from `@MainActor` views and from the OCR/parser/HealthKit
+    /// actors, so this may be called from any isolation domain.
+    static func current() -> LabDisplayPreferences {
+        let raw = UserDefaults.standard.string(forKey: storageKey) ?? ""
+        cacheLock.lock(); defer { cacheLock.unlock() }
+        if raw == cachedRaw, let cached { return cached }
+        let prefs = LabDisplayPreferences(rawValue: raw) ?? LabDisplayPreferences()
+        cachedRaw = raw
+        cached = prefs
+        return prefs
+    }
+
+    private nonisolated(unsafe) static var cachedRaw: String?
+    private nonisolated(unsafe) static var cached: LabDisplayPreferences?
+    private static let cacheLock = NSLock()
 }

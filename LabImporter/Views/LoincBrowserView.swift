@@ -109,11 +109,19 @@ struct LoincTermDetailView: View {
     let term: LoincTerm
     @State private var detail: LoincDetail?
     @State private var browserURL: IdentifiedURL?
+    @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
+    @State private var renamingCode: String?
+    @State private var renameDraft = ""
 
     var body: some View {
         List {
             Section {
                 Text(detail?.name ?? term.name).font(.headline)
+                if let custom = prefs.customName(for: term.code) {
+                    Label(custom, systemImage: "pencil")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
                 if let description = detail?.description ?? term.description, !description.isEmpty {
                     Text(description).foregroundStyle(.secondary)
                 }
@@ -150,6 +158,17 @@ struct LoincTermDetailView: View {
         }
         .navigationTitle(Text(verbatim: term.code))
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    renameDraft = prefs.customName(for: term.code) ?? ""
+                    renamingCode = term.code
+                } label: {
+                    Label("Rename", systemImage: "pencil")
+                }
+            }
+        }
+        .renameLabAlert(code: $renamingCode, draft: $renameDraft, prefs: $prefs)
         .task { detail = LoincDirectory.shared.detail(for: term.code) }
         .sheet(item: $browserURL) { item in
             SafariView(url: item.url)

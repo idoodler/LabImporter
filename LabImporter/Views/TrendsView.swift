@@ -18,6 +18,8 @@ struct TrendsView: View {
     @State private var selectedTerm: LoincTerm?
     @State private var valueColor: Color = .accentColor
     @State private var showHideConfirmation = false
+    @State private var renamingCode: String?
+    @State private var renameDraft = ""
     private let selectionFeedback = UISelectionFeedbackGenerator()
     private let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
 
@@ -108,6 +110,7 @@ struct TrendsView: View {
         } message: {
             Text("This metric will no longer appear on your dashboard. You can show it again from Settings.")
         }
+        .renameLabAlert(code: $renamingCode, draft: $renameDraft, prefs: $prefs)
         .onAppear {
             let codes = availableCodes.map(\.code)
             if let initial = initialCode, codes.contains(initial) {
@@ -128,6 +131,12 @@ struct TrendsView: View {
 
     private var moreMenu: some View {
         Menu {
+            Button {
+                renameDraft = prefs.customName(for: selectedCode) ?? ""
+                renamingCode = selectedCode
+            } label: {
+                Label("Rename", systemImage: "pencil")
+            }
             Button {
                 togglePin(selectedCode)
             } label: {

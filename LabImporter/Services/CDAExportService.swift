@@ -38,7 +38,11 @@ struct CDAExportService {
         }
 
         let narrativeRows = exportable.map { labValue in
-            "<tr><td>\(esc(labValue.name))</td><td>\(esc(labValue.displayValue)) \(esc(labValue.unit))</td></tr>"
+            // Use the canonical catalog name (not `labValue.name`, which may carry a
+            // user's custom display override) so a personal alias never leaks into
+            // the saved/shared document — only into on-screen display.
+            let canonicalName = LoincDirectory.shared.term(for: labValue.code)?.name ?? labValue.name
+            return "<tr><td>\(esc(canonicalName))</td><td>\(esc(labValue.displayValue)) \(esc(labValue.unit))</td></tr>"
         }.joined(separator: "\n              ")
 
         let components = exportable.compactMap { observationXML($0, date: dateStr) }
