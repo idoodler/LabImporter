@@ -33,6 +33,7 @@
 		AABB000000000000000074AA /* LabDisplayPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000075AA /* LabDisplayPreferences.swift */; };
 		AABB000000000000000077AA /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000076AA /* Localizable.xcstrings */; };
 		AABB000000000000000078AA /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000079AA /* WelcomeView.swift */; };
+		AABB0000000000000000E1AA /* DisclaimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000E2AA /* DisclaimerView.swift */; };
 		AABB000000000000000080AA /* DocumentScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000081AA /* DocumentScannerView.swift */; };
 		AABB000000000000000082AA /* VisionKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AABB000000000000000083AA /* VisionKit.framework */; };
 		AABB000000000000000084AA /* PDFKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AABB000000000000000085AA /* PDFKit.framework */; };
@@ -83,6 +84,7 @@
 		AABB000000000000000075AA /* LabDisplayPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabDisplayPreferences.swift; sourceTree = "<group>"; };
 		AABB000000000000000076AA /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		AABB000000000000000079AA /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		AABB0000000000000000E2AA /* DisclaimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisclaimerView.swift; sourceTree = "<group>"; };
 		AABB000000000000000081AA /* DocumentScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentScannerView.swift; sourceTree = "<group>"; };
 		AABB000000000000000083AA /* VisionKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VisionKit.framework; path = System/Library/Frameworks/VisionKit.framework; sourceTree = SDKROOT; };
 		AABB000000000000000085AA /* PDFKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PDFKit.framework; path = System/Library/Frameworks/PDFKit.framework; sourceTree = SDKROOT; };
@@ -199,6 +201,7 @@
 				AABB000000000000000073AA /* ImportLandingView.swift */,
 				AABB0000000000000000C1AA /* MorphingCategoryBackground.swift */,
 				AABB000000000000000079AA /* WelcomeView.swift */,
+				AABB0000000000000000E2AA /* DisclaimerView.swift */,
 				AABB000000000000000087AA /* SettingsView.swift */,
 				AABB0000000000000000C3DE /* UnsupportedDeviceView.swift */,
 				636BA85D2FCC52EE006E8E71 /* HealthPermissionView.swift */,
@@ -358,6 +361,7 @@
 				AABB0000000000000000C0AA /* MorphingCategoryBackground.swift in Sources */,
 				AABB000000000000000074AA /* LabDisplayPreferences.swift in Sources */,
 				AABB000000000000000078AA /* WelcomeView.swift in Sources */,
+				AABB0000000000000000E1AA /* DisclaimerView.swift in Sources */,
 				AABB000000000000000086AA /* SettingsView.swift in Sources */,
 				AABB0000000000000000C2DE /* UnsupportedDeviceView.swift in Sources */,
 			);
