@@ -90,7 +90,10 @@ struct SettingsView: View {
                                          systemImage: "arrow.triangle.2.circlepath", color: .blue)
                     }
                 } footer: {
-                    Text("Sync your dashboard layout — the card order plus what you pin and hide — across your devices. Your lab values stay in Apple Health.")
+                    Text("""
+                    Sync your dashboard layout — the card order, what you pin and hide, and your \
+                    custom names — across your devices. Your lab values stay in Apple Health.
+                    """)
                 }
 
                 Section("LOINC") {

@@ -15030,78 +15030,78 @@
         }
       }
     },
-    "Sync your dashboard layout — the card order plus what you pin and hide — across your devices. Your lab values stay in Apple Health." : {
+    "Sync your dashboard layout — the card order, what you pin and hide, and your custom names — across your devices. Your lab values stay in Apple Health." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchronisiere dein Dashboard-Layout – die Kartenreihenfolge sowie was du anheftest und ausblendest – über deine Geräte hinweg. Deine Laborwerte bleiben in Apple Health."
+            "value" : "Synchronisiere dein Dashboard-Layout – die Kartenreihenfolge, was du anheftest und ausblendest, sowie deine eigenen Namen – über deine Geräte hinweg. Deine Laborwerte bleiben in Apple Health."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sincroniza el diseño de tu panel —el orden de las tarjetas y lo que fijas y ocultas— entre tus dispositivos. Tus valores de laboratorio permanecen en Apple Salud."
+            "value" : "Sincroniza el diseño de tu panel —el orden de las tarjetas, lo que fijas y ocultas, y tus nombres personalizados— entre tus dispositivos. Tus valores de laboratorio permanecen en Apple Salud."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchronisez la disposition de votre tableau de bord — l’ordre des cartes ainsi que ce que vous épinglez et masquez — sur tous vos appareils. Vos valeurs de laboratoire restent dans Apple Santé."
+            "value" : "Synchronisez la disposition de votre tableau de bord — l’ordre des cartes, ce que vous épinglez et masquez, ainsi que vos noms personnalisés — sur tous vos appareils. Vos valeurs de laboratoire restent dans Apple Santé."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sincronizza il layout della dashboard — l’ordine delle schede e ciò che fissi e nascondi — su tutti i tuoi dispositivi. I tuoi valori di laboratorio restano in Apple Salute."
+            "value" : "Sincronizza il layout della dashboard — l’ordine delle schede, ciò che fissi e nascondi e i tuoi nomi personalizzati — su tutti i tuoi dispositivi. I tuoi valori di laboratorio restano in Apple Salute."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ダッシュボードのレイアウト（カードの順序と固定・非表示の設定）をデバイス間で同期します。検査値はAppleヘルスケアに残ります。"
+            "value" : "ダッシュボードのレイアウト（カードの順序、固定・非表示の設定、カスタム名）をデバイス間で同期します。検査値はAppleヘルスケアに残ります。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchroniseer je dashboardindeling — de kaartvolgorde plus wat je vastzet en verbergt — op al je apparaten. Je labwaarden blijven in Apple Gezondheid."
+            "value" : "Synchroniseer je dashboardindeling — de kaartvolgorde, wat je vastzet en verbergt, plus je eigen namen — op al je apparaten. Je labwaarden blijven in Apple Gezondheid."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchronizuj układ pulpitu — kolejność kart oraz to, co przypinasz i ukrywasz — między urządzeniami. Twoje wyniki badań pozostają w Apple Zdrowiu."
+            "value" : "Synchronizuj układ pulpitu — kolejność kart, to, co przypinasz i ukrywasz, oraz własne nazwy — między urządzeniami. Twoje wyniki badań pozostają w Apple Zdrowiu."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sincronize o layout do seu painel — a ordem dos cartões e o que você fixa e oculta — entre seus dispositivos. Seus valores de exames ficam no Apple Saúde."
+            "value" : "Sincronize o layout do seu painel — a ordem dos cartões, o que você fixa e oculta e seus nomes personalizados — entre seus dispositivos. Seus valores de exames ficam no Apple Saúde."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Синхронизируйте оформление панели — порядок карточек, а также что закреплено и скрыто — между устройствами. Ваши лабораторные значения остаются в Apple Здоровье."
+            "value" : "Синхронизируйте оформление панели — порядок карточек, что закреплено и скрыто, а также ваши собственные названия — между устройствами. Ваши лабораторные значения остаются в Apple Здоровье."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pano düzeninizi — kart sırası ile sabitlediğiniz ve gizlediğiniz öğeleri — cihazlarınız arasında senkronlayın. Laboratuvar değerleriniz Apple Sağlık’ta kalır."
+            "value" : "Pano düzeninizi — kart sırası, sabitlediğiniz ve gizlediğiniz öğeler ile özel adlarınızı — cihazlarınız arasında senkronlayın. Laboratuvar değerleriniz Apple Sağlık’ta kalır."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Синхронізуйте вигляд панелі — порядок карток, а також що закріплено й приховано — між пристроями. Ваші лабораторні значення залишаються в Apple Здоров’я."
+            "value" : "Синхронізуйте вигляд панелі — порядок карток, що закріплено й приховано, а також ваші власні назви — між пристроями. Ваші лабораторні значення залишаються в Apple Здоров’я."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在你的设备间同步仪表板布局——卡片顺序以及置顶和隐藏的设置。你的化验数值保留在 Apple 健康中。"
+            "value" : "在你的设备间同步仪表板布局——卡片顺序、置顶和隐藏的设置，以及你的自定名称。你的化验数值保留在 Apple 健康中。"
           }
         }
       }
