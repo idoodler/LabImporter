@@ -15,6 +15,18 @@ enum AppInfo {
     static var branch: String { string("GitBranch") ?? "unknown" }
     static var commit: String { string("GitCommit") ?? "unknown" }
 
+    /// The app's license text, read from the `LICENSE` file copied into the
+    /// bundle at build time (see the "Copy LICENSE" build phase). This keeps the
+    /// single source of truth in the repo-root `LICENSE` rather than duplicating
+    /// it in source. Returns a short message if the file is missing.
+    static var licenseText: String {
+        guard let url = Bundle.main.url(forResource: "LICENSE", withExtension: nil),
+              let text = try? String(contentsOf: url, encoding: .utf8) else {
+            return String(localized: "The license is unavailable in this build.")
+        }
+        return text
+    }
+
     /// Web URL of the repository this build came from, stamped into `Info.plist`
     /// at build time (`GitRepositoryURL`) so forks open their own repo. Returns
     /// `nil` when the build did not stamp a URL (e.g. local Xcode builds), in
@@ -259,41 +271,11 @@ struct CodeName: Identifiable {
 
 // MARK: - LicenseView
 
+/// The app's MIT license, read from the bundled `LICENSE` file via `AppInfo`.
 struct LicenseView: View {
     var body: some View {
-        ScrollView {
-            Text(Self.licenseText)
-                .font(.footnote)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
-        }
-        .navigationTitle("License")
-        .navigationBarTitleDisplayMode(.inline)
+        LicenseDocumentView(title: "License", text: AppInfo.licenseText)
     }
-
-    private static let licenseText = """
-    MIT License
-
-    Copyright (c) 2026 idoodler
-
-    Permission is hereby granted, free of charge, to any person obtaining a copy \
-    of this software and associated documentation files (the "Software"), to deal \
-    in the Software without restriction, including without limitation the rights \
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell \
-    copies of the Software, and to permit persons to whom the Software is \
-    furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in all \
-    copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR \
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, \
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE \
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER \
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, \
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE \
-    SOFTWARE.
-    """
 }
 
 // MARK: - Previews
