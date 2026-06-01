@@ -16,18 +16,22 @@ struct AddValueSheet: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Name", text: $name)
-                        .autocorrectionDisabled()
+                    // A LOINC code must be chosen first — every value is LOINC-based,
+                    // so the picker drives the name (the user's alias when set, else
+                    // the catalog name) and the canonical unit.
                     NavigationLink {
                         AddCodePickerPage(code: $code, name: $name)
                     } label: {
                         HStack {
                             Text("Lab Test")
                             Spacer()
-                            Text(code.isEmpty ? "Any" : code)
-                                .foregroundStyle(.secondary)
+                            Text(code.isEmpty ? "Required" : code)
+                                .foregroundStyle(code.isEmpty ? .secondary : .primary)
                         }
                     }
+                    TextField("Name", text: $name)
+                        .autocorrectionDisabled()
+                        .disabled(code.isEmpty)
                 }
                 Section {
                     TextField("Value", text: $displayValue)
@@ -45,7 +49,7 @@ struct AddValueSheet: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Add") { commit() }
                         .fontWeight(.semibold)
-                        .disabled(name.isEmpty || displayValue.isEmpty)
+                        .disabled(code.isEmpty || displayValue.isEmpty)
                 }
             }
             .onChange(of: code) { _, newCode in
@@ -66,9 +70,10 @@ struct AddValueSheet: View {
     }
 
     private func commit() {
-        let resolvedCode = code.isEmpty
-            ? "MANUAL"
-            : code.uppercased().trimmingCharacters(in: .whitespaces)
+        // A LOINC code is required (the Add button is disabled until one is picked),
+        // so there is no unmapped/"MANUAL" fallback — everything stays LOINC-based.
+        let resolvedCode = code.uppercased().trimmingCharacters(in: .whitespaces)
+        guard !resolvedCode.isEmpty else { return }
         let normalized = displayValue.replacingOccurrences(of: ",", with: ".")
         let value = LabValue(
             code: resolvedCode,
