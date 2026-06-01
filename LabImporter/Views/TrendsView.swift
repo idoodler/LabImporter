@@ -13,8 +13,12 @@ struct TrendsView: View {
     }
 
     @AppStorage("trendsSelectedCode") private var selectedCode: String = ""
+    @AppStorage("trendsWindow") private var window: TrendWindow = .year1
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
     @State private var selectedDate: Date?
+    /// Leading edge (oldest visible date) of the scrollable chart. Re-anchored to
+    /// the latest reading whenever the metric or window changes.
+    @State private var scrollPositionX = Date.now
     @State private var selectedTerm: LoincTerm?
     @State private var valueColor: Color = .accentColor
     @State private var showHideConfirmation = false
@@ -120,10 +124,15 @@ struct TrendsView: View {
             }
             selectedTerm = LoincDirectory.shared.term(for: selectedCode)
             valueColor = LabCategory.forCode(selectedCode).color
+            anchorScroll()
         }
         .onChange(of: selectedCode) { _, code in
             selectedTerm = LoincDirectory.shared.term(for: code)
             valueColor = LabCategory.forCode(code).color
+            anchorScroll()
+        }
+        .onChange(of: window) { _, _ in
+            anchorScroll()
         }
     }
 
@@ -179,6 +188,7 @@ struct TrendsView: View {
         } else {
             ScrollView {
                 VStack(spacing: 16) {
+                    windowPicker
                     trendChart
                     descriptionCard
                 }
@@ -237,6 +247,9 @@ struct TrendsView: View {
                 }
             }
         }
+        .chartScrollableAxes(.horizontal)
+        .chartXVisibleDomain(length: visibleDomainSeconds)
+        .chartScrollPosition(x: $scrollPositionX)
         .chartXSelection(value: $selectedDate)
         .chartOverlay { proxy in
             GeometryReader { geo in
@@ -268,11 +281,9 @@ struct TrendsView: View {
                 AxisValueLabel().foregroundStyle(valueColor.opacity(0.8))
             }
         }
-        .chartYAxisLabel {
-            Text(currentUnit).foregroundStyle(valueColor.opacity(0.8))
-        }
         .frame(minHeight: 260)
         .padding()
+        .overlay(alignment: .topLeading) { unitBadge }
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
         .overlay(
             RoundedRectangle(cornerRadius: 20)
@@ -325,15 +336,78 @@ struct TrendsView: View {
 // MARK: - Helpers
 
 extension TrendsView {
+    /// Selectable time window; a finite case fixes the visible x-span, `.all` fits everything.
+    enum TrendWindow: String, CaseIterable, Identifiable {
+        case month3, month6, year1, all
+        var id: Self { self }
+
+        /// Visible span in days, or `nil` for "fit everything".
+        var days: Int? {
+            switch self {
+            case .month3: return 92
+            case .month6: return 183
+            case .year1: return 366
+            case .all: return nil
+            }
+        }
+
+        var label: LocalizedStringKey {
+            switch self {
+            case .month3: return "3M"
+            case .month6: return "6M"
+            case .year1: return "1Y"
+            case .all: return "All"
+            }
+        }
+    }
+
+    /// Static unit caption pinned to the card (`chartYAxisLabel` rides the scrollable plot).
+    @ViewBuilder
+    var unitBadge: some View {
+        if !currentUnit.isEmpty {
+            Text(currentUnit)
+                .font(.caption.weight(.medium))
+                .foregroundStyle(valueColor.opacity(0.8))
+                .padding(EdgeInsets(top: 8, leading: 12, bottom: 0, trailing: 0))
+                .allowsHitTesting(false)
+        }
+    }
+
+    var windowPicker: some View {
+        Picker("Time Range", selection: $window) {
+            ForEach(TrendWindow.allCases) { option in
+                Text(option.label).tag(option)
+            }
+        }
+        .pickerStyle(.segmented)
+    }
+
+    /// Visible x-axis window width in seconds; for `.all`, the full span padded 10%.
+    var visibleDomainSeconds: TimeInterval {
+        if let days = window.days {
+            return Double(days) * 86_400
+        }
+        guard let first = dataPoints.first?.date, let last = dataPoints.last?.date else { return 86_400 }
+        return max(last.timeIntervalSince(first) * 1.1, 86_400)
+    }
+
+    /// Anchors the scroll so the latest reading is in view (whole range for `.all`).
+    func anchorScroll() {
+        guard let first = dataPoints.first?.date, let last = dataPoints.last?.date else { return }
+        if window.days == nil {
+            scrollPositionX = first.addingTimeInterval(-visibleDomainSeconds * 0.05)
+        } else {
+            scrollPositionX = last.addingTimeInterval(-visibleDomainSeconds * 0.95)
+        }
+    }
+
     private func clampedX(_ xPos: CGFloat, in frame: CGRect) -> CGFloat {
         let halfBubble: CGFloat = 60
         return min(max(xPos, frame.minX + halfBubble), frame.maxX - halfBubble)
     }
 
     private func formatValue(_ value: Double) -> String {
-        value.truncatingRemainder(dividingBy: 1) == 0
-            ? String(format: "%.0f", value)
-            : String(format: "%.4g", value)
+        value.truncatingRemainder(dividingBy: 1) == 0 ? String(format: "%.0f", value) : String(format: "%.4g", value)
     }
 
     private func togglePin(_ code: String) {
