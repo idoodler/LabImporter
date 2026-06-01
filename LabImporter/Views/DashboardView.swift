@@ -174,14 +174,25 @@ struct DashboardView: View {
 
     // MARK: - Metrics computation
 
+    /// Trailing window (in months) of readings charted by the overview
+    /// sparklines. Older historic values stay saved and fully visible in Trends —
+    /// they're excluded here only so a single very old reading can't stretch the
+    /// time axis and squish the recent points into a corner. The headline value
+    /// still reflects the true latest reading regardless of its age.
+    private static let sparklineWindowMonths = 12
+
     private var metrics: [MetricData] {
+        let cutoff = Calendar.current.date(byAdding: .month, value: -Self.sparklineWindowMonths, to: Date()) ?? .distantPast
+
         var latestEntry: [String: (entry: LabReport.Entry, date: Date)] = [:]
         var allPoints: [String: [SparkPoint]] = [:]
 
         for report in reports {
             for entry in report.entries {
                 guard let value = entry.numericValue else { continue }
-                allPoints[entry.code, default: []].append(SparkPoint(date: report.date, value: value))
+                if report.date >= cutoff {
+                    allPoints[entry.code, default: []].append(SparkPoint(date: report.date, value: value))
+                }
                 if let existing = latestEntry[entry.code] {
                     if report.date > existing.date {
                         latestEntry[entry.code] = (entry: entry, date: report.date)
