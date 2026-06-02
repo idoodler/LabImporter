@@ -255,9 +255,9 @@ struct TrendsView: View {
             GeometryReader { geo in
                 if let selected = selectedDataPoint,
                    let plotFrame = proxy.plotFrame.map({ geo[$0] }),
-                   let selectedX = proxy.position(forX: selected.date),
-                   let leadingX = proxy.position(forX: scrollPositionX) {
-                    // `position(forX:)` is full-content space on a scrollable chart; offset by the leading visible date.
+                   let selectedX = proxy.position(forX: selected.date) {
+                    // Map content-space x into the viewport by the scroll offset (nil when not scrolled → 0).
+                    let leadingX = proxy.position(forX: scrollPositionX) ?? 0
                     let viewportX = clampedX(plotFrame.minX + selectedX - leadingX, in: plotFrame)
                     scrubCallout(selected)
                         .position(x: viewportX, y: plotFrame.minY + 22)
