@@ -17,30 +17,41 @@ struct AddValueSheet: View {
             Form {
                 Section {
                     // A LOINC code must be chosen first — every value is LOINC-based,
-                    // so the picker drives the name and the canonical unit. The name
-                    // is shown read-only (the user's alias when set, else the catalog
-                    // name); renaming lives in Sort & Visibility, not here.
+                    // so the picker drives the name and the canonical unit. The chosen
+                    // test is shown as a rich, category-tinted row (the user's alias
+                    // when set, else the catalog name); renaming lives in Sort &
+                    // Visibility, not here.
                     NavigationLink {
                         AddCodePickerPage(code: $code, name: $name)
                     } label: {
-                        HStack {
-                            Text("Lab Test")
-                            Spacer()
-                            Text(code.isEmpty ? "Required" : code)
-                                .foregroundStyle(code.isEmpty ? .secondary : .primary)
-                        }
+                        testRow
                     }
-                    if !code.isEmpty {
-                        LabeledContent("Name", value: LabMapping.displayName(for: code))
-                    }
+                    .listRowBackground(Rectangle().fill(.ultraThinMaterial))
                 }
                 Section {
-                    TextField("Value", text: $displayValue)
-                        .keyboardType(.decimalPad)
-                    TextField("Unit (optional)", text: $unit)
-                        .autocorrectionDisabled()
+                    HStack(spacing: 12) {
+                        Image(systemName: "number")
+                            .font(.body.weight(.semibold))
+                            .foregroundStyle(accent)
+                            .frame(width: 24)
+                        TextField("Value", text: $displayValue)
+                            .keyboardType(.decimalPad)
+                    }
+                    HStack(spacing: 12) {
+                        Image(systemName: "ruler")
+                            .font(.body.weight(.semibold))
+                            .foregroundStyle(accent)
+                            .frame(width: 24)
+                        TextField("Unit (optional)", text: $unit)
+                            .autocorrectionDisabled()
+                    }
+                } header: {
+                    Text("Measurement")
                 }
+                .listRowBackground(Rectangle().fill(.ultraThinMaterial))
             }
+            .scrollContentBackground(.hidden)
+            .background { CategoryBackground(colors: backgroundColors) }
             .navigationTitle("Add Value")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -57,6 +68,68 @@ struct AddValueSheet: View {
                 fillUnit(for: newCode)
             }
         }
+    }
+
+    // MARK: - Test row
+
+    /// The chosen lab test, or a prompt to pick one — a category-tinted icon with
+    /// the resolved name and a category chip, matching the term-detail and history
+    /// rows so a test reads the same everywhere.
+    private var testRow: some View {
+        HStack(spacing: 14) {
+            CategoryIcon(color: accent, size: 44)
+            VStack(alignment: .leading, spacing: 4) {
+                if code.isEmpty {
+                    Text("Choose a lab test")
+                        .font(.headline)
+                    Text("Required")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text(LabMapping.displayName(for: code))
+                        .font(.headline)
+                        .lineLimit(2)
+                    HStack(spacing: 8) {
+                        if let category {
+                            categoryChip(category)
+                        }
+                        Text(code)
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                            .textCase(.uppercase)
+                    }
+                }
+            }
+        }
+        .padding(.vertical, 4)
+    }
+
+    private func categoryChip(_ category: LabCategory) -> some View {
+        HStack(spacing: 5) {
+            Circle()
+                .fill(category.color)
+                .frame(width: 7, height: 7)
+            Text(category.displayName)
+                .font(.caption2.weight(.medium))
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 3)
+        .background(category.color.opacity(0.12), in: Capsule())
+        .overlay(Capsule().stroke(category.color.opacity(0.25), lineWidth: 0.5))
+    }
+
+    // The chosen test's clinical category (nil until a code is picked) drives the
+    // icon tint, the chip and the background wash.
+    private var category: LabCategory? {
+        code.isEmpty ? nil : LabCategory.forCode(code)
+    }
+
+    private var accent: Color {
+        category?.color ?? .accentColor
+    }
+
+    private var backgroundColors: [Color] {
+        category.map { [$0.color] } ?? []
     }
 
     /// Prefills the unit from the LOINC catalog's example UCUM unit when a lab
