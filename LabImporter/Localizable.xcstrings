@@ -9553,78 +9553,78 @@
         }
       }
     },
-    "Layout Only" : {
+    "Layout & Names" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nur das Layout"
+            "value" : "Layout & Namen"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Solo el diseño"
+            "value" : "Diseño y nombres"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La disposition uniquement"
+            "value" : "Disposition et noms"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Solo il layout"
+            "value" : "Layout e nomi"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "レイアウトのみ"
+            "value" : "レイアウトと名前"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alleen de indeling"
+            "value" : "Indeling en namen"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tylko układ"
+            "value" : "Układ i nazwy"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apenas o layout"
+            "value" : "Layout e nomes"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Только оформление"
+            "value" : "Оформление и названия"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Yalnızca düzen"
+            "value" : "Düzen ve adlar"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Лише вигляд"
+            "value" : "Вигляд і назви"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "仅布局"
+            "value" : "布局与名称"
           }
         }
       }
@@ -12141,78 +12141,78 @@
         }
       }
     },
-    "Only your card layout syncs. Your lab values stay in Apple Health and never leave it." : {
+    "Only your card layout and the custom names you give labs sync. Your lab values stay in Apple Health and never leave it." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nur dein Karten-Layout wird synchronisiert. Deine Laborwerte bleiben in Apple Health und verlassen es nie."
+            "value" : "Nur dein Karten-Layout und die eigenen Namen, die du Laborwerten gibst, werden synchronisiert. Deine Laborwerte bleiben in Apple Health und verlassen es nie."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Solo se sincroniza el diseño de tus tarjetas. Tus valores de laboratorio permanecen en Apple Salud y nunca salen de ahí."
+            "value" : "Solo se sincronizan el diseño de tus tarjetas y los nombres personalizados que asignas a los valores. Tus valores de laboratorio permanecen en Apple Salud y nunca salen de ahí."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seule la disposition de vos cartes est synchronisée. Vos valeurs de laboratoire restent dans Apple Santé et n’en sortent jamais."
+            "value" : "Seules la disposition de vos cartes et les noms personnalisés que vous donnez aux analyses sont synchronisés. Vos valeurs de laboratoire restent dans Apple Santé et n’en sortent jamais."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Si sincronizza solo il layout delle schede. I tuoi valori di laboratorio restano in Apple Salute e non ne escono mai."
+            "value" : "Si sincronizzano solo il layout delle schede e i nomi personalizzati che assegni ai valori. I tuoi valori di laboratorio restano in Apple Salute e non ne escono mai."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "同期されるのはカードのレイアウトだけです。検査値はAppleヘルスケアに残り、外に出ることはありません。"
+            "value" : "同期されるのはカードのレイアウトと、検査値に付けたカスタム名だけです。検査値はAppleヘルスケアに残り、外に出ることはありません。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alleen je kaartindeling wordt gesynchroniseerd. Je labwaarden blijven in Apple Gezondheid en verlaten het nooit."
+            "value" : "Alleen je kaartindeling en de eigen namen die je labwaarden geeft, worden gesynchroniseerd. Je labwaarden blijven in Apple Gezondheid en verlaten het nooit."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchronizowany jest tylko układ kart. Twoje wyniki badań pozostają w Apple Zdrowiu i nigdy go nie opuszczają."
+            "value" : "Synchronizowane są tylko układ kart i własne nazwy nadane wynikom. Twoje wyniki badań pozostają w Apple Zdrowiu i nigdy go nie opuszczają."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apenas o layout dos seus cartões é sincronizado. Seus valores de exames ficam no Apple Saúde e nunca saem de lá."
+            "value" : "Apenas o layout dos seus cartões e os nomes personalizados que você dá aos exames são sincronizados. Seus valores de exames ficam no Apple Saúde e nunca saem de lá."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Синхронизируется только оформление карточек. Ваши лабораторные значения остаются в Apple Здоровье и никогда его не покидают."
+            "value" : "Синхронизируются только оформление карточек и собственные названия, которые вы даёте показателям. Ваши лабораторные значения остаются в Apple Здоровье и никогда его не покидают."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Yalnızca kart düzeniniz senkronlanır. Laboratuvar değerleriniz Apple Sağlık’ta kalır ve oradan asla çıkmaz."
+            "value" : "Yalnızca kart düzeniniz ve değerlere verdiğiniz özel adlar senkronlanır. Laboratuvar değerleriniz Apple Sağlık’ta kalır ve oradan asla çıkmaz."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Синхронізується лише вигляд карток. Ваші лабораторні значення залишаються в Apple Здоров’я й ніколи його не покидають."
+            "value" : "Синхронізуються лише вигляд карток і власні назви, які ви даєте показникам. Ваші лабораторні значення залишаються в Apple Здоров’я й ніколи його не покидають."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "只有卡片布局会同步。你的化验数值保留在 Apple 健康中，绝不会离开。"
+            "value" : "只有卡片布局和你为化验值设置的自定名称会同步。你的化验数值保留在 Apple 健康中，绝不会离开。"
           }
         }
       }
@@ -16711,78 +16711,78 @@
         }
       }
     },
-    "The order you arrange cards in — plus what you pin and hide — follows you to your other devices." : {
+    "The order you arrange cards in — plus what you pin, hide, and rename — follows you to your other devices." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die Reihenfolge deiner Karten – sowie was du anheftest und ausblendest – folgt dir auf deine anderen Geräte."
+            "value" : "Die Reihenfolge deiner Karten – sowie was du anheftest, ausblendest und umbenennst – folgt dir auf deine anderen Geräte."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El orden en que organizas las tarjetas —y lo que fijas y ocultas— te acompaña en tus otros dispositivos."
+            "value" : "El orden en que organizas las tarjetas —y lo que fijas, ocultas y renombras— te acompaña en tus otros dispositivos."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L’ordre dans lequel vous classez les cartes — ainsi que ce que vous épinglez et masquez — vous suit sur vos autres appareils."
+            "value" : "L’ordre dans lequel vous classez les cartes — ainsi que ce que vous épinglez, masquez et renommez — vous suit sur vos autres appareils."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L’ordine in cui disponi le schede — oltre a ciò che fissi e nascondi — ti segue sugli altri dispositivi."
+            "value" : "L’ordine in cui disponi le schede — oltre a ciò che fissi, nascondi e rinomini — ti segue sugli altri dispositivi."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "カードの並び順、固定・非表示の設定が、ほかのデバイスにも引き継がれます。"
+            "value" : "カードの並び順、固定・非表示・名前の変更が、ほかのデバイスにも引き継がれます。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "De volgorde van je kaarten — plus wat je vastzet en verbergt — gaat met je mee naar je andere apparaten."
+            "value" : "De volgorde van je kaarten — plus wat je vastzet, verbergt en hernoemt — gaat met je mee naar je andere apparaten."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kolejność kart oraz to, co przypinasz i ukrywasz, podąża za Tobą na inne urządzenia."
+            "value" : "Kolejność kart oraz to, co przypinasz i ukrywasz — a także własne nazwy — podąża za Tobą na inne urządzenia."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A ordem em que você organiza os cartões — além do que fixa e oculta — acompanha você nos seus outros dispositivos."
+            "value" : "A ordem em que você organiza os cartões — além do que fixa, oculta e renomeia — acompanha você nos seus outros dispositivos."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Порядок карточек, а также что закреплено и скрыто, переносится на другие ваши устройства."
+            "value" : "Порядок карточек, а также что закреплено, скрыто и переименовано, переносится на другие ваши устройства."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kartları dizdiğiniz sıra ile sabitlediğiniz ve gizlediğiniz öğeler diğer cihazlarınıza taşınır."
+            "value" : "Kartları dizdiğiniz sıra ile sabitlediğiniz, gizlediğiniz ve yeniden adlandırdığınız öğeler diğer cihazlarınıza taşınır."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Порядок розташування карток, а також що закріплено й приховано, переходить на інші ваші пристрої."
+            "value" : "Порядок розташування карток, а також що закріплено, приховано й перейменовано, переходить на інші ваші пристрої."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你排列卡片的顺序，以及置顶和隐藏的设置，都会同步到你的其他设备。"
+            "value" : "你排列卡片的顺序，以及置顶、隐藏和重命名的设置，都会同步到你的其他设备。"
           }
         }
       }

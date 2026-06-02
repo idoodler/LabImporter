@@ -18,13 +18,13 @@ struct CloudSyncOptInView: View {
                 icon: "square.grid.2x2.fill",
                 color: LabCategory.endocrine.color,
                 title: "Your Dashboard, Everywhere",
-                description: "The order you arrange cards in — plus what you pin and hide — follows you to your other devices."
+                description: "The order you arrange cards in — plus what you pin, hide, and rename — follows you to your other devices."
             ),
             Benefit(
                 icon: "icloud.fill",
                 color: LabCategory.cardiac.color,
-                title: "Layout Only",
-                description: "Only your card layout syncs. Your lab values stay in Apple Health and never leave it."
+                title: "Layout & Names",
+                description: "Only your card layout and the custom names you give labs sync. Your lab values stay in Apple Health and never leave it."
             ),
             Benefit(
                 icon: "slider.horizontal.3",
