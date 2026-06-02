@@ -6,14 +6,14 @@ import SwiftUI
 // Selecting a row stores the raw LOINC number as the value's code; LabMapping
 // resolves it everywhere.
 
-// Catalog terms whose user-defined alias (custom display name) contains the
-// query, so a manually renamed test stays findable by the name the user gave it.
-// Returns at most the codes that have an alias set, resolved back to full terms.
-private func aliasMatches(_ query: String) -> [LoincTerm] {
+// Catalog terms whose user-defined nickname contains the query, so a manually
+// renamed test stays findable by the name the user gave it. Returns at most the
+// codes that have a nickname set, resolved back to full terms.
+private func nicknameMatches(_ query: String) -> [LoincTerm] {
     let needle = query.trimmingCharacters(in: .whitespaces).lowercased()
     guard !needle.isEmpty else { return [] }
-    return LabDisplayPreferences.current().customNames.compactMap { code, alias in
-        alias.lowercased().contains(needle) ? LoincDirectory.shared.term(for: code) : nil
+    return LabDisplayPreferences.current().nicknames.compactMap { code, nickname in
+        nickname.lowercased().contains(needle) ? LoincDirectory.shared.term(for: code) : nil
     }
 }
 
@@ -33,14 +33,14 @@ private struct LabTestPickerList: View {
         List {
             Section {
                 ForEach(loincResults) { term in
-                    // Surface the user's alias (custom display name) when they've
-                    // renamed this code, so the picker matches what they see
-                    // everywhere else; the catalog name then becomes the subtitle.
-                    let alias = LabDisplayPreferences.current().customName(for: term.code)
+                    // Surface the user's nickname when they've renamed this code,
+                    // so the picker matches what they see everywhere else; the
+                    // catalog name then becomes the subtitle.
+                    let nickname = LabDisplayPreferences.current().nickname(for: term.code)
                     row(rowCode: term.code,
-                        title: alias ?? term.name,
-                        subtitle: alias != nil ? term.name : term.description) {
-                        select(term.code, alias ?? term.name)
+                        title: nickname ?? term.name,
+                        subtitle: nickname != nil ? term.name : term.description) {
+                        select(term.code, nickname ?? term.name)
                     }
                     .listRowBackground(Rectangle().fill(.ultraThinMaterial))
                 }
@@ -66,12 +66,12 @@ private struct LabTestPickerList: View {
         .task(id: query) {
             let current = query
             let found = await Task.detached(priority: .userInitiated) { () -> [LoincTerm] in
-                // Alias matches rank ahead of the catalog's full-text matches so a
-                // renamed test is findable by the name the user gave it.
-                let aliasHits = aliasMatches(current)
+                // Nickname matches rank ahead of the catalog's full-text matches so
+                // a renamed test is findable by the name the user gave it.
+                let nicknameHits = nicknameMatches(current)
                 let catalog = LoincDirectory.shared.search(current)
-                var seen = Set(aliasHits.map(\.code))
-                return aliasHits + catalog.filter { seen.insert($0.code).inserted }
+                var seen = Set(nicknameHits.map(\.code))
+                return nicknameHits + catalog.filter { seen.insert($0.code).inserted }
             }.value
             if current == query {
                 loincResults = found

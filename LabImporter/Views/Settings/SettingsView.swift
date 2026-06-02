@@ -110,7 +110,7 @@ struct SettingsView: View {
                 } footer: {
                     Text("""
                     Sync your dashboard layout — the card order, what you pin and hide, and your \
-                    custom names — across your devices. Your lab values stay in Apple Health.
+                    nicknames — across your devices. Your lab values stay in Apple Health.
                     """)
                 }
 

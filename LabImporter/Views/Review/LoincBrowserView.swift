@@ -192,7 +192,7 @@ struct LoincTermDetailView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    renameDraft = prefs.customName(for: term.code) ?? ""
+                    renameDraft = prefs.nickname(for: term.code) ?? ""
                     renamingCode = term.code
                 } label: {
                     Label("Rename", systemImage: "pencil")
@@ -236,9 +236,9 @@ struct LoincTermDetailView: View {
                 Spacer(minLength: 0)
             }
 
-            if let custom = prefs.customName(for: term.code) {
+            if let nickname = prefs.nickname(for: term.code) {
                 Divider()
-                customNameRow(custom)
+                nicknameRow(nickname)
             }
 
             if let description = detail?.description ?? term.description, !description.isEmpty {
@@ -273,17 +273,17 @@ struct LoincTermDetailView: View {
         )
     }
 
-    // The user's own name for this test, shown as a plainly-labelled read-only
+    // The user's nickname for this test, shown as a plainly-labelled read-only
     // field (renaming happens via the toolbar) — a "tag" glyph, not a pencil, so
     // it never reads as an inline edit button.
-    private func customNameRow(_ name: String) -> some View {
+    private func nicknameRow(_ name: String) -> some View {
         HStack(spacing: 10) {
             Image(systemName: "tag.fill")
                 .font(.subheadline)
                 .foregroundStyle(category.color)
                 .frame(width: 20)
             VStack(alignment: .leading, spacing: 1) {
-                Text("Custom name")
+                Text("Nickname")
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(.secondary)
                     .textCase(.uppercase)

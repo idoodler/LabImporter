@@ -141,7 +141,7 @@ struct TrendsView: View {
     private var moreMenu: some View {
         Menu {
             Button {
-                renameDraft = prefs.customName(for: selectedCode) ?? ""
+                renameDraft = prefs.nickname(for: selectedCode) ?? ""
                 renamingCode = selectedCode
             } label: {
                 Label("Rename", systemImage: "pencil")

@@ -18,7 +18,7 @@ struct AddValueSheet: View {
                 Section {
                     // A LOINC code must be chosen first — every value is LOINC-based,
                     // so the picker drives the name and the canonical unit. The chosen
-                    // test is shown as a rich, category-tinted row (the user's alias
+                    // test is shown as a rich, category-tinted row (the user's nickname
                     // when set, else the catalog name); renaming lives in Sort &
                     // Visibility, not here.
                     NavigationLink {

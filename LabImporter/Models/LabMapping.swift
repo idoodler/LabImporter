@@ -11,21 +11,21 @@ enum LabMapping {
 
     // MARK: - LOINC lookups
 
-    // Display name for a LOINC code: a user's custom name (set in Sort &
+    // Display name for a LOINC code: a user's nickname (set in Sort &
     // Visibility) wins, then the localized catalog name, finally the raw code
-    // (e.g. an as-yet-unmapped value). The custom-name override is cosmetic only —
+    // (e.g. an as-yet-unmapped value). The nickname override is cosmetic only —
     // CDA export keeps the standard LOINC English display (see `loincCode(for:)`).
     static func displayName(for code: String) -> String {
         let trimmed = code.trimmingCharacters(in: .whitespaces)
-        if let custom = LabDisplayPreferences.current().customName(for: trimmed) {
-            return custom
+        if let nickname = LabDisplayPreferences.current().nickname(for: trimmed) {
+            return nickname
         }
         return LoincDirectory.shared.term(for: trimmed)?.name ?? code
     }
 
-    // The catalog (non-overridden) display name for a code, ignoring any custom
-    // alias — used where the *default* name must be shown regardless of the user's
-    // rename (the rename field's placeholder, the row subtitle under a custom name,
+    // The catalog (non-overridden) display name for a code, ignoring any nickname
+    // — used where the *default* name must be shown regardless of the user's
+    // rename (the rename field's placeholder, the row subtitle under a nickname,
     // and the canonical name in CDA narrative export).
     static func catalogName(for code: String) -> String {
         let trimmed = code.trimmingCharacters(in: .whitespaces)

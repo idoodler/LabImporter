@@ -3,7 +3,7 @@ import SwiftUI
 // MARK: - LabSortEditor
 
 /// Per-metric management for the dashboard: reorder, pin, hide, and rename the
-/// LOINC codes the user has data for. Custom names are written straight into the
+/// LOINC codes the user has data for. Nicknames are written straight into the
 /// bound `LabDisplayPreferences` (so they persist and roam via iCloud) and are
 /// applied everywhere through `LabMapping.displayName(for:)`.
 struct LabSortEditor: View {
@@ -56,7 +56,7 @@ struct LabSortEditor: View {
     }
 
     private func startRename(_ code: String) {
-        renameDraft = prefs.customName(for: code) ?? ""
+        renameDraft = prefs.nickname(for: code) ?? ""
         renamingCode = code
     }
 
@@ -104,10 +104,10 @@ struct LabSortEditor: View {
                 .fill(LabCategory.forCode(item.code).color.gradient)
                 .frame(width: 9, height: 9)
             // Resolve live (not the captured `item.name`) so a rename updates the
-            // row immediately; show the catalog default beneath a custom name.
+            // row immediately; show the catalog default beneath a nickname.
             VStack(alignment: .leading, spacing: 1) {
                 Text(LabMapping.displayName(for: item.code))
-                if prefs.customName(for: item.code) != nil {
+                if prefs.nickname(for: item.code) != nil {
                     Text(LabMapping.catalogName(for: item.code))
                         .font(.caption2)
                         .foregroundStyle(.secondary)

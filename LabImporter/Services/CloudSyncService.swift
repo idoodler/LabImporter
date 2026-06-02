@@ -1,6 +1,6 @@
 import Foundation
 
-/// Roams the dashboard card layout (sorting / pinning / hiding / custom names)
+/// Roams the dashboard card layout (sorting / pinning / hiding / nicknames)
 /// across the user's devices via the iCloud key-value store (`NSUbiquitousKeyValueStore`).
 ///
 /// **Opt-in.** Nothing syncs until the user turns it on — the persisted flag
@@ -8,7 +8,7 @@ import Foundation
 /// decision (see `CloudSyncOptInView`) and Settings lets the user change it.
 ///
 /// **What syncs:** only `labDisplayPrefs` (the dashboard card layout plus the
-/// user's custom display names for codes).
+/// user's nicknames for codes).
 /// **What never syncs:** lab values — those live in Apple Health by design (see
 /// CLAUDE.md) — and patient metadata, which stays device-local. No network call
 /// here ever carries lab data; the iCloud KVS holds only the tiny layout blob.
@@ -38,7 +38,7 @@ final class CloudSyncService {
     /// The exact `@AppStorage` keys we roam. Layout only — never lab data or
     /// patient metadata.
     static let syncedKeys: Set<String> = [
-        "labDisplayPrefs"           // dashboard card sorting / pinning / hiding / custom names
+        "labDisplayPrefs"           // dashboard card sorting / pinning / hiding / nicknames
     ]
 
     private let store = NSUbiquitousKeyValueStore.default
