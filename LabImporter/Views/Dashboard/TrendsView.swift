@@ -245,22 +245,26 @@ struct TrendsView: View {
                             overflowResolution: .init(x: .disabled, y: .disabled)) {
                     selectedPointBubble
                 }
-                // Anchor the callout to the selected point as a chart annotation
-                // so it tracks the reading through horizontal scrolling. The old
-                // `chartOverlay` + `position(forX:)` reported full-content
-                // coordinates on a scrollable chart, clamping the callout to the
-                // right edge; a `RuleMark` `.top` annotation instead rendered
-                // above the plot and got clipped away entirely.
-                .annotation(position: .top, spacing: 6,
-                            overflowResolution: .init(x: .fit(to: .chart), y: .fit(to: .chart))) {
-                    scrubCallout(selected)
-                }
             }
         }
         .chartScrollableAxes(.horizontal)
         .chartXVisibleDomain(length: visibleDomainSeconds)
         .chartScrollPosition(x: $scrollPositionX)
         .chartXSelection(value: $selectedDate)
+        .chartOverlay { proxy in
+            GeometryReader { geo in
+                if let selected = selectedDataPoint,
+                   let plotFrame = proxy.plotFrame.map({ geo[$0] }),
+                   let selectedX = proxy.position(forX: selected.date),
+                   let leadingX = proxy.position(forX: scrollPositionX) {
+                    // `position(forX:)` is full-content space on a scrollable chart; offset by the leading visible date.
+                    let viewportX = clampedX(plotFrame.minX + selectedX - leadingX, in: plotFrame)
+                    scrubCallout(selected)
+                        .position(x: viewportX, y: plotFrame.minY + 22)
+                        .allowsHitTesting(false)
+                }
+            }
+        }
         .onChange(of: selectedDataPoint?.date) { _, newDate in
             if newDate != nil { selectionFeedback.selectionChanged() }
         }
@@ -395,6 +399,11 @@ extension TrendsView {
         } else {
             scrollPositionX = last.addingTimeInterval(-visibleDomainSeconds * 0.95)
         }
+    }
+
+    private func clampedX(_ xPos: CGFloat, in frame: CGRect) -> CGFloat {
+        let halfBubble: CGFloat = 60
+        return min(max(xPos, frame.minX + halfBubble), frame.maxX - halfBubble)
     }
 
     private func formatValue(_ value: Double) -> String {
