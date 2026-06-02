@@ -28,6 +28,7 @@ struct LoincCatalogView: View {
     @State private var query = ""
     @State private var results: [LoincTerm] = []
     @State private var reachedEnd = false
+    @FocusState private var searchFocused: Bool
 
     private let pageSize = 100
 
@@ -56,6 +57,8 @@ struct LoincCatalogView: View {
             }
         }
         .searchable(text: $query, prompt: Text("Search lab tests"))
+        .searchFocused($searchFocused)
+        .onAppear { searchFocused = true }
         .navigationTitle("LOINC catalog")
         .navigationBarTitleDisplayMode(.inline)
         .overlay {

@@ -26,6 +26,7 @@ private struct LabTestPickerList: View {
 
     @State private var query = ""
     @State private var loincResults: [LoincTerm] = []
+    @FocusState private var searchFocused: Bool
 
     var body: some View {
         List {
@@ -50,6 +51,8 @@ private struct LabTestPickerList: View {
             }
         }
         .searchable(text: $query, prompt: Text("Search lab tests"))
+        .searchFocused($searchFocused)
+        .onAppear { searchFocused = true }
         .task(id: query) {
             let current = query
             let found = await Task.detached(priority: .userInitiated) { () -> [LoincTerm] in
