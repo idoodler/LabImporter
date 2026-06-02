@@ -44,20 +44,20 @@ LabImporter/
 │   ├── HealthKitService.swift  # actor (.shared); read/write/delete HKCDADocumentSample + CDA XML parser
 │   ├── CDAExportService.swift  # struct; builds C-CDA R2.1 Lab Report XML + UCUM unit mapping
 │   └── LoincDirectory.swift    # Sendable singleton; in-memory index over the bundled LOINC catalog
-└── Views/
-    ├── HomeView.swift          # orchestrates the whole import flow + report loading
-    ├── ImportLandingView.swift # empty-state entry points (scan/file/paste/manual)
-    ├── DashboardView.swift     # metric cards w/ sparklines + status (uses Swift Charts)
-    ├── TrendsView.swift        # per-metric interactive chart (Swift Charts)
-    ├── HistoryView.swift       # list of saved reports
-    ├── ReportDetailView.swift  # single report view/edit/share
-    ├── ReviewView.swift        # review & correct parsed values before saving
-    ├── LabValueRowView.swift   # row used in review/detail
-    ├── CodePickerSheet.swift   # add/change a lab code
-    ├── SettingsView.swift      # patient metadata + display preferences
-    ├── DocumentScannerView.swift  # UIViewControllerRepresentable wrapping VNDocumentCameraViewController
-    ├── WelcomeView.swift       # first-launch onboarding (gated by hasSeenWelcome)
-    └── UnsupportedDeviceView.swift  # also defines enum DeviceSupport.isSupported
+└── Views/                     # SwiftUI screens, grouped by feature
+    ├── Home/
+    │   └── HomeView.swift          # orchestrates the whole import flow + report loading
+    ├── Onboarding/             # WelcomeView, DisclaimerView, HealthPermissionView,
+    │                           #   CloudSyncOptInView, OnboardingScaffold (first-launch gates)
+    ├── Import/                 # ImportLandingView (scan/file/paste/manual entry points),
+    │                           #   DocumentScannerView (VNDocumentCameraViewController), LabImportEngine
+    ├── Review/                 # ReviewView (+Preview), ReviewHeaderCard, LabValueRowView,
+    │                           #   AddValueSheet, CodePickerSheet, LoincBrowserView
+    ├── Dashboard/              # DashboardView (Swift Charts cards), MetricCard, TrendsView
+    ├── History/                # HistoryView (saved reports list), ReportDetailView
+    ├── Settings/               # SettingsView (patient metadata + display prefs), LabSortEditor, RenameLabAlert
+    └── Shared/                 # MorphingCategoryBackground, PreviewSampleData,
+                                #   UnsupportedDeviceView (also defines enum DeviceSupport.isSupported)
 
 fastlane/        # Fastfile (build/release/certs lanes) + Matchfile (git storage)
 .github/workflows/  # numbered setup workflows + lint + build

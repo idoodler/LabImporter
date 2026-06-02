@@ -46,7 +46,7 @@
 		AABB0000000000000000D1AA /* CloudSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000D0AA /* CloudSyncService.swift */; };
 		AABB000000000000000093AA /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AABB000000000000000092AA /* libsqlite3.tbd */; };
 		AABB000000000000000095AA /* LoincBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000094AA /* LoincBrowserView.swift */; };
-		AABB0000000000000000A2AA /* LicenseDocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000A1AA /* LicenseDocumentView.swift */; };
+		AABB0000000000000000AAAA /* LicenseDocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000A9AA /* LicenseDocumentView.swift */; };
 		AABB000000000000000097AA /* LabCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000096AA /* LabCategory.swift */; };
 		AABB0000000000000000B1AA /* ReviewHeaderCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000B0AA /* ReviewHeaderCard.swift */; };
 		AABB0000000000000000C0AA /* MorphingCategoryBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000C1AA /* MorphingCategoryBackground.swift */; };
@@ -102,7 +102,7 @@
 		AABB0000000000000000D0AA /* CloudSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncService.swift; sourceTree = "<group>"; };
 		AABB000000000000000092AA /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		AABB000000000000000094AA /* LoincBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoincBrowserView.swift; sourceTree = "<group>"; };
-		AABB0000000000000000A1AA /* LicenseDocumentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseDocumentView.swift; sourceTree = "<group>"; };
+		AABB0000000000000000A9AA /* LicenseDocumentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseDocumentView.swift; sourceTree = "<group>"; };
 		AABB000000000000000096AA /* LabCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabCategory.swift; sourceTree = "<group>"; };
 		AABB0000000000000000B0AA /* ReviewHeaderCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewHeaderCard.swift; sourceTree = "<group>"; };
 		AABB0000000000000000C1AA /* MorphingCategoryBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorphingCategoryBackground.swift; sourceTree = "<group>"; };
@@ -112,6 +112,23 @@
 		AABB0000000000000000F4AA /* AddValueSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddValueSheet.swift; sourceTree = "<group>"; };
 		AACC000000000000000002AA /* ReviewView+Preview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReviewView+Preview.swift"; sourceTree = "<group>"; };
 		AACC000000000000000004AA /* PreviewSampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSampleData.swift; sourceTree = "<group>"; };
+		AABB0000000000000000AB01 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		AABB0000000000000000AB02 /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
+		AABB0000000000000000AB03 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		AABB0000000000000000AB04 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
+		AABB0000000000000000AB05 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		AABB0000000000000000AB06 /* Gemfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Gemfile; sourceTree = "<group>"; };
+		AABB0000000000000000AB11 /* Fastfile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.ruby; path = Fastfile; sourceTree = "<group>"; };
+		AABB0000000000000000AB12 /* Matchfile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.ruby; path = Matchfile; sourceTree = "<group>"; };
+		AABB0000000000000000AB22 /* validate_secrets.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = validate_secrets.yml; sourceTree = "<group>"; };
+		AABB0000000000000000AB23 /* add_identifiers.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = add_identifiers.yml; sourceTree = "<group>"; };
+		AABB0000000000000000AB24 /* create_certs.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = create_certs.yml; sourceTree = "<group>"; };
+		AABB0000000000000000AB25 /* build_labimporter.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = build_labimporter.yml; sourceTree = "<group>"; };
+		AABB0000000000000000AB26 /* lint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = lint.yml; sourceTree = "<group>"; };
+		AABB0000000000000000AB31 /* build_loinc_resource.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = build_loinc_resource.py; sourceTree = "<group>"; };
+		AABB0000000000000000AB32 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		AABB0000000000000000AB41 /* settings.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = settings.json; sourceTree = "<group>"; };
+		AABB0000000000000000AB43 /* session-start.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "session-start.sh"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,11 +152,84 @@
 		AABB000000000000000009AA = {
 			isa = PBXGroup;
 			children = (
-				AABB000000000000000039AA /* Config.xcconfig */,
 				AABB000000000000000011AA /* LabImporter */,
+				AABB0000000000000000A8AA /* Project Files */,
 				AABB000000000000000015AA /* Frameworks */,
 				AABB000000000000000010AA /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		AABB0000000000000000A8AA /* Project Files */ = {
+			isa = PBXGroup;
+			children = (
+				AABB0000000000000000AB01 /* README.md */,
+				AABB0000000000000000AB02 /* CLAUDE.md */,
+				AABB0000000000000000AB03 /* LICENSE */,
+				AABB000000000000000039AA /* Config.xcconfig */,
+				AABB0000000000000000AB04 /* .swiftlint.yml */,
+				AABB0000000000000000AB05 /* .gitignore */,
+				AABB0000000000000000AB06 /* Gemfile */,
+				AABB0000000000000000AB10 /* fastlane */,
+				AABB0000000000000000AB20 /* .github */,
+				AABB0000000000000000AB30 /* tools */,
+				AABB0000000000000000AB40 /* .claude */,
+			);
+			name = "Project Files";
+			sourceTree = "<group>";
+		};
+		AABB0000000000000000AB10 /* fastlane */ = {
+			isa = PBXGroup;
+			children = (
+				AABB0000000000000000AB11 /* Fastfile */,
+				AABB0000000000000000AB12 /* Matchfile */,
+			);
+			path = fastlane;
+			sourceTree = "<group>";
+		};
+		AABB0000000000000000AB20 /* .github */ = {
+			isa = PBXGroup;
+			children = (
+				AABB0000000000000000AB21 /* workflows */,
+			);
+			path = .github;
+			sourceTree = "<group>";
+		};
+		AABB0000000000000000AB21 /* workflows */ = {
+			isa = PBXGroup;
+			children = (
+				AABB0000000000000000AB22 /* validate_secrets.yml */,
+				AABB0000000000000000AB23 /* add_identifiers.yml */,
+				AABB0000000000000000AB24 /* create_certs.yml */,
+				AABB0000000000000000AB25 /* build_labimporter.yml */,
+				AABB0000000000000000AB26 /* lint.yml */,
+			);
+			path = workflows;
+			sourceTree = "<group>";
+		};
+		AABB0000000000000000AB30 /* tools */ = {
+			isa = PBXGroup;
+			children = (
+				AABB0000000000000000AB31 /* build_loinc_resource.py */,
+				AABB0000000000000000AB32 /* README.md */,
+			);
+			path = tools;
+			sourceTree = "<group>";
+		};
+		AABB0000000000000000AB40 /* .claude */ = {
+			isa = PBXGroup;
+			children = (
+				AABB0000000000000000AB41 /* settings.json */,
+				AABB0000000000000000AB42 /* hooks */,
+			);
+			path = .claude;
+			sourceTree = "<group>";
+		};
+		AABB0000000000000000AB42 /* hooks */ = {
+			isa = PBXGroup;
+			children = (
+				AABB0000000000000000AB43 /* session-start.sh */,
+			);
+			path = hooks;
 			sourceTree = "<group>";
 		};
 		AABB000000000000000010AA /* Products */ = {
@@ -193,36 +283,100 @@
 		AABB000000000000000014AA /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				AABB0000000000000000A0AA /* Home */,
+				AABB0000000000000000A1AA /* Onboarding */,
+				AABB0000000000000000A2AA /* Import */,
+				AABB0000000000000000A3AA /* Review */,
+				AABB0000000000000000A4AA /* Dashboard */,
+				AABB0000000000000000A5AA /* History */,
+				AABB0000000000000000A6AA /* Settings */,
+				AABB0000000000000000A7AA /* Shared */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		AABB0000000000000000A0AA /* Home */ = {
+			isa = PBXGroup;
+			children = (
 				AABB000000000000000026AA /* HomeView.swift */,
-				AABB000000000000000027AA /* ReviewView.swift */,
-				AACC000000000000000002AA /* ReviewView+Preview.swift */,
-				AACC000000000000000004AA /* PreviewSampleData.swift */,
-				AABB0000000000000000B0AA /* ReviewHeaderCard.swift */,
-				AABB000000000000000028AA /* LabValueRowView.swift */,
-				AABB0000000000000000C1DE /* CodePickerSheet.swift */,
-				AABB000000000000000094AA /* LoincBrowserView.swift */,
-				AABB0000000000000000A1AA /* LicenseDocumentView.swift */,
-				AABB000000000000000081AA /* DocumentScannerView.swift */,
-				AABB0000000000000000F2AA /* LabImportEngine.swift */,
-				AABB0000000000000000F4AA /* AddValueSheet.swift */,
-				AABB000000000000000065AA /* HistoryView.swift */,
-				AABB000000000000000067AA /* ReportDetailView.swift */,
-				AABB000000000000000069AA /* TrendsView.swift */,
-				AABB000000000000000071AA /* DashboardView.swift */,
-				AABB0000000000000000CC02 /* MetricCard.swift */,
-				AABB000000000000000073AA /* ImportLandingView.swift */,
-				AABB0000000000000000C1AA /* MorphingCategoryBackground.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		AABB0000000000000000A1AA /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
 				AABB000000000000000079AA /* WelcomeView.swift */,
 				AABB0000000000000000E2AA /* DisclaimerView.swift */,
-				AABB000000000000000087AA /* SettingsView.swift */,
-				AABBCC0000000000000002AA /* LabSortEditor.swift */,
-				AABBCC0000000000000004AA /* RenameLabAlert.swift */,
-				AABB0000000000000000C3DE /* UnsupportedDeviceView.swift */,
 				636BA85D2FCC52EE006E8E71 /* HealthPermissionView.swift */,
 				AABB0000000000000000D2AA /* CloudSyncOptInView.swift */,
 				AABB0000000000000000F6AA /* OnboardingScaffold.swift */,
 			);
-			path = Views;
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		AABB0000000000000000A2AA /* Import */ = {
+			isa = PBXGroup;
+			children = (
+				AABB000000000000000073AA /* ImportLandingView.swift */,
+				AABB000000000000000081AA /* DocumentScannerView.swift */,
+				AABB0000000000000000F2AA /* LabImportEngine.swift */,
+			);
+			path = Import;
+			sourceTree = "<group>";
+		};
+		AABB0000000000000000A3AA /* Review */ = {
+			isa = PBXGroup;
+			children = (
+				AABB000000000000000027AA /* ReviewView.swift */,
+				AACC000000000000000002AA /* ReviewView+Preview.swift */,
+				AABB0000000000000000B0AA /* ReviewHeaderCard.swift */,
+				AABB000000000000000028AA /* LabValueRowView.swift */,
+				AABB0000000000000000F4AA /* AddValueSheet.swift */,
+				AABB0000000000000000C1DE /* CodePickerSheet.swift */,
+				AABB000000000000000094AA /* LoincBrowserView.swift */,
+			);
+			path = Review;
+			sourceTree = "<group>";
+		};
+		AABB0000000000000000A4AA /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				AABB000000000000000071AA /* DashboardView.swift */,
+				AABB0000000000000000CC02 /* MetricCard.swift */,
+				AABB000000000000000069AA /* TrendsView.swift */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
+		AABB0000000000000000A5AA /* History */ = {
+			isa = PBXGroup;
+			children = (
+				AABB000000000000000065AA /* HistoryView.swift */,
+				AABB000000000000000067AA /* ReportDetailView.swift */,
+			);
+			path = History;
+			sourceTree = "<group>";
+		};
+		AABB0000000000000000A6AA /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				AABB000000000000000087AA /* SettingsView.swift */,
+				AABBCC0000000000000002AA /* LabSortEditor.swift */,
+				AABBCC0000000000000004AA /* RenameLabAlert.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		AABB0000000000000000A7AA /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				AABB0000000000000000A9AA /* LicenseDocumentView.swift */,
+				AABB0000000000000000C1AA /* MorphingCategoryBackground.swift */,
+				AACC000000000000000004AA /* PreviewSampleData.swift */,
+				AABB0000000000000000C3DE /* UnsupportedDeviceView.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		AABB000000000000000015AA /* Frameworks */ = {
@@ -250,7 +404,7 @@
 				AABB000000000000000017AA /* Frameworks */,
 				AABB000000000000000018AA /* Resources */,
 				AABB000000000000000089AA /* Generate LOINC resource */,
-				AABB0000000000000000A3AA /* Copy LICENSE */,
+				AABB0000000000000000ABAA /* Copy LICENSE */,
 				AABB000000000000000088AA /* Embed Git Branch */,
 			);
 			buildRules = (
@@ -323,7 +477,7 @@
 			shellPath = /bin/sh;
 			shellScript = "set -u\nINFO_PLIST=\"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\n[ -f \"$INFO_PLIST\" ] || exit 0\nBRANCH=$(cd \"${SRCROOT}\" && git rev-parse --abbrev-ref HEAD 2>/dev/null)\nCOMMIT=$(cd \"${SRCROOT}\" && git rev-parse --short HEAD 2>/dev/null)\n[ -n \"$BRANCH\" ] || BRANCH=unknown\n[ -n \"$COMMIT\" ] || COMMIT=unknown\n/usr/libexec/PlistBuddy -c \"Set :GitBranch $BRANCH\" \"$INFO_PLIST\" 2>/dev/null || /usr/libexec/PlistBuddy -c \"Add :GitBranch string $BRANCH\" \"$INFO_PLIST\"\n/usr/libexec/PlistBuddy -c \"Set :GitCommit $COMMIT\" \"$INFO_PLIST\" 2>/dev/null || /usr/libexec/PlistBuddy -c \"Add :GitCommit string $COMMIT\" \"$INFO_PLIST\"\n";
 		};
-		AABB0000000000000000A3AA /* Copy LICENSE */ = {
+		AABB0000000000000000ABAA /* Copy LICENSE */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -378,7 +532,7 @@
 				AABB000000000000000048AA /* LabValueRowView.swift in Sources */,
 				AABB0000000000000000C0DE /* CodePickerSheet.swift in Sources */,
 				AABB000000000000000095AA /* LoincBrowserView.swift in Sources */,
-				AABB0000000000000000A2AA /* LicenseDocumentView.swift in Sources */,
+				AABB0000000000000000AAAA /* LicenseDocumentView.swift in Sources */,
 				AABB000000000000000080AA /* DocumentScannerView.swift in Sources */,
 				AABB0000000000000000F1AA /* LabImportEngine.swift in Sources */,
 				636BA85E2FCC52EE006E8E71 /* HealthPermissionView.swift in Sources */,
