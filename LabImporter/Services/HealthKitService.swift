@@ -226,8 +226,15 @@ private struct CDAObservation {
 private final class CDADocumentParser: NSObject, XMLParserDelegate {
 
     private var reportDate: Date?
+    // Patient name parts (CDA splits a person's name into given + family).
+    private var patientGiven: [String] = []
     private var patientFamily = ""
+    // The report's author/lab: an organization, an individual person (given +
+    // family), or — as a last resort — the document's custodian organization.
     private var authorOrg = ""
+    private var authorGiven: [String] = []
+    private var authorFamily = ""
+    private var custodianOrg = ""
     private var observations: [CDAObservation] = []
 
     private var elementStack: [String] = []
@@ -279,11 +286,32 @@ private final class CDADocumentParser: NSObject, XMLParserDelegate {
             )
         }
 
+        // Join the patient's given name(s) + family into a full name. App-written
+        // exports store the whole name in <family> (no <given>), so this still
+        // yields exactly that; foreign CDAs that split the name are reassembled.
+        let patientName = (delegate.patientGiven + [delegate.patientFamily])
+            .filter { !$0.isEmpty }
+            .joined(separator: " ")
+
+        // The "Lab / Doctor" field: prefer the author organization, then a named
+        // author person, then the custodian organization.
+        let authorPerson = (delegate.authorGiven + [delegate.authorFamily])
+            .filter { !$0.isEmpty }
+            .joined(separator: " ")
+        let authorName: String
+        if !delegate.authorOrg.isEmpty {
+            authorName = delegate.authorOrg
+        } else if !authorPerson.isEmpty {
+            authorName = authorPerson
+        } else {
+            authorName = delegate.custodianOrg
+        }
+
         let report = LabReport(
             id: id,
             date: date,
-            patientName: delegate.patientFamily,
-            authorName: delegate.authorOrg,
+            patientName: patientName,
+            authorName: authorName,
             entries: entries
         )
 
@@ -343,6 +371,30 @@ private final class CDADocumentParser: NSObject, XMLParserDelegate {
         currentText += string
     }
 
+    /// Routes a person-name part (`<given>`/`<family>`) by its ancestor: the
+    /// patient lives under `<patientRole>`, a named author/doctor under
+    /// `<assignedAuthor>`. "Unknown" is the export's null placeholder, so skip it.
+    private func captureNamePart(_ element: String, ancestors: ArraySlice<String>, text: String) {
+        guard !text.isEmpty, text != "Unknown" else { return }
+        if ancestors.contains("patientRole") {
+            if element == "given" { patientGiven.append(text) } else { patientFamily = text }
+        } else if ancestors.contains("assignedAuthor") {
+            if element == "given" { authorGiven.append(text) } else { authorFamily = text }
+        }
+    }
+
+    /// Captures an organization name: the author's is the lab/doctor, the
+    /// custodian's a fallback. The "LabImporter" sentinel (this app's own
+    /// custodian/author stamp) is ignored so it never surfaces as a real lab name.
+    private func captureOrganizationName(ancestors: ArraySlice<String>, text: String) {
+        guard !text.isEmpty, text != "LabImporter" else { return }
+        if ancestors.contains("author"), ancestors.contains("representedOrganization") {
+            authorOrg = text
+        } else if ancestors.contains("representedCustodianOrganization") {
+            custodianOrg = text
+        }
+    }
+
     func parser(_ parser: XMLParser, didEndElement element: String,
                 namespaceURI: String?, qualifiedName: String?) {
         defer {
@@ -350,14 +402,15 @@ private final class CDADocumentParser: NSObject, XMLParserDelegate {
             currentText = ""
         }
 
-        switch element {
-        case "family" where elementStack.dropLast().contains("patientRole"):
-            let trimmed = currentText.trimmingCharacters(in: .whitespacesAndNewlines)
-            if !trimmed.isEmpty && trimmed != "Unknown" { patientFamily = trimmed }
+        let ancestors = elementStack.dropLast()
+        let trimmedText = currentText.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        case "name" where elementStack.dropLast().contains("representedOrganization"):
-            let trimmed = currentText.trimmingCharacters(in: .whitespacesAndNewlines)
-            if !trimmed.isEmpty && trimmed != "LabImporter" { authorOrg = trimmed }
+        switch element {
+        case "given", "family":
+            captureNamePart(element, ancestors: ancestors, text: trimmedText)
+
+        case "name":
+            captureOrganizationName(ancestors: ancestors, text: trimmedText)
 
         case "softwareName":
             schemaVersion = Self.parseSchemaVersion(currentText)
