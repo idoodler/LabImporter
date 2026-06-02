@@ -35,27 +35,37 @@ struct LoincCatalogView: View {
     var body: some View {
         List {
             ForEach(results) { term in
+                let category = LabCategory.forCode(term.code)
                 NavigationLink {
                     LoincTermDetailView(term: term)
                 } label: {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(term.name)
-                        if let description = term.description, !description.isEmpty {
-                            Text(description)
+                    HStack(spacing: 14) {
+                        CategoryIcon(color: category.color)
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(term.name)
+                            if let description = term.description, !description.isEmpty {
+                                Text(description)
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(2)
+                            }
+                            Text(term.code)
                                 .font(.caption2)
-                                .foregroundStyle(.secondary)
-                                .lineLimit(2)
+                                .foregroundStyle(.tertiary)
                         }
-                        Text(term.code)
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
                     }
+                    .padding(.vertical, 2)
                 }
+                .listRowBackground(Rectangle().fill(.ultraThinMaterial))
                 .onAppear {
                     if term.id == results.last?.id { loadMore() }
                 }
             }
         }
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .background { CategoryBackground(colors: backgroundColors) }
         .searchable(text: $query, prompt: Text("Search lab tests"))
         .searchFocused($searchFocused)
         .onAppear { searchFocused = true }
@@ -67,6 +77,19 @@ struct LoincCatalogView: View {
             }
         }
         .task(id: query) { await reload() }
+    }
+
+    // Up to three distinct category colors from the loaded terms — the same
+    // background wash the Dashboard and History screens use.
+    private var backgroundColors: [Color] {
+        var seen = Set<LabCategory>()
+        var result: [Color] = []
+        for term in results {
+            let category = LabCategory.forCode(term.code)
+            if seen.insert(category).inserted { result.append(category.color) }
+            if result.count == 3 { break }
+        }
+        return result
     }
 
     private func reload() async {

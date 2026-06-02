@@ -41,6 +41,7 @@ private struct LabTestPickerList: View {
                         subtitle: alias != nil ? term.name : term.description) {
                         select(term.code, alias ?? term.name)
                     }
+                    .listRowBackground(Rectangle().fill(.ultraThinMaterial))
                 }
             } header: {
                 if query.isEmpty {
@@ -48,6 +49,14 @@ private struct LabTestPickerList: View {
                 } else {
                     Text("Matches")
                 }
+            }
+        }
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .background { CategoryBackground(colors: backgroundColors) }
+        .overlay {
+            if loincResults.isEmpty && !query.isEmpty {
+                ContentUnavailableView.search(text: query)
             }
         }
         .searchable(text: $query, prompt: Text("Search lab tests"))
@@ -67,9 +76,26 @@ private struct LabTestPickerList: View {
         }
     }
 
+    // Up to three distinct category colors from the current results, mirroring the
+    // Dashboard/History wash so the picker shares the app's color system.
+    private var backgroundColors: [Color] {
+        var seen = Set<LabCategory>()
+        var result: [Color] = []
+        for term in loincResults {
+            let category = LabCategory.forCode(term.code)
+            if seen.insert(category).inserted { result.append(category.color) }
+            if result.count == 3 { break }
+        }
+        return result
+    }
+
     private func row(rowCode: String, title: String, subtitle: String?, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack {
+        let category = LabCategory.forCode(rowCode)
+        let isSelected = code.uppercased() == rowCode.uppercased()
+        return Button(action: action) {
+            HStack(spacing: 14) {
+                CategoryIcon(color: category.color)
+
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                     if let subtitle, !subtitle.isEmpty {
@@ -83,12 +109,14 @@ private struct LabTestPickerList: View {
                         .foregroundStyle(.tertiary)
                         .textCase(.uppercase)
                 }
-                Spacer()
-                if code.uppercased() == rowCode.uppercased() {
+                Spacer(minLength: 0)
+                if isSelected {
                     Image(systemName: "checkmark")
-                        .foregroundStyle(Color.accentColor)
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(category.color)
                 }
             }
+            .padding(.vertical, 2)
         }
         .foregroundStyle(.primary)
     }
@@ -99,6 +127,34 @@ private struct LabTestPickerList: View {
             name = newName
         }
         onSelect()
+    }
+}
+
+// MARK: - CategoryIcon
+
+/// A category-tinted gradient disc with a test-tube glyph — the same rounded,
+/// shadowed icon used by `LoincTermDetailView`'s header and the History rows, so
+/// lab tests read consistently wherever they're listed.
+struct CategoryIcon: View {
+    let color: Color
+    var size: CGFloat = 38
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: [color, color.opacity(0.65)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+            Image(systemName: "testtube.2")
+                .font(.system(size: size * 0.42, weight: .semibold))
+                .foregroundStyle(.white)
+        }
+        .frame(width: size, height: size)
+        .shadow(color: color.opacity(0.35), radius: 4, x: 0, y: 2)
     }
 }
 
