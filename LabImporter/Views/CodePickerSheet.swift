@@ -6,6 +6,17 @@ import SwiftUI
 // Selecting a row stores the raw LOINC number as the value's code; LabMapping
 // resolves it everywhere.
 
+// Catalog terms whose user-defined alias (custom display name) contains the
+// query, so a manually renamed test stays findable by the name the user gave it.
+// Returns at most the codes that have an alias set, resolved back to full terms.
+private func aliasMatches(_ query: String) -> [LoincTerm] {
+    let needle = query.trimmingCharacters(in: .whitespaces).lowercased()
+    guard !needle.isEmpty else { return [] }
+    return LabDisplayPreferences.current().customNames.compactMap { code, alias in
+        alias.lowercased().contains(needle) ? LoincDirectory.shared.term(for: code) : nil
+    }
+}
+
 private struct LabTestPickerList: View {
     @Binding var code: String
     @Binding var name: String
@@ -20,8 +31,14 @@ private struct LabTestPickerList: View {
         List {
             Section {
                 ForEach(loincResults) { term in
-                    row(rowCode: term.code, title: term.name, subtitle: term.description) {
-                        select(term.code, term.name)
+                    // Surface the user's alias (custom display name) when they've
+                    // renamed this code, so the picker matches what they see
+                    // everywhere else; the catalog name then becomes the subtitle.
+                    let alias = LabDisplayPreferences.current().customName(for: term.code)
+                    row(rowCode: term.code,
+                        title: alias ?? term.name,
+                        subtitle: alias != nil ? term.name : term.description) {
+                        select(term.code, alias ?? term.name)
                     }
                 }
             } header: {
@@ -35,8 +52,13 @@ private struct LabTestPickerList: View {
         .searchable(text: $query, prompt: Text("Search lab tests"))
         .task(id: query) {
             let current = query
-            let found = await Task.detached(priority: .userInitiated) {
-                LoincDirectory.shared.search(current)
+            let found = await Task.detached(priority: .userInitiated) { () -> [LoincTerm] in
+                // Alias matches rank ahead of the catalog's full-text matches so a
+                // renamed test is findable by the name the user gave it.
+                let aliasHits = aliasMatches(current)
+                let catalog = LoincDirectory.shared.search(current)
+                var seen = Set(aliasHits.map(\.code))
+                return aliasHits + catalog.filter { seen.insert($0.code).inserted }
             }.value
             if current == query { loincResults = found }
         }

@@ -32,6 +32,9 @@ struct DashboardView: View {
         ScrollView {
             VStack(spacing: 20) {
                 metricSections
+                if showsFewValuesHint {
+                    fewValuesHint
+                }
                 footer
             }
             .padding(.horizontal, 16)
@@ -78,23 +81,30 @@ struct DashboardView: View {
     @ViewBuilder
     private var importMenu: some View {
         Menu {
-            Button(action: onScan) {
-                Label("Scan Document", systemImage: "doc.viewfinder")
-            }
-            .disabled(!scannerAvailable)
-            Button(action: onPickFile) {
-                Label("Choose File", systemImage: "folder")
-            }
-            Button(action: onPaste) {
-                Label("Paste from Clipboard", systemImage: "doc.on.clipboard")
-            }
-            .disabled(!clipboardAvailable)
-            Button(action: onManual) {
-                Label("Create Report Manually", systemImage: "square.and.pencil")
-            }
+            importMenuItems
         } label: {
             Image(systemName: "plus")
                 .fontWeight(.semibold)
+        }
+    }
+
+    /// The import actions, shared by the toolbar `+` menu and the few-values hint
+    /// card's "Import Report" button so both offer identical entry points.
+    @ViewBuilder
+    private var importMenuItems: some View {
+        Button(action: onScan) {
+            Label("Scan Document", systemImage: "doc.viewfinder")
+        }
+        .disabled(!scannerAvailable)
+        Button(action: onPickFile) {
+            Label("Choose File", systemImage: "folder")
+        }
+        Button(action: onPaste) {
+            Label("Paste from Clipboard", systemImage: "doc.on.clipboard")
+        }
+        .disabled(!clipboardAvailable)
+        Button(action: onManual) {
+            Label("Create Report Manually", systemImage: "square.and.pencil")
         }
     }
 
@@ -137,10 +147,15 @@ struct DashboardView: View {
 
     /// Two fixed columns on compact widths (iPhone); on regular widths (iPad) the
     /// cards flow to fill the wider canvas with a sensible minimum so they don't
-    /// stretch into a sparse two-up grid.
+    /// stretch into a sparse two-up grid. With only one or two metrics the
+    /// two-up grid would strand a card in a half-empty row, so it collapses to a
+    /// single full-width column that reads as an intentional, larger card.
     private var gridColumns: [GridItem] {
         if horizontalSizeClass == .regular {
             return [GridItem(.adaptive(minimum: 200, maximum: 280), spacing: 14)]
+        }
+        if sortedMetrics.count <= 2 {
+            return [GridItem(.flexible())]
         }
         return [GridItem(.flexible()), GridItem(.flexible())]
     }
@@ -163,6 +178,50 @@ struct DashboardView: View {
         }
     }
 
+    // MARK: - Few-values hint
+
+    /// With only one or two metrics there are no sparklines yet and the grid
+    /// leaves the screen mostly empty, so a gentle card explains why and offers a
+    /// one-tap path to import another report and start building trends.
+    private var showsFewValuesHint: Bool {
+        (1...2).contains(sortedMetrics.count)
+    }
+
+    private var fewValuesHint: some View {
+        VStack(spacing: 14) {
+            Image(systemName: "chart.line.uptrend.xyaxis")
+                .font(.system(size: 32))
+                .foregroundStyle(LabCategory.endocrine.color.gradient)
+            VStack(spacing: 6) {
+                Text("Track Your Trends")
+                    .font(.headline)
+                Text("Import reports with numeric lab values to see trends.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Menu {
+                importMenuItems
+            } label: {
+                Label("Import Report", systemImage: "plus")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+        }
+        .padding(24)
+        // Cap and center the card so it stays a readable column rather than
+        // stretching across an iPad's detail pane.
+        .frame(maxWidth: 480)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
+        )
+        .frame(maxWidth: .infinity)
+    }
+
     @ViewBuilder
     private var footer: some View {
         if let date = reports.max(by: { $0.date < $1.date })?.date {
@@ -173,6 +232,11 @@ struct DashboardView: View {
     }
 
     // MARK: - Metrics computation
+
+    /// Trailing window (in months) each overview sparkline charts, measured back
+    /// from that metric's *own* latest reading (not "today"). Keeps an old
+    /// outlier from stretching the axis; older readings stay visible in Trends.
+    private static let sparklineWindowMonths = 12
 
     private var metrics: [MetricData] {
         var latestEntry: [String: (entry: LabReport.Entry, date: Date)] = [:]
@@ -193,7 +257,14 @@ struct DashboardView: View {
         }
 
         return latestEntry.values.map { item in
-            let points = (allPoints[item.entry.code] ?? []).sorted { $0.date < $1.date }
+            let cutoff = Calendar.current.date(byAdding: .month, value: -Self.sparklineWindowMonths, to: item.date) ?? .distantPast
+            let all = (allPoints[item.entry.code] ?? []).sorted { $0.date < $1.date }
+            var points = all.filter { $0.date >= cutoff }
+            // Never let the window collapse a real trend to a single point: with
+            // two+ readings keep the two most recent so a sparkline still draws.
+            if points.count < 2 && all.count >= 2 {
+                points = Array(all.suffix(2))
+            }
             return MetricData(entry: item.entry, history: points)
         }
     }
@@ -269,168 +340,6 @@ struct DashboardView: View {
     }
 }
 
-// MARK: - Supporting types
-
-private struct SparkPoint: Identifiable {
-    let id = UUID()
-    let date: Date
-    let value: Double
-}
-
-private struct MetricData: Identifiable {
-    var id: String { entry.code }
-    let entry: LabReport.Entry
-    let history: [SparkPoint]
-}
-
-// MARK: - MetricCard
-
-private struct MetricCard: View {
-    let metric: MetricData
-    let isPinned: Bool
-
-    private var categoryColor: Color {
-        LabCategory.forCode(metric.entry.code).color
-    }
-
-    /// Direction of the latest reading relative to the previous one, used to show
-    /// a small trend arrow in the overview. `nil` when there is no prior value to
-    /// compare against.
-    private enum Trend {
-        case rising, falling, steady
-
-        var symbol: String {
-            switch self {
-            case .rising: return "arrow.up.right"
-            case .falling: return "arrow.down.right"
-            case .steady: return "arrow.right"
-            }
-        }
-
-        var accessibilityLabel: Text {
-            switch self {
-            case .rising: return Text("Trending up")
-            case .falling: return Text("Trending down")
-            case .steady: return Text("No change")
-            }
-        }
-    }
-
-    private var trend: Trend? {
-        guard metric.history.count > 1 else { return nil }
-        let latest = metric.history[metric.history.count - 1].value
-        let previous = metric.history[metric.history.count - 2].value
-        if latest > previous { return .rising }
-        if latest < previous { return .falling }
-        return .steady
-    }
-
-    /// The colored category "dock" at the card's top-left. When a trend is
-    /// available it doubles as the trend indicator and hosts a directional
-    /// arrow; otherwise it is a simple category-color dot filling the same
-    /// circle. Both variants share an 18×18 footprint so the title alignment —
-    /// and the dot/arrow size — stays consistent across cards.
-    @ViewBuilder
-    private var dock: some View {
-        if let trend {
-            Image(systemName: trend.symbol)
-                .font(.system(size: 9, weight: .heavy))
-                .foregroundStyle(.white)
-                .frame(width: 18, height: 18)
-                .background(categoryColor.gradient, in: Circle())
-                .accessibilityLabel(trend.accessibilityLabel)
-        } else {
-            Circle()
-                .fill(categoryColor.gradient)
-                .frame(width: 18, height: 18)
-                .accessibilityHidden(true)
-        }
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(alignment: .top, spacing: 7) {
-                dock
-                Text(metric.entry.resolvedName)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.top, 1)
-                Spacer(minLength: 0)
-                if isPinned {
-                    Image(systemName: "pin.fill")
-                        .font(.caption2)
-                        .foregroundStyle(Color.yellow)
-                }
-            }
-
-            HStack(alignment: .firstTextBaseline, spacing: 3) {
-                Text(metric.entry.displayValue)
-                    .font(.title2.bold())
-                    .foregroundStyle(.primary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
-                if !metric.entry.unit.isEmpty {
-                    Text(metric.entry.unit)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                }
-                Spacer(minLength: 0)
-            }
-
-            if metric.history.count > 1 {
-                sparkline
-            } else {
-                Spacer(minLength: 44)
-            }
-        }
-        .padding(14)
-        .frame(maxWidth: .infinity, minHeight: 158, alignment: .topLeading)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
-        .overlay(
-            RoundedRectangle(cornerRadius: 20)
-                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
-        )
-    }
-
-    private var sparkline: some View {
-        Chart(metric.history) { point in
-            LineMark(
-                x: .value("Date", point.date),
-                y: .value("Value", point.value)
-            )
-            .foregroundStyle(categoryColor.opacity(0.85))
-
-            AreaMark(
-                x: .value("Date", point.date),
-                y: .value("Value", point.value)
-            )
-            .foregroundStyle(
-                LinearGradient(
-                    colors: [categoryColor.opacity(0.3), categoryColor.opacity(0.05)],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            )
-
-            PointMark(
-                x: .value("Date", point.date),
-                y: .value("Value", point.value)
-            )
-            .foregroundStyle(categoryColor)
-            .symbolSize(20)
-        }
-        .chartXAxis(.hidden)
-        .chartYAxis(.hidden)
-        // Grow to absorb the card's remaining vertical space instead of leaving a
-        // fixed-height chart with blank padding beneath it. `minHeight` keeps a
-        // sensible floor when a card's row is short.
-        .frame(minHeight: 44, maxHeight: .infinity)
-    }
-}
-
 // MARK: - CategoryBackground
 
 /// A soft, low-opacity wash of the dashboard's metric category colors — a subtle
@@ -470,6 +379,27 @@ struct CategoryBackground: View {
             onScan: {}, onPickFile: {}, onPaste: {}, onManual: {},
             scannerAvailable: true,
             clipboardAvailable: true,
+            isProcessing: false
+        )
+    }
+}
+
+#Preview("Few values") {
+    NavigationStack {
+        DashboardView(
+            reports: [LabReport(
+                id: UUID(),
+                date: Date(timeIntervalSince1970: 1_780_000_000),
+                patientName: "Max Mustermann",
+                authorName: "Laborzentrum München",
+                entries: [
+                    LabReport.Entry(id: UUID(), code: "4548-4", name: "HbA1c",
+                                    displayValue: "5.4", numericValue: 5.4, unit: "%")
+                ]
+            )],
+            onScan: {}, onPickFile: {}, onPaste: {}, onManual: {},
+            scannerAvailable: true,
+            clipboardAvailable: false,
             isProcessing: false
         )
     }
