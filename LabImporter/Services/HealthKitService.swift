@@ -260,9 +260,12 @@ private final class CDADocumentParser: NSObject, XMLParserDelegate {
 
         let entries = delegate.observations.map { obs -> LabReport.Entry in
             // The stored code is the LOINC code itself; prefer our localized name,
-            // falling back to the display name carried in the CDA document.
+            // falling back to the display name carried in the CDA document, then to
+            // the raw code (an imported LOINC the catalog doesn't list still shows
+            // the code rather than a blank name, and stays manually re-mappable).
             let mappedName = LabMapping.displayName(for: obs.loinc)
-            let name = mappedName == obs.loinc ? obs.display : mappedName
+            let cdaName = obs.display.isEmpty ? obs.loinc : obs.display
+            let name = mappedName == obs.loinc ? cdaName : mappedName
             let display = obs.value.truncatingRemainder(dividingBy: 1) == 0
                 ? String(format: "%.0f", obs.value)
                 : String(format: "%.4g", obs.value)
@@ -314,8 +317,12 @@ private final class CDADocumentParser: NSObject, XMLParserDelegate {
             obsLoinc = nil; obsDisplay = nil
             obsValue = nil; obsUnit = nil
 
-        case "code" where inObservation:
-            if attrs["codeSystem"] == "2.16.840.1.113883.6.1" {
+        // The observation's LOINC identity. We accept it from the primary <code>
+        // or, when that uses a local coding system, from a <translation> child —
+        // a common shape in lab-system CDAs. The primary LOINC wins (the guard
+        // keeps the first one seen, and the primary <code> is parsed first).
+        case "code" where inObservation, "translation" where inObservation:
+            if attrs["codeSystem"] == "2.16.840.1.113883.6.1", obsLoinc == nil {
                 obsLoinc = attrs["code"]
                 obsDisplay = attrs["displayName"]
             }
@@ -356,9 +363,12 @@ private final class CDADocumentParser: NSObject, XMLParserDelegate {
             schemaVersion = Self.parseSchemaVersion(currentText)
 
         case "observation" where inObservation:
-            if let loinc = obsLoinc, let display = obsDisplay,
-               let value = obsValue, let unit = obsUnit {
-                observations.append(CDAObservation(loinc: loinc, display: display, value: value, unit: unit))
+            // A LOINC code is required — observations coded in any other system
+            // are skipped, since without LOINC the value can't be mapped or
+            // exported. The display name is optional: it's resolved from the
+            // bundled catalog (the CDA's own displayName is only a fallback).
+            if let loinc = obsLoinc, let value = obsValue, let unit = obsUnit {
+                observations.append(CDAObservation(loinc: loinc, display: obsDisplay ?? "", value: value, unit: unit))
             }
             inObservation = false
 
