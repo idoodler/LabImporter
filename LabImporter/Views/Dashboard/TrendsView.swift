@@ -232,6 +232,15 @@ struct TrendsView: View {
                 RuleMark(x: .value(String(localized: "Date"), selected.date))
                     .foregroundStyle(.secondary.opacity(0.5))
                     .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
+                    // Pin the callout to the top of the plot as a chart annotation
+                    // so it tracks the selected x through horizontal scrolling.
+                    // `chartOverlay` + `position(forX:)` reported full-content
+                    // coordinates on a scrollable chart, which clamped the callout
+                    // to the right edge.
+                    .annotation(position: .top, spacing: 4,
+                                overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
+                        scrubCallout(selected)
+                    }
 
                 PointMark(
                     x: .value(String(localized: "Date"), selected.date),
@@ -251,20 +260,6 @@ struct TrendsView: View {
         .chartXVisibleDomain(length: visibleDomainSeconds)
         .chartScrollPosition(x: $scrollPositionX)
         .chartXSelection(value: $selectedDate)
-        .chartOverlay { proxy in
-            GeometryReader { geo in
-                if let selected = selectedDataPoint,
-                   let plotFrame = proxy.plotFrame.map({ geo[$0] }),
-                   let xPos = proxy.position(forX: selected.date) {
-                    scrubCallout(selected)
-                        .position(
-                            x: clampedX(xPos, in: plotFrame),
-                            y: plotFrame.minY + 22
-                        )
-                        .allowsHitTesting(false)
-                }
-            }
-        }
         .onChange(of: selectedDataPoint?.date) { _, newDate in
             if newDate != nil { selectionFeedback.selectionChanged() }
         }
@@ -399,11 +394,6 @@ extension TrendsView {
         } else {
             scrollPositionX = last.addingTimeInterval(-visibleDomainSeconds * 0.95)
         }
-    }
-
-    private func clampedX(_ xPos: CGFloat, in frame: CGRect) -> CGFloat {
-        let halfBubble: CGFloat = 60
-        return min(max(xPos, frame.minX + halfBubble), frame.maxX - halfBubble)
     }
 
     private func formatValue(_ value: Double) -> String {
