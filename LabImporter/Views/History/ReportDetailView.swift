@@ -51,7 +51,7 @@ struct ReportDetailView: View {
                         Label("Delete", systemImage: "trash")
                     }
                 } label: {
-                    Image(systemName: "ellipsis.circle")
+                    Label("More", systemImage: "ellipsis")
                 }
             }
         }
