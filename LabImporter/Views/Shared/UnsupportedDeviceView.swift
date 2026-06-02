@@ -30,7 +30,7 @@ struct UnsupportedDeviceView: View {
                 icon: "cpu",
                 color: LabCategory.bloodGas.color,
                 title: "Apple Intelligence Device",
-                description: "An iPhone with A17 Pro or an iPad/Mac with Apple silicon (M1 or later) is required."
+                description: "An iPhone with A17 Pro or an iPad with Apple silicon (M1 or later) is required."
             ),
             Requirement(
                 icon: "arrow.up.circle",

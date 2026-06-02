@@ -1332,78 +1332,78 @@
         }
       }
     },
-    "An iPhone with A17 Pro or an iPad/Mac with Apple silicon (M1 or later) is required." : {
+    "An iPhone with A17 Pro or an iPad with Apple silicon (M1 or later) is required." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ein iPhone mit A17 Pro oder ein iPad/Mac mit Apple Silicon (M1 oder neuer) ist erforderlich."
+            "value" : "Ein iPhone mit A17 Pro oder ein iPad mit Apple Silicon (M1 oder neuer) ist erforderlich."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se requiere un iPhone con A17 Pro o un iPad/Mac con chip Apple (M1 o posterior)."
+            "value" : "Se requiere un iPhone con A17 Pro o un iPad con chip Apple (M1 o posterior)."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un iPhone équipé d’une puce A17 Pro ou un iPad/Mac doté d’une puce Apple (M1 ou ultérieure) est requis."
+            "value" : "Un iPhone équipé d’une puce A17 Pro ou un iPad doté d’une puce Apple (M1 ou ultérieure) est requis."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "È necessario un iPhone con A17 Pro o un iPad/Mac con chip Apple (M1 o successivo)."
+            "value" : "È necessario un iPhone con A17 Pro o un iPad con chip Apple (M1 o successivo)."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A17 Proを搭載したiPhone、またはAppleシリコン（M1以降）を搭載したiPad/Macが必要です。"
+            "value" : "A17 Proを搭載したiPhone、またはAppleシリコン（M1以降）を搭載したiPadが必要です。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Een iPhone met A17 Pro of een iPad/Mac met Apple silicon (M1 of nieuwer) is vereist."
+            "value" : "Een iPhone met A17 Pro of een iPad met Apple silicon (M1 of nieuwer) is vereist."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wymagany jest iPhone z chipem A17 Pro lub iPad/Mac z układem Apple silicon (M1 lub nowszym)."
+            "value" : "Wymagany jest iPhone z chipem A17 Pro lub iPad z układem Apple silicon (M1 lub nowszym)."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "É necessário um iPhone com A17 Pro ou um iPad/Mac com chip Apple (M1 ou posterior)."
+            "value" : "É necessário um iPhone com A17 Pro ou um iPad com chip Apple (M1 ou posterior)."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Требуется iPhone с чипом A17 Pro или iPad/Mac с чипом Apple (M1 или новее)."
+            "value" : "Требуется iPhone с чипом A17 Pro или iPad с чипом Apple (M1 или новее)."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A17 Pro çipli bir iPhone ya da Apple silikon (M1 veya üzeri) çipli bir iPad/Mac gerekir."
+            "value" : "A17 Pro çipli bir iPhone ya da Apple silikon (M1 veya üzeri) çipli bir iPad gerekir."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Потрібен iPhone з чипом A17 Pro або iPad/Mac з чипом Apple (M1 чи новішим)."
+            "value" : "Потрібен iPhone з чипом A17 Pro або iPad з чипом Apple (M1 чи новішим)."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "需要配备 A17 Pro 的 iPhone，或配备 Apple 芯片（M1 或更新机型）的 iPad/Mac。"
+            "value" : "需要配备 A17 Pro 的 iPhone，或配备 Apple 芯片（M1 或更新机型）的 iPad。"
           }
         }
       }
