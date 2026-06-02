@@ -254,13 +254,15 @@ struct TrendsView: View {
         .chartOverlay { proxy in
             GeometryReader { geo in
                 if let selected = selectedDataPoint,
-                   let plotFrame = proxy.plotFrame.map({ geo[$0] }) {
-                    // Place by the selected date's fraction across the visible window so it
-                    // tracks the selection line; position(forX:) misbehaves once scrollable.
-                    let frac = selected.date.timeIntervalSince(scrollPositionX) / visibleDomainSeconds
+                   let plotFrame = proxy.plotFrame.map({ geo[$0] }),
+                   let first = dataPoints.first?.date, let last = dataPoints.last?.date, last > first {
+                    // position(forX:) is nil once the chart is scrollable; map the date across
+                    // the content plot rect (plotFrame.minX carries the scroll offset) so the
+                    // callout sits on the selection line, then clamp to the visible width.
+                    let frac = selected.date.timeIntervalSince(first) / last.timeIntervalSince(first)
                     let xPos = plotFrame.minX + CGFloat(frac) * plotFrame.width
                     scrubCallout(selected)
-                        .position(x: clampedX(xPos, in: plotFrame), y: plotFrame.minY + 22)
+                        .position(x: min(max(xPos, 60), geo.size.width - 60), y: plotFrame.minY + 22)
                         .allowsHitTesting(false)
                 }
             }
@@ -399,11 +401,6 @@ extension TrendsView {
         } else {
             scrollPositionX = last.addingTimeInterval(-visibleDomainSeconds * 0.95)
         }
-    }
-
-    private func clampedX(_ xPos: CGFloat, in frame: CGRect) -> CGFloat {
-        let halfBubble: CGFloat = 60
-        return min(max(xPos, frame.minX + halfBubble), frame.maxX - halfBubble)
     }
 
     private func formatValue(_ value: Double) -> String {
