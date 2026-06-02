@@ -42,6 +42,7 @@
 		AABB000000000000000086AA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000087AA /* SettingsView.swift */; };
 		AABBCC0000000000000001AA /* LabSortEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCC0000000000000002AA /* LabSortEditor.swift */; };
 		AABBCC0000000000000003AA /* RenameLabAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCC0000000000000004AA /* RenameLabAlert.swift */; };
+		AABBCC0000000000000005AA /* BuildInfoCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCC0000000000000006AA /* BuildInfoCard.swift */; };
 		AABB000000000000000091AA /* LoincDirectory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000090AA /* LoincDirectory.swift */; };
 		AABB0000000000000000D1AA /* CloudSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000D0AA /* CloudSyncService.swift */; };
 		AABB000000000000000093AA /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AABB000000000000000092AA /* libsqlite3.tbd */; };
@@ -98,6 +99,7 @@
 		AABB000000000000000087AA /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		AABBCC0000000000000002AA /* LabSortEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabSortEditor.swift; sourceTree = "<group>"; };
 		AABBCC0000000000000004AA /* RenameLabAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenameLabAlert.swift; sourceTree = "<group>"; };
+		AABBCC0000000000000006AA /* BuildInfoCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildInfoCard.swift; sourceTree = "<group>"; };
 		AABB000000000000000090AA /* LoincDirectory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoincDirectory.swift; sourceTree = "<group>"; };
 		AABB0000000000000000D0AA /* CloudSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncService.swift; sourceTree = "<group>"; };
 		AABB000000000000000092AA /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
@@ -364,6 +366,7 @@
 				AABB000000000000000087AA /* SettingsView.swift */,
 				AABBCC0000000000000002AA /* LabSortEditor.swift */,
 				AABBCC0000000000000004AA /* RenameLabAlert.swift */,
+				AABBCC0000000000000006AA /* BuildInfoCard.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -553,6 +556,7 @@
 				AABB000000000000000086AA /* SettingsView.swift in Sources */,
 				AABBCC0000000000000001AA /* LabSortEditor.swift in Sources */,
 				AABBCC0000000000000003AA /* RenameLabAlert.swift in Sources */,
+				AABBCC0000000000000005AA /* BuildInfoCard.swift in Sources */,
 				AABB0000000000000000C2DE /* UnsupportedDeviceView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
