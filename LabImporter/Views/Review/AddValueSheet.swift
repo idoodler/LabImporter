@@ -77,15 +77,17 @@ struct AddValueSheet: View {
     /// rows so a test reads the same everywhere.
     private var testRow: some View {
         HStack(spacing: 14) {
-            CategoryIcon(color: accent, size: 44)
-            VStack(alignment: .leading, spacing: 4) {
-                if code.isEmpty {
+            if code.isEmpty {
+                placeholderIcon
+                VStack(alignment: .leading, spacing: 5) {
                     Text("Choose a lab test")
                         .font(.headline)
-                    Text("Required")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                } else {
+                        .foregroundStyle(Color.accentColor)
+                    requiredBadge
+                }
+            } else {
+                CategoryIcon(color: accent, size: 44)
+                VStack(alignment: .leading, spacing: 4) {
                     Text(LabMapping.displayName(for: code))
                         .font(.headline)
                         .lineLimit(2)
@@ -102,6 +104,34 @@ struct AddValueSheet: View {
             }
         }
         .padding(.vertical, 4)
+    }
+
+    /// Empty-state glyph — a dashed ring around a magnifying glass, deliberately
+    /// unlike the filled `CategoryIcon` disc so the row clearly reads as "nothing
+    /// picked yet" rather than an already-chosen test.
+    private var placeholderIcon: some View {
+        ZStack {
+            Circle()
+                .strokeBorder(
+                    Color.accentColor.opacity(0.5),
+                    style: StrokeStyle(lineWidth: 1.5, dash: [4, 3])
+                )
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(Color.accentColor)
+        }
+        .frame(width: 44, height: 44)
+    }
+
+    private var requiredBadge: some View {
+        Text("Required")
+            .font(.caption2.weight(.semibold))
+            .textCase(.uppercase)
+            .foregroundStyle(Color.accentColor)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 3)
+            .background(Color.accentColor.opacity(0.12), in: Capsule())
+            .overlay(Capsule().stroke(Color.accentColor.opacity(0.25), lineWidth: 0.5))
     }
 
     private func categoryChip(_ category: LabCategory) -> some View {
