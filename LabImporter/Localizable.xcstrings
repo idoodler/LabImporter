@@ -12141,78 +12141,78 @@
         }
       }
     },
-    "Only your card layout and the custom names you give labs sync. Your lab values stay in Apple Health and never leave it." : {
+    "Only your card layout and the names you give your lab tests sync. Your lab values stay in Apple Health and never leave it." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nur dein Karten-Layout und die eigenen Namen, die du Laborwerten gibst, werden synchronisiert. Deine Laborwerte bleiben in Apple Health und verlassen es nie."
+            "value" : "Nur dein Karten-Layout und die Namen, die du deinen Labortests gibst, werden synchronisiert. Deine Laborwerte bleiben in Apple Health und verlassen es nie."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Solo se sincronizan el diseño de tus tarjetas y los nombres personalizados que asignas a los valores. Tus valores de laboratorio permanecen en Apple Salud y nunca salen de ahí."
+            "value" : "Solo se sincronizan el diseño de tus tarjetas y los nombres que asignas a tus análisis. Tus valores de laboratorio permanecen en Apple Salud y nunca salen de ahí."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seules la disposition de vos cartes et les noms personnalisés que vous donnez aux analyses sont synchronisés. Vos valeurs de laboratoire restent dans Apple Santé et n’en sortent jamais."
+            "value" : "Seuls la disposition de vos cartes et les noms que vous donnez à vos analyses sont synchronisés. Vos valeurs de laboratoire restent dans Apple Santé et n’en sortent jamais."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Si sincronizzano solo il layout delle schede e i nomi personalizzati che assegni ai valori. I tuoi valori di laboratorio restano in Apple Salute e non ne escono mai."
+            "value" : "Si sincronizzano solo il layout delle schede e i nomi che assegni alle tue analisi. I tuoi valori di laboratorio restano in Apple Salute e non ne escono mai."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "同期されるのはカードのレイアウトと、検査値に付けたカスタム名だけです。検査値はAppleヘルスケアに残り、外に出ることはありません。"
+            "value" : "同期されるのはカードのレイアウトと、検査項目に付けた名前だけです。検査値はAppleヘルスケアに残り、外に出ることはありません。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alleen je kaartindeling en de eigen namen die je labwaarden geeft, worden gesynchroniseerd. Je labwaarden blijven in Apple Gezondheid en verlaten het nooit."
+            "value" : "Alleen je kaartindeling en de namen die je je labtests geeft, worden gesynchroniseerd. Je labwaarden blijven in Apple Gezondheid en verlaten het nooit."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchronizowane są tylko układ kart i własne nazwy nadane wynikom. Twoje wyniki badań pozostają w Apple Zdrowiu i nigdy go nie opuszczają."
+            "value" : "Synchronizowane są tylko układ kart i nazwy, które nadajesz swoim badaniom. Twoje wyniki badań pozostają w Apple Zdrowiu i nigdy go nie opuszczają."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apenas o layout dos seus cartões e os nomes personalizados que você dá aos exames são sincronizados. Seus valores de exames ficam no Apple Saúde e nunca saem de lá."
+            "value" : "Apenas o layout dos seus cartões e os nomes que você dá aos seus exames são sincronizados. Seus valores de exames ficam no Apple Saúde e nunca saem de lá."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Синхронизируются только оформление карточек и собственные названия, которые вы даёте показателям. Ваши лабораторные значения остаются в Apple Здоровье и никогда его не покидают."
+            "value" : "Синхронизируются только оформление карточек и названия, которые вы даёте своим анализам. Ваши лабораторные значения остаются в Apple Здоровье и никогда его не покидают."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Yalnızca kart düzeniniz ve değerlere verdiğiniz özel adlar senkronlanır. Laboratuvar değerleriniz Apple Sağlık’ta kalır ve oradan asla çıkmaz."
+            "value" : "Yalnızca kart düzeniniz ve tahlillerinize verdiğiniz adlar senkronlanır. Laboratuvar değerleriniz Apple Sağlık’ta kalır ve oradan asla çıkmaz."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Синхронізуються лише вигляд карток і власні назви, які ви даєте показникам. Ваші лабораторні значення залишаються в Apple Здоров’я й ніколи його не покидають."
+            "value" : "Синхронізуються лише вигляд карток і назви, які ви даєте своїм аналізам. Ваші лабораторні значення залишаються в Apple Здоров’я й ніколи його не покидають."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "只有卡片布局和你为化验值设置的自定名称会同步。你的化验数值保留在 Apple 健康中，绝不会离开。"
+            "value" : "只有卡片布局和你为检验项目设置的名称会同步。你的化验数值保留在 Apple 健康中，绝不会离开。"
           }
         }
       }
