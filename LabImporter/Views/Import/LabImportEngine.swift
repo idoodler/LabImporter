@@ -72,11 +72,17 @@ final class LabImportEngine {
             removeInboxCopy(at: url)
         }
 
-        let isPDF = url.pathExtension.lowercased() == "pdf"
-            || (try? url.resourceValues(forKeys: [.contentTypeKey]).contentType?.conforms(to: .pdf)) == true
+        let contentType = try? url.resourceValues(forKeys: [.contentTypeKey]).contentType
+        let ext = url.pathExtension.lowercased()
+        let isPDF = ext == "pdf" || contentType?.conforms(to: .pdf) == true
+        // A CDA document is XML; recognize it by extension or UTType so it's read
+        // structurally rather than (mis)handed to OCR + the AI parse.
+        let isCDA = ["xml", "cda", "ccda"].contains(ext) || contentType?.conforms(to: .xml) == true
 
         if isPDF {
             await processPDF(at: url)
+        } else if isCDA {
+            await processCDA(at: url)
         } else if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
             await processImages([image])
         } else {
@@ -135,6 +141,38 @@ final class LabImportEngine {
         }
     }
 
+    /// Imports a CDA (clinical document) file directly: its observations are
+    /// structured data, so they're read straight into `LabValue`s — no OCR, no
+    /// on-device AI. The resolved LOINC codes are authoritative (not fuzzy name
+    /// matches), so the values arrive confident rather than flagged as suggestions.
+    private func processCDA(at url: URL) async {
+        phase = .importingDocument
+        isProcessing = true
+        defer { isProcessing = false }
+
+        guard let data = try? Data(contentsOf: url) else {
+            errorMessage = String(localized: "Could not load the selected file.")
+            return
+        }
+        guard let report = HealthKitService.report(fromCDAFileData: data) else {
+            errorMessage = String(localized: "This file isn't a lab report this app can read. Choose a CDA document that contains lab results.")
+            return
+        }
+
+        // Collapse any duplicate-LOINC rows defensively, mirroring the AI path.
+        let values = report.asLabValues.deduplicatedByLoinc()
+        if values.isEmpty {
+            errorMessage = emptyMessage
+            return
+        }
+        onParsed?(ParseResult(
+            values: values,
+            reportDate: report.date,
+            patientName: report.patientName.isEmpty ? nil : report.patientName,
+            authorName: report.authorName.isEmpty ? nil : report.authorName
+        ))
+    }
+
     private func handleExtractedText(_ text: String) async throws {
         // Text is in hand; the remaining (and longest) work is the AI parse.
         phase = .analyzing
@@ -156,6 +194,16 @@ final class LabImportEngine {
 private struct LabImportModifier: ViewModifier {
     @Bindable var engine: LabImportEngine
 
+    /// File types the importer accepts: scanned/photographed reports (image, PDF)
+    /// plus CDA clinical documents (XML), which are read structurally. `.cda` /
+    /// `.ccda` extensions are included explicitly so files that the system doesn't
+    /// type as `public.xml` still appear in the picker.
+    static let importableTypes: [UTType] = {
+        var types: [UTType] = [.pdf, .image, .xml]
+        types += ["cda", "ccda"].compactMap { UTType(filenameExtension: $0) }
+        return types
+    }()
+
     func body(content: Content) -> some View {
         content
             .fullScreenCover(isPresented: $engine.showScanner) {
@@ -171,7 +219,7 @@ private struct LabImportModifier: ViewModifier {
             }
             .fileImporter(
                 isPresented: $engine.showFileImporter,
-                allowedContentTypes: [.pdf, .image],
+                allowedContentTypes: Self.importableTypes,
                 allowsMultipleSelection: false
             ) { result in
                 switch result {
@@ -332,11 +380,15 @@ extension View {
 enum ImportPhase: CaseIterable {
     case extractingText
     case analyzing
+    /// A CDA file is structured data, so there's no OCR or AI step — its values
+    /// are read straight in. This phase labels that direct import.
+    case importingDocument
 
     var title: LocalizedStringKey {
         switch self {
         case .extractingText: "Reading document…"
         case .analyzing: "Analyzing lab report…"
+        case .importingDocument: "Importing lab document…"
         }
     }
 
@@ -344,6 +396,7 @@ enum ImportPhase: CaseIterable {
         switch self {
         case .extractingText: "Extracting text on device"
         case .analyzing: "Using on-device AI"
+        case .importingDocument: "Reading values directly"
         }
     }
 
@@ -351,6 +404,7 @@ enum ImportPhase: CaseIterable {
         switch self {
         case .extractingText: "doc.text.viewfinder"
         case .analyzing: "sparkles"
+        case .importingDocument: "doc.badge.arrow.up"
         }
     }
 
@@ -358,6 +412,7 @@ enum ImportPhase: CaseIterable {
         switch self {
         case .extractingText: 0.45
         case .analyzing: 0.9
+        case .importingDocument: 0.9
         }
     }
 }

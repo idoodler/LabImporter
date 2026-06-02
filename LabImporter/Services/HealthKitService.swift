@@ -101,6 +101,20 @@ actor HealthKitService {
         }
     }
 
+    // MARK: - File import
+
+    /// Reconstructs a `LabReport` from a CDA document supplied as a file the user
+    /// explicitly chose to import (Files / share sheet), reading its values
+    /// structurally — no OCR and no on-device AI. Unlike Health read-back
+    /// (`loadCDADocuments`), an explicitly imported file is accepted even when it
+    /// carries no recognized LabImporter schema version: foreign or legacy C-CDA
+    /// lab reports have no migration history to honor, and the user deliberately
+    /// picked this file, so there's no implicit-migration concern. Returns `nil`
+    /// when the data isn't a parseable CDA lab document.
+    nonisolated static func report(fromCDAFileData data: Data) -> LabReport? {
+        CDADocumentParser.parse(data: data, id: UUID(), allowUnversioned: true)
+    }
+
     // MARK: - Characteristics
 
     struct PatientCharacteristics {
@@ -231,7 +245,12 @@ private final class CDADocumentParser: NSObject, XMLParserDelegate {
     /// versioning, which are ignored on read-back.
     private var schemaVersion: Int?
 
-    static func parse(data: Data, id: UUID) -> LabReport? {
+    /// - Parameter allowUnversioned: when `true`, a document that carries no
+    ///   recognized LabImporter schema version is still accepted (parsed as-is)
+    ///   rather than dropped. Used for explicit file imports — see
+    ///   `HealthKitService.report(fromCDAFileData:)`. Health read-back leaves it
+    ///   `false`, preserving the "ignore unversioned legacy exports" invariant.
+    static func parse(data: Data, id: UUID, allowUnversioned: Bool = false) -> LabReport? {
         let delegate = CDADocumentParser()
         let parser = XMLParser(data: data)
         parser.delegate = delegate
@@ -265,8 +284,13 @@ private final class CDADocumentParser: NSObject, XMLParserDelegate {
             entries: entries
         )
 
-        // Ignore documents with no recognized version, and upgrade older ones to
-        // the current schema (no-op today). Returns nil → the sample is skipped.
+        // An explicitly imported file with no version stamp (a foreign or legacy
+        // C-CDA) has no migration history to honor and was deliberately chosen by
+        // the user, so take it as-is. Health read-back keeps `allowUnversioned`
+        // false: unversioned documents are skipped and versioned ones migrated.
+        if delegate.schemaVersion == nil && allowUnversioned {
+            return report
+        }
         return CDAMigrator.upgrade(report, fromSchemaVersion: delegate.schemaVersion)
     }
 
