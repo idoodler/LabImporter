@@ -26,6 +26,7 @@ private struct LabTestPickerList: View {
 
     @State private var query = ""
     @State private var loincResults: [LoincTerm] = []
+    @State private var backgroundColors: [Color] = []
     @FocusState private var searchFocused: Bool
 
     var body: some View {
@@ -72,16 +73,20 @@ private struct LabTestPickerList: View {
                 var seen = Set(aliasHits.map(\.code))
                 return aliasHits + catalog.filter { seen.insert($0.code).inserted }
             }.value
-            if current == query { loincResults = found }
+            if current == query {
+                loincResults = found
+                backgroundColors = Self.washColors(for: found)
+            }
         }
     }
 
     // Up to three distinct category colors from the current results, mirroring the
-    // Dashboard/History wash so the picker shares the app's color system.
-    private var backgroundColors: [Color] {
+    // Dashboard/History wash so the picker shares the app's color system. Computed
+    // once per result set (not on every body pass) and stored in `backgroundColors`.
+    private static func washColors(for terms: [LoincTerm]) -> [Color] {
         var seen = Set<LabCategory>()
         var result: [Color] = []
-        for term in loincResults {
+        for term in terms {
             let category = LabCategory.forCode(term.code)
             if seen.insert(category).inserted { result.append(category.color) }
             if result.count == 3 { break }

@@ -67,10 +67,35 @@ enum LabCategory: String, CaseIterable, Sendable {
     }
 
     /// Best-effort category for a LOINC code, resolved via the bundled catalog.
+    ///
+    /// Codes repeat heavily across the UI (every dashboard card, history row and
+    /// search result re-derives a category from the same handful of codes), and
+    /// each miss costs a SQLite lookup in `LoincDirectory`, so the resolved
+    /// category is memoized. The cache is guarded by a lock because `forCode` is
+    /// called from both the main actor (view bodies) and background search tasks.
     static func forCode(_ code: String) -> LabCategory {
-        guard let info = LoincDirectory.shared.classification(for: code) else { return .other }
-        return category(loincClass: info.loincClass, component: info.component)
+        cacheLock.lock()
+        if let cached = cache[code] {
+            cacheLock.unlock()
+            return cached
+        }
+        cacheLock.unlock()
+
+        let resolved: LabCategory
+        if let info = LoincDirectory.shared.classification(for: code) {
+            resolved = category(loincClass: info.loincClass, component: info.component)
+        } else {
+            resolved = .other
+        }
+
+        cacheLock.lock()
+        cache[code] = resolved
+        cacheLock.unlock()
+        return resolved
     }
+
+    private static let cacheLock = NSLock()
+    nonisolated(unsafe) private static var cache: [String: LabCategory] = [:]
 
     // swiftlint:disable:next cyclomatic_complexity
     static func category(loincClass: String, component: String) -> LabCategory {
