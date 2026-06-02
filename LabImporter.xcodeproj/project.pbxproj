@@ -478,7 +478,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -u\nINFO_PLIST=\"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\n[ -f \"$INFO_PLIST\" ] || exit 0\nBRANCH=$(cd \"${SRCROOT}\" && git rev-parse --abbrev-ref HEAD 2>/dev/null)\nCOMMIT=$(cd \"${SRCROOT}\" && git rev-parse --short HEAD 2>/dev/null)\n[ -n \"$BRANCH\" ] || BRANCH=unknown\n[ -n \"$COMMIT\" ] || COMMIT=unknown\n/usr/libexec/PlistBuddy -c \"Set :GitBranch $BRANCH\" \"$INFO_PLIST\" 2>/dev/null || /usr/libexec/PlistBuddy -c \"Add :GitBranch string $BRANCH\" \"$INFO_PLIST\"\n/usr/libexec/PlistBuddy -c \"Set :GitCommit $COMMIT\" \"$INFO_PLIST\" 2>/dev/null || /usr/libexec/PlistBuddy -c \"Add :GitCommit string $COMMIT\" \"$INFO_PLIST\"\n";
+			shellScript = "set -u\nINFO_PLIST=\"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\n[ -f \"$INFO_PLIST\" ] || exit 0\nBRANCH=$(cd \"${SRCROOT}\" && git rev-parse --abbrev-ref HEAD 2>/dev/null)\nCOMMIT=$(cd \"${SRCROOT}\" && git rev-parse --short HEAD 2>/dev/null)\nREPO_URL=$(cd \"${SRCROOT}\" && git config --get remote.origin.url 2>/dev/null)\n[ -n \"$BRANCH\" ] || BRANCH=unknown\n[ -n \"$COMMIT\" ] || COMMIT=unknown\n/usr/libexec/PlistBuddy -c \"Set :GitBranch $BRANCH\" \"$INFO_PLIST\" 2>/dev/null || /usr/libexec/PlistBuddy -c \"Add :GitBranch string $BRANCH\" \"$INFO_PLIST\"\n/usr/libexec/PlistBuddy -c \"Set :GitCommit $COMMIT\" \"$INFO_PLIST\" 2>/dev/null || /usr/libexec/PlistBuddy -c \"Add :GitCommit string $COMMIT\" \"$INFO_PLIST\"\n/usr/libexec/PlistBuddy -c \"Set :GitRepositoryURL $REPO_URL\" \"$INFO_PLIST\" 2>/dev/null || /usr/libexec/PlistBuddy -c \"Add :GitRepositoryURL string $REPO_URL\" \"$INFO_PLIST\"\n";
 		};
 		AABB0000000000000000ABAA /* Copy LICENSE */ = {
 			isa = PBXShellScriptBuildPhase;
