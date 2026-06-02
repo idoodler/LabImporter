@@ -105,18 +105,17 @@ struct LoincTermDetailView: View {
     @State private var renamingCode: String?
     @State private var renameDraft = ""
 
+    // The clinical category drives the accent color used for the header icon,
+    // the category chip and the background wash — the same palette charts use.
+    private var category: LabCategory { LabCategory.forCode(term.code) }
+
     var body: some View {
         List {
             Section {
-                Text(detail?.name ?? term.name).font(.headline)
-                if let custom = prefs.customName(for: term.code) {
-                    Label(custom, systemImage: "pencil")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                if let description = detail?.description ?? term.description, !description.isEmpty {
-                    Text(description).foregroundStyle(.secondary)
-                }
+                headerCard
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
             }
             if let detail {
                 Section("Details") {
@@ -130,11 +129,13 @@ struct LoincTermDetailView: View {
                     attribute("Class", detail.loincClass)
                     attribute("Status", detail.status)
                 }
+                .listRowBackground(Rectangle().fill(.ultraThinMaterial))
                 Section {
                     attribute("Long name", detail.longName)
                     attribute("Short name", detail.shortName)
                     attribute("Units", detail.ucum)
                 }
+                .listRowBackground(Rectangle().fill(.ultraThinMaterial))
             }
             if let url = LabMapping.loincURL(for: term.code) {
                 Section {
@@ -146,8 +147,12 @@ struct LoincTermDetailView: View {
                 } footer: {
                     Text("Opens the full description and references on loinc.org.")
                 }
+                .listRowBackground(Rectangle().fill(.ultraThinMaterial))
             }
         }
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .background { CategoryBackground(colors: [category.color]) }
         .navigationTitle(Text(verbatim: term.code))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -165,6 +170,93 @@ struct LoincTermDetailView: View {
         .sheet(item: $browserURL) { item in
             SafariView(url: item.url)
                 .ignoresSafeArea()
+        }
+    }
+
+    // MARK: - Header
+
+    private var headerCard: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(spacing: 14) {
+                ZStack {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [category.color, category.color.opacity(0.65)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                    Image(systemName: "testtube.2")
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(.white)
+                }
+                .frame(width: 54, height: 54)
+                .shadow(color: category.color.opacity(0.35), radius: 5, x: 0, y: 2)
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(detail?.name ?? term.name)
+                        .font(.headline)
+                    categoryChip
+                }
+                Spacer(minLength: 0)
+            }
+
+            if let custom = prefs.customName(for: term.code) {
+                Divider()
+                customNameRow(custom)
+            }
+
+            if let description = detail?.description ?? term.description, !description.isEmpty {
+                Divider()
+                Text(description)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(18)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22))
+        .overlay(
+            RoundedRectangle(cornerRadius: 22)
+                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
+        )
+    }
+
+    private var categoryChip: some View {
+        HStack(spacing: 6) {
+            Circle()
+                .fill(category.color)
+                .frame(width: 8, height: 8)
+            Text(category.displayName)
+                .font(.caption.weight(.medium))
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
+        .background(category.color.opacity(0.12), in: Capsule())
+        .overlay(
+            Capsule().stroke(category.color.opacity(0.25), lineWidth: 0.5)
+        )
+    }
+
+    // The user's own name for this test, shown as a plainly-labelled read-only
+    // field (renaming happens via the toolbar) — a "tag" glyph, not a pencil, so
+    // it never reads as an inline edit button.
+    private func customNameRow(_ name: String) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: "tag.fill")
+                .font(.subheadline)
+                .foregroundStyle(category.color)
+                .frame(width: 20)
+            VStack(alignment: .leading, spacing: 1) {
+                Text("Custom name")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .textCase(.uppercase)
+                Text(name)
+                    .font(.subheadline.weight(.medium))
+            }
+            Spacer(minLength: 0)
         }
     }
 
