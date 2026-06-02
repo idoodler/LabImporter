@@ -254,13 +254,13 @@ struct TrendsView: View {
         .chartOverlay { proxy in
             GeometryReader { geo in
                 if let selected = selectedDataPoint,
-                   let plotFrame = proxy.plotFrame.map({ geo[$0] }),
-                   let selectedX = proxy.position(forX: selected.date) {
-                    // Map content-space x into the viewport by the scroll offset (nil when not scrolled → 0).
-                    let leadingX = proxy.position(forX: scrollPositionX) ?? 0
-                    let viewportX = clampedX(plotFrame.minX + selectedX - leadingX, in: plotFrame)
+                   let plotFrame = proxy.plotFrame.map({ geo[$0] }) {
+                    // Place by the selected date's fraction across the visible window so it
+                    // tracks the selection line; position(forX:) misbehaves once scrollable.
+                    let frac = selected.date.timeIntervalSince(scrollPositionX) / visibleDomainSeconds
+                    let xPos = plotFrame.minX + CGFloat(frac) * plotFrame.width
                     scrubCallout(selected)
-                        .position(x: viewportX, y: plotFrame.minY + 22)
+                        .position(x: clampedX(xPos, in: plotFrame), y: plotFrame.minY + 22)
                         .allowsHitTesting(false)
                 }
             }
