@@ -6,20 +6,12 @@ import SwiftUI
 /// requirement that the license travels with the LOINC data.
 struct LoincLicenseView: View {
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
-                if !LoincDirectory.shared.version.isEmpty {
-                    Text(verbatim: "LOINC® \(LoincDirectory.shared.version)")
-                        .font(.subheadline.weight(.semibold))
-                }
-                Text(licenseText)
-                    .font(.footnote)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .padding()
-        }
-        .navigationTitle("LOINC License")
-        .navigationBarTitleDisplayMode(.inline)
+        LicenseDocumentView(title: "LOINC License", header: header, text: licenseText)
+    }
+
+    private var header: String? {
+        let version = LoincDirectory.shared.version
+        return version.isEmpty ? nil : "LOINC® \(version)"
     }
 
     private var licenseText: String {
