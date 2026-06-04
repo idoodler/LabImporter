@@ -9,6 +9,18 @@ Scan, import, or paste your lab report — the app uses Vision OCR and the on-de
 
 ---
 
+## Screenshots
+
+| | Light | Dark |
+|---|---|---|
+| **Dashboard** — metric cards with sparklines | ![Dashboard Light](screenshots/01-dashboard-light.png) | ![Dashboard Dark](screenshots/01-dashboard-dark.png) |
+| **Trends** — interactive per-metric chart | ![Trends Light](screenshots/02-trends-light.png) | ![Trends Dark](screenshots/02-trends-dark.png) |
+| **Review** — AI-extracted values before saving | ![Review Light](screenshots/03-review-light.png) | ![Review Dark](screenshots/03-review-dark.png) |
+| **Reports** — full import history by year | ![Reports Light](screenshots/04-history-light.png) | ![Reports Dark](screenshots/04-history-dark.png) |
+| **Settings** — sort, sync, and LOINC catalog | ![Settings Light](screenshots/05-settings-light.png) | ![Settings Dark](screenshots/05-settings-dark.png) |
+
+---
+
 ## Features
 
 - **Import** by scanning multi-page documents with the camera, picking PDFs or images from Files, pasting from the clipboard, or sending a PDF/image to LabImporter from any app via the share sheet ("Open With")

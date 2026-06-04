@@ -98,6 +98,10 @@ struct HomeView: View {
             .interactiveDismissDisabled()
         }
         .task {
+            if ScreenshotMode.isActive {
+                setupScreenshotMode()
+                return
+            }
             // Reinstalled apps may still have CDA write access from a previous
             // launch — in that case skip the permission gate entirely.
             if !hasGrantedHealthAccess,
@@ -353,6 +357,7 @@ struct HomeView: View {
     }
 
     private func loadReports() async {
+        guard !ScreenshotMode.isActive else { return }
         do {
             reports = try await HealthKitService.shared.loadCDADocuments()
         } catch {
@@ -378,6 +383,32 @@ struct HomeView: View {
         showReview = true
     }
 }
+
+// MARK: - Screenshot mode
+
+#if DEBUG
+private extension HomeView {
+    func setupScreenshotMode() {
+        hasSeenWelcome = true
+        hasAcknowledgedDisclaimer = true
+        hasGrantedHealthAccess = true
+        hasChosenICloudSync = true
+        reports = LabReport.sampleHistory
+        isLoaded = true
+        if ScreenshotMode.initialScreen == "review" {
+            labValues = LabReport.sampleHistory[0].asLabValues
+            parsedPatientName = LabReport.sampleHistory[0].patientName
+            parsedAuthorName = LabReport.sampleHistory[0].authorName
+            parsedReportDate = LabReport.sampleHistory[0].date
+            showReview = true
+        }
+    }
+}
+#else
+private extension HomeView {
+    func setupScreenshotMode() {}
+}
+#endif
 
 #Preview {
     HomeView()

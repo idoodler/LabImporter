@@ -1,5 +1,6 @@
 import SwiftUI
 
+#if DEBUG
 #Preview("New Report") {
     NavigationStack {
         ReviewView(
@@ -18,3 +19,4 @@ import SwiftUI
         )
     }
 }
+#endif

@@ -203,9 +203,11 @@ struct LabSortEditor: View {
 
 // MARK: - Previews
 
+#if DEBUG
 #Preview("Sort & Visibility") {
     @Previewable @State var prefs = LabDisplayPreferences()
     NavigationStack {
         LabSortEditor(prefs: $prefs, allCodes: CodeName.sampleCodes)
     }
 }
+#endif

@@ -9,7 +9,7 @@ struct LabImporterApp: App {
 
     var body: some Scene {
         WindowGroup {
-            if DeviceSupport.isSupported {
+            if DeviceSupport.isSupported || ScreenshotMode.isActive {
                 HomeView()
             } else {
                 UnsupportedDeviceView()

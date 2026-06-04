@@ -443,7 +443,8 @@ private extension ReviewView {
     }
 
     func loadHKCharacteristics() async {
-        guard let chars = try? await HealthKitService.shared.readPatientCharacteristics() else { return }
+        guard !ScreenshotMode.isActive,
+              let chars = try? await HealthKitService.shared.readPatientCharacteristics() else { return }
         hkBirthdate = chars.dateOfBirth
         hkSex = chars.biologicalSexRaw
     }
@@ -491,7 +492,6 @@ private extension ReviewView {
         }
         finishSave()
     }
-
     func finishSave() {
         replaceWarning = nil
         onSaved?()

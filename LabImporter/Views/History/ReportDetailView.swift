@@ -336,8 +336,10 @@ private struct ShareSheet: UIViewControllerRepresentable {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview {
     NavigationStack {
         ReportDetailView(report: .sample, onDeleted: { _ in })
     }
 }
+#endif

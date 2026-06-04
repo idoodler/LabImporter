@@ -269,7 +269,9 @@ struct LicenseView: View {
 
 // MARK: - Previews
 
+#if DEBUG
 #Preview("Settings") {
     @Previewable @State var prefs = LabDisplayPreferences()
     SettingsView(prefs: $prefs, allCodes: CodeName.sampleCodes)
 }
+#endif
