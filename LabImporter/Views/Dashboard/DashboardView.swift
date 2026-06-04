@@ -19,6 +19,7 @@ struct DashboardView: View {
     var showsLibraryToolbarItems = true
 
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
+    @AppStorage("patientName") private var patientName: String = ""
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var showSettings = false
     @State private var showHistorySheet = false
@@ -32,6 +33,7 @@ struct DashboardView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
+                greeting
                 metricSections
                 if showsFewValuesHint {
                     fewValuesHint
@@ -355,6 +357,35 @@ struct DashboardView: View {
             updated.pinnedCodes.append(code)
         }
         prefs = updated
+    }
+}
+
+// MARK: - Greeting
+
+private extension DashboardView {
+    /// The first whitespace-separated component of the saved patient name, used to
+    /// greet the user by name. Empty when no name has been entered yet, in which
+    /// case the greeting is omitted entirely rather than shown impersonally.
+    var firstName: String {
+        patientName
+            .split(separator: " ", omittingEmptySubsequences: true)
+            .first
+            .map(String.init) ?? ""
+    }
+
+    /// A warm, personal welcome above the metrics. The localized greeting carries
+    /// `^[…](inflect: true)` markup, so on languages with grammatical gender it
+    /// agrees with the reader's system Term of Address automatically — no stored
+    /// gender of our own is consulted.
+    @ViewBuilder
+    var greeting: some View {
+        if !firstName.isEmpty {
+            Text("Welcome back, \(firstName)")
+                .font(.title3.weight(.semibold))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 2)
+                .accessibilityAddTraits(.isHeader)
+        }
     }
 }
 

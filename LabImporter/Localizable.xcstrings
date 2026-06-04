@@ -19451,6 +19451,82 @@
         }
       }
     },
+    "Welcome back, %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Willkommen zurück, %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "^[Bienvenido](inflect: true) de nuevo, %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "^[Heureux](inflect: true) de vous revoir, %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "^[Bentornato](inflect: true), %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "おかえりなさい、%@"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welkom terug, %@"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Witaj ponownie, %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "^[Bem-vindo](inflect: true) de volta, %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "С возвращением, %@"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tekrar hoş geldiniz, %@"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "З поверненням, %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "欢迎回来，%@"
+          }
+        }
+      }
+    },
     "Welcome to" : {
       "localizations" : {
         "de" : {
@@ -19462,7 +19538,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bienvenido a"
+            "value" : "^[Bienvenido](inflect: true) a"
           }
         },
         "fr" : {
@@ -19474,7 +19550,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Benvenuto in"
+            "value" : "^[Benvenuto](inflect: true) in"
           }
         },
         "ja" : {
@@ -19498,7 +19574,7 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bem-vindo ao"
+            "value" : "^[Bem-vindo](inflect: true) ao"
           }
         },
         "ru" : {
