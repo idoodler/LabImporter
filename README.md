@@ -1,6 +1,13 @@
-# LabImporter
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="LabImporter/Assets.xcassets/AppIcon.appiconset/AppIcon-dark.png">
+    <img src="LabImporter/Assets.xcassets/AppIcon.appiconset/AppIcon-light.png" alt="LabImporter app icon" width="160">
+  </picture>
+</p>
 
-A native iOS app that imports lab report values into Apple Health using on-device AI.
+<h1 align="center">LabImporter</h1>
+
+<p align="center">A native iOS app that imports lab report values into Apple Health using on-device AI.</p>
 
 Scan, import, or paste your lab report — the app uses Vision OCR and the on-device Foundation Models framework to extract values, lets you review and correct them, then saves them directly into Apple Health as a CDA clinical document.
 
@@ -30,7 +37,7 @@ Scan, import, or paste your lab report — the app uses Vision OCR and the on-de
 - **Trend charts** — interactive per-metric chart with finger-scrubbing to inspect individual values
 - **History** — full list of imported reports with edit and delete
 - **Customise** — pin metrics to the top, reorder, or hide them from the dashboard
-- **iCloud sync (opt-in)** — optionally roam your dashboard layout (card order, pins, and hidden metrics) across your devices; your lab values always stay in Apple Health and never sync
+- **iCloud sync (opt-in)** — optionally roam your dashboard layout (card order, pins, hidden metrics, custom names, and reference ranges) across your devices; your lab values always stay in Apple Health and never sync
 - **Share** — export any report as a CDA file to send to a doctor or another app
 - **Privacy-first** — all data lives in Apple Health on your device; no account or server required
 
@@ -38,8 +45,10 @@ Scan, import, or paste your lab report — the app uses Vision OCR and the on-de
 
 ## Requirements
 
-- iOS 26.0 or later
-- iPhone with Apple Intelligence support (A17 Pro / M1 or later)
+- iOS or iPadOS 26.0 or later
+- An Apple Intelligence–capable device:
+  - **iPhone** with an A17 Pro chip or later, or
+  - **iPad** with Apple silicon (M1 or later)
 - An Apple Developer account (free tier is sufficient for personal use via Xcode)
 - For GitHub Actions builds: an Apple Developer Program membership (paid, required for TestFlight)
 
@@ -147,7 +156,7 @@ After the first manual run succeeds, builds are triggered automatically on the *
 
 iCloud sync is **opt-in** and **layout-only**. On first launch — after the welcome and Apple Health steps — onboarding asks you to make an explicit choice before you can add any reports; you can change it later under **Settings → iCloud Sync**.
 
-When enabled, only your **dashboard layout** roams across your devices through your private iCloud key-value store (`NSUbiquitousKeyValueStore`): the card order, which metrics are pinned, and which are hidden. That's the entire payload.
+When enabled, only your **dashboard layout** roams across your devices through your private iCloud key-value store (`NSUbiquitousKeyValueStore`): the card order, which metrics are pinned, which are hidden, any custom names (nicknames) you've given metrics, and any custom reference ranges you've set. That's the entire payload.
 
 **Your lab values never sync.** They live exclusively in Apple Health, and patient metadata (name, date of birth, biological sex) stays on the device it was entered on. No lab data is ever transmitted, with or without sync enabled.
 
