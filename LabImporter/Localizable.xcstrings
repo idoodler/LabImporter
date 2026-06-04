@@ -10161,78 +10161,78 @@
         }
       }
     },
-    "Layout & Names" : {
+    "Layout, Names & Ranges" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Layout & Namen"
+            "value" : "Layout, Namen & Bereiche"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Diseño y nombres"
+            "value" : "Diseño, nombres y rangos"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Disposition et noms"
+            "value" : "Disposition, noms et plages"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Layout e nomi"
+            "value" : "Layout, nomi e intervalli"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "レイアウトと名前"
+            "value" : "レイアウト・名前・基準範囲"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Indeling en namen"
+            "value" : "Indeling, namen en bereiken"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Układ i nazwy"
+            "value" : "Układ, nazwy i zakresy"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Layout e nomes"
+            "value" : "Layout, nomes e faixas"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Оформление и названия"
+            "value" : "Оформление, названия и диапазоны"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Düzen ve adlar"
+            "value" : "Düzen, adlar ve aralıklar"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Вигляд і назви"
+            "value" : "Вигляд, назви та діапазони"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "布局与名称"
+            "value" : "布局、名称与范围"
           }
         }
       }
@@ -12749,78 +12749,78 @@
         }
       }
     },
-    "Only your card layout and the nicknames you give your lab tests sync. Your lab values stay in Apple Health and never leave it." : {
+    "Only your card layout, the nicknames you give your lab tests, and the reference ranges you set sync. Your lab values stay in Apple Health and never leave it." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nur dein Karten-Layout und die Spitznamen, die du deinen Labortests gibst, werden synchronisiert. Deine Laborwerte bleiben in Apple Health und verlassen es nie."
+            "value" : "Nur dein Karten-Layout, die Spitznamen, die du deinen Labortests gibst, und die Referenzbereiche, die du festlegst, werden synchronisiert. Deine Laborwerte bleiben in Apple Health und verlassen es nie."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Solo se sincronizan el diseño de tus tarjetas y los apodos que asignas a tus análisis. Tus valores de laboratorio permanecen en Apple Salud y nunca salen de ahí."
+            "value" : "Solo se sincronizan el diseño de tus tarjetas, los apodos que asignas a tus análisis y los rangos de referencia que defines. Tus valores de laboratorio permanecen en Apple Salud y nunca salen de ahí."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seuls la disposition de vos cartes et les surnoms que vous donnez à vos analyses sont synchronisés. Vos valeurs de laboratoire restent dans Apple Santé et n’en sortent jamais."
+            "value" : "Seuls la disposition de vos cartes, les surnoms que vous donnez à vos analyses et les plages de référence que vous définissez sont synchronisés. Vos valeurs de laboratoire restent dans Apple Santé et n’en sortent jamais."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Si sincronizzano solo il layout delle schede e i soprannomi che assegni alle tue analisi. I tuoi valori di laboratorio restano in Apple Salute e non ne escono mai."
+            "value" : "Si sincronizzano solo il layout delle schede, i soprannomi che assegni alle tue analisi e gli intervalli di riferimento che imposti. I tuoi valori di laboratorio restano in Apple Salute e non ne escono mai."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "同期されるのはカードのレイアウトと、検査項目に付けたニックネームだけです。検査値はAppleヘルスケアに残り、外に出ることはありません。"
+            "value" : "同期されるのはカードのレイアウト、検査項目に付けたニックネーム、設定した基準範囲だけです。検査値はAppleヘルスケアに残り、外に出ることはありません。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alleen je kaartindeling en de bijnamen die je je labtests geeft, worden gesynchroniseerd. Je labwaarden blijven in Apple Gezondheid en verlaten het nooit."
+            "value" : "Alleen je kaartindeling, de bijnamen die je je labtests geeft, en de referentiebereiken die je instelt, worden gesynchroniseerd. Je labwaarden blijven in Apple Gezondheid en verlaten het nooit."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchronizowane są tylko układ kart i pseudonimy, które nadajesz swoim badaniom. Twoje wyniki badań pozostają w Apple Zdrowiu i nigdy go nie opuszczają."
+            "value" : "Synchronizowane są tylko układ kart, pseudonimy, które nadajesz swoim badaniom, oraz zakresy referencyjne, które ustawiasz. Twoje wyniki badań pozostają w Apple Zdrowiu i nigdy go nie opuszczają."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apenas o layout dos seus cartões e os apelidos que você dá aos seus exames são sincronizados. Seus valores de exames ficam no Apple Saúde e nunca saem de lá."
+            "value" : "Apenas o layout dos seus cartões, os apelidos que você dá aos seus exames e as faixas de referência que você define são sincronizados. Seus valores de exames ficam no Apple Saúde e nunca saem de lá."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Синхронизируются только оформление карточек и псевдонимы, которые вы даёте своим анализам. Ваши лабораторные значения остаются в Apple Здоровье и никогда его не покидают."
+            "value" : "Синхронизируются только оформление карточек, псевдонимы, которые вы даёте своим анализам, и референсные диапазоны, которые вы задаёте. Ваши лабораторные значения остаются в Apple Здоровье и никогда его не покидают."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Yalnızca kart düzeniniz ve tahlillerinize verdiğiniz takma adlar senkronlanır. Laboratuvar değerleriniz Apple Sağlık’ta kalır ve oradan asla çıkmaz."
+            "value" : "Yalnızca kart düzeniniz, tahlillerinize verdiğiniz takma adlar ve belirlediğiniz referans aralıkları senkronlanır. Laboratuvar değerleriniz Apple Sağlık’ta kalır ve oradan asla çıkmaz."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Синхронізуються лише вигляд карток і псевдоніми, які ви даєте своїм аналізам. Ваші лабораторні значення залишаються в Apple Здоров’я й ніколи його не покидають."
+            "value" : "Синхронізуються лише вигляд карток, псевдоніми, які ви даєте своїм аналізам, і референсні діапазони, які ви задаєте. Ваші лабораторні значення залишаються в Apple Здоров’я й ніколи його не покидають."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "只有卡片布局和你为检验项目设置的昵称会同步。你的化验数值保留在 Apple 健康中，绝不会离开。"
+            "value" : "只有卡片布局、你为检验项目设置的昵称，以及你设置的参考范围会同步。你的化验数值保留在 Apple 健康中，绝不会离开。"
           }
         }
       }
@@ -16479,78 +16479,78 @@
         }
       }
     },
-    "Sync your dashboard layout — the card order, what you pin and hide, and your nicknames — across your devices. Your lab values stay in Apple Health." : {
+    "Sync your dashboard layout — the card order, what you pin and hide, your nicknames, and your reference ranges — across your devices. Your lab values stay in Apple Health." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchronisiere dein Dashboard-Layout – die Kartenreihenfolge, was du anheftest und ausblendest, sowie deine Spitznamen – über deine Geräte hinweg. Deine Laborwerte bleiben in Apple Health."
+            "value" : "Synchronisiere dein Dashboard-Layout – die Kartenreihenfolge, was du anheftest und ausblendest, deine Spitznamen sowie deine Referenzbereiche – über deine Geräte hinweg. Deine Laborwerte bleiben in Apple Health."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sincroniza el diseño de tu panel —el orden de las tarjetas, lo que fijas y ocultas, y tus apodos— entre tus dispositivos. Tus valores de laboratorio permanecen en Apple Salud."
+            "value" : "Sincroniza el diseño de tu panel —el orden de las tarjetas, lo que fijas y ocultas, tus apodos y tus rangos de referencia— entre tus dispositivos. Tus valores de laboratorio permanecen en Apple Salud."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchronisez la disposition de votre tableau de bord — l’ordre des cartes, ce que vous épinglez et masquez, ainsi que vos surnoms — sur tous vos appareils. Vos valeurs de laboratoire restent dans Apple Santé."
+            "value" : "Synchronisez la disposition de votre tableau de bord — l’ordre des cartes, ce que vous épinglez et masquez, vos surnoms et vos plages de référence — sur tous vos appareils. Vos valeurs de laboratoire restent dans Apple Santé."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sincronizza il layout della dashboard — l’ordine delle schede, ciò che fissi e nascondi e i tuoi soprannomi — su tutti i tuoi dispositivi. I tuoi valori di laboratorio restano in Apple Salute."
+            "value" : "Sincronizza il layout della dashboard — l’ordine delle schede, ciò che fissi e nascondi, i tuoi soprannomi e i tuoi intervalli di riferimento — su tutti i tuoi dispositivi. I tuoi valori di laboratorio restano in Apple Salute."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ダッシュボードのレイアウト（カードの順序、固定・非表示の設定、ニックネーム）をデバイス間で同期します。検査値はAppleヘルスケアに残ります。"
+            "value" : "ダッシュボードのレイアウト（カードの順序、固定・非表示の設定、ニックネーム、基準範囲）をデバイス間で同期します。検査値はAppleヘルスケアに残ります。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchroniseer je dashboardindeling — de kaartvolgorde, wat je vastzet en verbergt, plus je bijnamen — op al je apparaten. Je labwaarden blijven in Apple Gezondheid."
+            "value" : "Synchroniseer je dashboardindeling — de kaartvolgorde, wat je vastzet en verbergt, je bijnamen plus je referentiebereiken — op al je apparaten. Je labwaarden blijven in Apple Gezondheid."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchronizuj układ pulpitu — kolejność kart, to, co przypinasz i ukrywasz, oraz pseudonimy — między urządzeniami. Twoje wyniki badań pozostają w Apple Zdrowiu."
+            "value" : "Synchronizuj układ pulpitu — kolejność kart, to, co przypinasz i ukrywasz, pseudonimy oraz zakresy referencyjne — między urządzeniami. Twoje wyniki badań pozostają w Apple Zdrowiu."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sincronize o layout do seu painel — a ordem dos cartões, o que você fixa e oculta e seus apelidos — entre seus dispositivos. Seus valores de exames ficam no Apple Saúde."
+            "value" : "Sincronize o layout do seu painel — a ordem dos cartões, o que você fixa e oculta, seus apelidos e suas faixas de referência — entre seus dispositivos. Seus valores de exames ficam no Apple Saúde."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Синхронизируйте оформление панели — порядок карточек, что закреплено и скрыто, а также ваши псевдонимы — между устройствами. Ваши лабораторные значения остаются в Apple Здоровье."
+            "value" : "Синхронизируйте оформление панели — порядок карточек, что закреплено и скрыто, ваши псевдонимы, а также референсные диапазоны — между устройствами. Ваши лабораторные значения остаются в Apple Здоровье."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pano düzeninizi — kart sırası, sabitlediğiniz ve gizlediğiniz öğeler ile takma adlarınızı — cihazlarınız arasında senkronlayın. Laboratuvar değerleriniz Apple Sağlık’ta kalır."
+            "value" : "Pano düzeninizi — kart sırası, sabitlediğiniz ve gizlediğiniz öğeler, takma adlarınız ve referans aralıklarınızı — cihazlarınız arasında senkronlayın. Laboratuvar değerleriniz Apple Sağlık’ta kalır."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Синхронізуйте вигляд панелі — порядок карток, що закріплено й приховано, а також ваші псевдоніми — між пристроями. Ваші лабораторні значення залишаються в Apple Здоров’я."
+            "value" : "Синхронізуйте вигляд панелі — порядок карток, що закріплено й приховано, ваші псевдоніми, а також референсні діапазони — між пристроями. Ваші лабораторні значення залишаються в Apple Здоров’я."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在你的设备间同步仪表板布局——卡片顺序、置顶和隐藏的设置，以及你的昵称。你的化验数值保留在 Apple 健康中。"
+            "value" : "在你的设备间同步仪表板布局——卡片顺序、置顶和隐藏的设置、你的昵称，以及你的参考范围。你的化验数值保留在 Apple 健康中。"
           }
         }
       }
