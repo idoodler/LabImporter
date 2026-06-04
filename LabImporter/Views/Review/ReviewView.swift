@@ -443,7 +443,7 @@ private extension ReviewView {
     }
 
     func loadHKCharacteristics() async {
-        guard !CommandLine.arguments.contains("--ss"),
+        guard !ScreenshotMode.isActive,
               let chars = try? await HealthKitService.shared.readPatientCharacteristics() else { return }
         hkBirthdate = chars.dateOfBirth
         hkSex = chars.biologicalSexRaw

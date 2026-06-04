@@ -79,12 +79,8 @@ struct DashboardView: View {
             .presentationDragIndicator(.visible)
         }
         .onAppear {
-            guard CommandLine.arguments.contains("--ss"),
-                  let screenIdx = CommandLine.arguments.firstIndex(of: "--ss-screen"),
-                  CommandLine.arguments.indices.contains(screenIdx + 1)
-            else { return }
-            let screen = CommandLine.arguments[screenIdx + 1]
-            switch screen {
+            guard ScreenshotMode.isActive else { return }
+            switch ScreenshotMode.initialScreen {
             case "trends":
                 guard trendSheet == nil, let firstCode = sortedMetrics.first?.entry.code else { return }
                 trendSheet = TrendSheet(code: firstCode)

@@ -277,7 +277,7 @@ struct HistoryView: View {
     // MARK: - Data
 
     private func loadReports() async {
-        if CommandLine.arguments.contains("--ss") {
+        if ScreenshotMode.isActive {
             reports = LabReport.sampleHistory
             return
         }

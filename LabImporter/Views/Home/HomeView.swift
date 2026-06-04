@@ -98,7 +98,7 @@ struct HomeView: View {
             .interactiveDismissDisabled()
         }
         .task {
-            if isScreenshotMode {
+            if ScreenshotMode.isActive {
                 setupScreenshotMode()
                 return
             }
@@ -357,7 +357,7 @@ struct HomeView: View {
     }
 
     private func loadReports() async {
-        guard !isScreenshotMode else { return }
+        guard !ScreenshotMode.isActive else { return }
         do {
             reports = try await HealthKitService.shared.loadCDADocuments()
         } catch {
@@ -386,16 +386,8 @@ struct HomeView: View {
 
 // MARK: - Screenshot mode
 
+#if DEBUG
 private extension HomeView {
-    var isScreenshotMode: Bool { CommandLine.arguments.contains("--ss") }
-
-    var screenshotScreen: String {
-        guard let idx = CommandLine.arguments.firstIndex(of: "--ss-screen"),
-              CommandLine.arguments.indices.contains(idx + 1)
-        else { return "dashboard" }
-        return CommandLine.arguments[idx + 1]
-    }
-
     func setupScreenshotMode() {
         hasSeenWelcome = true
         hasAcknowledgedDisclaimer = true
@@ -403,7 +395,7 @@ private extension HomeView {
         hasChosenICloudSync = true
         reports = LabReport.sampleHistory
         isLoaded = true
-        if screenshotScreen == "review" {
+        if ScreenshotMode.initialScreen == "review" {
             labValues = LabReport.sampleHistory[0].asLabValues
             parsedPatientName = LabReport.sampleHistory[0].patientName
             parsedAuthorName = LabReport.sampleHistory[0].authorName
@@ -412,6 +404,11 @@ private extension HomeView {
         }
     }
 }
+#else
+private extension HomeView {
+    func setupScreenshotMode() {}
+}
+#endif
 
 #Preview {
     HomeView()

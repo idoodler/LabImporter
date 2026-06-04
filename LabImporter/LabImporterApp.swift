@@ -9,7 +9,7 @@ struct LabImporterApp: App {
 
     var body: some Scene {
         WindowGroup {
-            if DeviceSupport.isSupported || CommandLine.arguments.contains("--ss") {
+            if DeviceSupport.isSupported || ScreenshotMode.isActive {
                 HomeView()
             } else {
                 UnsupportedDeviceView()
