@@ -143,64 +143,30 @@ struct MetricCard: View {
         .padding(14)
         .frame(maxWidth: .infinity, minHeight: 158, alignment: .topLeading)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
-        // Keep all content — notably the chart — inside the card outline, so a
-        // mark drawn to the frame edge follows the rounded corners instead of
-        // spilling past the bottom.
-        .clipShape(RoundedRectangle(cornerRadius: 20))
         .overlay(
             RoundedRectangle(cornerRadius: 20)
                 .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
         )
     }
 
-    /// Reference bounds to draw on the sparkline: only those close enough to the
-    /// readings that showing them won't squash the trend (or stray off-card). A
-    /// bound farther than the tolerance from the data is dropped. The tolerance
-    /// is half the reading span, with a floor so a flat/near-flat series still
-    /// admits a nearby bound.
+    /// Reference bounds to draw on the sparkline: only those that fall *strictly
+    /// within* the readings' own range. Such a guide marks where the trend crosses
+    /// a threshold without touching the chart's automatic scale — so the sparkline
+    /// renders exactly as it does with no range set. A bound outside the data is
+    /// dropped (drawing it would either rescale and flatten the line or just sit
+    /// uselessly on an edge); the value tint and badge already convey that case.
     private var sparklineBounds: (low: Double?, high: Double?) {
         let values = metric.history.map(\.value)
         guard let dataLo = values.min(), let dataHi = values.max(), let range = referenceRange else {
             return (nil, nil)
         }
-        let tolerance = max((dataHi - dataLo) * 0.5, abs(dataHi) * 0.1, 0.5)
-        return (low: range.low.flatMap { $0 >= dataLo - tolerance ? $0 : nil },
-                high: range.high.flatMap { $0 <= dataHi + tolerance ? $0 : nil })
-    }
-
-    /// Y-axis domain covering the readings *and* any drawn reference bound, padded
-    /// so nothing hugs an edge. Folding the bound into the scale (rather than
-    /// pinning to the data alone) keeps a near-the-max threshold from cramming
-    /// against the top. A flat series gets a unit window so it doesn't collapse.
-    private var sparklineDomain: ClosedRange<Double> {
-        let values = metric.history.map(\.value)
-        var dataLo = values.min() ?? 0
-        var dataHi = values.max() ?? 1
-        let bounds = sparklineBounds
-        if let low = bounds.low { dataLo = min(dataLo, low) }
-        if let high = bounds.high { dataHi = max(dataHi, high) }
-        guard dataLo < dataHi else { return (dataLo - 1)...(dataHi + 1) }
-        let pad = (dataHi - dataLo) * 0.15
-        return (dataLo - pad)...(dataHi + pad)
+        let inside: (Double) -> Double? = { $0 > dataLo && $0 < dataHi ? $0 : nil }
+        return (low: range.low.flatMap(inside), high: range.high.flatMap(inside))
     }
 
     private var sparkline: some View {
         let bounds = sparklineBounds
         return Chart {
-            // Faint dashed guides at the reference bounds (those near the readings;
-            // see `sparklineBounds`). Both are folded into the Y scale, so a guide
-            // always sits inside the frame with margin.
-            if let low = bounds.low {
-                RuleMark(y: .value("Low", low))
-                    .foregroundStyle(RangeStatus.low.color.opacity(0.35))
-                    .lineStyle(StrokeStyle(lineWidth: 0.75, dash: [3, 2]))
-            }
-            if let high = bounds.high {
-                RuleMark(y: .value("High", high))
-                    .foregroundStyle(RangeStatus.high.color.opacity(0.35))
-                    .lineStyle(StrokeStyle(lineWidth: 0.75, dash: [3, 2]))
-            }
-
             ForEach(metric.history) { point in
                 LineMark(
                     x: .value("Date", point.date),
@@ -227,8 +193,21 @@ struct MetricCard: View {
                 .foregroundStyle(categoryColor)
                 .symbolSize(20)
             }
+
+            // Faint dashed guides at the reference bounds. Only the bounds that lie
+            // within the readings (see `sparklineBounds`) are drawn, so they never
+            // disturb the automatic Y scale.
+            if let low = bounds.low {
+                RuleMark(y: .value("Low", low))
+                    .foregroundStyle(RangeStatus.low.color.opacity(0.4))
+                    .lineStyle(StrokeStyle(lineWidth: 0.75, dash: [3, 2]))
+            }
+            if let high = bounds.high {
+                RuleMark(y: .value("High", high))
+                    .foregroundStyle(RangeStatus.high.color.opacity(0.4))
+                    .lineStyle(StrokeStyle(lineWidth: 0.75, dash: [3, 2]))
+            }
         }
-        .chartYScale(domain: sparklineDomain)
         .chartXAxis(.hidden)
         .chartYAxis(.hidden)
         // Grow to absorb the card's remaining vertical space instead of leaving a
