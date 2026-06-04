@@ -143,6 +143,10 @@ struct MetricCard: View {
         .padding(14)
         .frame(maxWidth: .infinity, minHeight: 158, alignment: .topLeading)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
+        // Keep all content — notably the chart — inside the card outline, so a
+        // mark drawn to the frame edge follows the rounded corners instead of
+        // spilling past the bottom.
+        .clipShape(RoundedRectangle(cornerRadius: 20))
         .overlay(
             RoundedRectangle(cornerRadius: 20)
                 .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
@@ -231,8 +235,5 @@ struct MetricCard: View {
         // fixed-height chart with blank padding beneath it. `minHeight` keeps a
         // sensible floor when a card's row is short.
         .frame(minHeight: 44, maxHeight: .infinity)
-        // Belt-and-suspenders: clip to the final frame so no mark can draw past
-        // the chart (and the card edge) regardless of scale.
-        .clipped()
     }
 }
