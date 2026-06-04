@@ -11,38 +11,13 @@ Scan, import, or paste your lab report — the app uses Vision OCR and the on-de
 
 ## Screenshots
 
-<table>
-  <tr>
-    <th align="left">Screen</th>
-    <th>Light</th>
-    <th>Dark</th>
-  </tr>
-  <tr>
-    <td><b>Dashboard</b><br><sup>Metric cards with sparklines</sup></td>
-    <td><img src="screenshots/01-dashboard-light.png" width="220"/></td>
-    <td><img src="screenshots/01-dashboard-dark.png" width="220"/></td>
-  </tr>
-  <tr>
-    <td><b>Trends</b><br><sup>Interactive per-metric chart</sup></td>
-    <td><img src="screenshots/02-trends-light.png" width="220"/></td>
-    <td><img src="screenshots/02-trends-dark.png" width="220"/></td>
-  </tr>
-  <tr>
-    <td><b>Review</b><br><sup>AI-extracted values before saving</sup></td>
-    <td><img src="screenshots/03-review-light.png" width="220"/></td>
-    <td><img src="screenshots/03-review-dark.png" width="220"/></td>
-  </tr>
-  <tr>
-    <td><b>Reports</b><br><sup>Full import history grouped by year</sup></td>
-    <td><img src="screenshots/04-history-light.png" width="220"/></td>
-    <td><img src="screenshots/04-history-dark.png" width="220"/></td>
-  </tr>
-  <tr>
-    <td><b>Settings</b><br><sup>Sort, sync, and LOINC catalog</sup></td>
-    <td><img src="screenshots/05-settings-light.png" width="220"/></td>
-    <td><img src="screenshots/05-settings-dark.png" width="220"/></td>
-  </tr>
-</table>
+| | Light | Dark |
+|---|---|---|
+| **Dashboard** — metric cards with sparklines | ![Dashboard Light](screenshots/01-dashboard-light.png) | ![Dashboard Dark](screenshots/01-dashboard-dark.png) |
+| **Trends** — interactive per-metric chart | ![Trends Light](screenshots/02-trends-light.png) | ![Trends Dark](screenshots/02-trends-dark.png) |
+| **Review** — AI-extracted values before saving | ![Review Light](screenshots/03-review-light.png) | ![Review Dark](screenshots/03-review-dark.png) |
+| **Reports** — full import history by year | ![Reports Light](screenshots/04-history-light.png) | ![Reports Dark](screenshots/04-history-dark.png) |
+| **Settings** — sort, sync, and LOINC catalog | ![Settings Light](screenshots/05-settings-light.png) | ![Settings Dark](screenshots/05-settings-dark.png) |
 
 ---
 
