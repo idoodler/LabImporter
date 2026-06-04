@@ -149,24 +149,8 @@ struct MetricCard: View {
         )
     }
 
-    /// Reference bounds to draw on the sparkline: only those that fall *strictly
-    /// within* the readings' own range. Such a guide marks where the trend crosses
-    /// a threshold without touching the chart's automatic scale — so the sparkline
-    /// renders exactly as it does with no range set. A bound outside the data is
-    /// dropped (drawing it would either rescale and flatten the line or just sit
-    /// uselessly on an edge); the value tint and badge already convey that case.
-    private var sparklineBounds: (low: Double?, high: Double?) {
-        let values = metric.history.map(\.value)
-        guard let dataLo = values.min(), let dataHi = values.max(), let range = referenceRange else {
-            return (nil, nil)
-        }
-        let inside: (Double) -> Double? = { $0 > dataLo && $0 < dataHi ? $0 : nil }
-        return (low: range.low.flatMap(inside), high: range.high.flatMap(inside))
-    }
-
     private var sparkline: some View {
-        let bounds = sparklineBounds
-        return Chart {
+        Chart {
             ForEach(metric.history) { point in
                 LineMark(
                     x: .value("Date", point.date),
@@ -194,15 +178,16 @@ struct MetricCard: View {
                 .symbolSize(20)
             }
 
-            // Faint dashed guides at the reference bounds. Only the bounds that lie
-            // within the readings (see `sparklineBounds`) are drawn, so they never
-            // disturb the automatic Y scale.
-            if let low = bounds.low {
+            // Faint dashed guides at the reference bounds. No explicit Y scale is
+            // set, so Charts auto-includes these in the domain — the marks stay
+            // inside the plot (never spilling past the card) and the data simply
+            // shares the height with them.
+            if let low = referenceRange?.low {
                 RuleMark(y: .value("Low", low))
                     .foregroundStyle(RangeStatus.low.color.opacity(0.4))
                     .lineStyle(StrokeStyle(lineWidth: 0.75, dash: [3, 2]))
             }
-            if let high = bounds.high {
+            if let high = referenceRange?.high {
                 RuleMark(y: .value("High", high))
                     .foregroundStyle(RangeStatus.high.color.opacity(0.4))
                     .lineStyle(StrokeStyle(lineWidth: 0.75, dash: [3, 2]))
