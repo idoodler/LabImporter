@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="LabImporter/Assets.xcassets/AppIcon.appiconset/AppIcon-light.png" alt="LabImporter app icon" width="160">
+  <img src="screenshots/app-icon.png" alt="LabImporter app icon" width="160">
 </p>
 
 <h1 align="center">LabImporter</h1>
