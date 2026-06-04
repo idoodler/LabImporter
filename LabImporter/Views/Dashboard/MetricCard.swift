@@ -25,6 +25,18 @@ struct MetricCard: View {
         LabCategory.forCode(metric.entry.code).color
     }
 
+    /// Out-of-range status of the latest reading against the user's reference
+    /// range for this code, or `nil` when there's no value or no range.
+    private var rangeStatus: RangeStatus? {
+        LabMapping.rangeStatus(for: metric.entry.numericValue, code: metric.entry.code)
+    }
+
+    /// The value's colour: tinted by its out-of-range status, else primary.
+    private var valueForeground: Color {
+        if let rangeStatus, rangeStatus.isOutOfRange { return rangeStatus.color }
+        return .primary
+    }
+
     /// Direction of the latest reading relative to the previous one, used to show
     /// a small trend arrow in the overview. `nil` when there is no prior value to
     /// compare against.
@@ -100,7 +112,7 @@ struct MetricCard: View {
             HStack(alignment: .firstTextBaseline, spacing: 3) {
                 Text(metric.entry.displayValue)
                     .font(.title2.bold())
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(valueForeground)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
                 if !metric.entry.unit.isEmpty {
@@ -110,6 +122,11 @@ struct MetricCard: View {
                         .lineLimit(1)
                 }
                 Spacer(minLength: 0)
+                if let rangeStatus {
+                    RangeStatusBadge(status: rangeStatus,
+                                     range: LabMapping.referenceRange(for: metric.entry.code),
+                                     unit: metric.entry.unit)
+                }
             }
 
             if metric.history.count > 1 {

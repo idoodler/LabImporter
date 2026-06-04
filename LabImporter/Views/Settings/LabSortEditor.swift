@@ -16,6 +16,11 @@ struct LabSortEditor: View {
     /// The code currently being renamed (drives the rename alert), plus its draft.
     @State private var renamingCode: String?
     @State private var renameDraft = ""
+    /// The code whose reference range is being edited (drives the range alert),
+    /// plus the low/high field drafts.
+    @State private var rangingCode: String?
+    @State private var rangeLowDraft = ""
+    @State private var rangeHighDraft = ""
 
     init(prefs: Binding<LabDisplayPreferences>, allCodes: [CodeName]) {
         _prefs = prefs
@@ -53,11 +58,25 @@ struct LabSortEditor: View {
         .onChange(of: hiddenSet) { save() }
         .onChange(of: pinnedSet) { save() }
         .renameLabAlert(code: $renamingCode, draft: $renameDraft, prefs: $prefs)
+        .referenceRangeAlert(code: $rangingCode, low: $rangeLowDraft, high: $rangeHighDraft, prefs: $prefs)
     }
 
     private func startRename(_ code: String) {
         renameDraft = prefs.nickname(for: code) ?? ""
         renamingCode = code
+    }
+
+    private func startSetRange(_ code: String) {
+        let range = prefs.referenceRange(for: code)
+        rangeLowDraft = range?.low.map { fieldText($0) } ?? ""
+        rangeHighDraft = range?.high.map { fieldText($0) } ?? ""
+        rangingCode = code
+    }
+
+    /// Renders a stored bound back into an editable field string (trailing zeros
+    /// trimmed) so reopening the editor shows what the user previously entered.
+    private func fieldText(_ value: Double) -> String {
+        value == value.rounded() ? String(format: "%.0f", value) : String(value)
     }
 
     /// Visible codes split by pin state. Both partitions preserve their relative
@@ -112,8 +131,20 @@ struct LabSortEditor: View {
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                 }
+                if let range = prefs.referenceRange(for: item.code) {
+                    Label(range.formatted(), systemImage: "ruler")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
             }
             Spacer()
+            Button { startSetRange(item.code) } label: {
+                Image(systemName: "ruler")
+                    .foregroundStyle(prefs.referenceRange(for: item.code) != nil
+                                     ? Color.accentColor : Color.secondary)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Set Reference Range")
             Button { startRename(item.code) } label: {
                 Image(systemName: "pencil")
                     .foregroundStyle(Color.secondary)

@@ -13,6 +13,11 @@
 		AABB000000000000000040AA /* LabImporterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000020AA /* LabImporterApp.swift */; };
 		AABB000000000000000041AA /* LabValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000021AA /* LabValue.swift */; };
 		AABB000000000000000042AA /* LabMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000022AA /* LabMapping.swift */; };
+		AAFF0000000000000000F102 /* ReferenceRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFF0000000000000000F101 /* ReferenceRange.swift */; };
+		AAFF0000000000000000F202 /* RangeStatusBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFF0000000000000000F201 /* RangeStatusBadge.swift */; };
+		AAFF0000000000000000F302 /* ReferenceRangeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFF0000000000000000F301 /* ReferenceRangeEditor.swift */; };
+		AAFF0000000000000000F402 /* ValueDescriptionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFF0000000000000000F401 /* ValueDescriptionCard.swift */; };
+		AAFF0000000000000000F502 /* TrendWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFF0000000000000000F501 /* TrendWindow.swift */; };
 		AABB000000000000000043AA /* OCRService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000023AA /* OCRService.swift */; };
 		AABB000000000000000044AA /* LabParserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000024AA /* LabParserService.swift */; };
 		AABB000000000000000045AA /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000025AA /* HealthKitService.swift */; };
@@ -67,6 +72,11 @@
 		AABB000000000000000020AA /* LabImporterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabImporterApp.swift; sourceTree = "<group>"; };
 		AABB000000000000000021AA /* LabValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabValue.swift; sourceTree = "<group>"; };
 		AABB000000000000000022AA /* LabMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabMapping.swift; sourceTree = "<group>"; };
+		AAFF0000000000000000F101 /* ReferenceRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferenceRange.swift; sourceTree = "<group>"; };
+		AAFF0000000000000000F201 /* RangeStatusBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeStatusBadge.swift; sourceTree = "<group>"; };
+		AAFF0000000000000000F301 /* ReferenceRangeEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferenceRangeEditor.swift; sourceTree = "<group>"; };
+		AAFF0000000000000000F401 /* ValueDescriptionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueDescriptionCard.swift; sourceTree = "<group>"; };
+		AAFF0000000000000000F501 /* TrendWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendWindow.swift; sourceTree = "<group>"; };
 		AABB000000000000000023AA /* OCRService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRService.swift; sourceTree = "<group>"; };
 		AABB000000000000000024AA /* LabParserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabParserService.swift; sourceTree = "<group>"; };
 		AABB000000000000000025AA /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
@@ -262,6 +272,7 @@
 			children = (
 				AABB000000000000000021AA /* LabValue.swift */,
 				AABB000000000000000022AA /* LabMapping.swift */,
+				AAFF0000000000000000F101 /* ReferenceRange.swift */,
 				AABB000000000000000096AA /* LabCategory.swift */,
 				AABB000000000000000061AA /* LabReport.swift */,
 				AABB000000000000000075AA /* LabDisplayPreferences.swift */,
@@ -346,6 +357,8 @@
 			children = (
 				AABB000000000000000071AA /* DashboardView.swift */,
 				AABB0000000000000000CC02 /* MetricCard.swift */,
+				AAFF0000000000000000F401 /* ValueDescriptionCard.swift */,
+				AAFF0000000000000000F501 /* TrendWindow.swift */,
 				AABB000000000000000069AA /* TrendsView.swift */,
 			);
 			path = Dashboard;
@@ -366,6 +379,7 @@
 				AABB000000000000000087AA /* SettingsView.swift */,
 				AABBCC0000000000000002AA /* LabSortEditor.swift */,
 				AABBCC0000000000000004AA /* RenameLabAlert.swift */,
+				AAFF0000000000000000F301 /* ReferenceRangeEditor.swift */,
 				AABBCC0000000000000006AA /* BuildInfoCard.swift */,
 			);
 			path = Settings;
@@ -378,6 +392,7 @@
 				AABB0000000000000000C1AA /* MorphingCategoryBackground.swift */,
 				AACC000000000000000004AA /* PreviewSampleData.swift */,
 				AABB0000000000000000C3DE /* UnsupportedDeviceView.swift */,
+				AAFF0000000000000000F201 /* RangeStatusBadge.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -520,6 +535,11 @@
 				AABB000000000000000040AA /* LabImporterApp.swift in Sources */,
 				AABB000000000000000041AA /* LabValue.swift in Sources */,
 				AABB000000000000000042AA /* LabMapping.swift in Sources */,
+				AAFF0000000000000000F102 /* ReferenceRange.swift in Sources */,
+				AAFF0000000000000000F202 /* RangeStatusBadge.swift in Sources */,
+				AAFF0000000000000000F302 /* ReferenceRangeEditor.swift in Sources */,
+				AAFF0000000000000000F402 /* ValueDescriptionCard.swift in Sources */,
+				AAFF0000000000000000F502 /* TrendWindow.swift in Sources */,
 				AABB000000000000000097AA /* LabCategory.swift in Sources */,
 				AABB000000000000000043AA /* OCRService.swift in Sources */,
 				AABB000000000000000044AA /* LabParserService.swift in Sources */,

@@ -12,6 +12,13 @@ struct LabDisplayPreferences: RawRepresentable {
     /// standard LOINC English display (see `LabMapping.loincCode(for:)`).
     /// Persisted under the legacy JSON key `customNames` (see `Payload`).
     var nicknames: [String: String] = [:]
+    /// User-defined reference (normal) ranges, keyed by LOINC code. Empty until
+    /// the user sets one in Sort & Visibility (or the trends screen). Like
+    /// nicknames these are cosmetic — they drive the out-of-range badges across
+    /// the app via `LabMapping.referenceRange(for:)` but never reach the exported
+    /// CDA. There is no bundled default: LOINC ships no ranges (see
+    /// `ReferenceRange`), so clearing one simply removes the flagging.
+    var referenceRanges: [String: ReferenceRange] = [:]
 
     init() {}
 
@@ -23,11 +30,13 @@ struct LabDisplayPreferences: RawRepresentable {
         orderedCodes = decoded.orderedCodes
         hiddenCodes = decoded.hiddenCodes
         nicknames = decoded.customNames ?? [:]
+        referenceRanges = decoded.referenceRanges ?? [:]
     }
 
     var rawValue: String {
         let payload = Payload(pinnedCodes: pinnedCodes, orderedCodes: orderedCodes,
-                              hiddenCodes: hiddenCodes, customNames: nicknames)
+                              hiddenCodes: hiddenCodes, customNames: nicknames,
+                              referenceRanges: referenceRanges)
         return (try? JSONEncoder().encode(payload)).flatMap { String(data: $0, encoding: .utf8) } ?? ""
     }
 
@@ -56,6 +65,25 @@ struct LabDisplayPreferences: RawRepresentable {
         }
     }
 
+    /// The user's reference range for `code`, or `nil` if none is set (or the
+    /// stored one is empty, i.e. constrains nothing).
+    func referenceRange(for code: String) -> ReferenceRange? {
+        let trimmed = code.trimmingCharacters(in: .whitespaces)
+        guard let range = referenceRanges[trimmed], !range.isEmpty else { return nil }
+        return range
+    }
+
+    /// Sets (or, when `range` is `nil`/empty, clears — the per-code "reset") the
+    /// reference range for `code`. Clearing removes out-of-range flagging.
+    mutating func setReferenceRange(_ range: ReferenceRange?, for code: String) {
+        let trimmedCode = code.trimmingCharacters(in: .whitespaces)
+        if let range, !range.isEmpty {
+            referenceRanges[trimmedCode] = range
+        } else {
+            referenceRanges.removeValue(forKey: trimmedCode)
+        }
+    }
+
     // Separate Codable type breaks the Codable+RawRepresentable encoding cycle.
     // If LabDisplayPreferences itself were Codable, the stdlib's RawRepresentable
     // default encode(to:) would call self.rawValue → JSONEncoder.encode(self) → infinite recursion.
@@ -69,6 +97,10 @@ struct LabDisplayPreferences: RawRepresentable {
         // decode (older builds likewise ignore this unknown key, so the layout
         // keeps roaming both ways).
         var customNames: [String: String]?
+        // Optional for the same forward/backward-compat reason as `customNames`:
+        // blobs written before ranges existed (or synced from an older build)
+        // decode fine, and older builds ignore this unknown key when roaming.
+        var referenceRanges: [String: ReferenceRange]?
     }
 }
 

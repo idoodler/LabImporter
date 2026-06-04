@@ -13,6 +13,12 @@ struct LabValueRowView: View {
         LabMapping.loincCode(for: value.code) != nil
     }
 
+    /// Where this row's value sits relative to the user's reference range for the
+    /// code, or `nil` when there is no value or no range (so no badge shows).
+    private var rangeStatus: RangeStatus? {
+        LabMapping.rangeStatus(for: value.numericValue, code: value.code)
+    }
+
     var body: some View {
         HStack(alignment: .center, spacing: 12) {
             Button {
@@ -52,6 +58,12 @@ struct LabValueRowView: View {
                             .background(Color.orange.opacity(0.15), in: Capsule())
                             .foregroundStyle(.orange)
                             .help("Another value uses the same LOINC code — keep only one")
+                    }
+
+                    if let rangeStatus {
+                        RangeStatusBadge(status: rangeStatus,
+                                         range: LabMapping.referenceRange(for: value.code),
+                                         unit: value.unit)
                     }
                 }
 

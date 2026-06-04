@@ -24,6 +24,9 @@ struct TrendsView: View {
     @State private var showHideConfirmation = false
     @State private var renamingCode: String?
     @State private var renameDraft = ""
+    @State private var rangingCode: String?
+    @State private var rangeLowDraft = ""
+    @State private var rangeHighDraft = ""
     private let selectionFeedback = UISelectionFeedbackGenerator()
     private let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
 
@@ -82,6 +85,17 @@ struct TrendsView: View {
 
     private var isPinned: Bool { prefs.pinnedSet.contains(selectedCode) }
 
+    /// The user's reference range for the metric on screen, or `nil` if unset.
+    /// Drives the dashed band lines and the per-point out-of-range tinting.
+    private var referenceRange: ReferenceRange? { prefs.referenceRange(for: selectedCode) }
+
+    /// Colour for a plotted point: the out-of-range status tint when the value
+    /// falls outside the reference range, otherwise the metric's category colour.
+    private func pointColor(_ value: Double) -> Color {
+        if let status = referenceRange?.status(for: value), status.isOutOfRange { return status.color }
+        return valueColor
+    }
+
     private var selectedName: String {
         availableCodes.first(where: { $0.code == selectedCode })?.name ?? "Trends"
     }
@@ -115,6 +129,8 @@ struct TrendsView: View {
             Text("This metric will no longer appear on your dashboard. You can show it again from Settings.")
         }
         .renameLabAlert(code: $renamingCode, draft: $renameDraft, prefs: $prefs)
+        .referenceRangeAlert(code: $rangingCode, low: $rangeLowDraft, high: $rangeHighDraft,
+                             unit: currentUnit, prefs: $prefs)
         .onAppear {
             let codes = availableCodes.map(\.code)
             if let initial = initialCode, codes.contains(initial) {
@@ -145,6 +161,11 @@ struct TrendsView: View {
                 renamingCode = selectedCode
             } label: {
                 Label("Rename", systemImage: "pencil")
+            }
+            Button {
+                startSetRange()
+            } label: {
+                Label("Set Reference Range", systemImage: "ruler")
             }
             Button {
                 togglePin(selectedCode)
@@ -206,8 +227,26 @@ struct TrendsView: View {
         }
     }
 
+}
+
+// MARK: - Chart
+
+extension TrendsView {
     private var trendChart: some View {
         Chart {
+            if let range = referenceRange {
+                if let low = range.low {
+                    RuleMark(y: .value(String(localized: "Low"), low))
+                        .foregroundStyle(RangeStatus.low.color.opacity(0.45))
+                        .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 3]))
+                }
+                if let high = range.high {
+                    RuleMark(y: .value(String(localized: "High"), high))
+                        .foregroundStyle(RangeStatus.high.color.opacity(0.45))
+                        .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 3]))
+                }
+            }
+
             ForEach(dataPoints) { point in
                 LineMark(
                     x: .value(String(localized: "Date"), point.date),
@@ -219,7 +258,7 @@ struct TrendsView: View {
                     x: .value(String(localized: "Date"), point.date),
                     y: .value(currentUnit, point.value)
                 )
-                .foregroundStyle(valueColor)
+                .foregroundStyle(pointColor(point.value))
 
                 AreaMark(
                     x: .value(String(localized: "Date"), point.date),
@@ -336,31 +375,6 @@ struct TrendsView: View {
 // MARK: - Helpers
 
 extension TrendsView {
-    /// Selectable time window; a finite case fixes the visible x-span, `.all` fits everything.
-    enum TrendWindow: String, CaseIterable, Identifiable {
-        case month3, month6, year1, all
-        var id: Self { self }
-
-        /// Visible span in days, or `nil` for "fit everything".
-        var days: Int? {
-            switch self {
-            case .month3: return 92
-            case .month6: return 183
-            case .year1: return 366
-            case .all: return nil
-            }
-        }
-
-        var label: LocalizedStringKey {
-            switch self {
-            case .month3: return "3M"
-            case .month6: return "6M"
-            case .year1: return "1Y"
-            case .all: return "All"
-            }
-        }
-    }
-
     /// Static unit caption pinned to the card (`chartYAxisLabel` rides the scrollable plot).
     @ViewBuilder
     var unitBadge: some View {
@@ -421,6 +435,19 @@ extension TrendsView {
         impactFeedback.impactOccurred()
     }
 
+    /// Seeds the range fields from the current range (if any) and opens the editor
+    /// for the metric on screen.
+    func startSetRange() {
+        let range = prefs.referenceRange(for: selectedCode)
+        rangeLowDraft = range?.low.map { Self.fieldText($0) } ?? ""
+        rangeHighDraft = range?.high.map { Self.fieldText($0) } ?? ""
+        rangingCode = selectedCode
+    }
+
+    private static func fieldText(_ value: Double) -> String {
+        value == value.rounded() ? String(format: "%.0f", value) : String(value)
+    }
+
     /// Hides the selected metric from the dashboard and dismisses the trend view,
     /// since the value is no longer surfaced in the overview after hiding.
     private func hideSelected() {
@@ -433,55 +460,6 @@ extension TrendsView {
         prefs = updated
         impactFeedback.impactOccurred()
         onDismiss?()
-    }
-}
-
-// MARK: - ValueDescriptionCard
-
-/// Tappable summary of the selected value's LOINC term shown beneath the trend
-/// chart; navigates to the full structured details (and the loinc.org link).
-private struct ValueDescriptionCard: View {
-    let term: LoincTerm
-
-    var body: some View {
-        NavigationLink {
-            LoincTermDetailView(term: term)
-        } label: {
-            VStack(alignment: .leading, spacing: 6) {
-                HStack {
-                    Text("About this value")
-                        .font(.subheadline.weight(.semibold))
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .font(.caption2)
-                        .foregroundStyle(.tertiary)
-                }
-                if let description {
-                    Text(description)
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                Text(verbatim: "LOINC \(term.code)")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
-            .overlay(
-                RoundedRectangle(cornerRadius: 20)
-                    .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
-            )
-            .padding(.horizontal)
-        }
-        .buttonStyle(.plain)
-    }
-
-    private var description: String? {
-        if let description = term.description, !description.isEmpty { return description }
-        // Fall back to the English name when it adds detail beyond the title.
-        return term.englishName == term.name ? nil : term.englishName
     }
 }
 

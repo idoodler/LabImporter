@@ -222,15 +222,28 @@ struct ReportDetailView: View {
 
             Spacer()
 
+            let status = LabMapping.rangeStatus(for: entry.numericValue, code: entry.code)
+            if let status {
+                RangeStatusBadge(status: status,
+                                 range: LabMapping.referenceRange(for: entry.code),
+                                 unit: entry.unit)
+            }
+
             let valueText = entry.displayValue == "-"
                 ? "–"
                 : "\(entry.displayValue) \(entry.unit)".trimmingCharacters(in: .whitespaces)
 
             Text(valueText)
                 .font(.body.monospacedDigit().weight(.medium))
-                .foregroundStyle(entry.displayValue == "-" ? .secondary : .primary)
+                .foregroundStyle(valueColor(for: entry, status: status))
         }
         .padding(.vertical, 2)
+    }
+
+    private func valueColor(for entry: LabReport.Entry, status: RangeStatus?) -> Color {
+        if entry.displayValue == "-" { return .secondary }
+        if let status, status.isOutOfRange { return status.color }
+        return .primary
     }
 
     // MARK: - Derived data

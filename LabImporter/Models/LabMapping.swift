@@ -48,4 +48,20 @@ enum LabMapping {
         guard let term = LoincDirectory.shared.term(for: trimmed) else { return nil }
         return (term.code, term.englishName)
     }
+
+    // MARK: - Reference ranges
+
+    // The user's reference range for a code, or nil if they haven't set one.
+    // Read centrally (like `displayName`) so the range flows to every screen that
+    // shows a value. Ranges are a display preference only and never reach the CDA.
+    static func referenceRange(for code: String) -> ReferenceRange? {
+        LabDisplayPreferences.current().referenceRange(for: code)
+    }
+
+    // Classifies `value` against the user's range for `code`. Returns nil when
+    // there is no value or no range, so callers can skip the badge entirely.
+    static func rangeStatus(for value: Double?, code: String) -> RangeStatus? {
+        guard let value, let range = referenceRange(for: code) else { return nil }
+        return range.status(for: value)
+    }
 }
