@@ -56,7 +56,7 @@ Scan, import, or paste your lab report — the app uses Vision OCR and the on-de
 
 ## Building with GitHub Actions (no Mac required)
 
-This repository uses the same Fastlane + Fastlane Match infrastructure as [Trio](https://github.com/idoodler-s-Diabetes-Management/Trio). If you have already configured secrets for Trio in your organisation, they are reused here without any changes.
+This repository uses Fastlane + Fastlane Match for fully automated, Mac-free builds.
 
 ### Required secrets
 
@@ -71,7 +71,7 @@ Add these to your repository (or organisation) under **Settings → Secrets and 
 | `FASTLANE_KEY` | App Store Connect API key contents (the `.p8` file, paste the full text including header/footer) |
 | `MATCH_PASSWORD` | A strong password used to encrypt certificates in the `Match-Secrets` repository |
 
-> All six secrets are shared with Trio — if they are already set at the organisation level you have nothing extra to do.
+> Secrets can be set at the organisation level — if they are already configured there you have nothing extra to do.
 
 ### Optional repository variables
 
@@ -96,7 +96,7 @@ Go to **Actions → 2. Add Identifiers → Run workflow**.
 
 This registers your app's bundle ID in App Store Connect and enables the **HealthKit** and **iCloud (key-value storage)** capabilities on it. The iCloud capability backs the opt-in dashboard-layout sync; if you enable it after a profile already exists, re-run **3. Create Certificates** (with `ENABLE_NUKE_CERTS` or `FORCE_NUKE_CERTS` set) so the provisioning profile is regenerated to include it.
 
-The bundle identifier is `dev.idoodler.<TEAMID>.labimporter` — the same pattern as Trio (`org.nightscout.<TEAMID>.trio`). The `<TEAMID>` placeholder is substituted automatically from the `TEAMID` secret at build time via `Config.xcconfig`.
+The bundle identifier is `dev.idoodler.<TEAMID>.labimporter`. The `<TEAMID>` placeholder is substituted automatically from the `TEAMID` secret at build time via `Config.xcconfig`.
 
 After this step, go to [App Store Connect](https://appstoreconnect.apple.com) and create a new app record for **LabImporter** using the bundle ID shown in the workflow log. This is required before the first build can upload to TestFlight.
 
