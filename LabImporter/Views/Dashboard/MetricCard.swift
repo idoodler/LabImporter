@@ -163,16 +163,17 @@ struct MetricCard: View {
 
     private var sparkline: some View {
         Chart {
-            // Faint dashed guides at the reference bounds. The Y scale is pinned to
-            // the data range (below), so a bound far from the data clips instead of
-            // flattening the trend — it only shows when the readings approach it.
+            // Faint dashed guides at the reference bounds. Only drawn when the
+            // bound falls inside the data-pinned Y scale (below): a bound far from
+            // the readings is omitted rather than rescaling and flattening the
+            // trend — or drawing a stray line past the card edge.
             if let range = referenceRange {
-                if let low = range.low {
+                if let low = range.low, sparklineDomain.contains(low) {
                     RuleMark(y: .value("Low", low))
                         .foregroundStyle(RangeStatus.low.color.opacity(0.35))
                         .lineStyle(StrokeStyle(lineWidth: 0.75, dash: [3, 2]))
                 }
-                if let high = range.high {
+                if let high = range.high, sparklineDomain.contains(high) {
                     RuleMark(y: .value("High", high))
                         .foregroundStyle(RangeStatus.high.color.opacity(0.35))
                         .lineStyle(StrokeStyle(lineWidth: 0.75, dash: [3, 2]))
@@ -213,5 +214,8 @@ struct MetricCard: View {
         // fixed-height chart with blank padding beneath it. `minHeight` keeps a
         // sensible floor when a card's row is short.
         .frame(minHeight: 44, maxHeight: .infinity)
+        // Belt-and-suspenders: clip to the final frame so no mark can draw past
+        // the chart (and the card edge) regardless of scale.
+        .clipped()
     }
 }
