@@ -138,6 +138,9 @@ struct LoincTermDetailView: View {
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
     @State private var renamingCode: String?
     @State private var renameDraft = ""
+    @State private var rangingCode: String?
+    @State private var rangeLowDraft = ""
+    @State private var rangeHighDraft = ""
 
     // The clinical category drives the accent color used for the header icon,
     // the category chip and the background wash — the same palette charts use.
@@ -191,15 +194,21 @@ struct LoincTermDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    renameDraft = prefs.nickname(for: term.code) ?? ""
-                    renamingCode = term.code
+                Menu {
+                    Button { startRename() } label: {
+                        Label("Rename", systemImage: "pencil")
+                    }
+                    Button { startSetRange() } label: {
+                        Label("Set Reference Range", systemImage: "ruler")
+                    }
                 } label: {
-                    Label("Rename", systemImage: "pencil")
+                    Label("More", systemImage: "ellipsis")
                 }
             }
         }
         .renameLabAlert(code: $renamingCode, draft: $renameDraft, prefs: $prefs)
+        .referenceRangeAlert(code: $rangingCode, low: $rangeLowDraft, high: $rangeHighDraft,
+                             unit: detail?.ucum ?? "", prefs: $prefs)
         .task { detail = LoincDirectory.shared.detail(for: term.code) }
         .sheet(item: $browserURL) { item in
             SafariView(url: item.url)
@@ -241,6 +250,11 @@ struct LoincTermDetailView: View {
                 nicknameRow(nickname)
             }
 
+            if let range = prefs.referenceRange(for: term.code) {
+                Divider()
+                referenceRangeRow(range)
+            }
+
             if let description = detail?.description ?? term.description, !description.isEmpty {
                 Divider()
                 Text(description)
@@ -271,6 +285,47 @@ struct LoincTermDetailView: View {
         .overlay(
             Capsule().stroke(category.color.opacity(0.25), lineWidth: 0.5)
         )
+    }
+
+    // MARK: - Editing
+
+    private func startRename() {
+        renameDraft = prefs.nickname(for: term.code) ?? ""
+        renamingCode = term.code
+    }
+
+    private func startSetRange() {
+        let range = prefs.referenceRange(for: term.code)
+        rangeLowDraft = range?.low.map { Self.fieldText($0) } ?? ""
+        rangeHighDraft = range?.high.map { Self.fieldText($0) } ?? ""
+        rangingCode = term.code
+    }
+
+    /// Renders a stored bound back into an editable field string (trailing zeros
+    /// trimmed) so reopening the editor shows what the user previously entered.
+    private static func fieldText(_ value: Double) -> String {
+        value == value.rounded() ? String(format: "%.0f", value) : String(value)
+    }
+
+    // The user's reference range for this test, shown read-only (editing happens
+    // via the toolbar menu) with a "ruler" glyph, mirroring the nickname row. The
+    // LOINC example unit is appended when known.
+    private func referenceRangeRow(_ range: ReferenceRange) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: "ruler")
+                .font(.subheadline)
+                .foregroundStyle(category.color)
+                .frame(width: 20)
+            VStack(alignment: .leading, spacing: 1) {
+                Text("Reference Range")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .textCase(.uppercase)
+                Text(range.formatted(unit: detail?.ucum ?? ""))
+                    .font(.subheadline.weight(.medium))
+            }
+            Spacer(minLength: 0)
+        }
     }
 
     // The user's nickname for this test, shown as a plainly-labelled read-only

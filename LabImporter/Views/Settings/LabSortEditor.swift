@@ -13,14 +13,10 @@ struct LabSortEditor: View {
     @State private var visibleOrdered: [CodeName]
     @State private var hiddenSet: Set<String>
     @State private var pinnedSet: Set<String>
-    /// The code currently being renamed (drives the rename alert), plus its draft.
-    @State private var renamingCode: String?
-    @State private var renameDraft = ""
-    /// The code whose reference range is being edited (drives the range alert),
-    /// plus the low/high field drafts.
-    @State private var rangingCode: String?
-    @State private var rangeLowDraft = ""
-    @State private var rangeHighDraft = ""
+    /// The LOINC code pushed onto the detail screen, where the user renames the
+    /// metric and sets its reference range. `nil` until they tap a row's info
+    /// button.
+    @State private var detailCode: String?
 
     init(prefs: Binding<LabDisplayPreferences>, allCodes: [CodeName]) {
         _prefs = prefs
@@ -57,26 +53,18 @@ struct LabSortEditor: View {
         .onChange(of: visibleOrdered.map(\.code)) { save() }
         .onChange(of: hiddenSet) { save() }
         .onChange(of: pinnedSet) { save() }
-        .renameLabAlert(code: $renamingCode, draft: $renameDraft, prefs: $prefs)
-        .referenceRangeAlert(code: $rangingCode, low: $rangeLowDraft, high: $rangeHighDraft, prefs: $prefs)
+        .navigationDestination(item: $detailCode) { code in
+            if let term = LoincDirectory.shared.term(for: code) {
+                LoincTermDetailView(term: term)
+            }
+        }
     }
 
-    private func startRename(_ code: String) {
-        renameDraft = prefs.nickname(for: code) ?? ""
-        renamingCode = code
-    }
-
-    private func startSetRange(_ code: String) {
-        let range = prefs.referenceRange(for: code)
-        rangeLowDraft = range?.low.map { fieldText($0) } ?? ""
-        rangeHighDraft = range?.high.map { fieldText($0) } ?? ""
-        rangingCode = code
-    }
-
-    /// Renders a stored bound back into an editable field string (trailing zeros
-    /// trimmed) so reopening the editor shows what the user previously entered.
-    private func fieldText(_ value: Double) -> String {
-        value == value.rounded() ? String(format: "%.0f", value) : String(value)
+    /// Opens the LOINC detail screen for `code`, where renaming and reference
+    /// range editing live. Codes the catalog doesn't know have no detail screen,
+    /// so the info button is hidden for them (see `row(for:)`).
+    private func showDetail(_ code: String) {
+        detailCode = code
     }
 
     /// Visible codes split by pin state. Both partitions preserve their relative
@@ -138,18 +126,16 @@ struct LabSortEditor: View {
                 }
             }
             Spacer()
-            Button { startSetRange(item.code) } label: {
-                Image(systemName: "ruler")
-                    .foregroundStyle(prefs.referenceRange(for: item.code) != nil
-                                     ? Color.accentColor : Color.secondary)
+            // The catalog detail screen hosts renaming and reference-range
+            // editing; only LOINC codes the catalog knows have one.
+            if LoincDirectory.shared.term(for: item.code) != nil {
+                Button { showDetail(item.code) } label: {
+                    Image(systemName: "info.circle")
+                        .foregroundStyle(Color.secondary)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Details")
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Set Reference Range")
-            Button { startRename(item.code) } label: {
-                Image(systemName: "pencil")
-                    .foregroundStyle(Color.secondary)
-            }
-            .buttonStyle(.plain)
             Button { hideCode(item.code) } label: {
                 Image(systemName: "eye.slash")
                     .foregroundStyle(Color.secondary)
