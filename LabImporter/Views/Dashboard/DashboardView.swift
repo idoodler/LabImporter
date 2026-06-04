@@ -390,6 +390,7 @@ struct CategoryBackground: View {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview("Dashboard") {
     NavigationStack {
         DashboardView(
@@ -401,6 +402,7 @@ struct CategoryBackground: View {
         )
     }
 }
+#endif
 
 #Preview("Few values") {
     NavigationStack {

@@ -465,11 +465,13 @@ extension TrendsView {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview("Trends") {
     NavigationStack {
         TrendsView(reports: LabReport.sampleHistory, initialCode: "4548-4")
     }
 }
+#endif
 
 #Preview("No Data") {
     NavigationStack {

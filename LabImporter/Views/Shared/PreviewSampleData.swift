@@ -1,3 +1,4 @@
+#if DEBUG
 import Foundation
 
 // Shared sample data for SwiftUI previews. The codes are real LOINC numbers so
@@ -112,3 +113,4 @@ extension CategoryCount {
         ]
     }
 }
+#endif

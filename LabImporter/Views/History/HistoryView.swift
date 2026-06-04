@@ -277,10 +277,12 @@ struct HistoryView: View {
     // MARK: - Data
 
     private func loadReports() async {
+        #if DEBUG
         if ScreenshotMode.isActive {
             reports = LabReport.sampleHistory
             return
         }
+        #endif
         do {
             reports = try await HealthKitService.shared.loadCDADocuments()
             // Drop selections (and leave edit mode) once nothing is left to act on.
@@ -422,8 +424,10 @@ private struct CategoryDots: View {
     }
 }
 
+#if DEBUG
 #Preview("Report Row") {
     List {
         ReportRow(report: .sample)
     }
 }
+#endif

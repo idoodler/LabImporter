@@ -359,11 +359,13 @@ struct LoincTermDetailView: View {
 
 // MARK: - Previews
 
+#if DEBUG
 #Preview("Term Detail") {
     NavigationStack {
         LoincTermDetailView(term: .sample)
     }
 }
+#endif
 
 #Preview("Catalog") {
     NavigationStack {

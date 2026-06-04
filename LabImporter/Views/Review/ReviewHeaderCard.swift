@@ -349,6 +349,7 @@ struct CategorySectionHeader: View {
 
 // MARK: - Previews
 
+#if DEBUG
 #Preview("Header Card") {
     ReviewHeaderCard(
         supportedCount: 10,
@@ -359,6 +360,7 @@ struct CategorySectionHeader: View {
     .padding()
     .background(Color(.systemGroupedBackground))
 }
+#endif
 
 #Preview("Action Bar") {
     VStack {
@@ -381,6 +383,7 @@ struct CategorySectionHeader: View {
     }
 }
 
+#if DEBUG
 #Preview("Category Chips") {
     VStack(alignment: .leading, spacing: 12) {
         CategorySectionHeader(category: .lipids, count: 4)
@@ -393,3 +396,4 @@ struct CategorySectionHeader: View {
     }
     .padding()
 }
+#endif
