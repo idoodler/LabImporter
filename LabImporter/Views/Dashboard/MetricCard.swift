@@ -25,6 +25,11 @@ struct MetricCard: View {
         LabCategory.forCode(metric.entry.code).color
     }
 
+    /// The user's reference range for this metric's code, if set.
+    private var referenceRange: ReferenceRange? {
+        LabMapping.referenceRange(for: metric.entry.code)
+    }
+
     /// Out-of-range status of the latest reading against the user's reference
     /// range for this code, or `nil` when there's no value or no range.
     private var rangeStatus: RangeStatus? {
@@ -124,7 +129,7 @@ struct MetricCard: View {
                 Spacer(minLength: 0)
                 if let rangeStatus {
                     RangeStatusBadge(status: rangeStatus,
-                                     range: LabMapping.referenceRange(for: metric.entry.code),
+                                     range: referenceRange,
                                      unit: metric.entry.unit)
                 }
             }
@@ -144,33 +149,64 @@ struct MetricCard: View {
         )
     }
 
+    /// Y-axis domain pinned to the readings (with a little padding) so reference
+    /// guides drawn outside it clip rather than rescaling and flattening the
+    /// trend. A flat series gets a unit window so it doesn't collapse to a line.
+    private var sparklineDomain: ClosedRange<Double> {
+        let values = metric.history.map(\.value)
+        let low = values.min() ?? 0
+        let high = values.max() ?? 1
+        guard low < high else { return (low - 1)...(high + 1) }
+        let pad = (high - low) * 0.15
+        return (low - pad)...(high + pad)
+    }
+
     private var sparkline: some View {
-        Chart(metric.history) { point in
-            LineMark(
-                x: .value("Date", point.date),
-                y: .value("Value", point.value)
-            )
-            .foregroundStyle(categoryColor.opacity(0.85))
+        Chart {
+            // Faint dashed guides at the reference bounds. The Y scale is pinned to
+            // the data range (below), so a bound far from the data clips instead of
+            // flattening the trend — it only shows when the readings approach it.
+            if let range = referenceRange {
+                if let low = range.low {
+                    RuleMark(y: .value("Low", low))
+                        .foregroundStyle(RangeStatus.low.color.opacity(0.35))
+                        .lineStyle(StrokeStyle(lineWidth: 0.75, dash: [3, 2]))
+                }
+                if let high = range.high {
+                    RuleMark(y: .value("High", high))
+                        .foregroundStyle(RangeStatus.high.color.opacity(0.35))
+                        .lineStyle(StrokeStyle(lineWidth: 0.75, dash: [3, 2]))
+                }
+            }
 
-            AreaMark(
-                x: .value("Date", point.date),
-                y: .value("Value", point.value)
-            )
-            .foregroundStyle(
-                LinearGradient(
-                    colors: [categoryColor.opacity(0.3), categoryColor.opacity(0.05)],
-                    startPoint: .top,
-                    endPoint: .bottom
+            ForEach(metric.history) { point in
+                LineMark(
+                    x: .value("Date", point.date),
+                    y: .value("Value", point.value)
                 )
-            )
+                .foregroundStyle(categoryColor.opacity(0.85))
 
-            PointMark(
-                x: .value("Date", point.date),
-                y: .value("Value", point.value)
-            )
-            .foregroundStyle(categoryColor)
-            .symbolSize(20)
+                AreaMark(
+                    x: .value("Date", point.date),
+                    y: .value("Value", point.value)
+                )
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [categoryColor.opacity(0.3), categoryColor.opacity(0.05)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+
+                PointMark(
+                    x: .value("Date", point.date),
+                    y: .value("Value", point.value)
+                )
+                .foregroundStyle(categoryColor)
+                .symbolSize(20)
+            }
         }
+        .chartYScale(domain: sparklineDomain)
         .chartXAxis(.hidden)
         .chartYAxis(.hidden)
         // Grow to absorb the card's remaining vertical space instead of leaving a
