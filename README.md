@@ -9,6 +9,32 @@ Scan, import, or paste your lab report — the app uses Vision OCR and the on-de
 
 ---
 
+## Screenshots
+
+> All screenshots are from the iOS 26 Simulator on iPhone 17 Pro. Left: Light mode · Right: Dark mode.
+
+**Dashboard** — metric cards with current value, sparkline trend, and category colour coding
+
+![Dashboard](screenshots/01-dashboard.png)
+
+**Trends** — interactive per-metric chart; scrub to inspect individual data points
+
+![Trends](screenshots/02-trends.png)
+
+**Review** — AI-extracted lab values grouped by clinical category, ready to correct before saving
+
+![Review](screenshots/03-review.png)
+
+**Reports** — full history of imported reports grouped by year, with report stats
+
+![Reports](screenshots/04-history.png)
+
+**Settings** — sort and visibility controls, iCloud sync toggle, and LOINC catalog browser
+
+![Settings](screenshots/05-settings.png)
+
+---
+
 ## Features
 
 - **Import** by scanning multi-page documents with the camera, picking PDFs or images from Files, pasting from the clipboard, or sending a PDF/image to LabImporter from any app via the share sheet ("Open With")

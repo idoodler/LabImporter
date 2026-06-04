@@ -21,6 +21,7 @@ struct DashboardView: View {
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var showSettings = false
+    @State private var showHistorySheet = false
     @State private var trendSheet: TrendSheet?
 
     private struct TrendSheet: Identifiable {
@@ -67,12 +68,33 @@ struct DashboardView: View {
         .sheet(isPresented: $showSettings) {
             SettingsView(prefs: $prefs, allCodes: allCodeNames)
         }
+        .sheet(isPresented: $showHistorySheet) {
+            NavigationStack { HistoryView() }
+        }
         .sheet(item: $trendSheet) { sheet in
             NavigationStack {
                 TrendsView(reports: reports, initialCode: sheet.code, onDismiss: { trendSheet = nil })
             }
             .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
+        }
+        .onAppear {
+            guard CommandLine.arguments.contains("--ss"),
+                  let screenIdx = CommandLine.arguments.firstIndex(of: "--ss-screen"),
+                  CommandLine.arguments.indices.contains(screenIdx + 1)
+            else { return }
+            let screen = CommandLine.arguments[screenIdx + 1]
+            switch screen {
+            case "trends":
+                guard trendSheet == nil, let firstCode = sortedMetrics.first?.entry.code else { return }
+                trendSheet = TrendSheet(code: firstCode)
+            case "history":
+                showHistorySheet = true
+            case "settings":
+                showSettings = true
+            default:
+                break
+            }
         }
     }
 
