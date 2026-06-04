@@ -149,35 +149,52 @@ struct MetricCard: View {
         )
     }
 
-    /// Y-axis domain pinned to the readings (with a little padding) so reference
-    /// guides drawn outside it clip rather than rescaling and flattening the
-    /// trend. A flat series gets a unit window so it doesn't collapse to a line.
+    /// Reference bounds to draw on the sparkline: only those close enough to the
+    /// readings that showing them won't squash the trend (or stray off-card). A
+    /// bound farther than the tolerance from the data is dropped. The tolerance
+    /// is half the reading span, with a floor so a flat/near-flat series still
+    /// admits a nearby bound.
+    private var sparklineBounds: (low: Double?, high: Double?) {
+        let values = metric.history.map(\.value)
+        guard let dataLo = values.min(), let dataHi = values.max(), let range = referenceRange else {
+            return (nil, nil)
+        }
+        let tolerance = max((dataHi - dataLo) * 0.5, abs(dataHi) * 0.1, 0.5)
+        return (low: range.low.flatMap { $0 >= dataLo - tolerance ? $0 : nil },
+                high: range.high.flatMap { $0 <= dataHi + tolerance ? $0 : nil })
+    }
+
+    /// Y-axis domain covering the readings *and* any drawn reference bound, padded
+    /// so nothing hugs an edge. Folding the bound into the scale (rather than
+    /// pinning to the data alone) keeps a near-the-max threshold from cramming
+    /// against the top. A flat series gets a unit window so it doesn't collapse.
     private var sparklineDomain: ClosedRange<Double> {
         let values = metric.history.map(\.value)
-        let low = values.min() ?? 0
-        let high = values.max() ?? 1
-        guard low < high else { return (low - 1)...(high + 1) }
-        let pad = (high - low) * 0.15
-        return (low - pad)...(high + pad)
+        var dataLo = values.min() ?? 0
+        var dataHi = values.max() ?? 1
+        let bounds = sparklineBounds
+        if let low = bounds.low { dataLo = min(dataLo, low) }
+        if let high = bounds.high { dataHi = max(dataHi, high) }
+        guard dataLo < dataHi else { return (dataLo - 1)...(dataHi + 1) }
+        let pad = (dataHi - dataLo) * 0.15
+        return (dataLo - pad)...(dataHi + pad)
     }
 
     private var sparkline: some View {
-        Chart {
-            // Faint dashed guides at the reference bounds. Only drawn when the
-            // bound falls inside the data-pinned Y scale (below): a bound far from
-            // the readings is omitted rather than rescaling and flattening the
-            // trend — or drawing a stray line past the card edge.
-            if let range = referenceRange {
-                if let low = range.low, sparklineDomain.contains(low) {
-                    RuleMark(y: .value("Low", low))
-                        .foregroundStyle(RangeStatus.low.color.opacity(0.35))
-                        .lineStyle(StrokeStyle(lineWidth: 0.75, dash: [3, 2]))
-                }
-                if let high = range.high, sparklineDomain.contains(high) {
-                    RuleMark(y: .value("High", high))
-                        .foregroundStyle(RangeStatus.high.color.opacity(0.35))
-                        .lineStyle(StrokeStyle(lineWidth: 0.75, dash: [3, 2]))
-                }
+        let bounds = sparklineBounds
+        return Chart {
+            // Faint dashed guides at the reference bounds (those near the readings;
+            // see `sparklineBounds`). Both are folded into the Y scale, so a guide
+            // always sits inside the frame with margin.
+            if let low = bounds.low {
+                RuleMark(y: .value("Low", low))
+                    .foregroundStyle(RangeStatus.low.color.opacity(0.35))
+                    .lineStyle(StrokeStyle(lineWidth: 0.75, dash: [3, 2]))
+            }
+            if let high = bounds.high {
+                RuleMark(y: .value("High", high))
+                    .foregroundStyle(RangeStatus.high.color.opacity(0.35))
+                    .lineStyle(StrokeStyle(lineWidth: 0.75, dash: [3, 2]))
             }
 
             ForEach(metric.history) { point in
