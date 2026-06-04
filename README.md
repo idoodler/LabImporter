@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="screenshots/app-icon.png" alt="LabImporter app icon" width="160">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="LabImporter/Assets.xcassets/AppIcon.appiconset/AppIcon-dark.png">
+    <img src="LabImporter/Assets.xcassets/AppIcon.appiconset/AppIcon-light.png" alt="LabImporter app icon" width="160">
+  </picture>
 </p>
 
 <h1 align="center">LabImporter</h1>
