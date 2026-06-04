@@ -16,21 +16,6 @@ extension AppInfo {
         case simulator
     }
 
-    /// The app's primary icon, loaded from the asset catalog at runtime so the
-    /// build-info card can show it. Prefers the generated icon-file names Xcode
-    /// injects into `CFBundleIcons` in the built `Info.plist`, then the asset name.
-    /// Returns `nil` in contexts where neither resolves (e.g. some previews).
-    static var icon: UIImage? {
-        if let icons = Bundle.main.infoDictionary?["CFBundleIcons"] as? [String: Any],
-           let primary = icons["CFBundlePrimaryIcon"] as? [String: Any],
-           let files = primary["CFBundleIconFiles"] as? [String],
-           let last = files.last,
-           let image = UIImage(named: last) {
-            return image
-        }
-        return UIImage(named: "AppIcon")
-    }
-
     /// Where this build came from. Order matters: a build carrying an embedded
     /// provisioning profile (development / ad-hoc) is reported as `.development`
     /// before the receipt is consulted.
@@ -193,11 +178,13 @@ struct BuildInfoCard: View {
         }
     }
 
-    /// The real app icon when it resolves, falling back to a tinted glyph tile so
-    /// the card still reads well in previews or odd build configurations.
+    /// The app icon, drawn from the color-scheme-adaptive `AppIconPreview` image
+    /// set so the card shows the dark artwork in Dark Mode (the app-icon set's
+    /// dark/tinted variants aren't reachable via `UIImage(named:)`). Falls back to
+    /// a tinted glyph tile so the card still reads well in odd build configurations.
     @ViewBuilder private var icon: some View {
-        if let image = AppInfo.icon {
-            Image(uiImage: image)
+        if UIImage(named: "AppIconPreview") != nil {
+            Image("AppIconPreview")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 56, height: 56)
