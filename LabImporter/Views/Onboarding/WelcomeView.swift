@@ -69,8 +69,11 @@ struct WelcomeView: View {
 
     @ViewBuilder
     private var appIcon: some View {
-        if let icon = UIImage(named: "AppIcon") {
-            Image(uiImage: icon)
+        // Use the color-scheme-adaptive `AppIconPreview` image set so Dark Mode
+        // shows the dark artwork — an app-icon set's dark variant isn't reachable
+        // via `UIImage(named:)`.
+        if UIImage(named: "AppIconPreview") != nil {
+            Image("AppIconPreview")
                 .resizable()
                 .frame(width: 110, height: 110)
                 .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
