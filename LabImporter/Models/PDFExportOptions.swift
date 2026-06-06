@@ -103,6 +103,20 @@ enum PDFPageFormat: String, CaseIterable, Identifiable {
         case .legal:    return "Legal"
         }
     }
+
+    /// A sensible default for the current device. iOS exposes no "paper size"
+    /// setting, so this keys off the device's **Region** (Settings → General →
+    /// Language & Region): the handful of regions that use US Letter paper get
+    /// Letter, everywhere else gets A4. The user can still override in the sheet.
+    static var deviceDefault: PDFPageFormat {
+        // Regions where US Letter (or its near-identical local equivalent) is the
+        // standard office paper size rather than ISO A4.
+        let letterRegions: Set<String> = [
+            "US", "CA", "MX", "PH", "CL", "CO", "CR", "GT", "NI", "PA", "DO", "SV", "VE", "PR"
+        ]
+        let region = Locale.current.region?.identifier ?? ""
+        return letterRegions.contains(region) ? .usLetter : .isoA4
+    }
 }
 
 /// The set of choices that fully describe one export.
@@ -111,7 +125,7 @@ struct PDFExportOptions {
     var selectedCodes: Set<String>
     var timeRange: PDFTimeRange = .year1
     var colorMode: PDFColorMode = .color
-    var pageFormat: PDFPageFormat = .isoA4
+    var pageFormat: PDFPageFormat = .deviceDefault
     /// Cover/summary page with patient details and headline stats.
     var includeSummary = true
     /// Table of the most recent value for every selected metric.
