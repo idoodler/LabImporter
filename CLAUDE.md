@@ -146,7 +146,10 @@ Config.xcconfig  # BUNDLE_IDENTIFIER = dev.idoodler.$(DEVELOPMENT_TEAM).labimpor
   itself uses a bare "Health" (e.g. the `Save Reports to Health` toggle), mirror
   that and use the bare localized name without the prefix. `Health Records`
   (`Gesundheitsakte`, …) is a *different* Apple feature — leave it alone.
-- OCR recognizes German + English (`["de-DE", "en-US"]`); narrative CDA labels are German.
+- OCR recognizes the app's current language plus English —
+  `OCRService.recognitionLanguages(for:)` uses `Bundle.main.preferredLocalizations`
+  first, then English, filtered to Vision's `supportedRecognitionLanguages()`.
+  Narrative CDA labels are German.
 - Preferences (`labDisplayPrefs`, `patientName`, `hasSeenWelcome`, etc.) are read
   via `@AppStorage`. `LabDisplayPreferences` is `RawRepresentable` over JSON — note
   the deliberate separate `Payload` type to avoid the Codable+RawRepresentable
