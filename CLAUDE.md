@@ -126,7 +126,14 @@ Config.xcconfig  # BUNDLE_IDENTIFIER = dev.idoodler.$(DEVELOPMENT_TEAM).labimpor
 
 ### UI patterns
 - All user-facing text uses `String(localized:)` / SwiftUI auto-localization and
-  lives in `Localizable.xcstrings`. Add new strings there; the app ships German + English.
+  lives in `Localizable.xcstrings`. **The app ships 13 languages** — `en`
+  (source), `de`, `es`, `fr`, `it`, `ja`, `nl`, `pl`, `pt-BR`, `ru`, `tr`, `uk`,
+  `zh-Hans` — and **every new key must be translated into all of them**, not just
+  English/German. Don't leave a string EN-only (which silently falls back to the
+  key) or EN+DE-only. Preserve format specifiers (`%lld`, `%@`) and follow the
+  Health-app naming convention below in each language. Reuse an existing key
+  verbatim when the same source string already exists (it's already fully
+  translated) rather than adding a duplicate.
 - **Naming the Health app:** never leave "Apple Health" untranslated. Every
   reference to the Health app must use the **on-device localized app name** for
   that language, keeping the **`Apple` brand prefix**. Canonical forms:
@@ -226,7 +233,9 @@ Required secrets: `GH_PAT`, `TEAMID`, `FASTLANE_ISSUER_ID`, `FASTLANE_KEY_ID`,
   4. Optionally raise `CDAMigrator.minimumSupportedVersion` to drop very old
      schemas. Documents below the minimum — and unversioned legacy exports — are
      ignored on read-back by design (no implicit data migration).
-- **New user-facing text:** always `String(localized:)`; add to `Localizable.xcstrings`.
+- **New user-facing text:** always `String(localized:)`; add to
+  `Localizable.xcstrings` and translate the key into **all 13 shipped languages**
+  (see UI patterns) — never EN-only or EN+DE-only.
 - **Before pushing:** make sure `swiftlint lint --strict` passes (the hook enforces it).
 - **No tests exist** in the project today; verify changes by building in Xcode on
   a supported device and exercising the import flow.
