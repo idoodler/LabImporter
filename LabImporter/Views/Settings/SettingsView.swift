@@ -70,10 +70,23 @@ enum AppInfo {
         return webURL(from: value)
     }
 
+    /// Whether the source repository has GitHub Issues enabled, stamped into
+    /// `Info.plist` at build time (`GitHasIssues`) by querying the GitHub API.
+    /// Returns `nil` when the build couldn't determine it (e.g. a local Xcode
+    /// build, a non-GitHub remote, or no network) — callers treat `nil` as
+    /// "unknown" and keep showing issue affordances rather than hiding them.
+    static var repositoryHasIssues: Bool? {
+        guard let value = string("GitHasIssues") else { return nil }
+        return (value as NSString).boolValue
+    }
+
     /// URL that opens the "new issue" composer for `repositoryURL`, pre-filling
-    /// the body with build metadata to help triage reports.
+    /// the body with build metadata to help triage reports. Returns `nil` when
+    /// the repository has Issues disabled (`repositoryHasIssues == false`) so
+    /// the "Report an Issue" row is hidden.
     static var newIssueURL: URL? {
-        guard let base = repositoryURL?.appendingPathComponent("issues/new"),
+        guard repositoryHasIssues != false,
+              let base = repositoryURL?.appendingPathComponent("issues/new"),
               var components = URLComponents(url: base, resolvingAgainstBaseURL: false) else { return nil }
         let body = """
 
@@ -254,6 +267,9 @@ struct SettingsView: View {
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.tertiary)
             }
+            // Make the whole row (including the gap the Spacer opens up)
+            // tappable, not just the label and trailing glyph.
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
