@@ -150,7 +150,7 @@ After the first manual run succeeds, builds are triggered automatically on the *
 |---|---|
 | Document input | `VisionKit` document scanner (multi-page), `UIDocumentPicker` for PDFs / images, Clipboard, or files opened from other apps (`CFBundleDocumentTypes` + `onOpenURL`) |
 | PDF rendering | `PDFKit` — extracts embedded text or renders pages for OCR |
-| Text extraction | `Vision` — `VNRecognizeTextRequest` (German + English) |
+| Text extraction | `Vision` — `VNRecognizeTextRequest` (app's current language + English fallback) |
 | Lab value parsing | `FoundationModels` — `@Generable` structured output via `LanguageModelSession` |
 | Health import | `HealthKit` — `HKCDADocumentSample` (CDA R2 clinical document) |
 

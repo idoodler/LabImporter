@@ -84,7 +84,7 @@ actor OCRService {
             }
 
             request.recognitionLevel = .accurate
-            request.recognitionLanguages = ["de-DE", "en-US"]
+            request.recognitionLanguages = Self.recognitionLanguages(for: request)
             request.usesLanguageCorrection = true
             request.minimumTextHeight = 0.01
 
@@ -95,6 +95,34 @@ actor OCRService {
                 continuation.resume(throwing: error)
             }
         }
+    }
+
+    /// Recognition languages to hand to Vision: the app's current UI language
+    /// first (reports are typically in the language the user runs the app in),
+    /// with English kept as a fallback for Latin-script text. Filtered to the
+    /// codes the current Vision revision can actually recognize so we never pass
+    /// an unsupported code; falls back to English if Vision reports nothing.
+    private static func recognitionLanguages(for request: VNRecognizeTextRequest) -> [String] {
+        let supported = (try? request.supportedRecognitionLanguages()) ?? []
+        guard !supported.isEmpty else { return ["en-US"] }
+
+        // The app's effective language (its preferred localization), then English.
+        let desired = (Bundle.main.preferredLocalizations + ["en"])
+        var ordered: [String] = []
+
+        for identifier in desired {
+            let base = Locale(identifier: identifier).language.languageCode?.identifier
+            // Prefer an exact code, then a script/region-qualified match, then
+            // any code sharing the same base language (e.g. "de" → "de-DE").
+            let match = supported.first { $0.caseInsensitiveCompare(identifier) == .orderedSame }
+                ?? supported.first { $0.hasPrefix(identifier) }
+                ?? supported.first { Locale(identifier: $0).language.languageCode?.identifier == base }
+            if let match, !ordered.contains(match) {
+                ordered.append(match)
+            }
+        }
+
+        return ordered.isEmpty ? supported : ordered
     }
 
     private func render(page: PDFPage) -> UIImage? {
