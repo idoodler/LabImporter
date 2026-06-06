@@ -397,7 +397,7 @@ enum FundingPlatform: String, CaseIterable {
         case .buyMeACoffee: return "https://www.buymeacoffee.com/%@"
         case .patreon: return "https://www.patreon.com/%@"
         case .openCollective: return "https://opencollective.com/%@"
-        case .liberapay: return "https://liberapay.com/%@"
+        case .liberapay: return "https://liberapay.com/%@/donate"
         case .polar: return "https://polar.sh/%@"
         case .issuehunt: return "https://issuehunt.io/r/%@"
         case .tidelift: return "https://tidelift.com/funding/github/%@"

@@ -196,9 +196,9 @@ The software is provided "as is", without warranty of any kind, as described in 
 
 LabImporter is free and open source. If you find it useful, you can support its development:
 
-<a href="https://ko-fi.com/idoodler" target="_blank"><img src="https://img.shields.io/badge/Ko--fi-Support%20me-FF5E5B?logo=ko-fi&logoColor=white" alt="Support me on Ko-fi"></a>
+<a href="https://liberapay.com/idoodler/donate" target="_blank"><img src="https://img.shields.io/badge/Liberapay-Donate-F6C915?logo=liberapay&logoColor=black" alt="Donate using Liberapay"></a>
 
-[ko-fi.com/idoodler](https://ko-fi.com/idoodler)
+[liberapay.com/idoodler](https://liberapay.com/idoodler/donate)
 
 ---
 
