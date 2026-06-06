@@ -26,6 +26,8 @@
 	<string>unknown</string>
 	<key>GitRepositoryURL</key>
 	<string></string>
+	<key>KoFiUsername</key>
+	<string></string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSRequiresIPhoneOS</key>

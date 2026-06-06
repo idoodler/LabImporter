@@ -15,8 +15,15 @@ enum AppInfo {
     static var branch: String { string("GitBranch") ?? "unknown" }
     static var commit: String { string("GitCommit") ?? "unknown" }
 
-    /// The developer's Ko-fi page, where users can support development of the app.
-    static let koFiURL = URL(string: "https://ko-fi.com/idoodler")!
+    /// The developer's Ko-fi page, derived from the `ko_fi` entry in the repo's
+    /// `.github/FUNDING.yml` (stamped into `Info.plist` as `KoFiUsername` by the
+    /// "Embed Build Metadata" build phase). Returns `nil` when no username is
+    /// stamped — e.g. a fork without Ko-fi funding — in which case the Support
+    /// row is hidden, mirroring how the GitHub buttons behave.
+    static var koFiURL: URL? {
+        guard let username = string("KoFiUsername") else { return nil }
+        return URL(string: "https://ko-fi.com/\(username)")
+    }
 
     /// The app's license text, read from the `LICENSE` file copied into the
     /// bundle at build time (see the "Copy LICENSE" build phase). This keeps the
@@ -157,12 +164,14 @@ struct SettingsView: View {
                     }
                 }
 
-                Section {
-                    linkRow("Support on Ko-fi",
-                            systemImage: "cup.and.saucer.fill",
-                            color: .orange, url: AppInfo.koFiURL)
-                } footer: {
-                    Text("LabImporter is free and open source. If you find it useful, you can support its development.")
+                if let koFi = AppInfo.koFiURL {
+                    Section {
+                        linkRow("Support on Ko-fi",
+                                systemImage: "cup.and.saucer.fill",
+                                color: .orange, url: koFi)
+                    } footer: {
+                        Text("LabImporter is free and open source. If you find it useful, you can support its development.")
+                    }
                 }
 
                 Section {
