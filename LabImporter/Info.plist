@@ -26,7 +26,7 @@
 	<string>unknown</string>
 	<key>GitRepositoryURL</key>
 	<string></string>
-	<key>KoFiUsername</key>
+	<key>FundingConfig</key>
 	<string></string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>

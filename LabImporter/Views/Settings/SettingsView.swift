@@ -15,14 +15,38 @@ enum AppInfo {
     static var branch: String { string("GitBranch") ?? "unknown" }
     static var commit: String { string("GitCommit") ?? "unknown" }
 
-    /// The developer's Ko-fi page, derived from the `ko_fi` entry in the repo's
-    /// `.github/FUNDING.yml` (stamped into `Info.plist` as `KoFiUsername` by the
-    /// "Embed Build Metadata" build phase). Returns `nil` when no username is
-    /// stamped — e.g. a fork without Ko-fi funding — in which case the Support
-    /// row is hidden, mirroring how the GitHub buttons behave.
-    static var koFiURL: URL? {
-        guard let username = string("KoFiUsername") else { return nil }
-        return URL(string: "https://ko-fi.com/\(username)")
+    /// The project's funding destinations, parsed from the repo's
+    /// `.github/FUNDING.yml`. The "Embed Build Metadata" build phase serializes
+    /// that file to JSON and stamps it into `Info.plist` (base64-encoded under
+    /// `FundingConfig`); here we decode it into one `FundingLink` per entry,
+    /// honoring the same platform set GitHub's Sponsor button supports. Returns
+    /// an empty array when nothing is stamped (e.g. a fork with no funding, or a
+    /// local build), in which case the Support section is hidden.
+    static var fundingLinks: [FundingLink] {
+        guard let encoded = string("FundingConfig"),
+              let data = Data(base64Encoded: encoded),
+              let config = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            return []
+        }
+        // `allCases` declaration order drives the display order in Settings.
+        return FundingPlatform.allCases.flatMap { platform -> [FundingLink] in
+            // A platform's value is either a single scalar (e.g. `ko_fi: name`)
+            // or an array (e.g. `github: [a, b]`, `custom: [url1, url2]`).
+            let raw = config[platform.rawValue]
+            let values: [String]
+            if let single = raw as? String {
+                values = [single]
+            } else if let many = raw as? [Any] {
+                values = many.compactMap { $0 as? String }
+            } else {
+                values = []
+            }
+            return values.compactMap { value in
+                let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !trimmed.isEmpty, let url = platform.url(for: trimmed) else { return nil }
+                return FundingLink(platform: platform, url: url)
+            }
+        }
     }
 
     /// The app's license text, read from the `LICENSE` file copied into the
@@ -164,11 +188,17 @@ struct SettingsView: View {
                     }
                 }
 
-                if let koFi = AppInfo.koFiURL {
+                let fundingLinks = AppInfo.fundingLinks
+                if !fundingLinks.isEmpty {
                     Section {
-                        linkRow("Support on Ko-fi",
-                                systemImage: "cup.and.saucer.fill",
-                                color: .orange, url: koFi)
+                        ForEach(fundingLinks) { link in
+                            linkRow(label: SettingsRowLabel(verbatim: link.title,
+                                                            systemImage: link.platform.systemImage,
+                                                            color: link.platform.color),
+                                    url: link.url)
+                        }
+                    } header: {
+                        Text("Support")
                     } footer: {
                         Text("LabImporter is free and open source. If you find it useful, you can support its development.")
                     }
@@ -208,11 +238,17 @@ struct SettingsView: View {
                          systemImage: String,
                          color: Color,
                          url: URL) -> some View {
+        linkRow(label: SettingsRowLabel(titleKey, systemImage: systemImage, color: color), url: url)
+    }
+
+    /// Shared link-row body, taking a pre-built label so callers can supply either
+    /// a localized title or a verbatim brand name (funding platforms).
+    private func linkRow(label: SettingsRowLabel, url: URL) -> some View {
         Button {
             browserURL = IdentifiedURL(url: url)
         } label: {
             HStack {
-                SettingsRowLabel(titleKey, systemImage: systemImage, color: color)
+                label
                 Spacer()
                 Image(systemName: "arrow.up.right")
                     .font(.caption.weight(.semibold))
@@ -228,19 +264,27 @@ struct SettingsView: View {
 /// A list-row label with a rounded, color-filled icon tile in the style of the
 /// iOS Settings app — used to give the otherwise plain settings screens some life.
 struct SettingsRowLabel: View {
-    let title: LocalizedStringKey
+    private let title: Text
     let systemImage: String
     let color: Color
 
     init(_ title: LocalizedStringKey, systemImage: String, color: Color) {
-        self.title = title
+        self.title = Text(title)
+        self.systemImage = systemImage
+        self.color = color
+    }
+
+    /// Verbatim variant for non-localizable text such as funding-platform brand
+    /// names ("Ko-fi", "Patreon", …) which must render exactly as written.
+    init(verbatim title: String, systemImage: String, color: Color) {
+        self.title = Text(verbatim: title)
         self.systemImage = systemImage
         self.color = color
     }
 
     var body: some View {
         Label {
-            Text(title)
+            title
         } icon: {
             Image(systemName: systemImage)
                 .font(.system(size: 13, weight: .semibold))
@@ -248,6 +292,133 @@ struct SettingsRowLabel: View {
                 .frame(width: 28, height: 28)
                 .background(color.gradient, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
         }
+    }
+}
+
+// MARK: - Funding
+
+/// A single funding destination resolved from `FUNDING.yml`: a platform plus the
+/// public URL its entry points at.
+struct FundingLink: Identifiable {
+    let id = UUID()
+    let platform: FundingPlatform
+    let url: URL
+
+    /// Row title. Custom links have no brand, so we show their host (e.g.
+    /// `paypal.me`); every other platform shows its brand name.
+    var title: String {
+        if platform == .custom {
+            return url.host?.replacingOccurrences(of: "www.", with: "") ?? url.absoluteString
+        }
+        return platform.brandName
+    }
+}
+
+/// The funding platforms GitHub's `FUNDING.yml` supports. Raw values match the
+/// YAML keys verbatim so a parsed config maps straight onto these cases, and
+/// `allCases` declaration order is the order rows appear in Settings.
+enum FundingPlatform: String, CaseIterable {
+    case github
+    case koFi = "ko_fi"
+    case buyMeACoffee = "buy_me_a_coffee"
+    case patreon
+    case openCollective = "open_collective"
+    case liberapay
+    case polar
+    case issuehunt
+    case tidelift
+    case communityBridge = "community_bridge"
+    case lfxCrowdfunding = "lfx_crowdfunding"
+    case thanksDev = "thanks_dev"
+    case custom
+
+    /// Brand name shown in the row (not localized — these are proper nouns).
+    var brandName: String {
+        switch self {
+        case .github: return "GitHub Sponsors"
+        case .koFi: return "Ko-fi"
+        case .buyMeACoffee: return "Buy Me a Coffee"
+        case .patreon: return "Patreon"
+        case .openCollective: return "Open Collective"
+        case .liberapay: return "Liberapay"
+        case .polar: return "Polar"
+        case .issuehunt: return "IssueHunt"
+        case .tidelift: return "Tidelift"
+        case .communityBridge: return "LFX Mentorship"
+        case .lfxCrowdfunding: return "LFX Crowdfunding"
+        case .thanksDev: return "thanks.dev"
+        case .custom: return "Custom"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .github: return "heart.fill"
+        case .koFi: return "cup.and.saucer.fill"
+        case .buyMeACoffee: return "cup.and.saucer.fill"
+        case .patreon: return "p.circle.fill"
+        case .openCollective: return "person.3.fill"
+        case .liberapay: return "banknote.fill"
+        case .polar: return "circle.hexagonpath.fill"
+        case .issuehunt: return "ladybug.fill"
+        case .tidelift: return "shield.lefthalf.filled"
+        case .communityBridge: return "person.2.fill"
+        case .lfxCrowdfunding: return "dollarsign.circle.fill"
+        case .thanksDev: return "hands.clap.fill"
+        case .custom: return "link"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .github: return .pink
+        case .koFi: return .red
+        case .buyMeACoffee: return .yellow
+        case .patreon: return .orange
+        case .openCollective: return .blue
+        case .liberapay: return .green
+        case .polar: return .indigo
+        case .issuehunt: return .mint
+        case .tidelift: return .purple
+        case .communityBridge: return .teal
+        case .lfxCrowdfunding: return .cyan
+        case .thanksDev: return .brown
+        case .custom: return .gray
+        }
+    }
+
+    /// `String(format:)` template for the funding URL, with `%@` standing in for
+    /// the entry value. Templates mirror the ones GitHub's Sponsor button uses;
+    /// `custom` entries are already full URLs, so their template is just `%@`.
+    private var urlTemplate: String {
+        switch self {
+        case .github: return "https://github.com/sponsors/%@"
+        case .koFi: return "https://ko-fi.com/%@"
+        case .buyMeACoffee: return "https://www.buymeacoffee.com/%@"
+        case .patreon: return "https://www.patreon.com/%@"
+        case .openCollective: return "https://opencollective.com/%@"
+        case .liberapay: return "https://liberapay.com/%@"
+        case .polar: return "https://polar.sh/%@"
+        case .issuehunt: return "https://issuehunt.io/r/%@"
+        case .tidelift: return "https://tidelift.com/funding/github/%@"
+        case .communityBridge: return "https://mentorship.lfx.linuxfoundation.org/project/%@"
+        case .lfxCrowdfunding: return "https://crowdfunding.lfx.linuxfoundation.org/projects/%@"
+        case .thanksDev: return "https://thanks.dev/%@"
+        case .custom: return "%@"
+        }
+    }
+
+    /// Builds the public funding URL for a parsed entry value. The value is the
+    /// raw YAML value: a username for most platforms, `platform/package` for
+    /// Tidelift, the `u/gh/<user>` path tail for thanks.dev, or a full URL for
+    /// `custom`.
+    func url(for value: String) -> URL? {
+        // FUNDING.yml allows schemeless custom URLs (e.g. `octocat.com`), but the
+        // in-app browser only opens http(s) — default a missing scheme to https.
+        if self == .custom, !value.contains("://") {
+            return URL(string: "https://\(value)")
+        }
+        return URL(string: String(format: urlTemplate, value))
     }
 }
 

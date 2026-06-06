@@ -16555,78 +16555,78 @@
         }
       }
     },
-    "Support on Ko-fi" : {
+    "Support" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Auf Ko-fi unterstützen"
+            "value" : "Unterstützen"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apoyar en Ko-fi"
+            "value" : "Apoyar"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Soutenir sur Ko-fi"
+            "value" : "Soutenir"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sostieni su Ko-fi"
+            "value" : "Sostieni"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ko-fiで支援する"
+            "value" : "支援する"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Steun op Ko-fi"
+            "value" : "Steunen"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wesprzyj na Ko-fi"
+            "value" : "Wesprzyj"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apoiar no Ko-fi"
+            "value" : "Apoiar"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Поддержать на Ko-fi"
+            "value" : "Поддержать"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ko-fi'de destekle"
+            "value" : "Destek"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Підтримати на Ko-fi"
+            "value" : "Підтримати"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在 Ko-fi 上支持"
+            "value" : "支持"
           }
         }
       }
