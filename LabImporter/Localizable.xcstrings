@@ -9629,6 +9629,82 @@
         }
       }
     },
+    "LabImporter is free and open source. If you find it useful, you can support its development." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter ist kostenlos und Open Source. Wenn du es nützlich findest, kannst du seine Entwicklung unterstützen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter es gratuito y de código abierto. Si te resulta útil, puedes apoyar su desarrollo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter est gratuit et open source. Si vous le trouvez utile, vous pouvez soutenir son développement."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter è gratuito e open source. Se lo trovi utile, puoi sostenerne lo sviluppo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporterは無料でオープンソースです。役に立つと感じたら、開発を支援できます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter is gratis en opensource. Als je het nuttig vindt, kun je de ontwikkeling steunen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter jest darmowy i open source. Jeśli uznasz go za przydatny, możesz wesprzeć jego rozwój."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O LabImporter é gratuito e de código aberto. Se você o achar útil, pode apoiar o seu desenvolvimento."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter — бесплатное приложение с открытым исходным кодом. Если оно вам полезно, вы можете поддержать его разработку."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter ücretsiz ve açık kaynaklıdır. Faydalı bulursanız geliştirilmesini destekleyebilirsiniz."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter — безкоштовний застосунок з відкритим кодом. Якщо він корисний для вас, ви можете підтримати його розробку."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter 是免费的开源应用。如果你觉得有用，可以支持它的开发。"
+          }
+        }
+      }
+    },
     "LabImporter is not a medical device and does not provide medical advice, diagnosis, or treatment. Extracted values may be inaccurate or incomplete — always verify them against your original report. Never make medical decisions based on this app; consult a qualified healthcare professional about your results." : {
       "localizations" : {
         "de" : {
@@ -16475,6 +16551,82 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "建议"
+          }
+        }
+      }
+    },
+    "Support on Ko-fi" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auf Ko-fi unterstützen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apoyar en Ko-fi"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soutenir sur Ko-fi"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sostieni su Ko-fi"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ko-fiで支援する"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Steun op Ko-fi"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wesprzyj na Ko-fi"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apoiar no Ko-fi"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поддержать на Ko-fi"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ko-fi'de destekle"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Підтримати на Ko-fi"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 Ko-fi 上支持"
           }
         }
       }

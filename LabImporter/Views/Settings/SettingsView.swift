@@ -15,6 +15,9 @@ enum AppInfo {
     static var branch: String { string("GitBranch") ?? "unknown" }
     static var commit: String { string("GitCommit") ?? "unknown" }
 
+    /// The developer's Ko-fi page, where users can support development of the app.
+    static let koFiURL = URL(string: "https://ko-fi.com/idoodler")!
+
     /// The app's license text, read from the `LICENSE` file copied into the
     /// bundle at build time (see the "Copy LICENSE" build phase). This keeps the
     /// single source of truth in the repo-root `LICENSE` rather than duplicating
@@ -152,6 +155,14 @@ struct SettingsView: View {
                                 systemImage: "exclamationmark.bubble",
                                 color: .red, url: newIssue)
                     }
+                }
+
+                Section {
+                    linkRow("Support on Ko-fi",
+                            systemImage: "cup.and.saucer.fill",
+                            color: .orange, url: AppInfo.koFiURL)
+                } footer: {
+                    Text("LabImporter is free and open source. If you find it useful, you can support its development.")
                 }
 
                 Section {
