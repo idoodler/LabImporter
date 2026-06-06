@@ -11,11 +11,12 @@ struct PDFTrendsPage: View {
     let range: PDFTimeRange
     let patientName: String
     let theme: PDFTheme
+    let pageSize: CGSize
     let pageNumber: Int
     let totalPages: Int
 
     var body: some View {
-        PDFPageScaffold(theme: theme, pageNumber: pageNumber, totalPages: totalPages,
+        PDFPageScaffold(theme: theme, pageSize: pageSize, pageNumber: pageNumber, totalPages: totalPages,
                         runningTitle: String(localized: "Lab Report"), patientName: patientName) {
             VStack(alignment: .leading, spacing: 14) {
                 if showTitle {

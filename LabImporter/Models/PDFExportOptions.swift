@@ -77,12 +77,41 @@ enum PDFTimeRange: String, CaseIterable, Identifiable {
     }
 }
 
+/// Selectable paper size for the export. All options are at least A4-wide, so
+/// the latest-results table's fixed columns hold across formats; only the page
+/// height (and therefore how much fits per page) varies.
+enum PDFPageFormat: String, CaseIterable, Identifiable {
+    case isoA4, usLetter, legal
+
+    var id: Self { self }
+
+    /// Page dimensions in points (72 dpi, 1 pt == 1/72").
+    var size: CGSize {
+        switch self {
+        case .isoA4:    return CGSize(width: 595.28, height: 841.89)  // 210 × 297 mm
+        case .usLetter: return CGSize(width: 612, height: 792)        // 8.5 × 11 in
+        case .legal:    return CGSize(width: 612, height: 1008)       // 8.5 × 14 in
+        }
+    }
+
+    /// Shown verbatim — A4 / US Letter / Legal are standard international paper
+    /// names, not translated.
+    var label: String {
+        switch self {
+        case .isoA4:    return "A4"
+        case .usLetter: return "US Letter"
+        case .legal:    return "Legal"
+        }
+    }
+}
+
 /// The set of choices that fully describe one export.
 struct PDFExportOptions {
     /// LOINC codes the user chose to include.
     var selectedCodes: Set<String>
     var timeRange: PDFTimeRange = .year1
     var colorMode: PDFColorMode = .color
+    var pageFormat: PDFPageFormat = .isoA4
     /// Cover/summary page with patient details and headline stats.
     var includeSummary = true
     /// Table of the most recent value for every selected metric.
@@ -156,16 +185,35 @@ struct PDFTheme {
 /// A4 is the most internationally portable choice given the app ships across
 /// many European locales.
 enum PDFLayout {
-    static let pageSize = CGSize(width: 595.28, height: 841.89)
     static let margin: CGFloat = 42
-    static var contentWidth: CGFloat { pageSize.width - margin * 2 }
 
-    /// How many latest-results rows fit per page. Sized for the worst case — a
-    /// two-line wrapped value name — so long LOINC names never clip or spill past
-    /// the page. The first page holds fewer rows because it carries the section
-    /// title.
-    static let tableRowsPerPage = 13
-    static let tableRowsFirstPage = 12
-    /// Trend charts stacked per page.
-    static let chartsPerPage = 3
+    /// Usable text width inside the page margins for a given paper size.
+    static func contentWidth(for size: CGSize) -> CGFloat { size.width - margin * 2 }
+
+    // Pagination capacities are derived from the page height so each paper format
+    // uses its available space (Legal fits more rows than A4, US Letter slightly
+    // fewer). Everything is sized for the worst case — a two-line wrapped value
+    // name, or a full-height chart card — so content never clips. The first page
+    // of a section holds fewer items because it also carries the section title.
+    private static let footer: CGFloat = 28
+    private static let runningHeader: CGFloat = 30
+    private static let sectionTitle: CGFloat = 56
+    private static let rowUnit: CGFloat = 50
+    private static let chartUnit: CGFloat = 212
+
+    private static func usableHeight(_ size: CGSize) -> CGFloat {
+        size.height - margin * 2 - footer - runningHeader
+    }
+
+    /// Latest-results rows per page: `(first page, continuation pages)`.
+    static func tableRows(for size: CGSize) -> (first: Int, rest: Int) {
+        let height = usableHeight(size)
+        return (max(1, Int((height - sectionTitle) / rowUnit)), max(1, Int(height / rowUnit)))
+    }
+
+    /// Trend charts per page: `(first page, continuation pages)`.
+    static func charts(for size: CGSize) -> (first: Int, rest: Int) {
+        let height = usableHeight(size)
+        return (max(1, Int((height - sectionTitle) / chartUnit)), max(1, Int(height / chartUnit)))
+    }
 }

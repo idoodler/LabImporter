@@ -187,7 +187,7 @@ struct PDFExportService {
         let pages = PDFPageComposer(data: data, options: options, theme: theme).pages()
         guard !pages.isEmpty else { throw PDFExportError.noContent }
 
-        let size = PDFLayout.pageSize
+        let size = options.pageFormat.size
         var mediaBox = CGRect(origin: .zero, size: size)
         let url = Self.outputURL(for: data)
 

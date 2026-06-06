@@ -84,6 +84,12 @@ struct PDFExportView: View {
                 }
             }
             .pickerStyle(.segmented)
+
+            Picker("Page Size", selection: $options.pageFormat) {
+                ForEach(PDFPageFormat.allCases) { format in
+                    Text(format.label).tag(format)
+                }
+            }
         }
     }
 

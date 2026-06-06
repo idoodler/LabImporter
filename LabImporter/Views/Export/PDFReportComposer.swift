@@ -16,6 +16,8 @@ struct PDFPageComposer {
     let options: PDFExportOptions
     let theme: PDFTheme
 
+    private var size: CGSize { options.pageFormat.size }
+
     func pages() -> [AnyView] {
         var blocks: [Block] = []
         if options.includeSummary { blocks.append(.cover) }
@@ -43,40 +45,47 @@ struct PDFPageComposer {
             rows.append(contentsOf: metrics.map { LatestRow.metric($0) })
         }
         guard !rows.isEmpty else { return [] }
-
-        // The first page holds fewer rows (it carries the section title); later
-        // pages use the full budget.
-        var blocks: [Block] = []
-        var index = 0
-        var isFirst = true
-        while index < rows.count {
-            let size = isFirst ? PDFLayout.tableRowsFirstPage : PDFLayout.tableRowsPerPage
-            let end = Swift.min(index + size, rows.count)
-            blocks.append(.latest(rows: Array(rows[index..<end]), showTitle: isFirst))
-            index = end
-            isFirst = false
-        }
-        return blocks
+        let capacity = PDFLayout.tableRows(for: size)
+        return paginate(rows, first: capacity.first, rest: capacity.rest)
+            .map { Block.latest(rows: $0.items, showTitle: $0.isFirst) }
     }
 
     private func trendBlocks() -> [Block] {
         let trendMetrics = data.metrics.filter(\.hasTrend)
         guard !trendMetrics.isEmpty else { return [] }
-        return trendMetrics.chunked(into: PDFLayout.chartsPerPage).enumerated().map { index, chunk in
-            .trends(metrics: chunk, showTitle: index == 0)
+        let capacity = PDFLayout.charts(for: size)
+        return paginate(trendMetrics, first: capacity.first, rest: capacity.rest)
+            .map { Block.trends(metrics: $0.items, showTitle: $0.isFirst) }
+    }
+
+    /// Splits items across pages: the first page holds `first` items (it carries
+    /// the section title), later pages hold `rest`.
+    private func paginate<T>(_ items: [T], first: Int, rest: Int) -> [(items: [T], isFirst: Bool)] {
+        var result: [(items: [T], isFirst: Bool)] = []
+        var index = 0
+        var isFirst = true
+        while index < items.count {
+            let size = isFirst ? first : rest
+            let end = Swift.min(index + size, items.count)
+            result.append((Array(items[index..<end]), isFirst))
+            index = end
+            isFirst = false
         }
+        return result
     }
 
     private func view(for block: Block, pageNumber: Int, total: Int) -> AnyView {
         switch block {
         case .cover:
-            return AnyView(PDFCoverPage(data: data, theme: theme, pageNumber: pageNumber, totalPages: total))
+            return AnyView(PDFCoverPage(data: data, theme: theme, pageSize: size,
+                                        pageNumber: pageNumber, totalPages: total))
         case let .latest(rows, showTitle):
             return AnyView(PDFLatestResultsPage(rows: rows, showTitle: showTitle, patientName: data.patientName,
-                                                theme: theme, pageNumber: pageNumber, totalPages: total))
+                                                theme: theme, pageSize: size,
+                                                pageNumber: pageNumber, totalPages: total))
         case let .trends(metrics, showTitle):
             return AnyView(PDFTrendsPage(metrics: metrics, showTitle: showTitle, range: data.timeRange,
-                                         patientName: data.patientName, theme: theme,
+                                         patientName: data.patientName, theme: theme, pageSize: size,
                                          pageNumber: pageNumber, totalPages: total))
         }
     }
@@ -97,10 +106,11 @@ enum LatestRow: Identifiable {
 
 // MARK: - Page scaffold
 
-/// Shared page chrome: fixed A4 geometry, white background, optional running
+/// Shared page chrome: fixed page geometry, white background, optional running
 /// header, and a footer with the page number. Content fills the space between.
 struct PDFPageScaffold<Content: View>: View {
     let theme: PDFTheme
+    let pageSize: CGSize
     let pageNumber: Int
     let totalPages: Int
     var runningTitle: String?
@@ -118,7 +128,7 @@ struct PDFPageScaffold<Content: View>: View {
             footer
         }
         .padding(PDFLayout.margin)
-        .frame(width: PDFLayout.pageSize.width, height: PDFLayout.pageSize.height, alignment: .topLeading)
+        .frame(width: pageSize.width, height: pageSize.height, alignment: .topLeading)
         .background(theme.pageBackground)
         .environment(\.colorScheme, .light)
     }
@@ -215,13 +225,6 @@ enum PDFFormat {
     }
 }
 
-extension Array {
-    func chunked(into size: Int) -> [[Element]] {
-        guard size > 0 else { return [self] }
-        return stride(from: 0, to: count, by: size).map { Array(self[$0..<Swift.min($0 + size, count)]) }
-    }
-}
-
 /// A minimal wrapping HStack for the cover legend — `ImageRenderer` supports the
 /// `Layout` protocol, so this lays category chips out across lines without
 /// relying on a fixed column count.
@@ -230,7 +233,7 @@ struct FlowLayout: Layout {
     var lineSpacing: CGFloat = 8
 
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout Void) -> CGSize {
-        let maxWidth = proposal.width ?? PDFLayout.contentWidth
+        let maxWidth = proposal.width ?? PDFLayout.contentWidth(for: PDFPageFormat.isoA4.size)
         var rows: [[CGSize]] = [[]]
         var lineWidth: CGFloat = 0
         for subview in subviews {
