@@ -192,6 +192,16 @@ The software is provided "as is", without warranty of any kind, as described in 
 
 ---
 
+## Support
+
+LabImporter is free and open source. If you find it useful, you can support its development:
+
+<a href="https://ko-fi.com/idoodler" target="_blank"><img src="https://img.shields.io/badge/Ko--fi-Support%20me-FF5E5B?logo=ko-fi&logoColor=white" alt="Support me on Ko-fi"></a>
+
+[ko-fi.com/idoodler](https://ko-fi.com/idoodler)
+
+---
+
 ## License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
