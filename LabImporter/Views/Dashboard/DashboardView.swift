@@ -86,7 +86,7 @@ struct DashboardView: View {
             case "trends":
                 guard trendSheet == nil, let firstCode = sortedMetrics.first?.entry.code else { return }
                 trendSheet = TrendSheet(code: firstCode)
-            case "history":
+            case "history", "pdf":
                 showHistorySheet = true
             case "settings":
                 showSettings = true

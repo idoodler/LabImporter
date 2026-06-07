@@ -31,7 +31,16 @@ struct HistoryView: View {
         .environment(\.editMode, $editMode)
         .navigationBarBackButtonHidden(editMode.isEditing)
         .toolbar { toolbarContent }
-        .onAppear { Task { await loadReports() } }
+        .onAppear {
+            Task {
+                await loadReports()
+                #if DEBUG
+                if ScreenshotMode.isActive && ScreenshotMode.initialScreen == "pdf" {
+                    showExport = true
+                }
+                #endif
+            }
+        }
         .sheet(isPresented: $showExport) {
             PDFExportView(reports: reports)
         }

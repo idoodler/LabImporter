@@ -27,6 +27,7 @@ Because the parsing runs on Apple Intelligence, LabImporter needs a compatible d
 | **Review** — AI-extracted values before saving | ![Review Light](screenshots/03-review-light.png) | ![Review Dark](screenshots/03-review-dark.png) |
 | **Reports** — full import history by year | ![Reports Light](screenshots/04-history-light.png) | ![Reports Dark](screenshots/04-history-dark.png) |
 | **Settings** — sort, sync, and LOINC catalog | ![Settings Light](screenshots/05-settings-light.png) | ![Settings Dark](screenshots/05-settings-dark.png) |
+| **PDF Export** — pick sections, range, and values | ![PDF Export Light](screenshots/06-pdf-export-light.png) | ![PDF Export Dark](screenshots/06-pdf-export-dark.png) |
 
 ---
 
