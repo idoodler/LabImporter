@@ -126,10 +126,12 @@ Config.xcconfig  # BUNDLE_IDENTIFIER = dev.idoodler.$(DEVELOPMENT_TEAM).labimpor
 
 ### UI patterns
 - All user-facing text uses `String(localized:)` / SwiftUI auto-localization and
-  lives in `Localizable.xcstrings`. **The app ships 13 languages** — `en`
-  (source), `de`, `es`, `fr`, `it`, `ja`, `nl`, `pl`, `pt-BR`, `ru`, `tr`, `uk`,
-  `zh-Hans` — and **every new key must be translated into all of them**, not just
-  English/German. Don't leave a string EN-only (which silently falls back to the
+  lives in `Localizable.xcstrings`. **The app ships 25 languages** — `en`
+  (source), `bg`, `ca`, `cs`, `da`, `de`, `el`, `es`, `fi`, `fr`, `hr`, `hu`,
+  `it`, `ja`, `nl`, `pl`, `pt-BR`, `pt-PT`, `ro`, `ru`, `sk`, `sv`, `tr`, `uk`,
+  `zh-Hans` (every iOS-supported language spoken in the EU, plus `ja`/`ru`/`tr`/
+  `uk`/`zh-Hans`) — and **every new key must be translated into all of them**, not
+  just English/German. Don't leave a string EN-only (which silently falls back to the
   key) or EN+DE-only. Preserve format specifiers (`%lld`, `%@`) and follow the
   Health-app naming convention below in each language. Reuse an existing key
   verbatim when the same source string already exists (it's already fully
@@ -138,10 +140,14 @@ Config.xcconfig  # BUNDLE_IDENTIFIER = dev.idoodler.$(DEVELOPMENT_TEAM).labimpor
   reference to the Health app must use the **on-device localized app name** for
   that language, keeping the **`Apple` brand prefix**. Canonical forms:
   `de Apple Health` · `fr Apple Santé` · `es Apple Salud` · `it Apple Salute` ·
-  `pt-BR Apple Saúde` · `nl Apple Gezondheid` · `pl Apple Zdrowie` ·
+  `pt-BR / pt-PT Apple Saúde` · `nl Apple Gezondheid` · `pl Apple Zdrowie` ·
   `ja Appleヘルスケア` · `zh-Hans Apple 健康` · `ru Apple Здоровье` ·
-  `tr Apple Sağlık` · `uk Apple Здоров'я`. Inflect the localized noun for the
-  surrounding grammar (pl/ru/uk case declensions, fr `d'Apple` elision, uk в/у
+  `tr Apple Sağlık` · `uk Apple Здоров'я` · `bg Apple Здраве` ·
+  `ca Apple Salut` · `cs Apple Zdraví` · `da Apple Helbred` · `el Apple Υγεία` ·
+  `fi Apple Terveys` · `hr Apple Zdravlje` · `hu Apple Egészség` ·
+  `ro Apple Sănătate` · `sk Apple Zdravie` · `sv Apple Hälsa`. Inflect the
+  localized noun for the surrounding grammar (pl/ru/uk/cs/sk/hr case declensions,
+  fi/hu case suffixes, el article agreement, fr/ca `d'Apple` elision, uk в/у
   euphony) — the `Apple` prefix stays invariant. Where the **English source**
   itself uses a bare "Health" (e.g. the `Save Reports to Health` toggle), mirror
   that and use the bare localized name without the prefix. `Health Records`
@@ -237,7 +243,7 @@ Required secrets: `GH_PAT`, `TEAMID`, `FASTLANE_ISSUER_ID`, `FASTLANE_KEY_ID`,
      schemas. Documents below the minimum — and unversioned legacy exports — are
      ignored on read-back by design (no implicit data migration).
 - **New user-facing text:** always `String(localized:)`; add to
-  `Localizable.xcstrings` and translate the key into **all 13 shipped languages**
+  `Localizable.xcstrings` and translate the key into **all 25 shipped languages**
   (see UI patterns) — never EN-only or EN+DE-only.
 - **Before pushing:** make sure `swiftlint lint --strict` passes (the hook enforces it).
 - **No tests exist** in the project today; verify changes by building in Xcode on
