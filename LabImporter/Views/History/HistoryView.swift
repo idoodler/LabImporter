@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct HistoryView: View {
-    @State private var reports: [LabReport] = []
+    @State private var reports: [LabReport]
     @State private var loadError: String?
     @State private var deleteError: String?
     @State private var reportToEdit: LabReport?
@@ -12,6 +12,16 @@ struct HistoryView: View {
     @State private var editMode: EditMode = .inactive
     @State private var selection: Set<UUID> = []
     @State private var showExport = false
+
+    /// Seeds the list with the reports the parent already has in memory so the
+    /// toolbar (Export / Edit) and content render populated on the very first
+    /// frame of the push. `loadReports()` still refreshes from Apple Health in
+    /// `.onAppear`; without this seed the view would mount empty and the
+    /// trailing toolbar buttons would briefly vanish until that async load
+    /// resolved.
+    init(initialReports: [LabReport] = []) {
+        _reports = State(initialValue: initialReports)
+    }
 
     var body: some View {
         Group {

@@ -234,7 +234,7 @@ struct HomeView: View {
             }
         case .reports:
             NavigationStack {
-                HistoryView()
+                HistoryView(initialReports: reports)
             }
         case .settings:
             SettingsView(prefs: $prefs, allCodes: allCodeNames, isModal: false)
