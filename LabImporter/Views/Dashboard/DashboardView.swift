@@ -50,7 +50,7 @@ struct DashboardView: View {
         .toolbar {
             if showsLibraryToolbarItems {
                 ToolbarItem(placement: .topBarLeading) {
-                    NavigationLink(destination: HistoryView()) {
+                    NavigationLink(destination: HistoryView(initialReports: reports)) {
                         Image(systemName: "doc.text")
                     }
                     .accessibilityLabel("Reports")
@@ -71,7 +71,7 @@ struct DashboardView: View {
             SettingsView(prefs: $prefs, allCodes: allCodeNames)
         }
         .sheet(isPresented: $showHistorySheet) {
-            NavigationStack { HistoryView() }
+            NavigationStack { HistoryView(initialReports: reports) }
         }
         .sheet(item: $trendSheet) { sheet in
             NavigationStack {
