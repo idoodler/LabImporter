@@ -55,7 +55,7 @@ struct ProcessingHUD: View {
     var forcesStaticCard = false
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var isThermallyThrottled = ProcessInfo.processInfo.thermalState >= .serious
+    @State private var isThermallyThrottled = ProcessInfo.processInfo.thermalState.isThrottling
     @State private var showsCancel = false
 
     private var usesStaticCard: Bool { forcesStaticCard || reduceMotion || isThermallyThrottled }
@@ -96,7 +96,7 @@ struct ProcessingHUD: View {
                 .publisher(for: ProcessInfo.thermalStateDidChangeNotification)
                 .receive(on: DispatchQueue.main)
         ) { _ in
-            isThermallyThrottled = ProcessInfo.processInfo.thermalState >= .serious
+            isThermallyThrottled = ProcessInfo.processInfo.thermalState.isThrottling
         }
     }
 
@@ -171,6 +171,17 @@ struct ProcessingHUD: View {
         .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 28))
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.updatesFrequently)
+    }
+}
+
+private extension ProcessInfo.ThermalState {
+    /// Whether the device is hot enough that decorative GPU work should stop.
+    /// (`ThermalState` isn't `Comparable`, hence the explicit case check.)
+    var isThrottling: Bool {
+        switch self {
+        case .serious, .critical: return true
+        default: return false
+        }
     }
 }
 
