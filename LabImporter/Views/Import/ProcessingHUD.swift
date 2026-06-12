@@ -67,9 +67,13 @@ struct ProcessingHUD: View {
             // Full-bleed opaque background: the HUD reads as its own screen —
             // like Image Playground's generation view — and, being opaque and
             // hit-testable, swallows every touch so the content behind it
-            // can't be interacted with while an import runs.
+            // can't be interacted with while an import runs. The soft category
+            // wash on top matters optically: Liquid Glass all but disappears
+            // over a flat color — the orb needs something to refract.
             Color(.systemBackground)
                 .ignoresSafeArea()
+                .transition(.opacity)
+            MorphingCategoryBackground()
                 .transition(.opacity)
 
             if usesStaticCard {
@@ -188,6 +192,7 @@ private struct ImportBubbleView: View {
 
     @State private var physics = BubblePhysics()
     @GestureState private var fingerLocation: CGPoint?
+    @Namespace private var glassNamespace
 
     var body: some View {
         GeometryReader { geo in
@@ -214,22 +219,55 @@ private struct ImportBubbleView: View {
 
     private func orb(in size: CGSize) -> some View {
         TimelineView(.animation(minimumInterval: 1 / 40)) { timeline in
-            // The container's spacing is the distance at which neighboring
-            // glass shapes start flowing into each other — Liquid Glass does
-            // the gooey merging natively, no raster trickery needed.
-            GlassEffectContainer(spacing: 48) {
-                ZStack {
-                    ForEach(physics.balls(at: timeline.date, attractor: fingerLocation, in: size)) { ball in
-                        Circle()
-                            .frame(width: ball.radius * 2, height: ball.radius * 2)
-                            .glassEffect(.regular, in: .circle)
-                            .position(ball.position)
+            let balls = physics.balls(at: timeline.date, attractor: fingerLocation, in: size)
+            ZStack {
+                // The union is what makes this read as *one* piece of glass:
+                // without it every ball draws its own rim and the orb looks
+                // like stacked bubbles. The container's spacing additionally
+                // lets approaching droplets flow into the orb.
+                GlassEffectContainer(spacing: 48) {
+                    ZStack {
+                        ForEach(balls) { ball in
+                            Circle()
+                                .frame(width: ball.radius * 2, height: ball.radius * 2)
+                                .glassEffect(.regular, in: .circle)
+                                .glassEffectUnion(id: "orb", namespace: glassNamespace)
+                                .position(ball.position)
+                        }
                     }
+                    .frame(width: size.width, height: size.height)
                 }
-                .frame(width: size.width, height: size.height)
+                sphereShading(for: balls[0])
             }
         }
         .accessibilityHidden(true)
+    }
+
+    /// Painted-on sphere lighting — a soft specular up-left and a faint lower
+    /// falloff — so the orb reads as a volume even where the background gives
+    /// the glass little to refract. (Image Playground's orb shades the same
+    /// way: the "glassiness" of a big orb on a quiet background is mostly
+    /// lighting, not refraction.)
+    private func sphereShading(for core: BubblePhysics.Ball) -> some View {
+        ZStack {
+            Circle()
+                .fill(
+                    RadialGradient(
+                        colors: [.clear, .black.opacity(0.12)],
+                        center: UnitPoint(x: 0.42, y: 0.32),
+                        startRadius: core.radius * 0.35,
+                        endRadius: core.radius * 1.15
+                    )
+                )
+                .frame(width: core.radius * 2, height: core.radius * 2)
+                .position(core.position)
+            Ellipse()
+                .fill(.white.opacity(0.5))
+                .frame(width: core.radius * 0.95, height: core.radius * 0.5)
+                .blur(radius: 18)
+                .position(x: core.position.x - core.radius * 0.25, y: core.position.y - core.radius * 0.52)
+        }
+        .allowsHitTesting(false)
     }
 
     /// A faint ambient halo behind the orb so the glass lifts off the plain
