@@ -135,8 +135,8 @@ struct ImportLandingView: View {
             .controlSize(.large)
         }
         .padding(24)
-        // Glass (rather than plain material) so the card matches the floating
-        // progress card it morphs into during import — see `LabImportEngine`.
+        // Glass (rather than plain material) so the card matches the glass
+        // chrome of the import flow's processing HUD — see `ProcessingHUD`.
         .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 28))
         .overlay(
             RoundedRectangle(cornerRadius: 28)

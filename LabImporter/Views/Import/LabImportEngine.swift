@@ -2,6 +2,19 @@ import SwiftUI
 import UniformTypeIdentifiers
 import VisionKit
 
+/// Page-by-page progress of the OCR stage, shown by the processing HUD while
+/// a multi-page scan or PDF is being read.
+struct OCRPageProgress: Equatable {
+    var page: Int
+    var total: Int
+}
+
+/// A user-facing import failure whose message is already localized.
+private struct ImportFailure: LocalizedError {
+    let message: String
+    var errorDescription: String? { message }
+}
+
 /// Shared driver for the "known" import methods — scan, file, paste — that turn a
 /// document or clipboard content into parsed `LabValue`s via OCR + the on-device AI.
 ///
@@ -10,6 +23,9 @@ import VisionKit
 /// `@State`, set `onParsed`, attach `.labImport(engine:)`, and call `scan()` /
 /// `pickFile()` / `paste()` from their own buttons. The engine owns the scanner,
 /// file importer, error alert and processing HUD so each call site stays small.
+///
+/// Each import runs as a single cancellable task; `cancelImport()` (wired to the
+/// HUD's Cancel button) stops it at the next OCR-page or parse-token checkpoint.
 @MainActor
 @Observable
 final class LabImportEngine {
@@ -24,10 +40,17 @@ final class LabImportEngine {
 
     private(set) var isProcessing = false
 
-    /// The stage the current import is in, surfaced by the processing HUD as a
-    /// description + coarse progress. There is no fine-grained progress to report
-    /// (OCR and the on-device model are opaque), so this advances by phase.
+    /// The stage the current import is in, surfaced by the processing HUD.
     private(set) var phase: ImportPhase = .extractingText
+
+    /// Live page progress while OCR runs (multi-page scans and PDFs).
+    private(set) var ocrProgress: OCRPageProgress?
+
+    /// Live progress of the streaming AI parse — entries found so far.
+    private(set) var parseProgress: ParseProgress?
+
+    /// Incremented after each successful parse; drives the success haptic.
+    private(set) var completedImports = 0
 
     fileprivate var errorMessage: String?
     fileprivate var showScanner = false
@@ -35,6 +58,7 @@ final class LabImportEngine {
 
     private let ocrService = OCRService()
     private let parserService = LabParserService()
+    private var importTask: Task<Void, Never>?
 
     // MARK: - Method entry points
 
@@ -43,25 +67,79 @@ final class LabImportEngine {
             errorMessage = String(localized: "Document scanning isn't available on this device.")
             return
         }
+        prewarmParser()
         showScanner = true
     }
 
     func pickFile() {
+        prewarmParser()
         showFileImporter = true
     }
 
     func paste() {
         let pasteboard = UIPasteboard.general
         if let image = pasteboard.image {
-            Task { await processImages([image]) }
+            processImages([image])
         } else if let text = pasteboard.string, !text.isEmpty {
-            Task { await processText(text) }
+            processText(text)
         }
+    }
+
+    /// Stops the in-flight import. The HUD dismisses immediately; the
+    /// underlying OCR/parse observes the cancellation at its next checkpoint
+    /// (between OCR pages, or between streamed parse snapshots).
+    func cancelImport() {
+        importTask?.cancel()
+        isProcessing = false
     }
 
     // MARK: - Processing
 
-    func processFile(at url: URL) async {
+    func processFile(at url: URL) {
+        startImport(phase: .extractingText) { engine in
+            try await engine.importFile(at: url)
+        }
+    }
+
+    func processImages(_ images: [UIImage]) {
+        guard !images.isEmpty else { return }
+        startImport(phase: .extractingText) { engine in
+            let text = try await engine.ocrService.extractText(from: images, onPageProgress: engine.pageProgressHandler)
+            try await engine.handleExtractedText(text)
+        }
+    }
+
+    func processText(_ text: String) {
+        startImport(phase: .analyzing) { engine in
+            try await engine.handleExtractedText(text)
+        }
+    }
+
+    /// Runs `operation` as the single current import task, owning the HUD
+    /// lifecycle and error reporting. A cancelled import dismisses quietly.
+    private func startImport(
+        phase: ImportPhase,
+        operation: @escaping @MainActor (LabImportEngine) async throws -> Void
+    ) {
+        importTask?.cancel()
+        prewarmParser()
+        self.phase = phase
+        ocrProgress = nil
+        parseProgress = nil
+        isProcessing = true
+        importTask = Task { [weak self] in
+            guard let self else { return }
+            defer { isProcessing = false }
+            do {
+                try await operation(self)
+            } catch {
+                guard !(error is CancellationError), !Task.isCancelled else { return }
+                errorMessage = error.localizedDescription
+            }
+        }
+    }
+
+    private func importFile(at url: URL) async throws {
         let accessing = url.startAccessingSecurityScopedResource()
         defer {
             if accessing { url.stopAccessingSecurityScopedResource() }
@@ -76,11 +154,13 @@ final class LabImportEngine {
             || (try? url.resourceValues(forKeys: [.contentTypeKey]).contentType?.conforms(to: .pdf)) == true
 
         if isPDF {
-            await processPDF(at: url)
+            let text = try await ocrService.extractText(fromPDFAt: url, onPageProgress: pageProgressHandler)
+            try await handleExtractedText(text)
         } else if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
-            await processImages([image])
+            let text = try await ocrService.extractText(from: [image], onPageProgress: pageProgressHandler)
+            try await handleExtractedText(text)
         } else {
-            errorMessage = String(localized: "Could not load the selected file.")
+            throw ImportFailure(message: String(localized: "Could not load the selected file."))
         }
     }
 
@@ -96,54 +176,34 @@ final class LabImportEngine {
         try? FileManager.default.removeItem(at: url)
     }
 
-    func processImages(_ images: [UIImage]) async {
-        guard !images.isEmpty else { return }
-        phase = .extractingText
-        isProcessing = true
-        defer { isProcessing = false }
-
-        do {
-            let text = try await ocrService.extractText(from: images)
-            try await handleExtractedText(text)
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-    }
-
-    func processText(_ text: String) async {
-        phase = .analyzing
-        isProcessing = true
-        defer { isProcessing = false }
-
-        do {
-            try await handleExtractedText(text)
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-    }
-
-    private func processPDF(at url: URL) async {
-        phase = .extractingText
-        isProcessing = true
-        defer { isProcessing = false }
-
-        do {
-            let text = try await ocrService.extractText(fromPDFAt: url)
-            try await handleExtractedText(text)
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-    }
-
     private func handleExtractedText(_ text: String) async throws {
         // Text is in hand; the remaining (and longest) work is the AI parse.
         phase = .analyzing
-        let result = try await parserService.parseLabValues(from: text)
+        let result = try await parserService.parseLabValues(from: text) { [weak self] progress in
+            Task { @MainActor in self?.parseProgress = progress }
+        }
+        // A late result after the user cancelled must not pop the review sheet.
+        try Task.checkCancellation()
         if result.values.isEmpty {
             errorMessage = emptyMessage
             return
         }
+        completedImports += 1
         onParsed?(result)
+    }
+
+    /// Forwards OCR page progress onto the main actor for the HUD.
+    private var pageProgressHandler: @Sendable (Int, Int) -> Void {
+        { [weak self] page, total in
+            Task { @MainActor in self?.ocrProgress = OCRPageProgress(page: page, total: total) }
+        }
+    }
+
+    /// Loads the language model in parallel with scanning/picking/OCR so the
+    /// parse phase doesn't pay the model's startup cost on top of its own.
+    private func prewarmParser() {
+        let parser = parserService
+        Task { await parser.prewarm() }
     }
 
     fileprivate func reportError(_ message: String) {
@@ -161,7 +221,7 @@ private struct LabImportModifier: ViewModifier {
             .fullScreenCover(isPresented: $engine.showScanner) {
                 DocumentScannerView(
                     onComplete: { images in
-                        Task { await engine.processImages(images) }
+                        engine.processImages(images)
                     },
                     onError: { error in
                         engine.reportError(error.localizedDescription)
@@ -177,7 +237,7 @@ private struct LabImportModifier: ViewModifier {
                 switch result {
                 case .success(let urls):
                     guard let url = urls.first else { return }
-                    Task { await engine.processFile(at: url) }
+                    engine.processFile(at: url)
                 case .failure:
                     engine.reportError(String(localized: "Could not load the selected file."))
                 }
@@ -190,6 +250,10 @@ private struct LabImportModifier: ViewModifier {
             } message: {
                 Text(engine.errorMessage ?? "")
             }
+            // Success/failure haptics for the pipeline — completion is
+            // otherwise only visible as a sheet or alert appearing.
+            .sensoryFeedback(.success, trigger: engine.completedImports)
+            .sensoryFeedback(.error, trigger: engine.errorMessage) { _, newValue in newValue != nil }
             // The processing HUD is hosted in its own UIWindow above the key
             // window rather than as a SwiftUI `.overlay`. An overlay composites
             // *inside* the navigation container's SwiftUI layer, but the toolbar
@@ -199,7 +263,13 @@ private struct LabImportModifier: ViewModifier {
             // genuinely on top of everything, navigation bar included, and
             // swallows all touches for the duration of the import.
             .background(
-                ProcessingHUDPresenter(isProcessing: engine.isProcessing, phase: engine.phase)
+                ProcessingHUDPresenter(
+                    isProcessing: engine.isProcessing,
+                    phase: engine.phase,
+                    ocrProgress: engine.ocrProgress,
+                    parseProgress: engine.parseProgress,
+                    onCancel: { engine.cancelImport() }
+                )
             )
     }
 }
@@ -208,11 +278,14 @@ private struct LabImportModifier: ViewModifier {
 
 /// Invisible SwiftUI anchor whose coordinator owns a top-level `UIWindow` that
 /// hosts the processing HUD. Placed via `.background` so it occupies no layout
-/// space; all it does is forward `isProcessing` / `phase` into the coordinator,
+/// space; all it does is forward the engine's HUD state into the coordinator,
 /// which shows or tears down the window.
 private struct ProcessingHUDPresenter: UIViewRepresentable {
     var isProcessing: Bool
     var phase: ImportPhase
+    var ocrProgress: OCRPageProgress?
+    var parseProgress: ParseProgress?
+    var onCancel: () -> Void
 
     func makeUIView(context: Context) -> UIView {
         let view = UIView(frame: .zero)
@@ -222,7 +295,7 @@ private struct ProcessingHUDPresenter: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UIView, context: Context) {
-        context.coordinator.update(isProcessing: isProcessing, phase: phase, anchor: uiView)
+        context.coordinator.update(from: self, anchor: uiView)
     }
 
     static func dismantleUIView(_ uiView: UIView, coordinator: Coordinator) {
@@ -234,13 +307,16 @@ private struct ProcessingHUDPresenter: UIViewRepresentable {
     @MainActor
     final class Coordinator {
         private var window: UIWindow?
-        private let model = HUDModel()
+        private let model = ProcessingHUDModel()
         private var dismissTask: Task<Void, Never>?
 
-        func update(isProcessing: Bool, phase: ImportPhase, anchor: UIView) {
-            model.phase = phase
+        func update(from presenter: ProcessingHUDPresenter, anchor: UIView) {
+            model.phase = presenter.phase
+            model.ocrProgress = presenter.ocrProgress
+            model.parseProgress = presenter.parseProgress
+            model.onCancel = presenter.onCancel
 
-            if isProcessing {
+            if presenter.isProcessing {
                 dismissTask?.cancel()
                 dismissTask = nil
                 presentIfNeeded(from: anchor)
@@ -248,7 +324,7 @@ private struct ProcessingHUDPresenter: UIViewRepresentable {
             } else {
                 guard window != nil else { return }
                 model.isActive = false
-                // Defer teardown so the card/scrim can animate out with the
+                // Defer teardown so the bubble/scrim can animate out with the
                 // same transition they animate in with.
                 dismissTask?.cancel()
                 dismissTask = Task { [weak self] in
@@ -291,29 +367,6 @@ private struct ProcessingHUDPresenter: UIViewRepresentable {
     }
 }
 
-/// Observable backing for the windowed HUD. Living in a persistent hosting
-/// controller (rather than re-creating the view) lets phase changes and the
-/// show/hide transition animate naturally inside SwiftUI.
-@MainActor
-@Observable
-private final class HUDModel {
-    var phase: ImportPhase = .extractingText
-    var isActive = false
-}
-
-private struct ProcessingHUDHost: View {
-    @Bindable var model: HUDModel
-
-    var body: some View {
-        ZStack {
-            if model.isActive {
-                ProcessingHUD(phase: model.phase)
-            }
-        }
-        .animation(.easeInOut(duration: 0.25), value: model.isActive)
-    }
-}
-
 extension View {
     /// Wires up the scanner, file importer, error alert and processing HUD that
     /// back a `LabImportEngine`. Pair with `engine.scan()` / `pickFile()` /
@@ -325,10 +378,9 @@ extension View {
 
 // MARK: - Import phases
 
-/// The coarse stages an import passes through, used to label the processing HUD
-/// and drive its progress bar. OCR and the on-device model expose no real
-/// progress, so each phase maps to an indicative fraction rather than a measured
-/// one — enough to show motion and tell the user what's happening.
+/// The coarse stages an import passes through, used to label the processing
+/// HUD. Within a stage the HUD shows live detail — OCR page progress and the
+/// streamed count of values the on-device model has found so far.
 enum ImportPhase: CaseIterable {
     case extractingText
     case analyzing
@@ -353,74 +405,4 @@ enum ImportPhase: CaseIterable {
         case .analyzing: "sparkles"
         }
     }
-
-    var fraction: Double {
-        switch self {
-        case .extractingText: 0.45
-        case .analyzing: 0.9
-        }
-    }
-}
-
-// MARK: - Processing HUD
-
-struct ProcessingHUD: View {
-    let phase: ImportPhase
-
-    var body: some View {
-        ZStack {
-            // Dimming scrim: focuses attention on the card and, being an opaque
-            // hit-testable shape, swallows every touch so the content behind the
-            // HUD can't be interacted with while an import is in flight.
-            Rectangle()
-                .fill(.black.opacity(0.28))
-                .ignoresSafeArea()
-                .transition(.opacity)
-
-            VStack(spacing: 18) {
-                Image(systemName: phase.systemImage)
-                    .font(.system(size: 40, weight: .semibold))
-                    .foregroundStyle(.tint)
-                    .symbolEffect(.pulse, options: .repeating)
-                    .contentTransition(.symbolEffect(.replace))
-
-                VStack(spacing: 6) {
-                    Text(phase.title)
-                        .font(.headline)
-                    Text(phase.detail)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                .multilineTextAlignment(.center)
-
-                ProgressView(value: phase.fraction)
-                    .progressViewStyle(.linear)
-                    .tint(.accentColor)
-                    .frame(width: 200)
-                    .animation(.easeInOut(duration: 0.5), value: phase.fraction)
-            }
-            .padding(28)
-            .frame(maxWidth: 280)
-            .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 28))
-            .transition(.scale(scale: 0.92).combined(with: .opacity))
-        }
-        // Fill the whole display and ignore the safe area so the card is centered
-        // in the device's screen rather than in the host view's safe-area content
-        // region (which would push it below the navigation bar).
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .ignoresSafeArea()
-        .animation(.easeInOut(duration: 0.3), value: phase)
-        .accessibilityElement(children: .combine)
-        .accessibilityAddTraits(.updatesFrequently)
-    }
-}
-
-#Preview("Reading") {
-    Color(.systemGroupedBackground)
-        .overlay { ProcessingHUD(phase: .extractingText) }
-}
-
-#Preview("Analyzing") {
-    Color(.systemGroupedBackground)
-        .overlay { ProcessingHUD(phase: .analyzing) }
 }

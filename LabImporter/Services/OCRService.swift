@@ -22,11 +22,19 @@ actor OCRService {
         try await extractText(from: [image])
     }
 
-    func extractText(from images: [UIImage]) async throws -> String {
+    /// Recognizes text page by page. `onPageProgress` is invoked just before
+    /// each page is processed with `(page, total)` so callers can surface real
+    /// OCR progress; cancellation is observed between pages.
+    func extractText(
+        from images: [UIImage],
+        onPageProgress: (@Sendable (_ page: Int, _ total: Int) -> Void)? = nil
+    ) async throws -> String {
         guard !images.isEmpty else { throw OCRError.invalidImage }
 
         var pageTexts: [String] = []
-        for image in images {
+        for (index, image) in images.enumerated() {
+            try Task.checkCancellation()
+            onPageProgress?(index + 1, images.count)
             let text = try await recognizeText(in: image)
             if !text.isEmpty {
                 pageTexts.append(text)
@@ -38,13 +46,20 @@ actor OCRService {
         return joined
     }
 
-    func extractText(fromPDFAt url: URL) async throws -> String {
+    /// Extracts a PDF's text, OCR-ing only pages without embedded text.
+    /// `onPageProgress` reports progress across those OCR'd pages (embedded
+    /// text is effectively instant and isn't counted).
+    func extractText(
+        fromPDFAt url: URL,
+        onPageProgress: (@Sendable (_ page: Int, _ total: Int) -> Void)? = nil
+    ) async throws -> String {
         guard let document = PDFDocument(url: url) else { throw OCRError.unreadablePDF }
 
         var embeddedText: [String] = []
         var renderedImages: [UIImage] = []
 
         for index in 0..<document.pageCount {
+            try Task.checkCancellation()
             guard let page = document.page(at: index) else { continue }
             if let text = page.string?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty {
                 embeddedText.append(text)
@@ -55,7 +70,7 @@ actor OCRService {
 
         let embedded = embeddedText.joined(separator: "\n\n")
         if !renderedImages.isEmpty {
-            let recognized = try await extractText(from: renderedImages)
+            let recognized = try await extractText(from: renderedImages, onPageProgress: onPageProgress)
             return [embedded, recognized].filter { !$0.isEmpty }.joined(separator: "\n\n")
         }
 
