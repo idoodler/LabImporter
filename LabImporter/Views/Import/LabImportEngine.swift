@@ -324,7 +324,7 @@ private struct ProcessingHUDPresenter: UIViewRepresentable {
             } else {
                 guard window != nil else { return }
                 model.isActive = false
-                // Defer teardown so the bubble/scrim can animate out with the
+                // Defer teardown so the HUD can animate out with the
                 // same transition they animate in with.
                 dismissTask?.cancel()
                 dismissTask = Task { [weak self] in

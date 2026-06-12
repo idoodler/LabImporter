@@ -37,52 +37,40 @@ struct ProcessingHUDHost: View {
 
 // MARK: - Processing HUD
 
-/// The import screen shown while OCR + the on-device parse run. Styled after
-/// Image Playground's generation view: a full-bleed background with one large
-/// water drop wobbling in the middle — the phase title and live progress
-/// (OCR pages, streamed values) sit behind the drop and are read through its
-/// lens, and a Cancel control fades in at the bottom once the import has run
-/// long enough that bailing out is plausibly wanted.
-///
-/// Falls back to a static glass card when Reduce Motion is enabled or the
-/// device is already running hot — the drop animates on the GPU while the
-/// language model is busy, and that's a luxury, not a requirement.
+/// The full-screen import progress screen: the landing screen's visual
+/// language brought to life. On the category wash, the hero circle (the same
+/// gradient + symbol treatment as `ImportLandingView`) sits inside a progress
+/// ring — determinate while a multi-page document is OCR'd, an orbiting arc
+/// while the on-device model parses — with the phase title, a live counter of
+/// streamed values, and the most recently found value in a glass chip below.
+/// A Cancel control fades in at the bottom once the import has run long
+/// enough that bailing out is plausibly wanted.
 struct ProcessingHUD: View {
     let phase: ImportPhase
     var ocrProgress: OCRPageProgress?
     var parseProgress: ParseProgress?
     var onCancel: (() -> Void)?
-    /// Forces the static-card variant (used by previews); at runtime the card
-    /// is chosen by Reduce Motion and thermal state.
-    var forcesStaticCard = false
 
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var isThermallyThrottled = ProcessInfo.processInfo.thermalState.isThrottling
     @State private var showsCancel = false
-
-    private var usesStaticCard: Bool { forcesStaticCard || reduceMotion || isThermallyThrottled }
 
     var body: some View {
         ZStack {
-            // Full-bleed opaque background: the HUD reads as its own screen —
-            // like Image Playground's generation view — and, being opaque and
-            // hit-testable, swallows every touch so the content behind it
-            // can't be interacted with while an import runs.
+            // Full-bleed opaque background: the HUD reads as its own screen
+            // and, being opaque and hit-testable, swallows every touch so the
+            // content behind it can't be interacted with while an import runs.
             Color(.systemBackground)
                 .ignoresSafeArea()
                 .transition(.opacity)
+            MorphingCategoryBackground()
+                .transition(.opacity)
 
-            if usesStaticCard {
-                // The drop view brings its own wash (it has to live inside the
-                // refracted layer); the static path adds it here instead.
-                MorphingCategoryBackground()
-                    .transition(.opacity)
-                staticCard
-                    .transition(.scale(scale: 0.94).combined(with: .opacity))
-            } else {
-                ImportWaterDropView(phase: phase, statusText: statusText, parseProgress: parseProgress)
-                    .transition(.scale(scale: 0.94).combined(with: .opacity))
-            }
+            ImportProgressView(
+                phase: phase,
+                ocrProgress: ocrProgress,
+                parseProgress: parseProgress,
+                statusText: statusText
+            )
+            .transition(.scale(scale: 0.94).combined(with: .opacity))
 
             VStack {
                 Spacer()
@@ -93,34 +81,24 @@ struct ProcessingHUD: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .ignoresSafeArea()
         .animation(.easeInOut(duration: 0.3), value: phase)
+        .animation(.spring(duration: 0.4), value: parseProgress?.entryCount ?? 0)
         .task {
             try? await Task.sleep(for: .seconds(2))
             withAnimation(.easeInOut(duration: 0.3)) { showsCancel = true }
-        }
-        .onReceive(
-            NotificationCenter.default
-                .publisher(for: ProcessInfo.thermalStateDidChangeNotification)
-                .receive(on: DispatchQueue.main)
-        ) { _ in
-            isThermallyThrottled = ProcessInfo.processInfo.thermalState.isThrottling
         }
     }
 
     // MARK: Pieces
 
     /// One line of *real* progress: the OCR page being read, or the running
-    /// count of values the model has streamed (plus the latest test name),
-    /// falling back to the phase's static description.
+    /// count of values the model has streamed, falling back to the phase's
+    /// static description. (The latest value's name gets its own chip.)
     private var statusText: Text {
         if phase == .extractingText, let pages = ocrProgress, pages.total > 1 {
             return Text("Page \(pages.page) of \(pages.total)")
         }
         if phase == .analyzing, let progress = parseProgress, progress.entryCount > 0 {
-            let count = Text("\(progress.entryCount) values")
-            if let name = progress.latestName, !name.isEmpty {
-                return count + Text(verbatim: " · \(name)")
-            }
-            return count
+            return Text("\(progress.entryCount) values")
         }
         return Text(phase.detail)
     }
@@ -136,41 +114,131 @@ struct ProcessingHUD: View {
         .opacity(showsCancel ? 1 : 0)
         .allowsHitTesting(showsCancel)
     }
+}
 
-    /// Reduce Motion / thermal fallback: the drop's information without its
-    /// animation, in the same glass language.
-    private var staticCard: some View {
-        VStack(spacing: 18) {
-            Image(systemName: phase.systemImage)
-                .font(.system(size: 40, weight: .semibold))
-                .foregroundStyle(.tint)
-                .contentTransition(.symbolEffect(.replace))
+// MARK: - Progress content
 
-            VStack(spacing: 6) {
+/// The centered content of the import screen: hero circle in a progress
+/// ring, phase title, live status, and the latest streamed value as a chip.
+private struct ImportProgressView: View {
+    let phase: ImportPhase
+    var ocrProgress: OCRPageProgress?
+    var parseProgress: ParseProgress?
+    let statusText: Text
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var isSpinning = false
+
+    private static let heroGradient = LinearGradient(
+        colors: [LabCategory.bloodGas.color, LabCategory.endocrine.color],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+
+    /// Real ring progress while a multi-page document is OCR'd; nil means
+    /// indeterminate (the on-device model exposes no fraction).
+    private var ringFraction: Double? {
+        guard phase == .extractingText, let pages = ocrProgress, pages.total > 1 else { return nil }
+        return Double(pages.page) / Double(pages.total)
+    }
+
+    var body: some View {
+        VStack(spacing: 28) {
+            hero
+
+            VStack(spacing: 8) {
                 Text(phase.title)
-                    .font(.headline)
+                    .font(.title3.weight(.semibold))
                 statusText
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .contentTransition(.numericText())
             }
             .multilineTextAlignment(.center)
-        }
-        .padding(28)
-        .frame(maxWidth: 280)
-        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 28))
-        .accessibilityElement(children: .combine)
-        .accessibilityAddTraits(.updatesFrequently)
-    }
-}
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.updatesFrequently)
 
-private extension ProcessInfo.ThermalState {
-    /// Whether the device is hot enough that decorative GPU work should stop.
-    /// (`ThermalState` isn't `Comparable`, hence the explicit case check.)
-    var isThrottling: Bool {
-        switch self {
-        case .serious, .critical: return true
-        default: return false
+            // Keeps the layout from jumping when the first chip appears.
+            latestValueChip
+                .frame(height: 36)
+        }
+        .padding(.horizontal, 32)
+        .onAppear { isSpinning = true }
+    }
+
+    /// The landing hero circle, alive: same gradient, same glow, with the
+    /// phase symbol pulsing inside and the progress ring around it.
+    private var hero: some View {
+        ZStack {
+            Circle()
+                .stroke(Color.primary.opacity(0.08), lineWidth: 4)
+                .frame(width: 158, height: 158)
+            progressRing
+                .frame(width: 158, height: 158)
+            Circle()
+                .fill(Self.heroGradient)
+                .frame(width: 110, height: 110)
+                .shadow(color: LabCategory.endocrine.color.opacity(0.35), radius: 24, y: 10)
+            Image(systemName: phase.systemImage)
+                .font(.system(size: 44, weight: .medium))
+                .foregroundStyle(.white)
+                .contentTransition(.symbolEffect(.replace))
+                .symbolEffect(.pulse, options: .repeating, isActive: !reduceMotion)
+        }
+        .accessibilityHidden(true)
+    }
+
+    @ViewBuilder
+    private var progressRing: some View {
+        if let fraction = ringFraction {
+            // Determinate: fills with real page progress.
+            Circle()
+                .trim(from: 0, to: fraction)
+                .stroke(ringStyle, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+                .animation(.easeInOut(duration: 0.4), value: fraction)
+        } else if reduceMotion {
+            // No fraction and no motion allowed: a calm full brand ring.
+            Circle()
+                .stroke(ringStyle, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                .opacity(0.4)
+        } else {
+            // Indeterminate: a brand-gradient arc orbiting the hero.
+            Circle()
+                .trim(from: 0, to: 0.22)
+                .stroke(ringStyle, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                .rotationEffect(.degrees(isSpinning ? 270 : -90))
+                .animation(.linear(duration: 1.4).repeatForever(autoreverses: false), value: isSpinning)
+        }
+    }
+
+    private var ringStyle: AngularGradient {
+        AngularGradient(
+            colors: [LabCategory.bloodGas.color, LabCategory.endocrine.color, LabCategory.bloodGas.color],
+            center: .center
+        )
+    }
+
+    /// The most recently streamed value, in a glass chip. The name fills in
+    /// token by token as the model writes it — a live "found it" readout.
+    @ViewBuilder
+    private var latestValueChip: some View {
+        if let name = parseProgress?.latestName, !name.isEmpty {
+            HStack(spacing: 6) {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(LabCategory.hepatic.color)
+                Text(name)
+                    .lineLimit(1)
+                    .contentTransition(.interpolate)
+            }
+            .font(.footnote.weight(.medium))
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .glassEffect(.regular, in: Capsule())
+            .frame(maxWidth: 300)
+            .transition(.scale(scale: 0.9).combined(with: .opacity))
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.updatesFrequently)
         }
     }
 }
@@ -181,6 +249,13 @@ private extension ProcessInfo.ThermalState {
     ProcessingHUD(
         phase: .extractingText,
         ocrProgress: OCRPageProgress(page: 2, total: 5),
+        onCancel: {}
+    )
+}
+
+#Preview("Analyzing — before first value") {
+    ProcessingHUD(
+        phase: .analyzing,
         onCancel: {}
     )
 }
@@ -200,13 +275,4 @@ private extension ProcessInfo.ThermalState {
         onCancel: {}
     )
     .preferredColorScheme(.dark)
-}
-
-#Preview("Reduced Motion / thermal fallback") {
-    ProcessingHUD(
-        phase: .analyzing,
-        parseProgress: ParseProgress(entryCount: 3, latestName: "Ferritin"),
-        onCancel: {},
-        forcesStaticCard: true
-    )
 }
