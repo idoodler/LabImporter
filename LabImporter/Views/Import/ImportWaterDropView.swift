@@ -109,10 +109,11 @@ struct ImportWaterDropView: View {
             halo(for: state)
             ForEach(state.droplets) { dropletView($0) }
             ZStack {
-                // Barely-there frost and shading: the glass should read as
-                // very transparent liquid, carried by refraction, not paint.
+                // A whisper of the hero gradient inside the glass — the same
+                // blue→purple as the landing hero circle — so the drop is
+                // unmistakably this app's, while staying clearly transparent.
                 shape
-                    .fill(.white.opacity(0.03))
+                    .fill(Self.heroGradient.opacity(0.12))
                 shape
                     .fill(
                         RadialGradient(
@@ -127,22 +128,33 @@ struct ImportWaterDropView: View {
                     .frame(width: state.radius * 0.9, height: state.radius * 0.45)
                     .blur(radius: 16)
                     .position(x: side / 2 - state.radius * 0.25, y: side / 2 - state.radius * 0.5)
+                // Constant brand-colored rim, with the wandering glints on top.
+                shape
+                    .stroke(Self.heroGradient.opacity(0.30), lineWidth: 1.2)
                 shape
                     .stroke(glintGradient(at: time), lineWidth: 2)
                     .blur(radius: 1)
             }
             .frame(width: side, height: side)
-            .shadow(color: .black.opacity(0.07), radius: 24, y: 10)
+            .shadow(color: LabCategory.endocrine.color.opacity(0.22), radius: 24, y: 10)
             .position(state.position)
         }
         .allowsHitTesting(false)
         .accessibilityHidden(true)
     }
 
-    /// A soft ambient halo that travels with the drop.
+    /// The landing hero's gradient — the drop's brand tint.
+    private static let heroGradient = LinearGradient(
+        colors: [LabCategory.bloodGas.color, LabCategory.endocrine.color],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+
+    /// A soft ambient halo in the hero's purple that travels with the drop —
+    /// the same glow the landing hero circle casts.
     private func halo(for state: BubblePhysics.DropState) -> some View {
         RadialGradient(
-            colors: [Color.primary.opacity(0.05), .clear],
+            colors: [LabCategory.endocrine.color.opacity(0.10), .clear],
             center: .center,
             startRadius: state.radius * 0.5,
             endRadius: state.radius * 2.2
@@ -151,29 +163,30 @@ struct ImportWaterDropView: View {
         .position(state.position)
     }
 
-    /// An incoming streamed-value droplet: a small frosted bead.
+    /// An incoming streamed-value droplet: a small bead in the brand blue.
     private func dropletView(_ droplet: BubblePhysics.Droplet) -> some View {
         Circle()
-            .fill(.white.opacity(0.18))
-            .overlay(Circle().strokeBorder(.white.opacity(0.45), lineWidth: 1))
+            .fill(LabCategory.bloodGas.color.opacity(0.16))
+            .overlay(Circle().strokeBorder(LabCategory.bloodGas.color.opacity(0.45), lineWidth: 1))
             .frame(width: droplet.radius * 2, height: droplet.radius * 2)
             .shadow(color: .black.opacity(0.08), radius: 6, y: 3)
             .position(droplet.position)
     }
 
-    /// Mostly-transparent angular gradient with two short chromatic slivers,
-    /// rotated slowly over time so the glints wander around the rim.
+    /// Mostly-transparent angular gradient with two short slivers drawn from
+    /// the app's category palette, rotated slowly over time so the glints
+    /// wander around the rim.
     private func glintGradient(at time: TimeInterval) -> AngularGradient {
         AngularGradient(
             stops: [
                 .init(color: .clear, location: 0),
                 .init(color: .clear, location: 0.50),
-                .init(color: .blue.opacity(0.55), location: 0.54),
-                .init(color: .cyan.opacity(0.45), location: 0.57),
+                .init(color: LabCategory.bloodGas.color.opacity(0.55), location: 0.54),
+                .init(color: LabCategory.electrolytes.color.opacity(0.45), location: 0.57),
                 .init(color: .clear, location: 0.61),
                 .init(color: .clear, location: 0.84),
-                .init(color: .orange.opacity(0.40), location: 0.87),
-                .init(color: .pink.opacity(0.40), location: 0.89),
+                .init(color: LabCategory.endocrine.color.opacity(0.45), location: 0.87),
+                .init(color: LabCategory.hematology.color.opacity(0.40), location: 0.89),
                 .init(color: .clear, location: 0.92),
                 .init(color: .clear, location: 1)
             ],
