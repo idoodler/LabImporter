@@ -233,6 +233,45 @@ struct TrendsView: View {
 
 extension TrendsView {
     private var trendChart: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            chartHeader
+            chartBody
+        }
+        .padding()
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
+        )
+    }
+
+    /// Fixed readout above the plot, Apple-Health style: while scrubbing it
+    /// shows the value under the finger, otherwise the latest reading. Living
+    /// outside the scrollable plot, it needs no scroll-offset math and no
+    /// edge clamping, and never covers the data under the finger.
+    @ViewBuilder
+    private var chartHeader: some View {
+        if let point = selectedDataPoint ?? dataPoints.last {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(point.date.formatted(date: .abbreviated, time: .omitted))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    Text(formatValue(point.value))
+                        .font(.title2.weight(.semibold))
+                        .contentTransition(.numericText())
+                    if !point.unit.isEmpty {
+                        Text(point.unit)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .animation(.snappy(duration: 0.2), value: point.date)
+        }
+    }
+
+    private var chartBody: some View {
         Chart {
             if let range = referenceRange {
                 if let low = range.low {
@@ -271,15 +310,6 @@ extension TrendsView {
                 RuleMark(x: .value(String(localized: "Date"), selected.date))
                     .foregroundStyle(.secondary.opacity(0.5))
                     .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
-                    // The callout must be an annotation, not a chartOverlay: with a
-                    // scrolled finite window the proxy's position(forX:) is offset by
-                    // the scroll amount, so an overlay drifts away from the finger.
-                    // `.fit(to: .plot)` keeps it inside the visible plot at the edges
-                    // without padding the scale (which would resize the graph).
-                    .annotation(position: .top, spacing: 0,
-                                overflowResolution: .init(x: .fit(to: .plot), y: .fit(to: .plot))) {
-                        scrubCallout(selected)
-                    }
 
                 PointMark(
                     x: .value(String(localized: "Date"), selected.date),
@@ -316,43 +346,6 @@ extension TrendsView {
             }
         }
         .frame(minHeight: 260)
-        .padding()
-        .overlay(alignment: .topLeading) { unitBadge }
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
-        .overlay(
-            RoundedRectangle(cornerRadius: 20)
-                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
-        )
-    }
-
-    private func scrubCallout(_ point: DataPoint) -> some View {
-        VStack(alignment: .center, spacing: 1) {
-            Text(point.date.formatted(date: .abbreviated, time: .omitted))
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-            HStack(alignment: .firstTextBaseline, spacing: 3) {
-                Text(formatValue(point.value))
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.primary)
-                if !point.unit.isEmpty {
-                    Text(point.unit)
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                }
-            }
-        }
-        .fixedSize()
-        .padding(.horizontal, 14)
-        .padding(.vertical, 8)
-        // Not .glassEffect: the scrollable plot renders annotations into its own
-        // layer, so glass has no backdrop to sample and turns dark. A material
-        // resolves correctly there.
-        .background(.regularMaterial, in: Capsule())
-        .overlay(
-            Capsule()
-                .stroke(Color.primary.opacity(0.15), lineWidth: 0.5)
-        )
-        .shadow(color: Color.black.opacity(0.2), radius: 8, x: 0, y: 3)
     }
 
     private var selectedPointBubble: some View {
@@ -373,18 +366,6 @@ extension TrendsView {
 // MARK: - Helpers
 
 extension TrendsView {
-    /// Static unit caption pinned to the card (`chartYAxisLabel` rides the scrollable plot).
-    @ViewBuilder
-    var unitBadge: some View {
-        if !currentUnit.isEmpty {
-            Text(currentUnit)
-                .font(.caption.weight(.medium))
-                .foregroundStyle(valueColor.opacity(0.8))
-                .padding(EdgeInsets(top: 8, leading: 12, bottom: 0, trailing: 0))
-                .allowsHitTesting(false)
-        }
-    }
-
     var windowPicker: some View {
         Picker("Time Range", selection: $window) {
             ForEach(TrendWindow.allCases) { option in
