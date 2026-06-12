@@ -342,13 +342,13 @@ struct HomeView: View {
             pendingImportURL = url
             return
         }
-        Task { await importEngine.processFile(at: url) }
+        importEngine.processFile(at: url)
     }
 
     private func flushPendingImport() {
         guard let url = pendingImportURL else { return }
         pendingImportURL = nil
-        Task { await importEngine.processFile(at: url) }
+        importEngine.processFile(at: url)
     }
 
     // MARK: - Import engine

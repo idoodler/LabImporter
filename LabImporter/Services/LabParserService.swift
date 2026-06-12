@@ -46,6 +46,15 @@ struct ParseResult {
     let authorName: String?
 }
 
+/// Live progress of a streaming parse, surfaced by the processing HUD: how
+/// many entries the model has emitted so far and the most recent test name.
+/// The name may still be mid-generation — it fills in token by token, which
+/// the HUD shows as a pleasant "typing" effect.
+struct ParseProgress: Equatable, Sendable {
+    var entryCount: Int
+    var latestName: String?
+}
+
 // MARK: - Errors
 
 /// Errors surfaced to the user when the on-device model can't parse a report.
@@ -107,8 +116,25 @@ enum LabParserError: LocalizedError {
 
 actor LabParserService {
 
-    func parseLabValues(from text: String) async throws -> ParseResult {
-        let report = try await parseWithFoundationModels(text: text)
+    /// A session created (and prewarmed) ahead of the next parse so the model
+    /// loads while the user is still scanning or while OCR runs, instead of
+    /// paying that startup cost serialized after it.
+    private var preparedSession: LanguageModelSession?
+
+    func prewarm() {
+        guard preparedSession == nil else { return }
+        let session = Self.makeSession()
+        session.prewarm()
+        preparedSession = session
+    }
+
+    /// Parses lab values out of `text`. `onProgress` is invoked as the model
+    /// streams entries, with the running count and latest test name.
+    func parseLabValues(
+        from text: String,
+        onProgress: (@Sendable (ParseProgress) -> Void)? = nil
+    ) async throws -> ParseResult {
+        let report = try await parseWithFoundationModels(text: text, onProgress: onProgress)
         let entries = report.entries
         let reportDate = parseDate(report.reportDate)
         let patientName = report.patientName.isEmpty ? nil : report.patientName
@@ -165,8 +191,8 @@ actor LabParserService {
 
     // MARK: - Foundation Models path
 
-    private func parseWithFoundationModels(text: String) async throws -> AILabReport {
-        let session = LanguageModelSession(
+    private static func makeSession() -> LanguageModelSession {
+        LanguageModelSession(
             instructions: """
             You are a medical lab report parser. Extract every lab test entry from the provided text.
             Lab reports follow the pattern: CODE: value unit; CODE2: value2 unit2; ...
@@ -184,6 +210,21 @@ actor LabParserService {
             Extract the lab or doctor name if visible; otherwise return an empty string for authorName.
             """
         )
+    }
+
+    /// Consumes the prewarmed session if one is waiting, else creates a fresh
+    /// one. Sessions are single-use per parse so transcripts never accumulate
+    /// across imports.
+    private func takeSession() -> LanguageModelSession {
+        defer { preparedSession = nil }
+        return preparedSession ?? Self.makeSession()
+    }
+
+    private func parseWithFoundationModels(
+        text: String,
+        onProgress: (@Sendable (ParseProgress) -> Void)?
+    ) async throws -> AILabReport {
+        let session = takeSession()
 
         // Foundation Models detects the language of the *prompt* and refuses
         // (`unsupportedLanguageOrLocale`) if it can't classify it as a supported
@@ -202,16 +243,54 @@ actor LabParserService {
         """
 
         do {
-            let response = try await session.respond(
-                to: prompt,
-                generating: AILabReport.self
-            )
-            return response.content
+            // Stream the structured response instead of awaiting it whole:
+            // every snapshot carries the entries generated so far, which the
+            // processing HUD surfaces as live progress while the model works.
+            var lastSnapshot: AILabReport.PartiallyGenerated?
+            var reported = ParseProgress(entryCount: 0, latestName: nil)
+            let stream = session.streamResponse(to: prompt, generating: AILabReport.self)
+            for try await snapshot in stream {
+                try Task.checkCancellation()
+                lastSnapshot = snapshot.content
+                guard let onProgress else { continue }
+                let entries = snapshot.content.entries ?? []
+                let progress = ParseProgress(
+                    entryCount: entries.count,
+                    // Hold the previous name while a new entry's name hasn't
+                    // started generating yet, so the HUD never flashes empty.
+                    latestName: entries.last?.name ?? reported.latestName
+                )
+                if progress != reported {
+                    reported = progress
+                    onProgress(progress)
+                }
+            }
+            return materialize(lastSnapshot)
         } catch let error as LanguageModelSession.GenerationError {
             // Translate the model's terse, English-only system error into a
             // clear, localized message before it reaches the UI alert.
             throw LabParserError(error)
         }
+    }
+
+    /// Builds the final report from the last streamed snapshot. The stream's
+    /// final snapshot is the complete generation, so the defaults only paper
+    /// over a stream that ended early — which then surfaces to the user as
+    /// "no values found" rather than a crash on a half-built entry.
+    private func materialize(_ partial: AILabReport.PartiallyGenerated?) -> AILabReport {
+        let entries = (partial?.entries ?? []).compactMap { entry -> AILabEntry? in
+            let code = entry.code ?? ""
+            let name = entry.name ?? ""
+            guard !code.isEmpty || !name.isEmpty else { return nil }
+            return AILabEntry(code: code, name: name, rawValue: entry.rawValue ?? "", unit: entry.unit ?? "")
+        }
+        return AILabReport(
+            entries: entries,
+            reportDate: partial?.reportDate ?? "",
+            patientName: partial?.patientName ?? "",
+            authorName: partial?.authorName ?? "",
+            reportLanguage: partial?.reportLanguage ?? ""
+        )
     }
 
     // MARK: - Date helpers
