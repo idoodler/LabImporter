@@ -45763,6 +45763,1486 @@
           }
         }
       }
+    },
+    "Search Your Lab Values" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Търсете вашите лабораторни стойности"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerca els teus valors de laboratori"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hledejte své laboratorní hodnoty"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Søg i dine laboratorieværdier"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durchsuche deine Laborwerte"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αναζητήστε τις εργαστηριακές σας τιμές"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Busca tus valores de laboratorio"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hae laboratorioarvojasi"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recherchez vos valeurs de laboratoire"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pretražite svoje laboratorijske vrijednosti"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keressen a laborértékei között"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerca i tuoi valori di laboratorio"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "検査値を検索"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doorzoek je labwaarden"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wyszukuj swoje wyniki laboratoryjne"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Busque seus valores laboratoriais"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pesquise os seus valores laboratoriais"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Caută-ți valorile de laborator"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ищите свои лабораторные показатели"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hľadajte svoje laboratórne hodnoty"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sök bland dina labbvärden"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laboratuvar değerlerinizi arayın"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Шукайте свої лабораторні показники"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜索你的化验值"
+          }
+        }
+      }
+    },
+    "Find any value you track straight from iOS search." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Намерете всеки проследяван показател направо от търсенето в iOS."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Troba qualsevol valor que segueixes directament des de la cerca d’iOS."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Najděte kterýkoli sledovaný ukazatel přímo z vyhledávání v iOS."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Find enhver værdi, du følger, direkte fra iOS-søgning."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finde jeden Wert, den du verfolgst, direkt über die iOS-Suche."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Βρείτε οποιαδήποτε τιμή παρακολουθείτε απευθείας από την αναζήτηση του iOS."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encuentra cualquier valor que sigues directamente desde la búsqueda de iOS."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Löydä mikä tahansa seuraamasi arvo suoraan iOS-haulla."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trouvez n’importe quelle valeur que vous suivez directement depuis la recherche d’iOS."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pronađite bilo koju vrijednost koju pratite izravno iz iOS pretraživanja."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Találjon meg bármely követett értéket közvetlenül az iOS keresőből."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trova qualsiasi valore che monitori direttamente dalla ricerca di iOS."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "追跡している値を iOS の検索からすぐに見つけられます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vind elke waarde die je volgt rechtstreeks via iOS-zoeken."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Znajdź dowolny śledzony parametr bezpośrednio z wyszukiwania iOS."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encontre qualquer valor que você acompanha direto da busca do iOS."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encontre qualquer valor que acompanha diretamente da pesquisa do iOS."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Găsește orice valoare pe care o urmărești direct din căutarea iOS."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Находите любой отслеживаемый показатель прямо из поиска iOS."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nájdite ktorýkoľvek sledovaný ukazovateľ priamo z vyhľadávania v iOS."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hitta vilket värde du följer som helst direkt från iOS-sökningen."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Takip ettiğiniz herhangi bir değeri doğrudan iOS aramasından bulun."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Знаходьте будь-який показник, який ви відстежуєте, прямо з пошуку iOS."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "直接从 iOS 搜索中找到你追踪的任何数值。"
+          }
+        }
+      }
+    },
+    "Find Labs from Search" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Намерете изследвания чрез търсене"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Troba anàlisis des de la cerca"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Najděte hodnoty přes vyhledávání"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Find prøver via søgning"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laborwerte über die Suche finden"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Βρείτε εξετάσεις από την αναζήτηση"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encuentra análisis desde la búsqueda"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Löydä arvot haulla"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trouvez vos analyses via la recherche"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pronađite nalaze pretraživanjem"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Találja meg az értékeket keresésből"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trova le analisi dalla ricerca"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "検索で検査値を見つける"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vind labs via zoeken"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Znajdź wyniki z wyszukiwania"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encontre exames pela busca"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encontre análises pela pesquisa"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Găsește analize din căutare"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Находите анализы через поиск"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nájdite hodnoty cez vyhľadávanie"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hitta prover via sökning"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tahlilleri aramadan bulun"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Знаходьте аналізи через пошук"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从搜索中查找化验"
+          }
+        }
+      }
+    },
+    "Swipe down on the Home Screen, type a value's name, and open its trend in a tap." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Плъзнете надолу на началния екран, въведете името на показател и отворете тенденцията му с едно докосване."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Llisca cap avall a la pantalla d’inici, escriu el nom d’un valor i obre’n la tendència amb un toc."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Přejeďte dolů na ploše, napište název ukazatele a jedním klepnutím otevřete jeho trend."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stryg ned på hjemmeskærmen, skriv navnet på en værdi, og åbn dens udvikling med et tryk."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wische auf dem Home-Bildschirm nach unten, tippe den Namen eines Werts ein und öffne seinen Verlauf mit einem Tipp."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Σύρετε προς τα κάτω στην αρχική οθόνη, πληκτρολογήστε το όνομα μιας τιμής και ανοίξτε την τάση της με ένα άγγιγμα."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desliza hacia abajo en la pantalla de inicio, escribe el nombre de un valor y abre su tendencia con un toque."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pyyhkäise alaspäin Koti-näytöllä, kirjoita arvon nimi ja avaa sen kehitys yhdellä napautuksella."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Balayez vers le bas sur l’écran d’accueil, saisissez le nom d’une valeur et ouvrez sa tendance d’un toucher."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Povucite prema dolje na početnom zaslonu, upišite naziv vrijednosti i jednim dodirom otvorite njezin trend."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Húzzon lefelé a kezdőképernyőn, írja be egy érték nevét, és egy koppintással nyissa meg a trendjét."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scorri verso il basso nella schermata Home, digita il nome di un valore e apri il suo andamento con un tocco."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ホーム画面で下にスワイプし、値の名前を入力すれば、タップひとつで推移を開けます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Veeg omlaag op het beginscherm, typ de naam van een waarde en open de trend met één tik."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przesuń w dół na ekranie głównym, wpisz nazwę parametru i otwórz jego trend jednym dotknięciem."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deslize para baixo na Tela de Início, digite o nome de um valor e abra sua tendência com um toque."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deslize para baixo no ecrã principal, escreva o nome de um valor e abra a sua tendência com um toque."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Glisează în jos pe ecranul principal, scrie numele unei valori și deschide-i tendința cu o atingere."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Смахните вниз на экране «Домой», введите название показателя и откройте его динамику одним касанием."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Potiahnite nadol na ploche, napíšte názov hodnoty a jedným ťuknutím otvorte jej trend."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Svep nedåt på hemskärmen, skriv namnet på ett värde och öppna dess trend med en tryckning."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ana ekranda aşağı kaydırın, bir değerin adını yazın ve eğilimini tek dokunuşla açın."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проведіть униз на головному екрані, введіть назву показника й одним дотиком відкрийте його динаміку."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在主屏幕下拉，输入数值名称，轻点即可打开其趋势。"
+          }
+        }
+      }
+    },
+    "Names, Not Numbers" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Имена, не числа"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noms, no xifres"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Názvy, ne čísla"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navne, ikke tal"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Namen, keine Zahlen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ονόματα, όχι αριθμοί"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nombres, no cifras"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nimet, ei lukuja"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Des noms, pas des chiffres"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nazivi, ne brojevi"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nevek, nem számok"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nomi, non numeri"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "数値ではなく名称"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Namen, geen getallen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nazwy, nie liczby"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nomes, não números"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nomes, não números"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nume, nu cifre"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Названия, а не числа"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Názvy, nie čísla"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Namn, inte siffror"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sayılar değil, adlar"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Назви, а не числа"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "只有名称，没有数值"
+          }
+        }
+      }
+    },
+    "By default only the names of the values you track are searchable — never a reading." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "По подразбиране се търсят само имената на проследяваните показатели — никога стойност."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per defecte només es poden cercar els noms dels valors que segueixes, mai una lectura."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ve výchozím nastavení lze hledat jen názvy sledovaných ukazatelů — nikdy hodnotu."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Som standard kan kun navnene på de værdier, du følger, søges frem — aldrig en måling."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standardmäßig sind nur die Namen der von dir verfolgten Werte durchsuchbar – niemals ein Messwert."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Από προεπιλογή είναι αναζητήσιμα μόνο τα ονόματα των τιμών που παρακολουθείτε — ποτέ μια μέτρηση."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por defecto solo se pueden buscar los nombres de los valores que sigues, nunca una lectura."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oletuksena vain seuraamiesi arvojen nimet ovat haettavissa — ei koskaan lukema."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Par défaut, seuls les noms des valeurs que vous suivez sont recherchables, jamais une mesure."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prema zadanim postavkama pretraživi su samo nazivi vrijednosti koje pratite — nikada očitanje."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alapértelmezésben csak a követett értékek nevei kereshetők — mérés soha."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per impostazione predefinita sono ricercabili solo i nomi dei valori che monitori, mai una misurazione."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デフォルトでは、追跡している値の名称のみが検索対象で、測定値は対象外です。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standaard zijn alleen de namen van de waarden die je volgt doorzoekbaar — nooit een meting."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Domyślnie można wyszukiwać tylko nazwy śledzonych parametrów — nigdy wynik."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por padrão, apenas os nomes dos valores que você acompanha podem ser buscados — nunca uma leitura."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por predefinição, só os nomes dos valores que acompanha podem ser pesquisados — nunca uma leitura."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "În mod implicit pot fi căutate doar numele valorilor pe care le urmărești — niciodată o valoare."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "По умолчанию доступны для поиска только названия отслеживаемых показателей — без значений."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "V predvolenom nastavení sa dajú hľadať len názvy sledovaných ukazovateľov — nikdy hodnota."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Som standard går bara namnen på värdena du följer att söka efter — aldrig ett mätvärde."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Varsayılan olarak yalnızca takip ettiğiniz değerlerin adları aranabilir — asla bir ölçüm."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "За замовчуванням доступні для пошуку лише назви показників, які ви відстежуєте, — без значень."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "默认情况下，仅可搜索你追踪的数值名称，绝不包含读数。"
+          }
+        }
+      }
+    },
+    "Show Your Latest Reading" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показвайте последния си резултат"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra la teva darrera lectura"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zobrazte svou poslední hodnotu"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vis din seneste måling"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeige deinen neuesten Messwert"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Εμφανίστε την πιο πρόσφατη μέτρησή σας"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muestra tu última lectura"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Näytä viimeisin lukemasi"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Affichez votre dernière mesure"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prikažite svoje posljednje očitanje"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mutassa a legutóbbi mérését"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra la tua ultima misurazione"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最新の測定値を表示"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toon je laatste meting"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pokaż swój ostatni wynik"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostre sua leitura mais recente"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostre a sua leitura mais recente"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arată ultima ta valoare"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показывайте последний результат"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zobrazte svoju poslednú hodnotu"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visa ditt senaste värde"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Son ölçümünüzü gösterin"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показуйте свій останній показник"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示你的最新读数"
+          }
+        }
+      }
+    },
+    "Optionally surface each value's most recent reading in search too. Change it anytime in Settings." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "По избор показвайте и най-новия резултат за всеки показател в търсенето. Променяйте го по всяко време в Настройки."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opcionalment, mostra també la lectura més recent de cada valor a la cerca. Canvia-ho quan vulguis a Configuració."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Volitelně zobrazte ve vyhledávání i nejnovější hodnotu každého ukazatele. Kdykoli to změníte v Nastavení."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vis eventuelt også den seneste måling for hver værdi i søgningen. Du kan ændre det når som helst i Indstillinger."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Optional kannst du auch den neuesten Messwert jedes Werts in der Suche anzeigen. Ändere das jederzeit in den Einstellungen."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Προαιρετικά, εμφανίστε στην αναζήτηση και την πιο πρόσφατη μέτρηση κάθε τιμής. Αλλάξτε το όποτε θέλετε στις Ρυθμίσεις."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opcionalmente, muestra también la lectura más reciente de cada valor en la búsqueda. Cámbialo cuando quieras en Ajustes."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voit halutessasi näyttää haussa myös kunkin arvon viimeisimmän lukeman. Muuta tätä milloin tahansa Asetuksissa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous pouvez aussi afficher la mesure la plus récente de chaque valeur dans la recherche. Modifiable à tout moment dans Réglages."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Po želji u pretraživanju prikažite i najnovije očitanje svake vrijednosti. Promijenite to bilo kada u Postavkama."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Igény szerint a keresésben megjelenítheti minden érték legutóbbi mérését is. Bármikor módosíthatja a Beállításokban."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se vuoi, mostra nella ricerca anche la misurazione più recente di ogni valore. Puoi cambiarlo quando vuoi in Impostazioni."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "必要に応じて、各値の最新の測定値も検索に表示できます。設定でいつでも変更できます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toon desgewenst ook de meest recente meting van elke waarde in zoeken. Wijzig dit altijd in Instellingen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opcjonalnie pokaż w wyszukiwaniu także najnowszy wynik każdego parametru. Zmienisz to w każdej chwili w Ustawieniach."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opcionalmente, exiba também a leitura mais recente de cada valor na busca. Mude quando quiser nos Ajustes."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opcionalmente, mostre também a leitura mais recente de cada valor na pesquisa. Altere quando quiser nos Ajustes."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opțional, afișează în căutare și cea mai recentă valoare a fiecărui parametru. Schimbi oricând în Reglaje."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "При желании показывайте в поиске и последний результат каждого показателя. Измените это в любой момент в Настройках."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voliteľne zobrazte vo vyhľadávaní aj najnovšiu hodnotu každého ukazovateľa. Kedykoľvek to zmeníte v Nastaveniach."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visa valfritt även det senaste värdet för varje mätvärde i sökningen. Ändra det när som helst i Inställningar."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İsteğe bağlı olarak her değerin en son ölçümünü de aramada gösterin. İstediğiniz zaman Ayarlar’dan değiştirin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "За бажанням показуйте в пошуку й останній показник кожного значення. Змінюйте це будь-коли в Параметрах."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "也可选择在搜索中显示每项数值的最新读数。可随时在“设置”中更改。"
+          }
+        }
+      }
+    },
+    "Search entries stay on this device. Your lab values never leave Apple Health." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Записите за търсене остават на това устройство. Лабораторните ви стойности никога не напускат Apple Здраве."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les entrades de cerca es queden en aquest dispositiu. Els teus valors de laboratori mai no surten d’Apple Salut."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Záznamy pro vyhledávání zůstávají v tomto zařízení. Vaše laboratorní hodnoty nikdy neopustí Apple Zdraví."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Søgeposterne bliver på denne enhed. Dine laboratorieværdier forlader aldrig Apple Helbred."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Sucheinträge bleiben auf diesem Gerät. Deine Laborwerte verlassen Apple Health nie."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Οι καταχωρίσεις αναζήτησης παραμένουν σε αυτή τη συσκευή. Οι εργαστηριακές σας τιμές δεν φεύγουν ποτέ από το Apple Υγεία."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las entradas de búsqueda se quedan en este dispositivo. Tus valores de laboratorio nunca salen de Apple Salud."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hakukohteet pysyvät tässä laitteessa. Laboratorioarvosi eivät koskaan poistu Apple Terveydestä."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les entrées de recherche restent sur cet appareil. Vos valeurs de laboratoire ne quittent jamais Apple Santé."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stavke pretraživanja ostaju na ovom uređaju. Vaše laboratorijske vrijednosti nikada ne napuštaju Apple Zdravlje."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A keresési bejegyzések ezen az eszközön maradnak. A laborértékei soha nem hagyják el az Apple Egészséget."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le voci di ricerca restano su questo dispositivo. I tuoi valori di laboratorio non lasciano mai Apple Salute."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "検索エントリはこのデバイスに残ります。検査値が Appleヘルスケア から外に出ることはありません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De zoekvermeldingen blijven op dit apparaat. Je labwaarden verlaten Apple Gezondheid nooit."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wpisy wyszukiwania pozostają na tym urządzeniu. Twoje wyniki laboratoryjne nigdy nie opuszczają Apple Zdrowia."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As entradas de busca permanecem neste dispositivo. Seus valores laboratoriais nunca saem do Apple Saúde."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As entradas de pesquisa permanecem neste dispositivo. Os seus valores laboratoriais nunca saem da Apple Saúde."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intrările de căutare rămân pe acest dispozitiv. Valorile tale de laborator nu părăsesc niciodată Apple Sănătate."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Записи для поиска остаются на этом устройстве. Ваши лабораторные показатели никогда не покидают Apple Здоровье."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Záznamy vyhľadávania zostávajú v tomto zariadení. Vaše laboratórne hodnoty nikdy neopustia Apple Zdravie."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sökposterna stannar på den här enheten. Dina labbvärden lämnar aldrig Apple Hälsa."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arama girdileri bu cihazda kalır. Laboratuvar değerleriniz Apple Sağlık'tan asla çıkmaz."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Записи для пошуку залишаються на цьому пристрої. Ваші лабораторні показники ніколи не залишають Apple Здоров'я."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜索条目保留在本设备上。你的化验值绝不会离开 Apple 健康。"
+          }
+        }
+      }
+    },
+    "Show Latest Values" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показвай последните стойности"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra els darrers valors"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zobrazit poslední hodnoty"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vis seneste værdier"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzte Werte anzeigen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Εμφάνιση τελευταίων τιμών"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar últimos valores"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Näytä viimeisimmät arvot"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher les dernières valeurs"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prikaži posljednje vrijednosti"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Legutóbbi értékek megjelenítése"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra ultimi valori"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最新の値を表示"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laatste waarden tonen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pokaż ostatnie wyniki"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar últimos valores"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar últimos valores"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afișează ultimele valori"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показывать последние значения"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zobraziť posledné hodnoty"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visa senaste värden"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Son değerleri göster"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показувати останні значення"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示最新值"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

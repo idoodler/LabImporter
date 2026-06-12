@@ -32,6 +32,10 @@ struct HomeView: View {
     /// Whether the user has made the required up-front iCloud sync decision.
     /// Gates entry into the app so no reports can be added before deciding.
     @AppStorage("hasChosenICloudSync") private var hasChosenICloudSync = false
+    /// Whether the user has seen the Spotlight search introduction and made the
+    /// up-front decision about surfacing latest readings in search. Gates entry
+    /// like the iCloud step; defaults `false` so existing installs see it once.
+    @AppStorage("hasChosenSpotlightSearch") private var hasChosenSpotlightSearch = false
     @AppStorage(CloudSyncService.enabledKey) private var iCloudSyncEnabled = false
     /// Mirrors the Settings opt-in for surfacing the latest reading in Spotlight,
     /// observed here so flipping it re-publishes the index right away.
@@ -191,52 +195,13 @@ struct HomeView: View {
             presentTrend(for: code)
         }
         .fullScreenCover(isPresented: Binding(
-            get: { !hasSeenWelcome || !hasAcknowledgedDisclaimer || !hasGrantedHealthAccess || !hasChosenICloudSync },
+            get: {
+                !hasSeenWelcome || !hasAcknowledgedDisclaimer || !hasGrantedHealthAccess
+                    || !hasChosenICloudSync || !hasChosenSpotlightSearch
+            },
             set: { _ in }
         )) {
             onboardingFlow
-        }
-    }
-
-    /// Four-step onboarding: marketing welcome → medical disclaimer →
-    /// Apple Health permission gate → required iCloud sync decision. Swapping the
-    /// inner view inside the same fullScreenCover keeps the cover presented
-    /// without a dismiss/re-present flash between steps. The iCloud decision is
-    /// mandatory, so the cover stays up — and the dashboard / import entry points
-    /// stay unreachable — until the user picks an option.
-    @ViewBuilder
-    private var onboardingFlow: some View {
-        if !hasSeenWelcome {
-            WelcomeView {
-                withAnimation(.smooth(duration: 0.35)) {
-                    hasSeenWelcome = true
-                }
-            }
-            .transition(.opacity)
-        } else if !hasAcknowledgedDisclaimer {
-            DisclaimerView {
-                withAnimation(.smooth(duration: 0.35)) {
-                    hasAcknowledgedDisclaimer = true
-                }
-            }
-            .transition(.opacity)
-        } else if !hasGrantedHealthAccess {
-            HealthPermissionView {
-                withAnimation(.smooth(duration: 0.35)) {
-                    hasGrantedHealthAccess = true
-                }
-            }
-            .transition(.opacity)
-        } else {
-            CloudSyncOptInView { enabled in
-                iCloudSyncEnabled = enabled
-                withAnimation(.smooth(duration: 0.35)) {
-                    hasChosenICloudSync = true
-                }
-                flushPendingImport()
-                flushPendingDeepLink()
-            }
-            .transition(.opacity)
         }
     }
 
@@ -366,7 +331,8 @@ struct HomeView: View {
     /// stashed and replayed once `WelcomeView` is dismissed — otherwise the
     /// review sheet would present beneath the welcome cover and stay hidden.
     private func handleIncomingFile(_ url: URL) {
-        guard hasSeenWelcome, hasAcknowledgedDisclaimer, hasGrantedHealthAccess, hasChosenICloudSync else {
+        guard hasSeenWelcome, hasAcknowledgedDisclaimer, hasGrantedHealthAccess,
+              hasChosenICloudSync, hasChosenSpotlightSearch else {
             pendingImportURL = url
             return
         }
@@ -412,6 +378,45 @@ struct HomeView: View {
 // MARK: - Report loading & Spotlight deep links
 
 private extension HomeView {
+    /// Five-step onboarding: welcome → disclaimer → Apple Health → iCloud sync →
+    /// Spotlight search. Swapping the inner view inside the same fullScreenCover
+    /// avoids a dismiss/re-present flash; each gate is mandatory so the cover (and
+    /// the app behind it) stays up until the user decides.
+    @ViewBuilder
+    var onboardingFlow: some View {
+        if !hasSeenWelcome {
+            WelcomeView {
+                withAnimation(.smooth(duration: 0.35)) { hasSeenWelcome = true }
+            }
+            .transition(.opacity)
+        } else if !hasAcknowledgedDisclaimer {
+            DisclaimerView {
+                withAnimation(.smooth(duration: 0.35)) { hasAcknowledgedDisclaimer = true }
+            }
+            .transition(.opacity)
+        } else if !hasGrantedHealthAccess {
+            HealthPermissionView {
+                withAnimation(.smooth(duration: 0.35)) { hasGrantedHealthAccess = true }
+            }
+            .transition(.opacity)
+        } else if !hasChosenICloudSync {
+            CloudSyncOptInView { enabled in
+                iCloudSyncEnabled = enabled
+                withAnimation(.smooth(duration: 0.35)) { hasChosenICloudSync = true }
+            }
+            .transition(.opacity)
+        } else {
+            SpotlightOptInView { showValues in
+                showLatestValueInSearch = showValues
+                withAnimation(.smooth(duration: 0.35)) { hasChosenSpotlightSearch = true }
+                // Final step — release anything that was waiting on onboarding.
+                flushPendingImport()
+                flushPendingDeepLink()
+            }
+            .transition(.opacity)
+        }
+    }
+
     /// Wraps `loadReports` so it does nothing until the user has cleared the
     /// Apple Health permission gate. Without this guard, `.task` would call
     /// `requestAuthorization` and surface the system prompt before the
@@ -440,7 +445,7 @@ private extension HomeView {
     /// and replayed by `flushPendingDeepLink` once those gates clear.
     func presentTrend(for code: String) {
         guard hasSeenWelcome, hasAcknowledgedDisclaimer, hasGrantedHealthAccess, hasChosenICloudSync,
-              isLoaded, !reports.isEmpty else {
+              hasChosenSpotlightSearch, isLoaded, !reports.isEmpty else {
             pendingDeepLinkCode = code
             return
         }
@@ -463,6 +468,7 @@ private extension HomeView {
         hasAcknowledgedDisclaimer = true
         hasGrantedHealthAccess = true
         hasChosenICloudSync = true
+        hasChosenSpotlightSearch = true
         reports = LabReport.sampleHistory
         isLoaded = true
         if ScreenshotMode.initialScreen == "review" {
