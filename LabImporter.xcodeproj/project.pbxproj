@@ -53,6 +53,7 @@
 		AABB0000000000000000C2DE /* UnsupportedDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000C3DE /* UnsupportedDeviceView.swift */; };
 		AABB0000000000000000CC01 /* MetricCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000CC02 /* MetricCard.swift */; };
 		AABB0000000000000000D1AA /* CloudSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000D0AA /* CloudSyncService.swift */; };
+		AASP000000000000000001AA /* SpotlightIndexService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASP000000000000000002AA /* SpotlightIndexService.swift */; };
 		AABB0000000000000000D3AA /* CloudSyncOptInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000D2AA /* CloudSyncOptInView.swift */; };
 		AABB0000000000000000E1AA /* DisclaimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000E2AA /* DisclaimerView.swift */; };
 		AABB0000000000000000F1AA /* LabImportEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000F2AA /* LabImportEngine.swift */; };
@@ -139,6 +140,7 @@
 		AABB0000000000000000C3DE /* UnsupportedDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsupportedDeviceView.swift; sourceTree = "<group>"; };
 		AABB0000000000000000CC02 /* MetricCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricCard.swift; sourceTree = "<group>"; };
 		AABB0000000000000000D0AA /* CloudSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncService.swift; sourceTree = "<group>"; };
+		AASP000000000000000002AA /* SpotlightIndexService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightIndexService.swift; sourceTree = "<group>"; };
 		AABB0000000000000000D2AA /* CloudSyncOptInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncOptInView.swift; sourceTree = "<group>"; };
 		AABB0000000000000000E2AA /* DisclaimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisclaimerView.swift; sourceTree = "<group>"; };
 		AABB0000000000000000F2AA /* LabImportEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabImportEngine.swift; sourceTree = "<group>"; };
@@ -233,6 +235,7 @@
 				AAED000000000000000013AA /* PDFExportService.swift */,
 				AABB000000000000000090AA /* LoincDirectory.swift */,
 				AABB0000000000000000D0AA /* CloudSyncService.swift */,
+				AASP000000000000000002AA /* SpotlightIndexService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -575,6 +578,7 @@
 				AABB000000000000000045AA /* HealthKitService.swift in Sources */,
 				AABB000000000000000091AA /* LoincDirectory.swift in Sources */,
 				AABB0000000000000000D1AA /* CloudSyncService.swift in Sources */,
+				AASP000000000000000001AA /* SpotlightIndexService.swift in Sources */,
 				AABB000000000000000057AA /* CDAExportService.swift in Sources */,
 				AAED000000000000000010AA /* PDFExportOptions.swift in Sources */,
 				AAED000000000000000012AA /* PDFExportService.swift in Sources */,

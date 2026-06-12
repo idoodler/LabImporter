@@ -66,6 +66,29 @@ enum LabCategory: String, CaseIterable, Sendable {
         }
     }
 
+    /// An SF Symbol representing the category, used wherever a metric needs a
+    /// compact glyph rather than a chart — e.g. the Spotlight search thumbnail.
+    /// Picked to read at a glance; the category colour carries the rest.
+    var icon: String {
+        switch self {
+        case .glycemic:     return "cube.fill"
+        case .lipids:       return "circle.hexagongrid.fill"
+        case .cardiac:      return "heart.fill"
+        case .renal:        return "cross.vial.fill"
+        case .hepatic:      return "leaf.fill"
+        case .endocrine:    return "atom"
+        case .electrolytes: return "bolt.fill"
+        case .bloodGas:     return "lungs.fill"
+        case .hematology:   return "drop.fill"
+        case .coagulation:  return "bandage.fill"
+        case .nutrition:    return "pills.fill"
+        case .microbiology: return "microbe.fill"
+        case .urinalysis:   return "drop.triangle.fill"
+        case .drug:         return "pills.circle.fill"
+        case .other:        return "testtube.2"
+        }
+    }
+
     /// Best-effort category for a LOINC code, resolved via the bundled catalog.
     ///
     /// Codes repeat heavily across the UI (every dashboard card, history row and

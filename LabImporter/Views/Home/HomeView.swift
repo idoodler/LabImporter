@@ -1,3 +1,4 @@
+import CoreSpotlight
 import SwiftUI
 import VisionKit
 
@@ -17,6 +18,12 @@ struct HomeView: View {
     /// An "Open With" file that arrived before onboarding was dismissed; held
     /// back so its review sheet isn't presented underneath the welcome cover.
     @State private var pendingImportURL: URL?
+    /// A metric (by LOINC code) the user tapped in Spotlight whose trend detail
+    /// should be presented. Wrapped so `.sheet(item:)` drives the presentation.
+    @State private var trendDeepLink: TrendDeepLink?
+    /// A deep link that arrived before the app was ready (onboarding incomplete or
+    /// reports not yet loaded); replayed once those gates clear.
+    @State private var pendingDeepLinkCode: String?
     @AppStorage("hasSeenWelcome") private var hasSeenWelcome = false
     /// Whether the user has acknowledged the medical disclaimer shown after the
     /// welcome screen and before the Apple Health permission gate.
@@ -68,6 +75,12 @@ struct HomeView: View {
         }
     }
 
+    /// Identifiable wrapper so a deep-linked metric drives `.sheet(item:)`.
+    private struct TrendDeepLink: Identifiable {
+        let code: String
+        var id: String { code }
+    }
+
     var body: some View {
         // The layout adapts to the device — a sidebar split view on iPad and the
         // original stack on iPhone — while the import overlay, review sheet,
@@ -96,6 +109,16 @@ struct HomeView: View {
                 )
             }
             .interactiveDismissDisabled()
+        }
+        // The trend detail opened from a Spotlight search hit. Mirrors the
+        // dashboard's own metric sheet (medium/large detents, drag indicator) so a
+        // deep link lands on the exact same "detail popup" as tapping a card.
+        .sheet(item: $trendDeepLink) { link in
+            NavigationStack {
+                TrendsView(reports: reports, initialCode: link.code, onDismiss: { trendDeepLink = nil })
+            }
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
         }
         .task {
             if ScreenshotMode.isActive {
@@ -143,7 +166,21 @@ struct HomeView: View {
             configureImportEngine()
         }
         .onOpenURL { url in
-            handleIncomingFile(url)
+            // A `labimporter://metric/<code>` deep link opens that metric's trend;
+            // anything else is a file handed over via "Open With".
+            if let code = DeepLink.metricCode(from: url) {
+                presentTrend(for: code)
+            } else {
+                handleIncomingFile(url)
+            }
+        }
+        // A tap on a Spotlight result reaches us as a continued user activity whose
+        // identifier is the metric's deep-link URL — route it the same way.
+        .onContinueUserActivity(CSSearchableItemActionType) { activity in
+            guard let identifier = activity.userInfo?[CSSearchableItemActivityIdentifier] as? String,
+                  let url = URL(string: identifier),
+                  let code = DeepLink.metricCode(from: url) else { return }
+            presentTrend(for: code)
         }
         .fullScreenCover(isPresented: Binding(
             get: { !hasSeenWelcome || !hasAcknowledgedDisclaimer || !hasGrantedHealthAccess || !hasChosenICloudSync },
@@ -189,6 +226,7 @@ struct HomeView: View {
                     hasChosenICloudSync = true
                 }
                 flushPendingImport()
+                flushPendingDeepLink()
             }
             .transition(.opacity)
         }
@@ -345,27 +383,6 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Report loading
-
-    /// Wraps `loadReports` so it does nothing until the user has cleared the
-    /// Apple Health permission gate. Without this guard, `.task` would call
-    /// `requestAuthorization` and surface the system prompt before the
-    /// explainer view has even appeared.
-    private func loadReportsIfAuthorized() async {
-        guard hasGrantedHealthAccess else { return }
-        await loadReports()
-    }
-
-    private func loadReports() async {
-        guard !ScreenshotMode.isActive else { return }
-        do {
-            reports = try await HealthKitService.shared.loadCDADocuments()
-        } catch {
-            // Silently ignore authorization errors on first launch before user grants access
-        }
-        isLoaded = true
-    }
-
     // MARK: - Clipboard
 
     private func refreshClipboardState() {
@@ -381,6 +398,51 @@ struct HomeView: View {
         parsedPatientName = nil
         parsedAuthorName = nil
         showReview = true
+    }
+}
+
+// MARK: - Report loading & Spotlight deep links
+
+private extension HomeView {
+    /// Wraps `loadReports` so it does nothing until the user has cleared the
+    /// Apple Health permission gate. Without this guard, `.task` would call
+    /// `requestAuthorization` and surface the system prompt before the
+    /// explainer view has even appeared.
+    func loadReportsIfAuthorized() async {
+        guard hasGrantedHealthAccess else { return }
+        await loadReports()
+    }
+
+    func loadReports() async {
+        guard !ScreenshotMode.isActive else { return }
+        do {
+            reports = try await HealthKitService.shared.loadCDADocuments()
+            // Publish the tracked metrics to Spotlight so they're searchable
+            // system-wide (names only — never a reading).
+            SpotlightIndexService.shared.reindex(reports: reports)
+        } catch {
+            // Silently ignore authorization errors on first launch before user grants access
+        }
+        isLoaded = true
+        flushPendingDeepLink()
+    }
+
+    /// Opens the trend detail for a Spotlight-searched metric. If the app isn't
+    /// ready yet — onboarding still up, or reports not loaded — the code is stashed
+    /// and replayed by `flushPendingDeepLink` once those gates clear.
+    func presentTrend(for code: String) {
+        guard hasSeenWelcome, hasAcknowledgedDisclaimer, hasGrantedHealthAccess, hasChosenICloudSync,
+              isLoaded, !reports.isEmpty else {
+            pendingDeepLinkCode = code
+            return
+        }
+        pendingDeepLinkCode = nil
+        trendDeepLink = TrendDeepLink(code: code)
+    }
+
+    func flushPendingDeepLink() {
+        guard let code = pendingDeepLinkCode else { return }
+        presentTrend(for: code)
     }
 }
 
