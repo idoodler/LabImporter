@@ -163,11 +163,13 @@ struct SettingsView: View {
                     """)
                 }
 
-                Section("Search") {
+                Section {
                     Toggle(isOn: $showLatestValueInSearch) {
                         SettingsRowLabel("Show Latest Value in Search",
                                          systemImage: "magnifyingglass", color: .orange)
                     }
+                } header: {
+                    Text("Search")
                 } footer: {
                     Text("""
                     Let each value's most recent reading appear in iOS search results. \
