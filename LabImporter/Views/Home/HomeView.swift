@@ -112,10 +112,7 @@ struct HomeView: View {
             }
             .interactiveDismissDisabled()
         }
-        // The trend detail opened from a Spotlight search hit — the same "detail
-        // popup" (medium/large detents) as tapping a dashboard card. The
-        // coordinator only sets `presentedCode` once the app is back at root with
-        // no editor in the way, so the presentation always succeeds.
+        // The trend detail from a Spotlight hit — the coordinator presents it only once the app is back at root with no editor in the way.
         .sheet(item: Binding(
             get: { searchPresentation.presentedCode.map(MetricDetailRequest.init) },
             set: { if $0 == nil { searchPresentation.presentedCode = nil } }
@@ -131,6 +128,8 @@ struct HomeView: View {
         .environment(searchPresentation)
         // "Navigate back" also returns the iPad sidebar to the dashboard.
         .onChange(of: searchPresentation.navResetToken) { _, _ in sidebarSelection = .dashboard }
+        // The last onboarding gate releases anything that waited on onboarding.
+        .onChange(of: onboardingComplete) { _, done in if done { flushPendingImport(); flushPendingDeepLink() } }
         .task {
             if ScreenshotMode.isActive {
                 setupScreenshotMode()
@@ -385,20 +384,14 @@ struct HomeView: View {
 // MARK: - Report loading & Spotlight deep links
 
 private extension HomeView {
-    /// Five-step onboarding: welcome → disclaimer → Apple Health → iCloud sync →
-    /// Spotlight search. Swapping the inner view inside the same fullScreenCover
-    /// avoids a dismiss/re-present flash; each gate is mandatory so the cover (and
-    /// the app behind it) stays up until the user decides.
+    /// Five-step onboarding: welcome → Apple Health → iCloud sync → Spotlight
+    /// search → disclaimer. Each gate is mandatory, so the same fullScreenCover
+    /// stays up (swapping its inner view) until the user clears them all.
     @ViewBuilder
     var onboardingFlow: some View {
         if !hasSeenWelcome {
             WelcomeView {
                 withAnimation(.smooth(duration: 0.35)) { hasSeenWelcome = true }
-            }
-            .transition(.opacity)
-        } else if !hasAcknowledgedDisclaimer {
-            DisclaimerView {
-                withAnimation(.smooth(duration: 0.35)) { hasAcknowledgedDisclaimer = true }
             }
             .transition(.opacity)
         } else if !hasGrantedHealthAccess {
@@ -412,16 +405,23 @@ private extension HomeView {
                 withAnimation(.smooth(duration: 0.35)) { hasChosenICloudSync = true }
             }
             .transition(.opacity)
-        } else {
+        } else if !hasChosenSpotlightSearch {
             SpotlightOptInView { showValues in
                 showLatestValueInSearch = showValues
                 withAnimation(.smooth(duration: 0.35)) { hasChosenSpotlightSearch = true }
-                // Final step — release anything that was waiting on onboarding.
-                flushPendingImport()
-                flushPendingDeepLink()
+            }
+            .transition(.opacity)
+        } else {
+            DisclaimerView {
+                withAnimation(.smooth(duration: 0.35)) { hasAcknowledgedDisclaimer = true }
             }
             .transition(.opacity)
         }
+    }
+
+    /// True once every onboarding gate is cleared, whichever step was last.
+    var onboardingComplete: Bool {
+        hasSeenWelcome && hasAcknowledgedDisclaimer && hasGrantedHealthAccess && hasChosenICloudSync && hasChosenSpotlightSearch
     }
 
     /// Wraps `loadReports` so it does nothing until the user has cleared the
