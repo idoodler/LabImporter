@@ -107,7 +107,7 @@ struct ImportWaterDropView: View {
         )
         return ZStack {
             halo(for: state)
-            ForEach(state.droplets) { dropletView($0) }
+            ForEach(state.droplets) { dropletView($0, time: time) }
             ZStack {
                 // A whisper of the hero gradient inside the glass — the same
                 // blue→purple as the landing hero circle — so the drop is
@@ -163,12 +163,22 @@ struct ImportWaterDropView: View {
         .position(state.position)
     }
 
-    /// An incoming streamed-value droplet: a small bead in the brand blue.
-    private func dropletView(_ droplet: BubblePhysics.Droplet) -> some View {
-        Circle()
+    /// An incoming streamed-value droplet: a small bead in the brand blue,
+    /// with a falling drop's squash-and-stretch — elongated along its
+    /// direction of travel, thinned across it (area-conserving), and gently
+    /// breathing so it never reads as a rigid token.
+    private func dropletView(_ droplet: BubblePhysics.Droplet, time: TimeInterval) -> some View {
+        let speed = hypot(droplet.velocity.dx, droplet.velocity.dy)
+        let stretch = 1 + min(speed / 900, 0.55)
+        let breathe = 1 + 0.06 * sin(time * 3.2 + droplet.phase)
+        return Ellipse()
             .fill(LabCategory.bloodGas.color.opacity(0.16))
-            .overlay(Circle().strokeBorder(LabCategory.bloodGas.color.opacity(0.45), lineWidth: 1))
-            .frame(width: droplet.radius * 2, height: droplet.radius * 2)
+            .overlay(Ellipse().strokeBorder(LabCategory.bloodGas.color.opacity(0.45), lineWidth: 1))
+            .frame(
+                width: droplet.radius * 2 * stretch * breathe,
+                height: droplet.radius * 2 / stretch * breathe
+            )
+            .rotationEffect(.radians(atan2(droplet.velocity.dy, droplet.velocity.dx)))
             .shadow(color: .black.opacity(0.08), radius: 6, y: 3)
             .position(droplet.position)
     }
@@ -242,6 +252,9 @@ private final class BubblePhysics {
         var position: CGPoint
         var velocity: CGVector = .zero
         var radius: CGFloat
+        /// Phase offset for this droplet's wander and breathing, so no two
+        /// droplets move in lockstep.
+        let phase = Double.random(in: 0..<(2 * .pi))
     }
 
     /// Everything the renderer needs for one frame of the drop.
@@ -287,13 +300,10 @@ private final class BubblePhysics {
             let anchor = clamp(attractor ?? center, in: size)
             integrate(&position, &velocity, toward: anchor, stiffness: Self.stiffness, delta: delta)
             for index in droplets.indices {
-                // Copy out/in: two inout projections into the same array
-                // element would overlap exclusive access to `droplets`.
+                // Copy out/in: inout projections into the same array element
+                // would overlap exclusive access to `droplets`.
                 var droplet = droplets[index]
-                integrate(
-                    &droplet.position, &droplet.velocity,
-                    toward: position, stiffness: Self.stiffness / 2, delta: delta
-                )
+                integrateDroplet(&droplet, time: time, delta: delta)
                 droplets[index] = droplet
             }
             absorbDroplets()
@@ -310,8 +320,19 @@ private final class BubblePhysics {
         let center = CGPoint(x: bounds.width / 2, y: bounds.height / 2)
         let angle = Double.random(in: 0..<(2 * .pi))
         let distance = max(bounds.width, bounds.height) / 2 + 60
+        let spawn = CGPoint(x: center.x + cos(angle) * distance, y: center.y + sin(angle) * distance)
+        // Launch with mostly *tangential* velocity so the droplet arcs around
+        // toward the drop instead of beelining at it — water curls, it
+        // doesn't travel in straight rays.
+        let inwardX = (center.x - spawn.x) / distance
+        let inwardY = (center.y - spawn.y) / distance
+        let tangential = (Bool.random() ? 1 : -1) * CGFloat.random(in: 220...420)
         droplets.append(Droplet(
-            position: CGPoint(x: center.x + cos(angle) * distance, y: center.y + sin(angle) * distance),
+            position: spawn,
+            velocity: CGVector(
+                dx: inwardX * 140 - inwardY * tangential,
+                dy: inwardY * 140 + inwardX * tangential
+            ),
             radius: CGFloat.random(in: 13...18)
         ))
     }
@@ -358,6 +379,29 @@ private final class BubblePhysics {
         velocity.dy += ((target.y - point.y) * stiffness - velocity.dy * Self.damping) * delta
         point.x += velocity.dx * delta
         point.y += velocity.dy * delta
+    }
+
+    /// Water-like droplet motion: a lazy, slightly serpentine drift while far
+    /// from the drop, then a surface-tension "grab" whose pull ramps up
+    /// steeply as the droplet nears the surface and swoops it in. The wander
+    /// fades out as the grab takes over so the final approach is clean.
+    private func integrateDroplet(_ droplet: inout Droplet, time: TimeInterval, delta: CGFloat) {
+        let toCoreX = position.x - droplet.position.x
+        let toCoreY = position.y - droplet.position.y
+        let distance = max(hypot(toCoreX, toCoreY), 1)
+        let surface = Self.coreRadius + growth
+        let proximity = max(0, 1 - max(0, distance - surface) / (surface * 1.8))
+
+        let drive = (8 + 110 * proximity * proximity) * min(distance, 280)
+        let wander = CGFloat(sin(time * 2.1 + droplet.phase)) * 1400 * (1 - proximity)
+        let dampingDrag: CGFloat = 5
+
+        let directionX = toCoreX / distance
+        let directionY = toCoreY / distance
+        droplet.velocity.dx += (directionX * drive - directionY * wander - droplet.velocity.dx * dampingDrag) * delta
+        droplet.velocity.dy += (directionY * drive + directionX * wander - droplet.velocity.dy * dampingDrag) * delta
+        droplet.position.x += droplet.velocity.dx * delta
+        droplet.position.y += droplet.velocity.dy * delta
     }
 
     private func absorbDroplets() {
