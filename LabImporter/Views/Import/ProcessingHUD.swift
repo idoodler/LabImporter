@@ -38,14 +38,14 @@ struct ProcessingHUDHost: View {
 // MARK: - Processing HUD
 
 /// The import screen shown while OCR + the on-device parse run. Styled after
-/// Image Playground's generation view: a full-bleed plain background with one
-/// large Liquid Glass orb in the middle — the phase title and live progress
-/// (OCR pages, streamed values) sit *inside* the orb, and a Cancel control
+/// Image Playground's generation view: a full-bleed background with one large
+/// water drop wobbling in the middle — the phase title and live progress
+/// (OCR pages, streamed values) sit *inside* the drop, and a Cancel control
 /// fades in at the bottom once the import has run long enough that bailing
 /// out is plausibly wanted.
 ///
 /// Falls back to a static glass card when Reduce Motion is enabled or the
-/// device is already running hot — the orb animates on the GPU while the
+/// device is already running hot — the drop animates on the GPU while the
 /// language model is busy, and that's a luxury, not a requirement.
 struct ProcessingHUD: View {
     let phase: ImportPhase
@@ -68,8 +68,7 @@ struct ProcessingHUD: View {
             // like Image Playground's generation view — and, being opaque and
             // hit-testable, swallows every touch so the content behind it
             // can't be interacted with while an import runs. The soft category
-            // wash on top matters optically: Liquid Glass all but disappears
-            // over a flat color — the orb needs something to refract.
+            // wash keeps the screen in the app's visual language.
             Color(.systemBackground)
                 .ignoresSafeArea()
                 .transition(.opacity)
@@ -80,7 +79,7 @@ struct ProcessingHUD: View {
                 staticCard
                     .transition(.scale(scale: 0.94).combined(with: .opacity))
             } else {
-                ImportBubbleView(phase: phase, statusText: statusText, parseProgress: parseProgress)
+                ImportWaterDropView(phase: phase, statusText: statusText, parseProgress: parseProgress)
                     .transition(.scale(scale: 0.94).combined(with: .opacity))
             }
 
@@ -137,7 +136,7 @@ struct ProcessingHUD: View {
         .allowsHitTesting(showsCancel)
     }
 
-    /// Reduce Motion / thermal fallback: the orb's information without its
+    /// Reduce Motion / thermal fallback: the drop's information without its
     /// animation, in the same glass language.
     private var staticCard: some View {
         VStack(spacing: 18) {
@@ -172,269 +171,6 @@ private extension ProcessInfo.ThermalState {
         case .serious, .critical: return true
         default: return false
         }
-    }
-}
-
-// MARK: - Interactive Liquid Glass bubble
-
-/// The interactive water bubble: one large Liquid Glass orb that idles with a
-/// slow wobble, stretches toward the user's finger anywhere on screen and
-/// springs back when released. Every ball of the little physics simulation is
-/// a real `.glassEffect` circle inside a `GlassEffectContainer`, whose native
-/// shape blending merges them like water — so each lab value streamed out of
-/// the on-device model arrives as a glass droplet that fuses into the orb,
-/// growing it. The phase title and live status live inside the orb (and carry
-/// the accessibility); the glass itself is decoration and hidden from it.
-private struct ImportBubbleView: View {
-    let phase: ImportPhase
-    let statusText: Text
-    var parseProgress: ParseProgress?
-
-    @State private var physics = BubblePhysics()
-    @GestureState private var fingerLocation: CGPoint?
-    @Namespace private var glassNamespace
-
-    var body: some View {
-        GeometryReader { geo in
-            ZStack {
-                halo(in: geo.size)
-                orb(in: geo.size)
-                textBlock
-                    .position(x: geo.size.width / 2, y: geo.size.height / 2)
-            }
-        }
-        .ignoresSafeArea()
-        .contentShape(Rectangle())
-        .gesture(
-            DragGesture(minimumDistance: 0)
-                .updating($fingerLocation) { value, state, _ in state = value.location }
-        )
-        .onChange(of: parseProgress?.entryCount ?? 0) { oldCount, newCount in
-            // A burst of entries can arrive in one snapshot — cap the droplets
-            // so the orb doesn't get mobbed.
-            guard newCount > oldCount else { return }
-            for _ in 0..<min(newCount - oldCount, 3) { physics.spawnDroplet() }
-        }
-    }
-
-    private func orb(in size: CGSize) -> some View {
-        TimelineView(.animation(minimumInterval: 1 / 40)) { timeline in
-            let balls = physics.balls(at: timeline.date, attractor: fingerLocation, in: size)
-            ZStack {
-                // The union is what makes this read as *one* piece of glass:
-                // without it every ball draws its own rim and the orb looks
-                // like stacked bubbles. The container's spacing additionally
-                // lets approaching droplets flow into the orb.
-                GlassEffectContainer(spacing: 48) {
-                    ZStack {
-                        ForEach(balls) { ball in
-                            Circle()
-                                .frame(width: ball.radius * 2, height: ball.radius * 2)
-                                .glassEffect(.regular, in: .circle)
-                                .glassEffectUnion(id: "orb", namespace: glassNamespace)
-                                .position(ball.position)
-                        }
-                    }
-                    .frame(width: size.width, height: size.height)
-                }
-                sphereShading(for: balls[0])
-            }
-        }
-        .accessibilityHidden(true)
-    }
-
-    /// Painted-on sphere lighting — a soft specular up-left and a faint lower
-    /// falloff — so the orb reads as a volume even where the background gives
-    /// the glass little to refract. (Image Playground's orb shades the same
-    /// way: the "glassiness" of a big orb on a quiet background is mostly
-    /// lighting, not refraction.)
-    private func sphereShading(for core: BubblePhysics.Ball) -> some View {
-        ZStack {
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [.clear, .black.opacity(0.12)],
-                        center: UnitPoint(x: 0.42, y: 0.32),
-                        startRadius: core.radius * 0.35,
-                        endRadius: core.radius * 1.15
-                    )
-                )
-                .frame(width: core.radius * 2, height: core.radius * 2)
-                .position(core.position)
-            Ellipse()
-                .fill(.white.opacity(0.5))
-                .frame(width: core.radius * 0.95, height: core.radius * 0.5)
-                .blur(radius: 18)
-                .position(x: core.position.x - core.radius * 0.25, y: core.position.y - core.radius * 0.52)
-        }
-        .allowsHitTesting(false)
-    }
-
-    /// A faint ambient halo behind the orb so the glass lifts off the plain
-    /// background even when nothing colorful is behind it to refract.
-    private func halo(in size: CGSize) -> some View {
-        RadialGradient(
-            colors: [Color.primary.opacity(0.07), .clear],
-            center: .center,
-            startRadius: 0,
-            endRadius: 300
-        )
-        .frame(width: 600, height: 600)
-        .position(x: size.width / 2, y: size.height / 2)
-        .accessibilityHidden(true)
-    }
-
-    /// Title + live status, anchored to the orb's resting place. Fades out
-    /// while the user drags the orb away so it doesn't float alone.
-    private var textBlock: some View {
-        VStack(spacing: 8) {
-            Text(phase.title)
-                .font(.title3.weight(.semibold))
-            statusText
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .contentTransition(.numericText())
-                .lineLimit(2)
-        }
-        .multilineTextAlignment(.center)
-        .frame(maxWidth: 220)
-        .opacity(fingerLocation == nil ? 1 : 0)
-        .animation(.easeOut(duration: 0.2), value: fingerLocation == nil)
-        .accessibilityElement(children: .combine)
-        .accessibilityAddTraits(.updatesFrequently)
-    }
-}
-
-/// Minimal spring integrator behind `ImportBubbleView`: a core ball, a few
-/// orbiting satellites that give the orb its idle undulation, and transient
-/// droplets that chase the core until absorbed. A plain class mutated on each
-/// `TimelineView` tick — nothing observes it; the timeline drives the redraws.
-private final class BubblePhysics {
-    struct Ball: Identifiable {
-        let id = UUID()
-        var position: CGPoint
-        var velocity: CGVector = .zero
-        var radius: CGFloat
-        /// Polar offset of this ball's resting place around the orb core,
-        /// advanced over time for the idle wobble. Zero for the core itself.
-        var orbitRadius: CGFloat = 0
-        var orbitSpeed: Double = 0
-        var orbitPhase: Double = 0
-        var isDroplet = false
-    }
-
-    private var ballStore: [Ball] = []
-    private var lastStepTime: TimeInterval?
-    private var bounds: CGSize = .zero
-    /// Extra core radius earned by absorbed droplets.
-    private var growth: CGFloat = 0
-
-    private static let coreRadius: CGFloat = 118
-    private static let maxGrowth: CGFloat = 28
-    private static let stiffness: CGFloat = 90
-    private static let damping: CGFloat = 7
-
-    /// Advances the simulation to `date` and returns the balls to draw.
-    func balls(at date: Date, attractor: CGPoint?, in size: CGSize) -> [Ball] {
-        step(to: date, attractor: attractor, in: size)
-        return ballStore
-    }
-
-    /// Spawns a droplet just outside the screen that springs toward the orb
-    /// and merges on contact. No-op before the first frame has run (the
-    /// bounds aren't known yet) and capped so droplets can't pile up.
-    func spawnDroplet() {
-        guard bounds != .zero, ballStore.count < 12 else { return }
-        let center = CGPoint(x: bounds.width / 2, y: bounds.height / 2)
-        let angle = Double.random(in: 0..<(2 * .pi))
-        let distance = max(bounds.width, bounds.height) / 2 + 60
-        var droplet = Ball(
-            position: CGPoint(x: center.x + cos(angle) * distance, y: center.y + sin(angle) * distance),
-            radius: CGFloat.random(in: 16...22)
-        )
-        droplet.isDroplet = true
-        ballStore.append(droplet)
-    }
-
-    // MARK: Internals
-
-    private func step(to date: Date, attractor: CGPoint?, in size: CGSize) {
-        bounds = size
-        if ballStore.isEmpty { seed(in: size) }
-        let time = date.timeIntervalSinceReferenceDate
-        let delta = CGFloat(min(time - (lastStepTime ?? time), 1 / 20))
-        lastStepTime = time
-        guard delta > 0 else { return }
-
-        let center = CGPoint(x: size.width / 2, y: size.height / 2)
-        let anchor = clamp(attractor ?? center, in: size)
-        // A gentle breath so the orb never looks frozen, even untouched.
-        ballStore[0].radius = Self.coreRadius + growth + CGFloat(sin(time * 1.4)) * 4
-
-        for index in ballStore.indices {
-            let target = restingPlace(
-                for: ballStore[index],
-                around: index == 0 ? anchor : ballStore[0].position,
-                at: time
-            )
-            integrate(&ballStore[index], toward: target, delta: delta)
-        }
-        absorbDroplets()
-    }
-
-    private func seed(in size: CGSize) {
-        let center = CGPoint(x: size.width / 2, y: size.height / 2)
-        ballStore = [Ball(position: center, radius: Self.coreRadius)]
-        let orbitSpeeds: [Double] = [0.7, -0.5, 0.9]
-        for index in 0..<3 {
-            ballStore.append(Ball(
-                position: center,
-                radius: 52 + CGFloat(index) * 8,
-                orbitRadius: 34 + CGFloat(index) * 10,
-                orbitSpeed: orbitSpeeds[index],
-                orbitPhase: Double(index) * 2.1
-            ))
-        }
-    }
-
-    private func restingPlace(for ball: Ball, around center: CGPoint, at time: TimeInterval) -> CGPoint {
-        guard !ball.isDroplet else { return center }  // droplets chase the core
-        let angle = ball.orbitPhase + time * ball.orbitSpeed
-        return CGPoint(
-            x: center.x + cos(angle) * ball.orbitRadius,
-            y: center.y + sin(angle) * ball.orbitRadius
-        )
-    }
-
-    /// Semi-implicit Euler with an underdamped spring — enough wobble to feel
-    /// like water, settling in under a second.
-    private func integrate(_ ball: inout Ball, toward target: CGPoint, delta: CGFloat) {
-        let stiffness = ball.isDroplet ? Self.stiffness / 2 : Self.stiffness
-        ball.velocity.dx += ((target.x - ball.position.x) * stiffness - ball.velocity.dx * Self.damping) * delta
-        ball.velocity.dy += ((target.y - ball.position.y) * stiffness - ball.velocity.dy * Self.damping) * delta
-        ball.position.x += ball.velocity.dx * delta
-        ball.position.y += ball.velocity.dy * delta
-    }
-
-    private func absorbDroplets() {
-        let core = ballStore[0]
-        ballStore.removeAll { ball in
-            guard ball.isDroplet else { return false }
-            let distance = hypot(ball.position.x - core.position.x, ball.position.y - core.position.y)
-            guard distance < core.radius * 0.6 else { return false }
-            growth = min(growth + 3, Self.maxGrowth)
-            return true
-        }
-    }
-
-    /// Keeps the orb's anchor far enough from the edges that the core stays
-    /// substantially on screen however hard it's dragged.
-    private func clamp(_ point: CGPoint, in size: CGSize) -> CGPoint {
-        let inset: CGFloat = 110
-        return CGPoint(
-            x: min(max(point.x, inset), size.width - inset),
-            y: min(max(point.y, inset), size.height - inset)
-        )
     }
 }
 
