@@ -2,18 +2,20 @@ import SwiftUI
 
 // MARK: - Interactive water drop
 
-/// The interactive water drop: a single milky, softly lit blob — modeled on
-/// Image Playground's generation drop — that idles with the slow squash-and-
-/// stretch of a droplet in zero gravity, elongates along its direction of
+/// The interactive water drop: a transparent lens of "liquid" — modeled on
+/// Image Playground's generation drop — that refracts whatever sits behind it
+/// through the `waterDrop` Metal shader. The category wash and the title/
+/// status block below the drop are magnified and bent through it, with
+/// chromatic fringing at the rim — drag the drop over the text and the text
+/// itself distorts.
+///
+/// The drop idles with the slow squash-and-stretch of a droplet in zero
+/// gravity (mode-2 + mode-3 surface waves), elongates along its direction of
 /// travel when dragged (anywhere on screen) and springs back when released.
 /// Each lab value streamed out of the on-device model arrives as a small
-/// droplet that flies in and merges, giving the surface a visible "gulp".
-///
-/// The drop is deliberately *painted* (gradients, specular, chromatic rim
-/// glints) rather than built from backdrop-sampling glass: the reference
-/// drop is opaque, and its glassiness is lighting, not refraction. The phase
-/// title and live status live inside the drop and carry the accessibility;
-/// the drop itself is decoration and hidden from it.
+/// droplet that flies in and merges, kicking a visible wobble into the
+/// surface. The text block carries the accessibility; the optics are
+/// decoration and hidden from it.
 struct ImportWaterDropView: View {
     let phase: ImportPhase
     let statusText: Text
@@ -24,10 +26,16 @@ struct ImportWaterDropView: View {
 
     var body: some View {
         GeometryReader { geo in
-            ZStack {
-                drop(in: geo.size)
-                textBlock
-                    .position(x: geo.size.width / 2, y: geo.size.height / 2)
+            TimelineView(.animation(minimumInterval: 1 / 40)) { timeline in
+                let time = timeline.date.timeIntervalSinceReferenceDate
+                let state = physics.dropState(at: timeline.date, attractor: fingerLocation, in: geo.size)
+                ZStack {
+                    refractingContent(in: geo.size)
+                        // Flattened so the shader bends wash and text as one image.
+                        .compositingGroup()
+                        .layerEffect(dropShader(for: state), maxSampleOffset: CGSize(width: 90, height: 90))
+                    dropOverlays(state, time: time)
+                }
             }
         }
         .ignoresSafeArea()
@@ -44,118 +52,19 @@ struct ImportWaterDropView: View {
         }
     }
 
-    private func drop(in size: CGSize) -> some View {
-        TimelineView(.animation(minimumInterval: 1 / 40)) { timeline in
-            let time = timeline.date.timeIntervalSinceReferenceDate
-            let state = physics.dropState(at: timeline.date, attractor: fingerLocation, in: size)
-            ZStack {
-                halo(for: state)
-                ForEach(state.droplets) { dropletView($0) }
-                dropBody(state, time: time)
-            }
+    // MARK: Refracted layer
+
+    /// Everything the drop can refract: the app's category wash and the
+    /// title/status block sitting below the drop's resting place.
+    private func refractingContent(in size: CGSize) -> some View {
+        ZStack {
+            MorphingCategoryBackground()
+            textBlock
+                .position(x: size.width / 2, y: size.height / 2 + 215)
         }
-        .accessibilityHidden(true)
+        .frame(width: size.width, height: size.height)
     }
 
-    /// The drop itself: milky body, volume shading, specular, and a slowly
-    /// turning chromatic glint on the rim — all clipped to the wobbling shape.
-    private func dropBody(_ state: BubblePhysics.DropState, time: TimeInterval) -> some View {
-        // Generous headroom around the resting radius so squash-and-stretch
-        // never clips against the frame.
-        let side = state.radius * 3.2
-        let shape = WaterDropShape(
-            mode2: state.mode2,
-            mode2Angle: state.mode2Angle,
-            mode3: state.mode3,
-            mode3Phase: state.mode3Phase
-        )
-        return ZStack {
-            shape
-                .fill(
-                    RadialGradient(
-                        colors: [Color(.systemBackground), Color(.systemGray5)],
-                        center: UnitPoint(x: 0.42, y: 0.36),
-                        startRadius: 0,
-                        endRadius: side * 0.55
-                    )
-                )
-            // Darkening toward the lower-trailing rim gives the volume.
-            shape
-                .fill(
-                    RadialGradient(
-                        colors: [.clear, .black.opacity(0.10)],
-                        center: UnitPoint(x: 0.42, y: 0.34),
-                        startRadius: side * 0.18,
-                        endRadius: side * 0.52
-                    )
-                )
-            // Soft specular up-left, like the reference drop's window light.
-            Ellipse()
-                .fill(.white.opacity(0.55))
-                .frame(width: state.radius * 0.9, height: state.radius * 0.45)
-                .blur(radius: 16)
-                .position(x: side / 2 - state.radius * 0.25, y: side / 2 - state.radius * 0.5)
-            // The tiny rainbow glints that creep along the reference drop's rim.
-            shape
-                .stroke(glintGradient(at: time), lineWidth: 2.5)
-                .blur(radius: 1)
-        }
-        .frame(width: side, height: side)
-        .shadow(color: .black.opacity(0.12), radius: 28, y: 12)
-        .position(state.position)
-    }
-
-    /// A big soft ambient halo that travels with the drop.
-    private func halo(for state: BubblePhysics.DropState) -> some View {
-        RadialGradient(
-            colors: [Color.primary.opacity(0.10), .clear],
-            center: .center,
-            startRadius: state.radius * 0.5,
-            endRadius: state.radius * 2.2
-        )
-        .frame(width: state.radius * 4.4, height: state.radius * 4.4)
-        .position(state.position)
-    }
-
-    /// An incoming streamed-value droplet: a miniature of the drop's body.
-    private func dropletView(_ droplet: BubblePhysics.Droplet) -> some View {
-        Circle()
-            .fill(
-                RadialGradient(
-                    colors: [Color(.systemBackground), Color(.systemGray4)],
-                    center: UnitPoint(x: 0.38, y: 0.32),
-                    startRadius: 0,
-                    endRadius: droplet.radius * 1.4
-                )
-            )
-            .frame(width: droplet.radius * 2, height: droplet.radius * 2)
-            .shadow(color: .black.opacity(0.10), radius: 8, y: 4)
-            .position(droplet.position)
-    }
-
-    /// Mostly-transparent angular gradient with two short chromatic slivers,
-    /// rotated slowly over time so the glints wander around the rim.
-    private func glintGradient(at time: TimeInterval) -> AngularGradient {
-        AngularGradient(
-            stops: [
-                .init(color: .clear, location: 0),
-                .init(color: .clear, location: 0.50),
-                .init(color: .blue.opacity(0.65), location: 0.54),
-                .init(color: .cyan.opacity(0.55), location: 0.57),
-                .init(color: .clear, location: 0.61),
-                .init(color: .clear, location: 0.84),
-                .init(color: .orange.opacity(0.45), location: 0.87),
-                .init(color: .pink.opacity(0.45), location: 0.89),
-                .init(color: .clear, location: 0.92),
-                .init(color: .clear, location: 1)
-            ],
-            center: .center,
-            angle: .radians(time * 0.25)
-        )
-    }
-
-    /// Title + live status, anchored to the drop's resting place. Fades out
-    /// while the user drags the drop away so it doesn't float alone.
     private var textBlock: some View {
         VStack(spacing: 8) {
             Text(phase.title)
@@ -167,18 +76,115 @@ struct ImportWaterDropView: View {
                 .lineLimit(2)
         }
         .multilineTextAlignment(.center)
-        .frame(maxWidth: 220)
-        .opacity(fingerLocation == nil ? 1 : 0)
-        .animation(.easeOut(duration: 0.2), value: fingerLocation == nil)
+        .frame(maxWidth: 260)
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.updatesFrequently)
+    }
+
+    private func dropShader(for state: BubblePhysics.DropState) -> Shader {
+        ShaderLibrary.waterDrop(
+            .float2(state.position),
+            .float(state.radius),
+            .float2(state.mode2, state.mode2Angle),
+            .float2(state.mode3, state.mode3Phase),
+            .float(0.35)
+        )
+    }
+
+    // MARK: Painted lighting
+
+    /// The lighting the lens can't produce from refraction alone: a whisper
+    /// of frost, volume shading, a soft specular, the wandering chromatic rim
+    /// glints, incoming droplets, and an ambient halo grounding the drop.
+    private func dropOverlays(_ state: BubblePhysics.DropState, time: TimeInterval) -> some View {
+        let side = state.radius * 3.2
+        let shape = WaterDropShape(
+            mode2: state.mode2,
+            mode2Angle: state.mode2Angle,
+            mode3: state.mode3,
+            mode3Phase: state.mode3Phase
+        )
+        return ZStack {
+            halo(for: state)
+            ForEach(state.droplets) { dropletView($0) }
+            ZStack {
+                shape
+                    .fill(.white.opacity(0.06))
+                shape
+                    .fill(
+                        RadialGradient(
+                            colors: [.clear, .black.opacity(0.07)],
+                            center: UnitPoint(x: 0.42, y: 0.34),
+                            startRadius: side * 0.18,
+                            endRadius: side * 0.52
+                        )
+                    )
+                Ellipse()
+                    .fill(.white.opacity(0.45))
+                    .frame(width: state.radius * 0.9, height: state.radius * 0.45)
+                    .blur(radius: 16)
+                    .position(x: side / 2 - state.radius * 0.25, y: side / 2 - state.radius * 0.5)
+                shape
+                    .stroke(glintGradient(at: time), lineWidth: 2)
+                    .blur(radius: 1)
+            }
+            .frame(width: side, height: side)
+            .shadow(color: .black.opacity(0.10), radius: 24, y: 10)
+            .position(state.position)
+        }
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+
+    /// A soft ambient halo that travels with the drop.
+    private func halo(for state: BubblePhysics.DropState) -> some View {
+        RadialGradient(
+            colors: [Color.primary.opacity(0.07), .clear],
+            center: .center,
+            startRadius: state.radius * 0.5,
+            endRadius: state.radius * 2.2
+        )
+        .frame(width: state.radius * 4.4, height: state.radius * 4.4)
+        .position(state.position)
+    }
+
+    /// An incoming streamed-value droplet: a small frosted bead.
+    private func dropletView(_ droplet: BubblePhysics.Droplet) -> some View {
+        Circle()
+            .fill(.white.opacity(0.18))
+            .overlay(Circle().strokeBorder(.white.opacity(0.45), lineWidth: 1))
+            .frame(width: droplet.radius * 2, height: droplet.radius * 2)
+            .shadow(color: .black.opacity(0.08), radius: 6, y: 3)
+            .position(droplet.position)
+    }
+
+    /// Mostly-transparent angular gradient with two short chromatic slivers,
+    /// rotated slowly over time so the glints wander around the rim.
+    private func glintGradient(at time: TimeInterval) -> AngularGradient {
+        AngularGradient(
+            stops: [
+                .init(color: .clear, location: 0),
+                .init(color: .clear, location: 0.50),
+                .init(color: .blue.opacity(0.55), location: 0.54),
+                .init(color: .cyan.opacity(0.45), location: 0.57),
+                .init(color: .clear, location: 0.61),
+                .init(color: .clear, location: 0.84),
+                .init(color: .orange.opacity(0.40), location: 0.87),
+                .init(color: .pink.opacity(0.40), location: 0.89),
+                .init(color: .clear, location: 0.92),
+                .init(color: .clear, location: 1)
+            ],
+            center: .center,
+            angle: .radians(time * 0.25)
+        )
     }
 }
 
 /// The wobbling outline of the drop: a circle whose radius oscillates with a
 /// mode-2 (elliptical squash/stretch) and a mode-3 (triangular ripple) wave —
 /// the dominant oscillation modes of a real liquid drop, which is why the
-/// result reads as water rather than as a morphing ellipse.
+/// result reads as water rather than as a morphing ellipse. Must stay in
+/// lockstep with the boundary formula in `WaterDrop.metal`.
 private struct WaterDropShape: Shape {
     var mode2: CGFloat
     var mode2Angle: CGFloat
@@ -209,7 +215,7 @@ private struct WaterDropShape: Shape {
     }
 }
 
-/// Minimal spring simulation behind `ImportBubbleView`: the drop's center
+/// Minimal spring simulation behind `ImportWaterDropView`: the drop's center
 /// springs toward the finger (or screen center), incoming droplets chase the
 /// drop until absorbed, and surface-wobble energy decays over time. A plain
 /// class mutated on each `TimelineView` tick — nothing observes it; the
@@ -363,13 +369,18 @@ private final class BubblePhysics {
 // MARK: - Preview
 
 #Preview("Water drop") {
-    ZStack {
-        Color(.systemBackground).ignoresSafeArea()
-        MorphingCategoryBackground()
-        ImportWaterDropView(
-            phase: .analyzing,
-            statusText: Text(verbatim: "7 values \u{00B7} Kreatinin"),
-            parseProgress: ParseProgress(entryCount: 7, latestName: "Kreatinin")
-        )
-    }
+    ImportWaterDropView(
+        phase: .analyzing,
+        statusText: Text(verbatim: "7 values \u{00B7} Kreatinin"),
+        parseProgress: ParseProgress(entryCount: 7, latestName: "Kreatinin")
+    )
+}
+
+#Preview("Water drop — Dark") {
+    ImportWaterDropView(
+        phase: .analyzing,
+        statusText: Text(verbatim: "12 values \u{00B7} HbA1c"),
+        parseProgress: ParseProgress(entryCount: 12, latestName: "HbA1c")
+    )
+    .preferredColorScheme(.dark)
 }

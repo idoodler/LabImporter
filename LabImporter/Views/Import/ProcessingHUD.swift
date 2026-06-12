@@ -40,9 +40,9 @@ struct ProcessingHUDHost: View {
 /// The import screen shown while OCR + the on-device parse run. Styled after
 /// Image Playground's generation view: a full-bleed background with one large
 /// water drop wobbling in the middle — the phase title and live progress
-/// (OCR pages, streamed values) sit *inside* the drop, and a Cancel control
-/// fades in at the bottom once the import has run long enough that bailing
-/// out is plausibly wanted.
+/// (OCR pages, streamed values) sit below the drop and are refracted through
+/// it when it passes over them, and a Cancel control fades in at the bottom
+/// once the import has run long enough that bailing out is plausibly wanted.
 ///
 /// Falls back to a static glass card when Reduce Motion is enabled or the
 /// device is already running hot — the drop animates on the GPU while the
@@ -67,15 +67,16 @@ struct ProcessingHUD: View {
             // Full-bleed opaque background: the HUD reads as its own screen —
             // like Image Playground's generation view — and, being opaque and
             // hit-testable, swallows every touch so the content behind it
-            // can't be interacted with while an import runs. The soft category
-            // wash keeps the screen in the app's visual language.
+            // can't be interacted with while an import runs.
             Color(.systemBackground)
                 .ignoresSafeArea()
                 .transition(.opacity)
-            MorphingCategoryBackground()
-                .transition(.opacity)
 
             if usesStaticCard {
+                // The drop view brings its own wash (it has to live inside the
+                // refracted layer); the static path adds it here instead.
+                MorphingCategoryBackground()
+                    .transition(.opacity)
                 staticCard
                     .transition(.scale(scale: 0.94).combined(with: .opacity))
             } else {

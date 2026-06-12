@@ -61,6 +61,7 @@
 		AABB0000000000000000F1AA /* LabImportEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000F2AA /* LabImportEngine.swift */; };
 		AABB0000000000000000F7AA /* ProcessingHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000F8AA /* ProcessingHUD.swift */; };
 		AABB0000000000000000F9AA /* ImportWaterDropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000FAAA /* ImportWaterDropView.swift */; };
+		AABB0000000000000000FBAA /* WaterDrop.metal in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000FCAA /* WaterDrop.metal */; };
 		AABB0000000000000000F3AA /* AddValueSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000F4AA /* AddValueSheet.swift */; };
 		AABB0000000000000000F5AA /* OnboardingScaffold.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000F6AA /* OnboardingScaffold.swift */; };
 		AABBCC0000000000000001AA /* LabSortEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCC0000000000000002AA /* LabSortEditor.swift */; };
@@ -152,6 +153,7 @@
 		AABB0000000000000000F2AA /* LabImportEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabImportEngine.swift; sourceTree = "<group>"; };
 		AABB0000000000000000F8AA /* ProcessingHUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessingHUD.swift; sourceTree = "<group>"; };
 		AABB0000000000000000FAAA /* ImportWaterDropView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportWaterDropView.swift; sourceTree = "<group>"; };
+		AABB0000000000000000FCAA /* WaterDrop.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = WaterDrop.metal; sourceTree = "<group>"; };
 		AABB0000000000000000F4AA /* AddValueSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddValueSheet.swift; sourceTree = "<group>"; };
 		AABB0000000000000000F6AA /* OnboardingScaffold.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingScaffold.swift; sourceTree = "<group>"; };
 		AABBCC0000000000000002AA /* LabSortEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabSortEditor.swift; sourceTree = "<group>"; };
@@ -308,6 +310,7 @@
 				AABB0000000000000000F2AA /* LabImportEngine.swift */,
 				AABB0000000000000000F8AA /* ProcessingHUD.swift */,
 				AABB0000000000000000FAAA /* ImportWaterDropView.swift */,
+				AABB0000000000000000FCAA /* WaterDrop.metal */,
 			);
 			path = Import;
 			sourceTree = "<group>";
@@ -613,6 +616,7 @@
 				AABB0000000000000000F1AA /* LabImportEngine.swift in Sources */,
 				AABB0000000000000000F7AA /* ProcessingHUD.swift in Sources */,
 				AABB0000000000000000F9AA /* ImportWaterDropView.swift in Sources */,
+				AABB0000000000000000FBAA /* WaterDrop.metal in Sources */,
 				636BA85E2FCC52EE006E8E71 /* HealthPermissionView.swift in Sources */,
 				AABB0000000000000000D3AA /* CloudSyncOptInView.swift in Sources */,
 				AABB0000000000000000F5AA /* OnboardingScaffold.swift in Sources */,
