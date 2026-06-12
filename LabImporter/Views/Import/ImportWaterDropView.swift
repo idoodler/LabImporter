@@ -265,10 +265,14 @@ private final class BubblePhysics {
             let anchor = clamp(attractor ?? center, in: size)
             integrate(&position, &velocity, toward: anchor, stiffness: Self.stiffness, delta: delta)
             for index in droplets.indices {
+                // Copy out/in: two inout projections into the same array
+                // element would overlap exclusive access to `droplets`.
+                var droplet = droplets[index]
                 integrate(
-                    &droplets[index].position, &droplets[index].velocity,
+                    &droplet.position, &droplet.velocity,
                     toward: position, stiffness: Self.stiffness / 2, delta: delta
                 )
+                droplets[index] = droplet
             }
             absorbDroplets()
             wobble *= CGFloat(exp(-2.4 * Double(delta)))
