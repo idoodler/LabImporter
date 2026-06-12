@@ -224,3 +224,23 @@ private struct SpotlightMetricThumbnail: View {
         }
     }
 }
+
+// MARK: - Preview
+
+#Preview("Glyph tiles") {
+    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 4), spacing: 16) {
+        ForEach(LabCategory.allCases, id: \.self) { category in
+            SpotlightMetricThumbnail(category: category)
+        }
+    }
+    .padding()
+}
+
+#Preview("Value tiles") {
+    HStack(spacing: 16) {
+        SpotlightMetricThumbnail(category: .glycemic, value: "5.4", unit: "%")
+        SpotlightMetricThumbnail(category: .hematology, value: "120000", unit: "10^3/µL")
+        SpotlightMetricThumbnail(category: .lipids, value: "201", unit: "mg/dL")
+    }
+    .padding()
+}

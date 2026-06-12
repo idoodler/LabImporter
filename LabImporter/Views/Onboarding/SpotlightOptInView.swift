@@ -208,6 +208,16 @@ private struct BenefitRow: View {
 
 // MARK: - Preview
 
-#Preview {
+#Preview("Light") {
     SpotlightOptInView { _ in }
+}
+
+#Preview("Dark") {
+    SpotlightOptInView { _ in }
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Landscape") {
+    SpotlightOptInView { _ in }
+        .previewInterfaceOrientation(.landscapeLeft)
 }

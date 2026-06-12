@@ -162,6 +162,18 @@ Config.xcconfig  # BUNDLE_IDENTIFIER = dev.idoodler.$(DEVELOPMENT_TEAM).labimpor
   recursion trap (documented in the source; don't "simplify" it away).
 - Reports are reloaded on `HomeView` `.task`, on returning from the review sheet,
   and on `didBecomeActiveNotification`.
+- **Always ship `#Preview`s, in all variations.** Every SwiftUI view must have
+  SwiftUI previews — and not just one happy-path preview: cover the view's
+  *meaningful variations* so each state is inspectable without running the app.
+  That means, as applicable: empty vs populated (and "few items" in between),
+  light **and** dark (`.preferredColorScheme`), the size classes the view adapts
+  to (e.g. an onboarding screen's portrait vs landscape/compact-height layout via
+  `.previewInterfaceOrientation`), and any first-class state the view renders
+  differently (loading, error, in-range vs out-of-range, pinned, selected,
+  RTL via `.environment(\.layoutDirection, .rightToLeft)`). Name each preview so
+  the variation is obvious (`#Preview("Dark")`, `#Preview("Empty")`). Drive them
+  from `PreviewSampleData` / the model `sample*` fixtures rather than ad-hoc data.
+  New or edited views are not done until their previews cover every variation.
 
 ## Build, run & lint
 
