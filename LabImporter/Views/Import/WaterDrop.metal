@@ -51,7 +51,8 @@ using namespace metal;
     color.g = g.g;
     color.b = layer.sample(center + dir * (zoom * (1.0 + aberration))).b;
 
-    // Faint frost plus a bright rim so the glass reads even over flat color.
-    half lift = half(0.04 + 0.10 * pow(rim, 3.0));
+    // Whisper of frost plus a bright rim so the glass reads even over flat
+    // color — kept minimal so the drop stays convincingly transparent.
+    half lift = half(0.02 + 0.07 * pow(rim, 3.0));
     return half4(mix(color, half3(1.0h), lift), g.a);
 }

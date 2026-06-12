@@ -88,7 +88,7 @@ struct ImportWaterDropView: View {
             .float(state.radius),
             .float2(state.mode2, state.mode2Angle),
             .float2(state.mode3, state.mode3Phase),
-            .float(0.35)
+            .float(0.15)
         )
     }
 
@@ -109,19 +109,21 @@ struct ImportWaterDropView: View {
             halo(for: state)
             ForEach(state.droplets) { dropletView($0) }
             ZStack {
+                // Barely-there frost and shading: the glass should read as
+                // very transparent liquid, carried by refraction, not paint.
                 shape
-                    .fill(.white.opacity(0.06))
+                    .fill(.white.opacity(0.03))
                 shape
                     .fill(
                         RadialGradient(
-                            colors: [.clear, .black.opacity(0.07)],
+                            colors: [.clear, .black.opacity(0.04)],
                             center: UnitPoint(x: 0.42, y: 0.34),
                             startRadius: side * 0.18,
                             endRadius: side * 0.52
                         )
                     )
                 Ellipse()
-                    .fill(.white.opacity(0.45))
+                    .fill(.white.opacity(0.28))
                     .frame(width: state.radius * 0.9, height: state.radius * 0.45)
                     .blur(radius: 16)
                     .position(x: side / 2 - state.radius * 0.25, y: side / 2 - state.radius * 0.5)
@@ -130,7 +132,7 @@ struct ImportWaterDropView: View {
                     .blur(radius: 1)
             }
             .frame(width: side, height: side)
-            .shadow(color: .black.opacity(0.10), radius: 24, y: 10)
+            .shadow(color: .black.opacity(0.07), radius: 24, y: 10)
             .position(state.position)
         }
         .allowsHitTesting(false)
@@ -140,7 +142,7 @@ struct ImportWaterDropView: View {
     /// A soft ambient halo that travels with the drop.
     private func halo(for state: BubblePhysics.DropState) -> some View {
         RadialGradient(
-            colors: [Color.primary.opacity(0.07), .clear],
+            colors: [Color.primary.opacity(0.05), .clear],
             center: .center,
             startRadius: state.radius * 0.5,
             endRadius: state.radius * 2.2
