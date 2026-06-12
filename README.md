@@ -40,6 +40,7 @@ Because the parsing runs on Apple Intelligence, LabImporter needs a compatible d
 - **Trend charts** — interactive per-metric chart with finger-scrubbing to inspect individual values
 - **History** — full list of imported reports with edit and delete
 - **Customise** — pin metrics to the top, reorder, or hide them from the dashboard
+- **Spotlight search** — find any tracked metric from iOS system-wide search and jump straight to its trend detail; results show only metric names by default, with an opt-in (Settings → Search) to display the latest reading
 - **iCloud sync (opt-in)** — optionally roam your dashboard layout (card order, pins, hidden metrics, custom names, and reference ranges) across your devices; your lab values always stay in Apple Health and never sync
 - **Share** — export any report as a CDA file to send to a doctor or another app
 - **PDF export** — generate an information-rich PDF report (cover summary, latest-results table, and trend charts), choosing which values and time range to include, in color or black & white, on A4, US Letter, or Legal paper (defaulting to your region's size)
@@ -154,6 +155,7 @@ After the first manual run succeeds, builds are triggered automatically on the *
 | Text extraction | `Vision` — `VNRecognizeTextRequest` (app's current language + English fallback) |
 | Lab value parsing | `FoundationModels` — `@Generable` structured output via `LanguageModelSession` |
 | Health import | `HealthKit` — `HKCDADocumentSample` (CDA R2 clinical document) |
+| Spotlight search | `CoreSpotlight` — on-device index of tracked metrics; results deep-link into the metric's trend detail via the `labimporter://` URL scheme |
 
 ---
 
@@ -169,7 +171,7 @@ When enabled, only your **dashboard layout** roams across your devices through y
 
 ## Privacy
 
-All processing happens entirely on-device. No lab data is sent to any server. The Foundation Models framework runs the language model locally without any network requests. The optional [iCloud sync](#icloud-sync) carries only your dashboard layout — never lab values or patient metadata.
+All processing happens entirely on-device. No lab data is sent to any server. The Foundation Models framework runs the language model locally without any network requests. The optional [iCloud sync](#icloud-sync) carries only your dashboard layout — never lab values or patient metadata. The Spotlight search index also stays on-device and contains only metric names unless you explicitly opt in to showing the latest reading in results.
 
 ---
 
