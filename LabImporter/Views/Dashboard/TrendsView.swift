@@ -344,7 +344,10 @@ extension TrendsView {
         .fixedSize()
         .padding(.horizontal, 14)
         .padding(.vertical, 8)
-        .glassEffect(.regular, in: Capsule())
+        // Not .glassEffect: the scrollable plot renders annotations into its own
+        // layer, so glass has no backdrop to sample and turns dark. A material
+        // resolves correctly there.
+        .background(.regularMaterial, in: Capsule())
         .overlay(
             Capsule()
                 .stroke(Color.primary.opacity(0.15), lineWidth: 0.5)
