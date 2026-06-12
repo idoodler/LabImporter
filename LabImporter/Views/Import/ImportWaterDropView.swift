@@ -4,10 +4,9 @@ import SwiftUI
 
 /// The interactive water drop: a transparent lens of "liquid" — modeled on
 /// Image Playground's generation drop — that refracts whatever sits behind it
-/// through the `waterDrop` Metal shader. The category wash and the title/
-/// status block below the drop are magnified and bent through it, with
-/// chromatic fringing at the rim — drag the drop over the text and the text
-/// itself distorts.
+/// through the `waterDrop` Metal shader. The title/status block sits behind
+/// the drop and is read through the lens: magnified and bent, chromatically
+/// fringed at the rim, warping as the drop wobbles or is dragged across it.
 ///
 /// The drop idles with the slow squash-and-stretch of a droplet in zero
 /// gravity (mode-2 + mode-3 surface waves), elongates along its direction of
@@ -55,12 +54,14 @@ struct ImportWaterDropView: View {
     // MARK: Refracted layer
 
     /// Everything the drop can refract: the app's category wash and the
-    /// title/status block sitting below the drop's resting place.
+    /// title/status block sitting *behind* the drop's resting place, so the
+    /// text is read through the lens — magnified at rest, smeared and fringed
+    /// while the drop wobbles, and revealed plain when it's dragged away.
     private func refractingContent(in size: CGSize) -> some View {
         ZStack {
             MorphingCategoryBackground()
             textBlock
-                .position(x: size.width / 2, y: size.height / 2 + 215)
+                .position(x: size.width / 2, y: size.height / 2)
         }
         .frame(width: size.width, height: size.height)
     }

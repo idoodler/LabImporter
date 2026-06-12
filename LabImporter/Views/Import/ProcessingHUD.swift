@@ -40,9 +40,9 @@ struct ProcessingHUDHost: View {
 /// The import screen shown while OCR + the on-device parse run. Styled after
 /// Image Playground's generation view: a full-bleed background with one large
 /// water drop wobbling in the middle — the phase title and live progress
-/// (OCR pages, streamed values) sit below the drop and are refracted through
-/// it when it passes over them, and a Cancel control fades in at the bottom
-/// once the import has run long enough that bailing out is plausibly wanted.
+/// (OCR pages, streamed values) sit behind the drop and are read through its
+/// lens, and a Cancel control fades in at the bottom once the import has run
+/// long enough that bailing out is plausibly wanted.
 ///
 /// Falls back to a static glass card when Reduce Motion is enabled or the
 /// device is already running hot — the drop animates on the GPU while the
