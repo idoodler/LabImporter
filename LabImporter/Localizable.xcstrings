@@ -45319,6 +45319,450 @@
           }
         }
       }
+    },
+    "Search" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Търсене"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerca"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hledání"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Søgning"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suche"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αναζήτηση"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Búsqueda"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haku"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recherche"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pretraživanje"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keresés"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ricerca"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "検索"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoeken"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wyszukiwanie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Busca"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pesquisa"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Căutare"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поиск"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vyhľadávanie"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sök"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arama"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пошук"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜索"
+          }
+        }
+      }
+    },
+    "Show Latest Value in Search" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показване на последната стойност при търсене"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar el darrer valor a la cerca"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zobrazit poslední hodnotu ve vyhledávání"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vis seneste værdi i søgning"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzten Wert in der Suche anzeigen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Εμφάνιση τελευταίας τιμής στην αναζήτηση"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar el último valor en la búsqueda"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Näytä viimeisin arvo haussa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher la dernière valeur dans la recherche"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prikaži posljednju vrijednost u pretraživanju"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Legutóbbi érték megjelenítése a keresésben"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra l’ultimo valore nella ricerca"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "検索に最新の値を表示"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laatste waarde tonen in zoeken"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pokaż ostatni wynik w wyszukiwaniu"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar último valor na busca"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar último valor na pesquisa"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afișează ultima valoare în căutare"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показывать последний показатель в поиске"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zobraziť poslednú hodnotu vo vyhľadávaní"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visa senaste värdet i sökning"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aramada son değeri göster"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показувати останній показник у пошуку"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在搜索中显示最新值"
+          }
+        }
+      }
+    },
+    "Let each value's most recent reading appear in iOS search results. When off, only the value's name is shown — never a reading." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Позволете най-новата стойност за всеки показател да се показва в резултатите от търсенето в iOS. Когато е изключено, се показва само името на показателя — никога стойност."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permet que la lectura més recent de cada valor aparegui als resultats de cerca d’iOS. Quan està desactivat, només es mostra el nom del valor, mai una lectura."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nechte nejnovější naměřenou hodnotu každého ukazatele zobrazit ve výsledcích hledání v iOS. Když je vypnuto, zobrazí se jen název ukazatele — nikdy hodnota."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lad den seneste måling for hver værdi vises i iOS-søgeresultater. Når det er slået fra, vises kun værdiens navn — aldrig en måling."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lass den neuesten Messwert jedes Werts in den iOS-Suchergebnissen erscheinen. Wenn aus, wird nur der Name des Werts angezeigt – niemals ein Messwert."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Επιτρέψτε την εμφάνιση της πιο πρόσφατης μέτρησης κάθε τιμής στα αποτελέσματα αναζήτησης του iOS. Όταν είναι ανενεργό, εμφανίζεται μόνο το όνομα της τιμής — ποτέ μια μέτρηση."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permite que la lectura más reciente de cada valor aparezca en los resultados de búsqueda de iOS. Cuando está desactivado, solo se muestra el nombre del valor, nunca una lectura."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salli kunkin arvon viimeisimmän lukeman näkyä iOS:n hakutuloksissa. Kun pois päältä, näytetään vain arvon nimi — ei koskaan lukemaa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laissez la dernière mesure de chaque valeur apparaître dans les résultats de recherche d’iOS. Lorsque désactivé, seul le nom de la valeur est affiché, jamais une mesure."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dopustite da se najnovije očitanje svake vrijednosti pojavi u iOS rezultatima pretraživanja. Kada je isključeno, prikazuje se samo naziv vrijednosti — nikada očitanje."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engedélyezze, hogy minden érték legutóbbi mérése megjelenjen az iOS keresési találatai között. Kikapcsolva csak az érték neve jelenik meg — mérés soha."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consenti che la misurazione più recente di ogni valore compaia nei risultati di ricerca di iOS. Quando è disattivato, viene mostrato solo il nome del valore, mai una misurazione."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "各値の最新の測定値をiOSの検索結果に表示します。オフのときは値の名称のみが表示され、測定値は表示されません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laat de meest recente meting van elke waarde verschijnen in iOS-zoekresultaten. Wanneer uit, wordt alleen de naam van de waarde getoond — nooit een meting."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pozwól, aby najnowszy wynik każdego parametru pojawiał się w wynikach wyszukiwania iOS. Po wyłączeniu pokazywana jest tylko nazwa parametru — nigdy wynik."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permita que a leitura mais recente de cada valor apareça nos resultados de busca do iOS. Quando desativado, apenas o nome do valor é mostrado — nunca uma leitura."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permita que a leitura mais recente de cada valor apareça nos resultados de pesquisa do iOS. Quando desativado, só é mostrado o nome do valor — nunca uma leitura."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permite ca cea mai recentă valoare măsurată pentru fiecare parametru să apară în rezultatele căutării iOS. Când este dezactivat, se afișează doar numele parametrului — niciodată o valoare."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разрешите показывать последний результат каждого показателя в результатах поиска iOS. Когда выключено, отображается только название показателя — без значения."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Povoľte, aby sa najnovšia nameraná hodnota každého ukazovateľa zobrazovala vo výsledkoch vyhľadávania v iOS. Keď je vypnuté, zobrazuje sa len názov ukazovateľa — nikdy hodnota."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Låt det senaste värdet för varje mätvärde visas i iOS sökresultat. När det är av visas bara värdets namn — aldrig ett mätvärde."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Her değerin en son ölçümünün iOS arama sonuçlarında görünmesine izin verin. Kapalıyken yalnızca değerin adı gösterilir — asla bir ölçüm."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дозвольте показувати останній показник кожного значення в результатах пошуку iOS. Коли вимкнено, відображається лише назва значення — без показника."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "让每项数值的最新读数显示在 iOS 搜索结果中。关闭时仅显示数值名称，绝不显示读数。"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

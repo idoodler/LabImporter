@@ -33,6 +33,9 @@ struct HomeView: View {
     /// Gates entry into the app so no reports can be added before deciding.
     @AppStorage("hasChosenICloudSync") private var hasChosenICloudSync = false
     @AppStorage(CloudSyncService.enabledKey) private var iCloudSyncEnabled = false
+    /// Mirrors the Settings opt-in for surfacing the latest reading in Spotlight,
+    /// observed here so flipping it re-publishes the index right away.
+    @AppStorage(SpotlightSearch.showLatestValueKey) private var showLatestValueInSearch = false
 
     // iPad sidebar state
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
@@ -140,6 +143,11 @@ struct HomeView: View {
         }
         .onChange(of: showReview) { _, showing in
             if !showing { Task { await loadReportsIfAuthorized() } }
+        }
+        .onChange(of: showLatestValueInSearch) { _, _ in
+            // Re-publish so the search index switches between name-only and
+            // value-bearing entries as soon as the preference is toggled.
+            SpotlightIndexService.shared.reindex(reports: reports)
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
             // Re-reading the pasteboard here is essential: copying happens in

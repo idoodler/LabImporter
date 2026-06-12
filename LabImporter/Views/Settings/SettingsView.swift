@@ -130,6 +130,7 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var browserURL: IdentifiedURL?
     @AppStorage(CloudSyncService.enabledKey) private var iCloudSyncEnabled = false
+    @AppStorage(SpotlightSearch.showLatestValueKey) private var showLatestValueInSearch = false
 
     var body: some View {
         NavigationStack {
@@ -159,6 +160,18 @@ struct SettingsView: View {
                     Sync your dashboard layout — the card order, what you pin and hide, your \
                     nicknames, and your reference ranges — across your devices. Your lab values \
                     stay in Apple Health.
+                    """)
+                }
+
+                Section("Search") {
+                    Toggle(isOn: $showLatestValueInSearch) {
+                        SettingsRowLabel("Show Latest Value in Search",
+                                         systemImage: "magnifyingglass", color: .orange)
+                    }
+                } footer: {
+                    Text("""
+                    Let each value's most recent reading appear in iOS search results. \
+                    When off, only the value's name is shown — never a reading.
                     """)
                 }
 
