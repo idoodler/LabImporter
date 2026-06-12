@@ -23,7 +23,9 @@ using namespace metal;
     float radius,
     float2 wobble2,   // (amplitude, angle) of the mode-2 squash/stretch
     float2 wobble3,   // (amplitude, phase) of the mode-3 ripple
-    float strength    // center magnification, 0…1
+    float strength,   // center magnification, 0…1
+    device const float *bumps,  // surface-tension bulges: (angle, height, width) triplets
+    int bumpCount
 ) {
     float2 dir = position - center;
     float dist = length(dir);
@@ -32,6 +34,15 @@ using namespace metal;
     float boundary = radius * (1.0
         + wobble2.x * cos(2.0 * (theta - wobble2.y))
         + wobble3.x * cos(3.0 * theta + wobble3.y));
+
+    // Local bulges where droplets are arriving or have just merged — must
+    // stay in lockstep with `WaterDropShape.bumpHeight(at:)`.
+    for (int i = 0; i + 2 < bumpCount; i += 3) {
+        float away = theta - bumps[i];
+        away = atan2(sin(away), cos(away));
+        float width = bumps[i + 2];
+        boundary += bumps[i + 1] * exp(-(away * away) / (2.0 * width * width));
+    }
 
     if (boundary <= 0.0 || dist >= boundary) {
         return layer.sample(position);

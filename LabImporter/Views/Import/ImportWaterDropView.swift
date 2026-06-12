@@ -88,7 +88,8 @@ struct ImportWaterDropView: View {
             .float(state.radius),
             .float2(state.mode2, state.mode2Angle),
             .float2(state.mode3, state.mode3Phase),
-            .float(0.15)
+            .float(0.15),
+            .floatArray(state.bumps.flatMap { [Float($0.angle), Float($0.height), Float($0.width)] })
         )
     }
 
@@ -103,11 +104,12 @@ struct ImportWaterDropView: View {
             mode2: state.mode2,
             mode2Angle: state.mode2Angle,
             mode3: state.mode3,
-            mode3Phase: state.mode3Phase
+            mode3Phase: state.mode3Phase,
+            bumps: state.bumps
         )
         return ZStack {
             halo(for: state)
-            ForEach(state.droplets) { dropletView($0, time: time) }
+            ForEach(state.droplets) { dropletView($0, state: state, time: time) }
             ZStack {
                 // A whisper of the hero gradient inside the glass — the same
                 // blue→purple as the landing hero circle — so the drop is
@@ -163,14 +165,28 @@ struct ImportWaterDropView: View {
         .position(state.position)
     }
 
-    /// An incoming streamed-value droplet: a small bead in the brand blue,
-    /// with a falling drop's squash-and-stretch — elongated along its
-    /// direction of travel, thinned across it (area-conserving), and gently
-    /// breathing so it never reads as a rigid token.
-    private func dropletView(_ droplet: BubblePhysics.Droplet, time: TimeInterval) -> some View {
-        let speed = hypot(droplet.velocity.dx, droplet.velocity.dy)
-        let stretch = 1 + min(speed / 900, 0.55)
+    /// An incoming streamed-value droplet: a small bead in the brand blue
+    /// with a falling drop's squash-and-stretch. Near the drop, surface
+    /// tension takes over: the stretch axis swings from the travel direction
+    /// toward the surface (necking), the elongation grows, and the bead sinks
+    /// in — fully faded by the moment the physics absorbs it, while the
+    /// drop's boundary raises a matching bump to meet it.
+    private func dropletView(
+        _ droplet: BubblePhysics.Droplet,
+        state: BubblePhysics.DropState,
+        time: TimeInterval
+    ) -> some View {
+        let toCoreX = state.position.x - droplet.position.x
+        let toCoreY = state.position.y - droplet.position.y
+        let distance = max(hypot(toCoreX, toCoreY), 1)
+        // 0 approaching → 1 touching the surface (mirrors the physics bump).
+        let contact = max(0, min(1, 1 - (distance - state.radius) / (droplet.radius * 3.5)))
+        let speed = max(hypot(droplet.velocity.dx, droplet.velocity.dy), 1)
+        let stretch = 1 + min(speed / 900, 0.55) + 0.45 * contact * contact
+        let axisX = droplet.velocity.dx / speed * (1 - contact) + toCoreX / distance * contact
+        let axisY = droplet.velocity.dy / speed * (1 - contact) + toCoreY / distance * contact
         let breathe = 1 + 0.06 * sin(time * 3.2 + droplet.phase)
+        let submersion = max(0, min(1, (state.radius + droplet.radius - distance) / (2 * droplet.radius)))
         return Ellipse()
             .fill(LabCategory.bloodGas.color.opacity(0.16))
             .overlay(Ellipse().strokeBorder(LabCategory.bloodGas.color.opacity(0.45), lineWidth: 1))
@@ -178,7 +194,8 @@ struct ImportWaterDropView: View {
                 width: droplet.radius * 2 * stretch * breathe,
                 height: droplet.radius * 2 / stretch * breathe
             )
-            .rotationEffect(.radians(atan2(droplet.velocity.dy, droplet.velocity.dx)))
+            .rotationEffect(.radians(atan2(axisY, axisX)))
+            .opacity(1 - submersion)
             .shadow(color: .black.opacity(0.08), radius: 6, y: 3)
             .position(droplet.position)
     }
@@ -216,6 +233,8 @@ private struct WaterDropShape: Shape {
     var mode2Angle: CGFloat
     var mode3: CGFloat
     var mode3Phase: CGFloat
+    /// Local surface-tension bulges (arriving/merging droplets), in points.
+    var bumps: [BubblePhysics.SurfaceBump] = []
 
     func path(in rect: CGRect) -> Path {
         let center = CGPoint(x: rect.midX, y: rect.midY)
@@ -228,7 +247,7 @@ private struct WaterDropShape: Shape {
             let theta = CGFloat(index) / CGFloat(samples) * 2 * .pi
             let wave2 = mode2 * cos(2 * (theta - mode2Angle))
             let wave3 = mode3 * cos(3 * theta + mode3Phase)
-            let radius = base * (1 + wave2 + wave3)
+            let radius = base * (1 + wave2 + wave3) + bumpHeight(at: theta)
             let point = CGPoint(x: center.x + cos(theta) * radius, y: center.y + sin(theta) * radius)
             if index == 0 {
                 path.move(to: point)
@@ -239,190 +258,17 @@ private struct WaterDropShape: Shape {
         path.closeSubpath()
         return path
     }
-}
 
-/// Minimal spring simulation behind `ImportWaterDropView`: the drop's center
-/// springs toward the finger (or screen center), incoming droplets chase the
-/// drop until absorbed, and surface-wobble energy decays over time. A plain
-/// class mutated on each `TimelineView` tick — nothing observes it; the
-/// timeline drives the redraws.
-private final class BubblePhysics {
-    struct Droplet: Identifiable {
-        let id = UUID()
-        var position: CGPoint
-        var velocity: CGVector = .zero
-        var radius: CGFloat
-        /// Phase offset for this droplet's wander and breathing, so no two
-        /// droplets move in lockstep.
-        let phase = Double.random(in: 0..<(2 * .pi))
-    }
-
-    /// Everything the renderer needs for one frame of the drop.
-    struct DropState {
-        var position: CGPoint
-        var radius: CGFloat
-        var mode2: CGFloat
-        var mode2Angle: CGFloat
-        var mode3: CGFloat
-        var mode3Phase: CGFloat
-        var droplets: [Droplet]
-    }
-
-    private var position: CGPoint = .zero
-    private var velocity: CGVector = .zero
-    private var droplets: [Droplet] = []
-    /// Extra radius earned by absorbed droplets.
-    private var growth: CGFloat = 0
-    /// Surface-wobble energy kicked up by merges; decays exponentially.
-    private var wobble: CGFloat = 0
-    private var lastStepTime: TimeInterval?
-    private var bounds: CGSize = .zero
-    private var seeded = false
-
-    private static let coreRadius: CGFloat = 118
-    private static let maxGrowth: CGFloat = 28
-    private static let stiffness: CGFloat = 90
-    private static let damping: CGFloat = 7
-
-    /// Advances the simulation to `date` and returns the frame to draw.
-    func dropState(at date: Date, attractor: CGPoint?, in size: CGSize) -> DropState {
-        bounds = size
-        let center = CGPoint(x: size.width / 2, y: size.height / 2)
-        if !seeded {
-            position = center
-            seeded = true
+    /// Sum of the Gaussian bumps at `theta`, wrap-aware. Must stay in
+    /// lockstep with the bump term in `WaterDrop.metal`.
+    private func bumpHeight(at theta: CGFloat) -> CGFloat {
+        var total: CGFloat = 0
+        for bump in bumps {
+            let raw = theta - bump.angle
+            let wrapped = atan2(sin(raw), cos(raw))
+            total += bump.height * exp(-(wrapped * wrapped) / (2 * bump.width * bump.width))
         }
-        let time = date.timeIntervalSinceReferenceDate
-        let delta = CGFloat(min(time - (lastStepTime ?? time), 1 / 20))
-        lastStepTime = time
-
-        if delta > 0 {
-            let anchor = clamp(attractor ?? center, in: size)
-            integrate(&position, &velocity, toward: anchor, stiffness: Self.stiffness, delta: delta)
-            for index in droplets.indices {
-                // Copy out/in: inout projections into the same array element
-                // would overlap exclusive access to `droplets`.
-                var droplet = droplets[index]
-                integrateDroplet(&droplet, time: time, delta: delta)
-                droplets[index] = droplet
-            }
-            absorbDroplets()
-            wobble *= CGFloat(exp(-2.4 * Double(delta)))
-        }
-        return makeState(at: time)
-    }
-
-    /// Spawns a droplet just outside the screen that springs toward the drop
-    /// and merges on contact. No-op before the first frame has run (the
-    /// bounds aren't known yet) and capped so droplets can't pile up.
-    func spawnDroplet() {
-        guard seeded, droplets.count < 8 else { return }
-        let center = CGPoint(x: bounds.width / 2, y: bounds.height / 2)
-        let angle = Double.random(in: 0..<(2 * .pi))
-        let distance = max(bounds.width, bounds.height) / 2 + 60
-        let spawn = CGPoint(x: center.x + cos(angle) * distance, y: center.y + sin(angle) * distance)
-        // Launch with mostly *tangential* velocity so the droplet arcs around
-        // toward the drop instead of beelining at it — water curls, it
-        // doesn't travel in straight rays.
-        let inwardX = (center.x - spawn.x) / distance
-        let inwardY = (center.y - spawn.y) / distance
-        let tangential = (Bool.random() ? 1 : -1) * CGFloat.random(in: 220...420)
-        droplets.append(Droplet(
-            position: spawn,
-            velocity: CGVector(
-                dx: inwardX * 140 - inwardY * tangential,
-                dy: inwardY * 140 + inwardX * tangential
-            ),
-            radius: CGFloat.random(in: 13...18)
-        ))
-    }
-
-    // MARK: Internals
-
-    private func makeState(at time: TimeInterval) -> DropState {
-        // A gentle breath so the drop never looks frozen, even untouched.
-        let radius = Self.coreRadius + growth + CGFloat(sin(time * 1.2)) * 3
-
-        // The elliptical deformation is the sum of a slowly turning idle
-        // wobble and a stretch along the direction of travel. Two cos(2θ)
-        // waves sum to a single one, combined here in double-angle space so
-        // the transition between idling and dragging is seamless.
-        let idleAmp = 0.05 + wobble * 0.4
-        let idleAngle = CGFloat(time * 0.35)
-        let speed = hypot(velocity.dx, velocity.dy)
-        let dragAmp = min(speed / 1500, 0.18)
-        let dragAngle = atan2(velocity.dy, velocity.dx)
-        let combinedX = idleAmp * cos(2 * idleAngle) + dragAmp * cos(2 * dragAngle)
-        let combinedY = idleAmp * sin(2 * idleAngle) + dragAmp * sin(2 * dragAngle)
-
-        return DropState(
-            position: position,
-            radius: radius,
-            mode2: hypot(combinedX, combinedY),
-            mode2Angle: atan2(combinedY, combinedX) / 2,
-            mode3: 0.03 + wobble * 0.5,
-            mode3Phase: CGFloat(time * 1.1),
-            droplets: droplets
-        )
-    }
-
-    /// Semi-implicit Euler with an underdamped spring — enough wobble to feel
-    /// like water, settling in under a second.
-    private func integrate(
-        _ point: inout CGPoint,
-        _ velocity: inout CGVector,
-        toward target: CGPoint,
-        stiffness: CGFloat,
-        delta: CGFloat
-    ) {
-        velocity.dx += ((target.x - point.x) * stiffness - velocity.dx * Self.damping) * delta
-        velocity.dy += ((target.y - point.y) * stiffness - velocity.dy * Self.damping) * delta
-        point.x += velocity.dx * delta
-        point.y += velocity.dy * delta
-    }
-
-    /// Water-like droplet motion: a lazy, slightly serpentine drift while far
-    /// from the drop, then a surface-tension "grab" whose pull ramps up
-    /// steeply as the droplet nears the surface and swoops it in. The wander
-    /// fades out as the grab takes over so the final approach is clean.
-    private func integrateDroplet(_ droplet: inout Droplet, time: TimeInterval, delta: CGFloat) {
-        let toCoreX = position.x - droplet.position.x
-        let toCoreY = position.y - droplet.position.y
-        let distance = max(hypot(toCoreX, toCoreY), 1)
-        let surface = Self.coreRadius + growth
-        let proximity = max(0, 1 - max(0, distance - surface) / (surface * 1.8))
-
-        let drive = (8 + 110 * proximity * proximity) * min(distance, 280)
-        let wander = CGFloat(sin(time * 2.1 + droplet.phase)) * 1400 * (1 - proximity)
-        let dampingDrag: CGFloat = 5
-
-        let directionX = toCoreX / distance
-        let directionY = toCoreY / distance
-        droplet.velocity.dx += (directionX * drive - directionY * wander - droplet.velocity.dx * dampingDrag) * delta
-        droplet.velocity.dy += (directionY * drive + directionX * wander - droplet.velocity.dy * dampingDrag) * delta
-        droplet.position.x += droplet.velocity.dx * delta
-        droplet.position.y += droplet.velocity.dy * delta
-    }
-
-    private func absorbDroplets() {
-        droplets.removeAll { droplet in
-            let distance = hypot(droplet.position.x - position.x, droplet.position.y - position.y)
-            guard distance < (Self.coreRadius + growth) * 0.6 else { return false }
-            growth = min(growth + 3, Self.maxGrowth)
-            // Each merge kicks the surface so the drop visibly gulps.
-            wobble = min(wobble + 0.12, 0.3)
-            return true
-        }
-    }
-
-    /// Keeps the drop's anchor far enough from the edges that it stays
-    /// substantially on screen however hard it's dragged.
-    private func clamp(_ point: CGPoint, in size: CGSize) -> CGPoint {
-        let inset: CGFloat = 110
-        return CGPoint(
-            x: min(max(point.x, inset), size.width - inset),
-            y: min(max(point.y, inset), size.height - inset)
-        )
+        return total
     }
 }
 
