@@ -18,9 +18,10 @@ struct HomeView: View {
     /// An "Open With" file that arrived before onboarding was dismissed; held
     /// back so its review sheet isn't presented underneath the welcome cover.
     @State private var pendingImportURL: URL?
-    /// A metric (by LOINC code) the user tapped in Spotlight whose trend detail
-    /// should be presented. Wrapped so `.sheet(item:)` drives the presentation.
-    @State private var trendDeepLink: TrendDeepLink?
+    /// Coordinates presenting a Spotlight-deep-linked metric's detail (navigate
+    /// back, then present once any open editor has stepped aside). In the
+    /// environment so every Review editor can register with it.
+    @State private var searchPresentation = SearchPresentationCoordinator()
     /// A deep link that arrived before the app was ready (onboarding incomplete or
     /// reports not yet loaded); replayed once those gates clear.
     @State private var pendingDeepLinkCode: String?
@@ -82,12 +83,6 @@ struct HomeView: View {
         }
     }
 
-    /// Identifiable wrapper so a deep-linked metric drives `.sheet(item:)`.
-    private struct TrendDeepLink: Identifiable {
-        let code: String
-        var id: String { code }
-    }
-
     var body: some View {
         // The layout adapts to the device — a sidebar split view on iPad and the
         // original stack on iPhone — while the import overlay, review sheet,
@@ -117,16 +112,25 @@ struct HomeView: View {
             }
             .interactiveDismissDisabled()
         }
-        // The trend detail opened from a Spotlight search hit. Mirrors the
-        // dashboard's own metric sheet (medium/large detents, drag indicator) so a
-        // deep link lands on the exact same "detail popup" as tapping a card.
-        .sheet(item: $trendDeepLink) { link in
+        // The trend detail opened from a Spotlight search hit — the same "detail
+        // popup" (medium/large detents) as tapping a dashboard card. The
+        // coordinator only sets `presentedCode` once the app is back at root with
+        // no editor in the way, so the presentation always succeeds.
+        .sheet(item: Binding(
+            get: { searchPresentation.presentedCode.map(MetricDetailRequest.init) },
+            set: { if $0 == nil { searchPresentation.presentedCode = nil } }
+        )) { request in
             NavigationStack {
-                TrendsView(reports: reports, initialCode: link.code, onDismiss: { trendDeepLink = nil })
+                TrendsView(reports: reports, initialCode: request.code,
+                           onDismiss: { searchPresentation.presentedCode = nil })
             }
             .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
+            .onAppear { searchPresentation.didPresentDetail() }
         }
+        .environment(searchPresentation)
+        // "Navigate back" also returns the iPad sidebar to the dashboard.
+        .onChange(of: searchPresentation.navResetToken) { _, _ in sidebarSelection = .dashboard }
         .task {
             if ScreenshotMode.isActive {
                 setupScreenshotMode()
@@ -211,6 +215,7 @@ struct HomeView: View {
         NavigationStack {
             mainContent(showsLibraryToolbarItems: true)
         }
+        .id(searchPresentation.navResetToken) // re-identified to pop to root on a deep link
     }
 
     // MARK: - Regular layout (iPad)
@@ -243,10 +248,12 @@ struct HomeView: View {
             NavigationStack {
                 mainContent(showsLibraryToolbarItems: false)
             }
+            .id(searchPresentation.navResetToken)
         case .reports:
             NavigationStack {
                 HistoryView(initialReports: reports)
             }
+            .id(searchPresentation.navResetToken)
         case .settings:
             SettingsView(prefs: $prefs, allCodes: allCodeNames, isModal: false)
         }
@@ -442,7 +449,9 @@ private extension HomeView {
 
     /// Opens the trend detail for a Spotlight-searched metric. If the app isn't
     /// ready yet — onboarding still up, or reports not loaded — the code is stashed
-    /// and replayed by `flushPendingDeepLink` once those gates clear.
+    /// and replayed by `flushPendingDeepLink` once those gates clear. Otherwise the
+    /// coordinator navigates back to root (closing any open editor via its own
+    /// confirmation) and presents the detail.
     func presentTrend(for code: String) {
         guard hasSeenWelcome, hasAcknowledgedDisclaimer, hasGrantedHealthAccess, hasChosenICloudSync,
               hasChosenSpotlightSearch, isLoaded, !reports.isEmpty else {
@@ -450,7 +459,7 @@ private extension HomeView {
             return
         }
         pendingDeepLinkCode = nil
-        trendDeepLink = TrendDeepLink(code: code)
+        searchPresentation.open(code)
     }
 
     func flushPendingDeepLink() {

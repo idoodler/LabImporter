@@ -116,10 +116,8 @@ struct ReviewView: View {
         .toolbar {
             keyboardDoneButton
             ToolbarItem(placement: .topBarLeading) {
-                Button(role: .close) {
-                    if hasEdits { showDiscardAlert = true } else { dismiss() }
-                }
-                .disabled(importEngine.isProcessing) // HUD overlay can't cover this bar.
+                Button(role: .close) { attemptClose() }
+                    .disabled(importEngine.isProcessing) // HUD overlay can't cover this bar.
             }
         }
         .alert("Discard Report?", isPresented: $showDiscardAlert) {
@@ -137,6 +135,7 @@ struct ReviewView: View {
             configureImportEngine()
             seedMetadataFromReport()
         }
+        .registersAsSearchEditor(onClose: attemptClose)
         .sheet(isPresented: Binding(
             get: { cdaShareURL != nil },
             set: { if !$0 { cdaShareURL = nil } }
@@ -385,11 +384,12 @@ private extension ReviewView {
 // MARK: - Helpers
 
 private extension ReviewView {
-
     var clipboardHasContent: Bool {
         let pasteboard = UIPasteboard.general
         return pasteboard.hasImages || pasteboard.hasStrings
     }
+
+    func attemptClose() { if hasEdits { showDiscardAlert = true } else { dismiss() } }
 
     /// Whether the report date or any lab value differs from what the sheet
     /// opened with — drives the discard confirmation. Patient/author/biometrics

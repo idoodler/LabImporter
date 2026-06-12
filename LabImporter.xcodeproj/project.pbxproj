@@ -55,6 +55,7 @@
 		AABB0000000000000000D1AA /* CloudSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000D0AA /* CloudSyncService.swift */; };
 		AASP000000000000000001AA /* SpotlightIndexService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASP000000000000000002AA /* SpotlightIndexService.swift */; };
 		AASP000000000000000003AA /* SpotlightOptInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASP000000000000000004AA /* SpotlightOptInView.swift */; };
+		AASP000000000000000005AA /* SearchPresentationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASP000000000000000006AA /* SearchPresentationCoordinator.swift */; };
 		AABB0000000000000000D3AA /* CloudSyncOptInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000D2AA /* CloudSyncOptInView.swift */; };
 		AABB0000000000000000E1AA /* DisclaimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000E2AA /* DisclaimerView.swift */; };
 		AABB0000000000000000F1AA /* LabImportEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000F2AA /* LabImportEngine.swift */; };
@@ -143,6 +144,7 @@
 		AABB0000000000000000D0AA /* CloudSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncService.swift; sourceTree = "<group>"; };
 		AASP000000000000000002AA /* SpotlightIndexService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightIndexService.swift; sourceTree = "<group>"; };
 		AASP000000000000000004AA /* SpotlightOptInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightOptInView.swift; sourceTree = "<group>"; };
+		AASP000000000000000006AA /* SearchPresentationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchPresentationCoordinator.swift; sourceTree = "<group>"; };
 		AABB0000000000000000D2AA /* CloudSyncOptInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncOptInView.swift; sourceTree = "<group>"; };
 		AABB0000000000000000E2AA /* DisclaimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisclaimerView.swift; sourceTree = "<group>"; };
 		AABB0000000000000000F2AA /* LabImportEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabImportEngine.swift; sourceTree = "<group>"; };
@@ -276,6 +278,7 @@
 			isa = PBXGroup;
 			children = (
 				AABB000000000000000026AA /* HomeView.swift */,
+				AASP000000000000000006AA /* SearchPresentationCoordinator.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -583,6 +586,7 @@
 				AABB0000000000000000D1AA /* CloudSyncService.swift in Sources */,
 				AASP000000000000000001AA /* SpotlightIndexService.swift in Sources */,
 				AASP000000000000000003AA /* SpotlightOptInView.swift in Sources */,
+				AASP000000000000000005AA /* SearchPresentationCoordinator.swift in Sources */,
 				AABB000000000000000057AA /* CDAExportService.swift in Sources */,
 				AAED000000000000000010AA /* PDFExportOptions.swift in Sources */,
 				AAED000000000000000012AA /* PDFExportService.swift in Sources */,
