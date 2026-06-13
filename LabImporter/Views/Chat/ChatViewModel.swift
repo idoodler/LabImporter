@@ -55,7 +55,8 @@ final class ChatViewModel {
                         self?.update(id: assistantID, text: partial, complete: false)
                     }
                 }
-                self.update(id: assistantID, text: final, complete: true)
+                let trimmed = final.trimmingCharacters(in: .whitespacesAndNewlines)
+                self.update(id: assistantID, text: trimmed, complete: true)
             } catch is CancellationError {
                 self.finishOrDrop(id: assistantID)
             } catch {

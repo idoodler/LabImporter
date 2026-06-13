@@ -145,8 +145,10 @@ struct VitalsTool: Tool {
     Read the user's recent vital signs and glucose readings logged in Apple \
     Health — blood glucose, body weight, BMI, blood pressure and resting heart \
     rate. Returns the latest reading and the range over the window for each \
-    metric that has data. Call this to bring lifestyle/vital context into the \
-    conversation (especially blood sugar for diabetes questions).
+    metric that has data. ALWAYS call this for any question about blood \
+    sugar/glucose, weight, blood pressure or heart rate — that data is in Apple \
+    Health, not in the lab reports — and call it whenever bringing lifestyle or \
+    vital context into the conversation.
     """
 
     @Generable
