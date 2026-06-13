@@ -8,7 +8,6 @@ import SwiftUI
 struct ChatContainerView: View {
     let reports: [LabReport]
 
-    @Environment(\.dismiss) private var dismiss
     @AppStorage(PersonaStore.storageKey) private var store = PersonaStore()
     /// Gates the one-time chat intro. Defaults `false` so existing installs see
     /// it the first time they open the chat after updating.
@@ -26,11 +25,6 @@ struct ChatContainerView: View {
     var body: some View {
         NavigationStack {
             content
-                .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button("Done") { dismiss() }
-                    }
-                }
         }
         .fullScreenCover(isPresented: Binding(
             get: { !hasSeenChatIntro },

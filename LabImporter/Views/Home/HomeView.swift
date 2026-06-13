@@ -42,60 +42,14 @@ struct HomeView: View {
     /// observed here so flipping it re-publishes the index right away.
     @AppStorage(SpotlightSearch.showLatestValueKey) private var showLatestValueInSearch = false
 
-    // iPad sidebar state
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
-    @State private var sidebarSelection: SidebarSection? = .dashboard
-
-    /// Whether to present the iPad sidebar split view. Keyed off the device
-    /// idiom rather than `horizontalSizeClass` on purpose: a large iPhone flips
-    /// between compact (portrait) and regular (landscape) on every rotation, and
-    /// driving the root layout off that swaps the whole navigation container —
-    /// tearing down any pushed screen and dumping the user back on the
-    /// dashboard. The idiom is stable across rotation, so the iPhone keeps its
-    /// `NavigationStack` (and its navigation state) and only the iPad gets the
-    /// sidebar. `NavigationSplitView` still collapses itself when an iPad is
-    /// horizontally compact (Slide Over), so no behavior is lost there.
-    private var usesSidebarLayout: Bool {
-        UIDevice.current.userInterfaceIdiom == .pad
-    }
-
-    /// Sections shown in the iPad sidebar. On compact widths (iPhone) these are
-    /// reached through the dashboard's own toolbar instead, so the sidebar is
-    /// only built when the layout is regular-width.
-    private enum SidebarSection: String, CaseIterable, Identifiable {
-        case dashboard, reports, settings
-        var id: String { rawValue }
-
-        var title: LocalizedStringKey {
-            switch self {
-            case .dashboard: return "Lab Results"
-            case .reports: return "Reports"
-            case .settings: return "Settings"
-            }
-        }
-
-        var icon: String {
-            switch self {
-            case .dashboard: return "square.grid.2x2"
-            case .reports: return "doc.text"
-            case .settings: return "gearshape"
-            }
-        }
-    }
 
     var body: some View {
-        // The layout adapts to the device — a sidebar split view on iPad and the
-        // original stack on iPhone — while the import overlay, review sheet,
-        // report loading and onboarding stay shared across both so behavior is
-        // identical. See `usesSidebarLayout` for why this is keyed off the idiom,
-        // not the size class, so rotating an iPhone doesn't reset navigation.
-        Group {
-            if usesSidebarLayout {
-                splitRoot
-            } else {
-                compactRoot
-            }
-        }
+        // A tab bar is the primary navigation; on iPad it adapts to a sidebar.
+        // The import overlay, review sheet, onboarding cover and deep-link
+        // handling are attached here so they stay shared across every tab. A
+        // TabView is stable across rotation, so navigation isn't torn down.
+        tabRoot
         // The processing HUD is presented in its own top-level UIWindow (see
         // `labImport`), so it floats above the navigation bar and blocks the
         // toolbar buttons (history/settings/import) while an import is running.
@@ -125,8 +79,6 @@ struct HomeView: View {
             .onAppear { searchPresentation.didPresentDetail() }
         }
         .environment(searchPresentation)
-        // "Navigate back" also returns the iPad sidebar to the dashboard.
-        .onChange(of: searchPresentation.navResetToken) { _, _ in sidebarSelection = .dashboard }
         // The last onboarding gate releases anything that waited on onboarding.
         .onChange(of: onboardingComplete) { _, done in if done { flushPendingImport(); flushPendingDeepLink() } }
         .task {
@@ -207,59 +159,44 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Compact layout (iPhone)
+    // MARK: - Tabs
 
-    private var compactRoot: some View {
+    /// Bottom tab bar on iPhone; adapts to a sidebar on iPad.
+    private var tabRoot: some View {
+        TabView {
+            Tab("Lab Results", systemImage: "square.grid.2x2") { resultsTab }
+            Tab("Reports", systemImage: "doc.text") { reportsTab }
+            Tab("Chat", systemImage: "bubble.left.and.text.bubble.right") { chatTab }
+            Tab("Settings", systemImage: "gearshape") { settingsTab }
+        }
+        .tabViewStyle(.sidebarAdaptable)
+    }
+
+    private var resultsTab: some View {
         NavigationStack {
-            mainContent(showsLibraryToolbarItems: true)
+            mainContent(showsLibraryToolbarItems: false)
+                .toolbar { ToolbarItem(placement: .topBarTrailing) { importMenu } }
         }
         .id(searchPresentation.navResetToken) // re-identified to pop to root on a deep link
     }
 
-    // MARK: - Regular layout (iPad)
-
-    private var splitRoot: some View {
-        NavigationSplitView {
-            List(selection: $sidebarSelection) {
-                ForEach(SidebarSection.allCases) { section in
-                    Label(section.title, systemImage: section.icon)
-                        .tag(section)
-                }
-            }
-            .navigationTitle("Lab Importer")
-            .navigationSplitViewColumnWidth(min: 240, ideal: 280)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    importMenu
-                }
-            }
-        } detail: {
-            detailColumn
-        }
-        .navigationSplitViewStyle(.balanced)
-    }
-
-    @ViewBuilder
-    private var detailColumn: some View {
-        switch sidebarSelection ?? .dashboard {
-        case .dashboard:
-            NavigationStack {
-                mainContent(showsLibraryToolbarItems: false)
-            }
-            .id(searchPresentation.navResetToken)
-        case .reports:
-            NavigationStack {
-                HistoryView(initialReports: reports)
-            }
-            .id(searchPresentation.navResetToken)
-        case .settings:
-            SettingsView(prefs: $prefs, allCodes: allCodeNames, isModal: false)
+    private var reportsTab: some View {
+        NavigationStack {
+            HistoryView(initialReports: reports)
         }
     }
 
-    /// The landing-or-dashboard content shared by both layouts. `showsLibraryToolbarItems`
-    /// hides the dashboard's History/Settings toolbar buttons when the sidebar
-    /// already provides those destinations.
+    private var chatTab: some View {
+        ChatContainerView(reports: reports)
+    }
+
+    private var settingsTab: some View {
+        SettingsView(prefs: $prefs, allCodes: allCodeNames, isModal: false)
+    }
+
+    /// The landing-or-dashboard content for the first tab. The dashboard's own
+    /// History/Settings toolbar buttons stay off (those are their own tabs); the
+    /// import `+` is provided by the tab's toolbar instead.
     @ViewBuilder
     private func mainContent(showsLibraryToolbarItems: Bool) -> some View {
         if !isLoaded {
@@ -288,11 +225,10 @@ struct HomeView: View {
                 isProcessing: importEngine.isProcessing,
                 showsLibraryToolbarItems: showsLibraryToolbarItems
             )
-            .chatEntryPoint(reports: reports)
         }
     }
 
-    // MARK: - Sidebar import menu
+    // MARK: - Import menu
 
     private var importMenu: some View {
         Menu {
