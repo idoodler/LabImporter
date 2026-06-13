@@ -1,13 +1,13 @@
 import Foundation
 
-struct LabReport: Codable, Identifiable {
+struct LabReport: Codable, Identifiable, Sendable {
     let id: UUID
     let date: Date
     let patientName: String
     let authorName: String
     let entries: [Entry]
 
-    struct Entry: Codable, Identifiable {
+    struct Entry: Codable, Identifiable, Sendable {
         let id: UUID
         let code: String
         let name: String

@@ -37,7 +37,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Camera is used to scan your lab report pages so values can be extracted automatically.</string>
 	<key>NSHealthShareUsageDescription</key>
-	<string>Lab Importer reads your lab reports from Apple Health and may read basic characteristics like date of birth and biological sex to pre-fill your lab report metadata.</string>
+	<string>Lab Importer reads your lab reports from Apple Health and may read basic characteristics like date of birth and biological sex to pre-fill your lab report metadata. If you use the on-device Health Assistant, it can also read recent vitals and glucose readings to discuss your results with you. All of this stays on your device.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Lab Importer saves your lab results to Apple Health so you can track them over time.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

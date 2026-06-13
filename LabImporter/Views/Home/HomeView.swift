@@ -87,9 +87,8 @@ struct HomeView: View {
         // The layout adapts to the device — a sidebar split view on iPad and the
         // original stack on iPhone — while the import overlay, review sheet,
         // report loading and onboarding stay shared across both so behavior is
-        // identical no matter how the content is presented. See
-        // `usesSidebarLayout` for why this is keyed off the idiom, not the size
-        // class, so rotating an iPhone doesn't reset navigation.
+        // identical. See `usesSidebarLayout` for why this is keyed off the idiom,
+        // not the size class, so rotating an iPhone doesn't reset navigation.
         Group {
             if usesSidebarLayout {
                 splitRoot
@@ -289,6 +288,7 @@ struct HomeView: View {
                 isProcessing: importEngine.isProcessing,
                 showsLibraryToolbarItems: showsLibraryToolbarItems
             )
+            .chatEntryPoint(reports: reports)
         }
     }
 

@@ -7,7 +7,7 @@ import SwiftUI
 // kidney, liver and thyroid markers are all class "CHEM" — so for chemistry we
 // refine by component keywords. This is heuristic and meant to be easy to tune:
 // adjust the rules in `category(loincClass:component:)` and the colors below.
-enum LabCategory: String, CaseIterable, Sendable {
+enum LabCategory: String, CaseIterable, Sendable, Codable {
     case glycemic
     case lipids
     case cardiac

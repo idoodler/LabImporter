@@ -5,7 +5,10 @@ actor HealthKitService {
 
     static let shared = HealthKitService()
 
-    nonisolated(unsafe) private let store = HKHealthStore()
+    // Internal (not private) so the vitals/metrics reads in
+    // HealthKitService+Vitals.swift can reach the same store. HKHealthStore is
+    // thread-safe by design, hence `nonisolated(unsafe)`.
+    nonisolated(unsafe) let store = HKHealthStore()
 
     static var isHealthDataAvailable: Bool {
         HKHealthStore.isHealthDataAvailable()

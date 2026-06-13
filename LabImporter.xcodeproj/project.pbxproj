@@ -73,6 +73,20 @@
 		AAFF0000000000000000F402 /* ValueDescriptionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFF0000000000000000F401 /* ValueDescriptionCard.swift */; };
 		AAFF0000000000000000F502 /* TrendWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFF0000000000000000F501 /* TrendWindow.swift */; };
 		D24B3094F0FD8A93BB70A34F /* ScreenshotMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C897701053C6666E95989E84 /* ScreenshotMode.swift */; };
+		AACH0000000000000000B1AA /* MedicalPersona.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACH0000000000000000F1AA /* MedicalPersona.swift */; };
+		AACH0000000000000000B2AA /* PersonaStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACH0000000000000000F2AA /* PersonaStore.swift */; };
+		AACH0000000000000000B3AA /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACH0000000000000000F3AA /* ChatMessage.swift */; };
+		AACH0000000000000000B4AA /* LabChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACH0000000000000000F4AA /* LabChatService.swift */; };
+		AACH0000000000000000B5AA /* ChatTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACH0000000000000000F5AA /* ChatTools.swift */; };
+		AACH0000000000000000BDAA /* HealthKitService+Vitals.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACH0000000000000000FDAA /* HealthKitService+Vitals.swift */; };
+		AACH0000000000000000B6AA /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACH0000000000000000F6AA /* ChatView.swift */; };
+		AACH0000000000000000B7AA /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACH0000000000000000F7AA /* ChatViewModel.swift */; };
+		AACH0000000000000000B8AA /* ChatMessageBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACH0000000000000000F8AA /* ChatMessageBubble.swift */; };
+		AACH0000000000000000B9AA /* PersonaPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACH0000000000000000F9AA /* PersonaPickerView.swift */; };
+		AACH0000000000000000BAAA /* PersonaEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACH0000000000000000FAAA /* PersonaEditorView.swift */; };
+		AACH0000000000000000BBAA /* ChatContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACH0000000000000000FBAA /* ChatContainerView.swift */; };
+		AACH0000000000000000BCAA /* ChatIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACH0000000000000000FCAA /* ChatIntroView.swift */; };
+		AACH0000000000000000BEAA /* ChatEntryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACH0000000000000000FEAA /* ChatEntryButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -163,6 +177,20 @@
 		AAFF0000000000000000F401 /* ValueDescriptionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueDescriptionCard.swift; sourceTree = "<group>"; };
 		AAFF0000000000000000F501 /* TrendWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendWindow.swift; sourceTree = "<group>"; };
 		C897701053C6666E95989E84 /* ScreenshotMode.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScreenshotMode.swift; sourceTree = "<group>"; };
+		AACH0000000000000000F1AA /* MedicalPersona.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicalPersona.swift; sourceTree = "<group>"; };
+		AACH0000000000000000F2AA /* PersonaStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonaStore.swift; sourceTree = "<group>"; };
+		AACH0000000000000000F3AA /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
+		AACH0000000000000000F4AA /* LabChatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabChatService.swift; sourceTree = "<group>"; };
+		AACH0000000000000000F5AA /* ChatTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTools.swift; sourceTree = "<group>"; };
+		AACH0000000000000000FDAA /* HealthKitService+Vitals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HealthKitService+Vitals.swift"; sourceTree = "<group>"; };
+		AACH0000000000000000F6AA /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		AACH0000000000000000F7AA /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
+		AACH0000000000000000F8AA /* ChatMessageBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageBubble.swift; sourceTree = "<group>"; };
+		AACH0000000000000000F9AA /* PersonaPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonaPickerView.swift; sourceTree = "<group>"; };
+		AACH0000000000000000FAAA /* PersonaEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonaEditorView.swift; sourceTree = "<group>"; };
+		AACH0000000000000000FBAA /* ChatContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatContainerView.swift; sourceTree = "<group>"; };
+		AACH0000000000000000FCAA /* ChatIntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatIntroView.swift; sourceTree = "<group>"; };
+		AACH0000000000000000FEAA /* ChatEntryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEntryButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -227,6 +255,9 @@
 				AABB000000000000000061AA /* LabReport.swift */,
 				AABB000000000000000075AA /* LabDisplayPreferences.swift */,
 				AAED000000000000000011AA /* PDFExportOptions.swift */,
+				AACH0000000000000000F1AA /* MedicalPersona.swift */,
+				AACH0000000000000000F2AA /* PersonaStore.swift */,
+				AACH0000000000000000F3AA /* ChatMessage.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -242,6 +273,9 @@
 				AABB000000000000000090AA /* LoincDirectory.swift */,
 				AABB0000000000000000D0AA /* CloudSyncService.swift */,
 				AASP000000000000000002AA /* SpotlightIndexService.swift */,
+				AACH0000000000000000F4AA /* LabChatService.swift */,
+				AACH0000000000000000F5AA /* ChatTools.swift */,
+				AACH0000000000000000FDAA /* HealthKitService+Vitals.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -257,6 +291,7 @@
 				AABB0000000000000000A5AA /* History */,
 				AABB0000000000000000A6AA /* Settings */,
 				AABB0000000000000000A7AA /* Shared */,
+				AACH0000000000000000GRAA /* Chat */,
 				AAED0000000000000000E0AA /* Export */,
 			);
 			path = Views;
@@ -294,6 +329,7 @@
 				AABB0000000000000000D2AA /* CloudSyncOptInView.swift */,
 				AASP000000000000000004AA /* SpotlightOptInView.swift */,
 				AABB0000000000000000F6AA /* OnboardingScaffold.swift */,
+				AACH0000000000000000FCAA /* ChatIntroView.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -366,6 +402,20 @@
 				AAFF0000000000000000F201 /* RangeStatusBadge.swift */,
 			);
 			path = Shared;
+			sourceTree = "<group>";
+		};
+		AACH0000000000000000GRAA /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				AACH0000000000000000FBAA /* ChatContainerView.swift */,
+				AACH0000000000000000F6AA /* ChatView.swift */,
+				AACH0000000000000000F7AA /* ChatViewModel.swift */,
+				AACH0000000000000000F8AA /* ChatMessageBubble.swift */,
+				AACH0000000000000000F9AA /* PersonaPickerView.swift */,
+				AACH0000000000000000FAAA /* PersonaEditorView.swift */,
+				AACH0000000000000000FEAA /* ChatEntryButton.swift */,
+			);
+			path = Chat;
 			sourceTree = "<group>";
 		};
 		AAED0000000000000000E0AA /* Export */ = {
@@ -630,6 +680,20 @@
 				AABBCC0000000000000005AA /* BuildInfoCard.swift in Sources */,
 				AABB0000000000000000C2DE /* UnsupportedDeviceView.swift in Sources */,
 				D24B3094F0FD8A93BB70A34F /* ScreenshotMode.swift in Sources */,
+				AACH0000000000000000B1AA /* MedicalPersona.swift in Sources */,
+				AACH0000000000000000B2AA /* PersonaStore.swift in Sources */,
+				AACH0000000000000000B3AA /* ChatMessage.swift in Sources */,
+				AACH0000000000000000B4AA /* LabChatService.swift in Sources */,
+				AACH0000000000000000B5AA /* ChatTools.swift in Sources */,
+				AACH0000000000000000BDAA /* HealthKitService+Vitals.swift in Sources */,
+				AACH0000000000000000B6AA /* ChatView.swift in Sources */,
+				AACH0000000000000000B7AA /* ChatViewModel.swift in Sources */,
+				AACH0000000000000000B8AA /* ChatMessageBubble.swift in Sources */,
+				AACH0000000000000000B9AA /* PersonaPickerView.swift in Sources */,
+				AACH0000000000000000BAAA /* PersonaEditorView.swift in Sources */,
+				AACH0000000000000000BBAA /* ChatContainerView.swift in Sources */,
+				AACH0000000000000000BCAA /* ChatIntroView.swift in Sources */,
+				AACH0000000000000000BEAA /* ChatEntryButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
