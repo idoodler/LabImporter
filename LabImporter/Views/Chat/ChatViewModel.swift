@@ -80,14 +80,29 @@ final class ChatViewModel {
         Task { await service.reset(); await start() }
     }
 
-    private func update(id: UUID, text: String, complete: Bool) {
+    private func update(id: UUID, text rawText: String, complete: Bool) {
         guard let index = messages.firstIndex(where: { $0.id == id }) else { return }
+        let text = Self.sanitize(rawText)
         // Snapshots arrive cumulatively; guard against a late, shorter one
         // briefly clobbering a longer partial.
         if text.count >= messages[index].text.count || complete {
             messages[index].text = text
         }
         if complete { messages[index].isComplete = true }
+    }
+
+    /// The on-device model occasionally leaks a transcript role marker
+    /// ("model" / "assistant") as a prefix on its reply. Strip a leading one —
+    /// only when it stands alone as the first token — before display.
+    private static func sanitize(_ text: String) -> String {
+        let lower = text.lowercased()
+        for marker in ["model", "assistant"] where lower.hasPrefix(marker) {
+            let rest = text[text.index(text.startIndex, offsetBy: marker.count)...]
+            if rest.isEmpty || rest.first == "\n" || rest.first == " " {
+                return String(rest).trimmingCharacters(in: .whitespacesAndNewlines)
+            }
+        }
+        return text
     }
 
     /// On cancel/error, drop an assistant bubble that never produced text;
