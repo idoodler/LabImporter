@@ -1,20 +1,20 @@
 import Foundation
 import FoundationModels
 
-// Read-only tools the AI chat calls to ground its answers in the user's own
-// data. Each conforms to Foundation Models' `Tool`: the model decides when to
-// call them, the framework fills the `@Generable` arguments, and the returned
-// string is fed back into the conversation. Nothing here writes Health data,
-// makes a network request, or leaves the device.
+// Read-only data access for the AI chat. The actual fetching/formatting lives in
+// `ChatData` so it can be used two ways without diverging:
+//   1. proactively, to seed a data snapshot into the session instructions at
+//      conversation start (see `LabChatService`), so the specialist always has
+//      the user's data even if the on-device model doesn't think to call a tool;
+//   2. on demand, through the Foundation Models `Tool`s below, for follow-up
+//      look-ups (a single test's full history, a different metric, …).
 //
-// The tools are handed a snapshot of the already-loaded `[LabReport]` (the same
-// reports the dashboard shows) and reach the live HealthKit store through
-// `HealthKitService.shared` for vitals/glucose. The set of tools a session gets
-// is assembled per-persona in `LabChatService`.
+// Everything only reads — already-loaded `[LabReport]` plus the local HealthKit
+// store via `HealthKitService.shared`. Nothing writes Health or leaves the device.
 
-// MARK: - Shared helpers
+// MARK: - Shared data + formatting
 
-private enum ToolFormat {
+enum ChatData {
     static func day(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
@@ -28,34 +28,40 @@ private enum ToolFormat {
             ? String(format: "%.0f", value)
             : String(format: "%.4g", value)
     }
-}
 
-// MARK: - Lab history
-
-/// Looks up the history of one lab test across all of the user's saved reports.
-struct LabHistoryTool: Tool {
-    let name = "getLabHistory"
-    let description = """
-    Look up the dated history of a single laboratory test (e.g. "HbA1c", \
-    "glucose", "LDL cholesterol", "creatinine") from the user's saved lab \
-    reports. Returns each measurement with its date, value and unit, oldest to \
-    newest. Call this to discuss how a specific lab value has changed.
-    """
-
-    let reports: [LabReport]
-
-    @Generable
-    struct Arguments {
-        @Guide(description: "The lab test to look up, e.g. 'HbA1c', 'fasting glucose', 'creatinine'.")
-        var testName: String
+    /// The values from the user's most recent report, optionally filtered to a
+    /// clinical area, with the specialist's focus areas marked.
+    static func latestLabs(reports: [LabReport], focusDomains: [LabCategory], category: String) -> String {
+        guard let latest = reports.max(by: { $0.date < $1.date }) else {
+            return "The user has no saved lab reports yet."
+        }
+        let filter = category.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        var lines: [String] = []
+        for entry in latest.entries {
+            let cat = LabCategory.forCode(entry.code)
+            if !filter.isEmpty {
+                let matches = cat.displayName.lowercased().contains(filter)
+                    || entry.resolvedName.lowercased().contains(filter)
+                guard matches else { continue }
+            }
+            let shown = entry.numericValue.map(number) ?? entry.displayValue
+            let mark = focusDomains.contains(cat) ? " *" : ""
+            lines.append("\(entry.resolvedName): \(shown) \(entry.unit)".trimmingCharacters(in: .whitespaces) + mark)
+        }
+        guard !lines.isEmpty else {
+            return filter.isEmpty
+                ? "The most recent report contains no values."
+                : "No results in the most recent report match '\(category)'."
+        }
+        let focusNote = focusDomains.isEmpty ? "" : "\n(* = within this specialist's focus area.)"
+        return "Most recent report, dated \(day(latest.date)):\n" + lines.joined(separator: "\n") + focusNote
     }
 
-    func call(arguments: Arguments) async throws -> String {
-        let query = arguments.testName.trimmingCharacters(in: .whitespacesAndNewlines)
+    /// The dated history of a single test across all reports, oldest to newest.
+    static func labHistory(reports: [LabReport], testName: String) -> String {
+        let query = testName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !query.isEmpty else { return "No test name was provided." }
 
-        // Resolve the free-text query to one or more LOINC codes via the catalog,
-        // then collect every matching entry across the reports.
         let directory = LoincDirectory.shared
         var codes = Set<String>()
         if directory.isKnownLoinc(query) {
@@ -72,22 +78,90 @@ struct LabHistoryTool: Tool {
                 let matchesCode = codes.contains(entry.code)
                 let matchesName = entry.resolvedName.lowercased().contains(lowerQuery)
                 guard matchesCode || matchesName else { continue }
-                let shown = entry.numericValue.map(ToolFormat.number) ?? entry.displayValue
+                let shown = entry.numericValue.map(number) ?? entry.displayValue
                 points.append(Point(date: report.date, value: shown, unit: entry.unit, name: entry.resolvedName))
             }
         }
-
         guard !points.isEmpty else {
             return "No measurements for '\(query)' were found in the user's saved reports."
         }
         points.sort { $0.date < $1.date }
         let label = points.last?.name ?? query
-        let lines = points.map { "\(ToolFormat.day($0.date)): \($0.value) \($0.unit)".trimmingCharacters(in: .whitespaces) }
+        let lines = points.map { "\(day($0.date)): \($0.value) \($0.unit)".trimmingCharacters(in: .whitespaces) }
         return "History for \(label) (oldest to newest):\n" + lines.joined(separator: "\n")
+    }
+
+    /// Recent readings from Apple Health for the given metrics. Requests read
+    /// access first (scoped to those metrics) when `requestAccess` is true.
+    static func vitals(kinds: [HealthKitService.VitalKind], days: Int, requestAccess: Bool) async -> String {
+        let service = HealthKitService.shared
+        if requestAccess { await service.requestAuthorization(for: kinds) }
+        var blocks: [String] = []
+        for kind in kinds {
+            let readings = (try? await service.readings(for: kind, days: days)) ?? []
+            guard let latest = readings.first else { continue }
+            let values = readings.map(\.value)
+            let minV = values.min() ?? latest.value
+            let maxV = values.max() ?? latest.value
+            var line = "\(kind.label): latest \(number(latest.value)) \(latest.unit) on \(day(latest.date))"
+            if readings.count > 1 {
+                line += "; range over \(days)d: \(number(minV))–\(number(maxV)) \(latest.unit) (\(readings.count) readings)"
+            }
+            blocks.append(line)
+        }
+        guard !blocks.isEmpty else {
+            return "No vitals or glucose readings are available in Apple Health for the last \(days) days."
+        }
+        return "Recent vitals from Apple Health:\n" + blocks.joined(separator: "\n")
+    }
+
+    /// The user's age and biological sex from Apple Health, for context.
+    static func profile() async -> String {
+        let characteristics = (try? await HealthKitService.shared.readPatientCharacteristics())
+            ?? .init(dateOfBirth: nil, biologicalSexRaw: nil)
+        var parts: [String] = []
+        if let dob = characteristics.dateOfBirth,
+           let years = Calendar.current.dateComponents([.year], from: dob, to: Date()).year {
+            parts.append("age \(years)")
+        }
+        switch characteristics.biologicalSexRaw {
+        case 1: parts.append("female")
+        case 2: parts.append("male")
+        default: break
+        }
+        guard !parts.isEmpty else {
+            return "The user's age and biological sex are not available in Apple Health."
+        }
+        return "User profile: " + parts.joined(separator: ", ") + "."
     }
 }
 
-// MARK: - Latest panel
+// MARK: - Lab history tool
+
+/// Looks up the history of one lab test across all of the user's saved reports.
+struct LabHistoryTool: Tool {
+    let name = "getLabHistory"
+    let description = """
+    Look up the dated history of a single laboratory test (e.g. "HbA1c", \
+    "glucose", "LDL cholesterol", "creatinine") from the user's saved lab \
+    reports. Returns each measurement with its date, value and unit, oldest to \
+    newest. Call this to discuss how a specific lab value has changed over time.
+    """
+
+    let reports: [LabReport]
+
+    @Generable
+    struct Arguments {
+        @Guide(description: "The lab test to look up, e.g. 'HbA1c', 'fasting glucose', 'creatinine'.")
+        var testName: String
+    }
+
+    func call(arguments: Arguments) async throws -> String {
+        ChatData.labHistory(reports: reports, testName: arguments.testName)
+    }
+}
+
+// MARK: - Latest panel tool
 
 /// Returns the values from the user's most recent lab report.
 struct LatestLabsTool: Tool {
@@ -99,8 +173,6 @@ struct LatestLabsTool: Tool {
     """
 
     let reports: [LabReport]
-    /// The persona's focus areas, used only to note which results are most
-    /// relevant to this specialist. Empty for the general practitioner.
     let focusDomains: [LabCategory]
 
     @Generable
@@ -110,33 +182,11 @@ struct LatestLabsTool: Tool {
     }
 
     func call(arguments: Arguments) async throws -> String {
-        guard let latest = reports.max(by: { $0.date < $1.date }) else {
-            return "The user has no saved lab reports yet."
-        }
-        let filter = arguments.category.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-
-        var lines: [String] = []
-        for entry in latest.entries {
-            let category = LabCategory.forCode(entry.code)
-            if !filter.isEmpty {
-                let matches = category.displayName.lowercased().contains(filter)
-                    || entry.resolvedName.lowercased().contains(filter)
-                guard matches else { continue }
-            }
-            let shown = entry.numericValue.map(ToolFormat.number) ?? entry.displayValue
-            let focusMark = focusDomains.contains(category) ? " *" : ""
-            lines.append("\(entry.resolvedName): \(shown) \(entry.unit)".trimmingCharacters(in: .whitespaces) + focusMark)
-        }
-
-        guard !lines.isEmpty else {
-            return "No results in the most recent report match '\(arguments.category)'."
-        }
-        let focusNote = focusDomains.isEmpty ? "" : "\n(* = within this specialist's focus area.)"
-        return "Most recent report, dated \(ToolFormat.day(latest.date)):\n" + lines.joined(separator: "\n") + focusNote
+        ChatData.latestLabs(reports: reports, focusDomains: focusDomains, category: arguments.category)
     }
 }
 
-// MARK: - Vitals
+// MARK: - Vitals tool
 
 /// Reads recent vitals and glucose readings from Apple Health.
 struct VitalsTool: Tool {
@@ -146,9 +196,8 @@ struct VitalsTool: Tool {
     are relevant to this specialist (e.g. blood glucose, insulin and carbs for \
     diabetes; blood pressure, heart-rate variability and VO2 max for the heart). \
     Returns the latest reading and the range over the window for each metric \
-    with data. ALWAYS call this for any question about blood sugar/glucose, \
-    weight, blood pressure, heart rate or other vitals — that data lives in \
-    Apple Health, not the lab reports.
+    with data. Call this for any question about blood sugar/glucose, weight, \
+    blood pressure, heart rate or other vitals.
     """
 
     /// The Apple Health metrics this specialist reads, derived from its domains.
@@ -161,37 +210,11 @@ struct VitalsTool: Tool {
     }
 
     func call(arguments: Arguments) async throws -> String {
-        let days = min(max(arguments.days, 1), 365)
-        let service = HealthKitService.shared
-        // Ask for read access to just this specialist's metrics, on demand, the
-        // first time the model reaches for them. HealthKit only surfaces the
-        // system sheet for types the user hasn't decided on yet.
-        await service.requestAuthorization(for: kinds)
-        var blocks: [String] = []
-
-        for kind in kinds {
-            let readings = (try? await service.readings(for: kind, days: days)) ?? []
-            guard let latest = readings.first else { continue }
-            let values = readings.map(\.value)
-            let minV = values.min() ?? latest.value
-            let maxV = values.max() ?? latest.value
-            var line = "\(kind.label): latest \(ToolFormat.number(latest.value)) \(latest.unit)"
-                + " on \(ToolFormat.day(latest.date))"
-            if readings.count > 1 {
-                line += "; range over \(days)d: \(ToolFormat.number(minV))–\(ToolFormat.number(maxV)) \(latest.unit)"
-                    + " (\(readings.count) readings)"
-            }
-            blocks.append(line)
-        }
-
-        guard !blocks.isEmpty else {
-            return "No vitals or glucose readings are available in Apple Health for the last \(days) days."
-        }
-        return "Recent vitals from Apple Health:\n" + blocks.joined(separator: "\n")
+        await ChatData.vitals(kinds: kinds, days: min(max(arguments.days, 1), 365), requestAccess: true)
     }
 }
 
-// MARK: - Profile
+// MARK: - Profile tool
 
 /// Returns the user's age and biological sex for context.
 struct ProfileTool: Tool {
@@ -208,20 +231,6 @@ struct ProfileTool: Tool {
     }
 
     func call(arguments: Arguments) async throws -> String {
-        let characteristics = try await HealthKitService.shared.readPatientCharacteristics()
-        var parts: [String] = []
-        if let dob = characteristics.dateOfBirth {
-            let years = Calendar.current.dateComponents([.year], from: dob, to: Date()).year
-            if let years { parts.append("age \(years)") }
-        }
-        switch characteristics.biologicalSexRaw {
-        case 1: parts.append("female")
-        case 2: parts.append("male")
-        default: break
-        }
-        guard !parts.isEmpty else {
-            return "The user's age and biological sex are not available in Apple Health."
-        }
-        return "User profile: " + parts.joined(separator: ", ") + "."
+        await ChatData.profile()
     }
 }

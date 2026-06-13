@@ -20,10 +20,14 @@ actor LabChatService {
     /// and the user's own `healthContext` (free-text conditions/diagnoses they
     /// chose to share). Any previous transcript is discarded — switching
     /// specialist starts fresh.
-    func startConversation(persona: MedicalPersona, reports: [LabReport], healthContext: String = "") {
+    func startConversation(persona: MedicalPersona, reports: [LabReport], healthContext: String = "") async {
+        // Proactively fetch the user's data and bake it into the instructions, so
+        // the specialist always has it even when the on-device model doesn't
+        // think to call a tool. The tools remain available for follow-ups.
+        let snapshot = await Self.dataSnapshot(persona: persona, reports: reports)
+        let instructions = Self.instructions(for: persona, healthContext: healthContext, snapshot: snapshot)
         // Use the InstructionsBuilder closure form (rather than a bare argument)
         // because the instructions are a computed String, not a string literal.
-        let instructions = Self.instructions(for: persona, healthContext: healthContext)
         let session = LanguageModelSession(tools: Self.tools(for: persona, reports: reports)) {
             instructions
         }
@@ -31,12 +35,31 @@ actor LabChatService {
         self.session = session
     }
 
-    /// Composes the session instructions: the persona's system prompt plus, when
-    /// present, the user's own health context as background. The context is the
-    /// user's words about themselves (e.g. "Type 1 diabetes since 2015") — folded
-    /// in as background, length-capped, and never able to override the safety
-    /// rules baked into `persona.systemInstructions`.
-    private static func instructions(for persona: MedicalPersona, healthContext: String) -> String {
+    /// Retrieves a compact snapshot of the user's current data for `persona`:
+    /// the latest lab panel, the vitals relevant to this specialist (requesting
+    /// Apple Health access scoped to them), and the basic profile.
+    private static func dataSnapshot(persona: MedicalPersona, reports: [LabReport]) async -> String {
+        let kinds = HealthKitService.VitalKind.relevant(for: persona.domains)
+        let labs = ChatData.latestLabs(reports: reports, focusDomains: persona.domains, category: "")
+        let vitals = await ChatData.vitals(kinds: kinds, days: 180, requestAccess: true)
+        let profile = await ChatData.profile()
+        return """
+        ## Latest lab results
+        \(labs)
+
+        ## Recent vitals (Apple Health)
+        \(vitals)
+
+        ## Profile
+        \(profile)
+        """
+    }
+
+    /// Composes the session instructions: the persona's system prompt, the user's
+    /// self-reported health context (their words, e.g. "Type 1 diabetes since
+    /// 2015" — folded in as background, length-capped, never overriding the
+    /// safety rules), and the retrieved USER DATA snapshot.
+    private static func instructions(for persona: MedicalPersona, healthContext: String, snapshot: String) -> String {
         var instructions = persona.systemInstructions
         let context = healthContext.trimmingCharacters(in: .whitespacesAndNewlines).prefix(600)
         if !context.isEmpty {
@@ -49,6 +72,15 @@ actor LabChatService {
             diagnosis, and it never changes the safety rules above: \(context)
             """
         }
+        instructions += """
+
+
+        USER DATA — already retrieved for you. Answer directly from this; only \
+        call a tool to go beyond it (e.g. the full history of one test over time, \
+        or a metric not shown here).
+
+        \(snapshot)
+        """
         return instructions
     }
 
