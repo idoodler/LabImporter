@@ -27,49 +27,50 @@ struct ChatView: View {
     private var persona: MedicalPersona { viewModel.persona }
 
     var body: some View {
-        VStack(spacing: 0) {
-            conversation
-            inputBar
-        }
-        .background { CategoryBackground(colors: [persona.color]) }
-        .navigationTitle(persona.name)
-        .navigationBarTitleDisplayMode(.inline)
-        .task { await viewModel.start() }
+        content
+            .background { CategoryBackground(colors: [persona.color]) }
+            .navigationTitle(persona.name)
+            .navigationBarTitleDisplayMode(.inline)
+            // The input bar lives in the bottom safe-area inset so it stays
+            // pinned just above the keyboard (and the messages scroll behind
+            // it), the way iMessage's compose bar does.
+            .safeAreaInset(edge: .bottom, spacing: 0) { inputBar }
+            .task { await viewModel.start() }
     }
 
     // MARK: - Conversation
 
-    private var conversation: some View {
-        ScrollViewReader { proxy in
+    @ViewBuilder
+    private var content: some View {
+        if viewModel.isEmpty {
             ScrollView {
-                if viewModel.isEmpty {
-                    emptyState
-                        .padding(.top, 24)
-                } else {
-                    LazyVStack(spacing: 12) {
-                        ForEach(viewModel.messages) { message in
-                            ChatMessageBubble(message: message, accent: persona.color)
-                                .id(message.id)
-                        }
-                        if let error = viewModel.errorMessage {
-                            errorNotice(error)
-                        }
-                        Color.clear.frame(height: 1).id(bottomAnchor)
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 16)
-                }
+                emptyState.padding(.vertical, 24)
             }
-            .scrollDismissesKeyboard(.immediately)
-            .onChange(of: viewModel.messages.last?.text) { _, _ in scrollToBottom(proxy) }
-            .onChange(of: viewModel.messages.count) { _, _ in scrollToBottom(proxy) }
+            .defaultScrollAnchor(.center)
+            .scrollDismissesKeyboard(.interactively)
+        } else {
+            messagesScroll
         }
     }
 
-    private let bottomAnchor = "chat-bottom"
-
-    private func scrollToBottom(_ proxy: ScrollViewProxy) {
-        withAnimation(.easeOut(duration: 0.2)) { proxy.scrollTo(bottomAnchor, anchor: .bottom) }
+    private var messagesScroll: some View {
+        ScrollView {
+            LazyVStack(spacing: 12) {
+                ForEach(viewModel.messages) { message in
+                    ChatMessageBubble(message: message, accent: persona.color)
+                        .id(message.id)
+                }
+                if let error = viewModel.errorMessage {
+                    errorNotice(error)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 16)
+        }
+        // Pin to the newest message (and follow it as a reply streams in),
+        // while leaving the user free to scroll up through history.
+        .defaultScrollAnchor(.bottom)
+        .scrollDismissesKeyboard(.interactively)
     }
 
     // MARK: - Empty state
@@ -156,8 +157,10 @@ struct ChatView: View {
         }
         .padding(.horizontal, 16)
         .padding(.top, 8)
-        .padding(.bottom, 10)
-        .background(.bar)
+        .padding(.bottom, 6)
+        // Let the bar material run to the screen bottom (under the home
+        // indicator) instead of leaving a gap, like iMessage's compose bar.
+        .background(.bar, ignoresSafeAreaEdges: .bottom)
     }
 
     @ViewBuilder
