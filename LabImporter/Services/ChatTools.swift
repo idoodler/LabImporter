@@ -12,6 +12,27 @@ import FoundationModels
 // Everything only reads — already-loaded `[LabReport]` plus the local HealthKit
 // store via `HealthKitService.shared`. Nothing writes Health or leaves the device.
 
+// MARK: - Activity reporting
+
+/// Collects which of the user's data was accessed, so the chat UI can show it
+/// transparently. Thread-safe because tools call it from background executors;
+/// it forwards each event to a handler the view model installs (hopping to the
+/// main actor there).
+final class ChatToolReporter: @unchecked Sendable {
+    private let lock = NSLock()
+    private var handler: (@Sendable (ChatToolActivity) -> Void)?
+
+    func setHandler(_ handler: (@Sendable (ChatToolActivity) -> Void)?) {
+        lock.lock(); defer { lock.unlock() }
+        self.handler = handler
+    }
+
+    func report(_ activity: ChatToolActivity) {
+        lock.lock(); let handler = self.handler; lock.unlock()
+        handler?(activity)
+    }
+}
+
 // MARK: - Shared data + formatting
 
 enum ChatData {
@@ -149,6 +170,7 @@ struct LabHistoryTool: Tool {
     """
 
     let reports: [LabReport]
+    let reporter: ChatToolReporter
 
     @Generable
     struct Arguments {
@@ -157,7 +179,8 @@ struct LabHistoryTool: Tool {
     }
 
     func call(arguments: Arguments) async throws -> String {
-        ChatData.labHistory(reports: reports, testName: arguments.testName)
+        reporter.report(.labHistory)
+        return ChatData.labHistory(reports: reports, testName: arguments.testName)
     }
 }
 
@@ -174,6 +197,7 @@ struct LatestLabsTool: Tool {
 
     let reports: [LabReport]
     let focusDomains: [LabCategory]
+    let reporter: ChatToolReporter
 
     @Generable
     struct Arguments {
@@ -182,7 +206,8 @@ struct LatestLabsTool: Tool {
     }
 
     func call(arguments: Arguments) async throws -> String {
-        ChatData.latestLabs(reports: reports, focusDomains: focusDomains, category: arguments.category)
+        reporter.report(.latestLabs)
+        return ChatData.latestLabs(reports: reports, focusDomains: focusDomains, category: arguments.category)
     }
 }
 
@@ -202,6 +227,7 @@ struct VitalsTool: Tool {
 
     /// The Apple Health metrics this specialist reads, derived from its domains.
     let kinds: [HealthKitService.VitalKind]
+    let reporter: ChatToolReporter
 
     @Generable
     struct Arguments {
@@ -210,7 +236,8 @@ struct VitalsTool: Tool {
     }
 
     func call(arguments: Arguments) async throws -> String {
-        await ChatData.vitals(kinds: kinds, days: min(max(arguments.days, 1), 365), requestAccess: true)
+        reporter.report(.vitals)
+        return await ChatData.vitals(kinds: kinds, days: min(max(arguments.days, 1), 365), requestAccess: true)
     }
 }
 
@@ -224,6 +251,8 @@ struct ProfileTool: Tool {
     interpreting values whose typical ranges depend on age or sex.
     """
 
+    let reporter: ChatToolReporter
+
     @Generable
     struct Arguments {
         @Guide(description: "Pass any short reason you need the profile, e.g. 'age for reference range'.")
@@ -231,6 +260,7 @@ struct ProfileTool: Tool {
     }
 
     func call(arguments: Arguments) async throws -> String {
-        await ChatData.profile()
+        reporter.report(.profile)
+        return await ChatData.profile()
     }
 }

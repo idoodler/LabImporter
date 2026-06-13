@@ -19,12 +19,34 @@ final class ChatViewModel {
     /// The user's self-reported conditions/diagnoses, shared with the specialist.
     private let healthContext: String
     private let service = LabChatService()
+    private let reporter = ChatToolReporter()
     private var sendTask: Task<Void, Never>?
+    /// The assistant message currently being produced — data-access events are
+    /// attached to it.
+    private var currentAssistantID: UUID?
+    /// Snapshot reads happen at conversation start, before any reply exists, so
+    /// they're buffered here and flushed onto the first assistant message.
+    private var bufferedActivities: [ChatToolActivity] = []
 
     init(persona: MedicalPersona, reports: [LabReport], healthContext: String) {
         self.persona = persona
         self.reports = reports
         self.healthContext = healthContext
+        reporter.setHandler { [weak self] activity in
+            Task { @MainActor [weak self] in self?.record(activity) }
+        }
+    }
+
+    /// Attaches a data-access event to the current reply, or buffers it when one
+    /// isn't being produced yet (the start-of-conversation snapshot reads).
+    private func record(_ activity: ChatToolActivity) {
+        if let id = currentAssistantID, let index = messages.firstIndex(where: { $0.id == id }) {
+            if !messages[index].toolActivities.contains(activity) {
+                messages[index].toolActivities.append(activity)
+            }
+        } else if !bufferedActivities.contains(activity) {
+            bufferedActivities.append(activity)
+        }
     }
 
     var canSend: Bool {
@@ -36,7 +58,9 @@ final class ChatViewModel {
     /// Spins up the persona's session (prewarming the model) before the first
     /// message so the initial reply isn't gated on a cold start.
     func start() async {
-        await service.startConversation(persona: persona, reports: reports, healthContext: healthContext)
+        await service.startConversation(
+            persona: persona, reports: reports, healthContext: healthContext, reporter: reporter
+        )
     }
 
     func send() {
@@ -45,9 +69,14 @@ final class ChatViewModel {
         input = ""
         errorMessage = nil
         messages.append(ChatMessage(role: .user, text: text))
-        let placeholder = ChatMessage(role: .assistant, text: "", isComplete: false)
+        // Carry any buffered start-of-conversation snapshot reads onto this first
+        // reply, then route subsequent live tool events to it.
+        let placeholder = ChatMessage(role: .assistant, text: "", isComplete: false,
+                                      toolActivities: bufferedActivities)
+        bufferedActivities.removeAll()
         messages.append(placeholder)
         let assistantID = placeholder.id
+        currentAssistantID = assistantID
         isResponding = true
 
         sendTask = Task { [weak self] in
@@ -66,6 +95,7 @@ final class ChatViewModel {
                 self.finishOrDrop(id: assistantID)
                 self.errorMessage = error.localizedDescription
             }
+            self.currentAssistantID = nil
             self.isResponding = false
         }
     }
@@ -79,6 +109,8 @@ final class ChatViewModel {
     func newConversation() {
         sendTask?.cancel()
         messages.removeAll()
+        bufferedActivities.removeAll()
+        currentAssistantID = nil
         errorMessage = nil
         Task { await service.reset(); await start() }
     }

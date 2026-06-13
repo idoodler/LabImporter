@@ -20,13 +20,22 @@ struct ChatMessageBubble: View {
         }
     }
 
-    @ViewBuilder
     private var bubble: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if !isUser && !message.toolActivities.isEmpty {
+                activitiesView
+            }
+            content
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 11)
+        .background(bubbleBackground)
+    }
+
+    @ViewBuilder
+    private var content: some View {
         if !isUser && message.text.isEmpty && !message.isComplete {
             TypingIndicator(accent: accent)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 20))
         } else {
             Text(displayText)
                 .font(.body)
@@ -34,10 +43,24 @@ struct ChatMessageBubble: View {
                 .textSelection(.enabled)
                 .multilineTextAlignment(.leading)
                 .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 11)
-                .background(bubbleBackground)
         }
+    }
+
+    /// Transparency captions: the user's data this specialist read to answer.
+    private var activitiesView: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            ForEach(message.toolActivities) { activity in
+                HStack(spacing: 6) {
+                    Image(systemName: activity.icon)
+                        .font(.caption2)
+                        .foregroundStyle(accent)
+                    Text(activity.label)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     /// The assistant replies in Markdown (bold headings, etc.); render it so the

@@ -20,15 +20,21 @@ actor LabChatService {
     /// and the user's own `healthContext` (free-text conditions/diagnoses they
     /// chose to share). Any previous transcript is discarded — switching
     /// specialist starts fresh.
-    func startConversation(persona: MedicalPersona, reports: [LabReport], healthContext: String = "") async {
+    func startConversation(
+        persona: MedicalPersona,
+        reports: [LabReport],
+        healthContext: String = "",
+        reporter: ChatToolReporter
+    ) async {
         // Proactively fetch the user's data and bake it into the instructions, so
         // the specialist always has it even when the on-device model doesn't
-        // think to call a tool. The tools remain available for follow-ups.
-        let snapshot = await Self.dataSnapshot(persona: persona, reports: reports)
+        // think to call a tool. The tools remain available for follow-ups. Both
+        // paths report through `reporter` so the UI can show what was read.
+        let snapshot = await Self.dataSnapshot(persona: persona, reports: reports, reporter: reporter)
         let instructions = Self.instructions(for: persona, healthContext: healthContext, snapshot: snapshot)
         // Use the InstructionsBuilder closure form (rather than a bare argument)
         // because the instructions are a computed String, not a string literal.
-        let session = LanguageModelSession(tools: Self.tools(for: persona, reports: reports)) {
+        let session = LanguageModelSession(tools: Self.tools(for: persona, reports: reports, reporter: reporter)) {
             instructions
         }
         session.prewarm()
@@ -37,12 +43,20 @@ actor LabChatService {
 
     /// Retrieves a compact snapshot of the user's current data for `persona`:
     /// the latest lab panel, the vitals relevant to this specialist (requesting
-    /// Apple Health access scoped to them), and the basic profile.
-    private static func dataSnapshot(persona: MedicalPersona, reports: [LabReport]) async -> String {
+    /// Apple Health access scoped to them), and the basic profile. Each access
+    /// is reported so the conversation can show it.
+    private static func dataSnapshot(
+        persona: MedicalPersona,
+        reports: [LabReport],
+        reporter: ChatToolReporter
+    ) async -> String {
         let kinds = HealthKitService.VitalKind.relevant(for: persona.domains)
         let labs = ChatData.latestLabs(reports: reports, focusDomains: persona.domains, category: "")
+        reporter.report(.latestLabs)
         let vitals = await ChatData.vitals(kinds: kinds, days: 180, requestAccess: true)
+        reporter.report(.vitals)
         let profile = await ChatData.profile()
+        reporter.report(.profile)
         return """
         ## Latest lab results
         \(labs)
@@ -119,12 +133,16 @@ actor LabChatService {
     /// scoped to the Apple Health metrics relevant to its focus domains (a
     /// diabetes specialist reads glucose/insulin/carbs; a heart specialist reads
     /// blood pressure/HRV/VO2 max; the GP reads a general core set).
-    private static func tools(for persona: MedicalPersona, reports: [LabReport]) -> [any Tool] {
+    private static func tools(
+        for persona: MedicalPersona,
+        reports: [LabReport],
+        reporter: ChatToolReporter
+    ) -> [any Tool] {
         [
-            LabHistoryTool(reports: reports),
-            LatestLabsTool(reports: reports, focusDomains: persona.domains),
-            ProfileTool(),
-            VitalsTool(kinds: HealthKitService.VitalKind.relevant(for: persona.domains))
+            LabHistoryTool(reports: reports, reporter: reporter),
+            LatestLabsTool(reports: reports, focusDomains: persona.domains, reporter: reporter),
+            ProfileTool(reporter: reporter),
+            VitalsTool(kinds: HealthKitService.VitalKind.relevant(for: persona.domains), reporter: reporter)
         ]
     }
 }
