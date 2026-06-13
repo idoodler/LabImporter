@@ -4,8 +4,11 @@ import Foundation
 /// Built-in personas are not stored here — they are rebuilt on launch — so this
 /// only carries what the user authored.
 ///
-/// `RawRepresentable` over JSON so it can live in `@AppStorage` (and roam via
-/// iCloud like `labDisplayPrefs`). It uses the same deliberate separate
+/// `RawRepresentable` over JSON so it can live in `@AppStorage`. When the user
+/// has iCloud sync enabled, this blob roams across their devices via
+/// `CloudSyncService` (its key is in `CloudSyncService.syncedKeys`), so custom
+/// specialists and the current selection follow them to their other devices —
+/// just like the dashboard layout. It uses the same deliberate separate
 /// `Payload` type as `LabDisplayPreferences` to avoid the
 /// Codable + RawRepresentable `encode(to:)` recursion trap — see the note there;
 /// don't collapse it back into a single Codable conformance.

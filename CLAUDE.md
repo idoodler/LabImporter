@@ -159,7 +159,16 @@ Config.xcconfig  # BUNDLE_IDENTIFIER = dev.idoodler.$(DEVELOPMENT_TEAM).labimpor
 - Preferences (`labDisplayPrefs`, `patientName`, `hasSeenWelcome`, etc.) are read
   via `@AppStorage`. `LabDisplayPreferences` is `RawRepresentable` over JSON — note
   the deliberate separate `Payload` type to avoid the Codable+RawRepresentable
-  recursion trap (documented in the source; don't "simplify" it away).
+  recursion trap (documented in the source; don't "simplify" it away). The same
+  `Payload` pattern is reused by `PersonaStore` (`medicalPersonas`), the AI-chat
+  specialists the user creates.
+- **iCloud sync** (opt-in, `CloudSyncService`, via `NSUbiquitousKeyValueStore`)
+  roams only the keys in `CloudSyncService.syncedKeys`: `labDisplayPrefs` (card
+  layout + nicknames + ranges) and `medicalPersonas` (the user's custom AI-chat
+  specialists + which one is selected). Add a key there to make it roam. Lab
+  values (Apple Health), patient metadata, and the chat's free-text health
+  context (`userHealthContext`) deliberately **do not** sync. Keep the
+  `CloudSyncOptInView` copy in step with this list — it tells the user what syncs.
 - Reports are reloaded on `HomeView` `.task`, on returning from the review sheet,
   and on `didBecomeActiveNotification`.
 - **Always ship `#Preview`s, in all variations.** Every SwiftUI view must have

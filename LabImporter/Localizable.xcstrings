@@ -54938,6 +54938,302 @@
           }
         }
       }
+    },
+    "Layout, Names & Specialists" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Оформление, имена и специалисти"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disposició, noms i especialistes"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rozvržení, názvy a specialisté"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Layout, navne og specialister"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Layout, Namen & Spezialisten"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Διάταξη, ονόματα και ειδικοί"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diseño, nombres y especialistas"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Asettelu, nimet ja asiantuntijat"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disposition, noms et spécialistes"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Izgled, nazivi i specijalisti"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elrendezés, nevek és szakemberek"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Layout, nomi e specialisti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レイアウト、名前、専門医"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indeling, namen en specialisten"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Układ, nazwy i specjaliści"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Layout, nomes e especialistas"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esquema, nomes e especialistas"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aspect, nume și specialiști"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Макет, названия и специалисты"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rozloženie, názvy a špecialisti"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Layout, namn och specialister"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Düzen, adlar ve uzmanlar"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Макет, назви та спеціалісти"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "布局、名称和专科医生"
+          }
+        }
+      }
+    },
+    "Your card layout, the nicknames and reference ranges you set, and the AI specialists you create sync across your devices. Your lab values stay in Apple Health and never leave it." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Оформлението на картите, псевдонимите и референтните диапазони, които задавате, и AI специалистите, които създавате, се синхронизират между устройствата ви. Стойностите от изследванията остават в Apple Здраве и никога не го напускат."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La disposició de les targetes, els àlies i els intervals de referència que defineixes, i els especialistes d'IA que crees se sincronitzen entre els teus dispositius. Els teus valors de laboratori es queden a Apple Salut i no en surten mai."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rozvržení karet, přezdívky a referenční rozsahy, které nastavíte, a specialisté s umělou inteligencí, které vytvoříte, se synchronizují mezi vašimi zařízeními. Vaše laboratorní hodnoty zůstávají v Apple Zdraví a nikdy je neopustí."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dit kortlayout, de kælenavne og referenceintervaller, du angiver, og de AI-specialister, du opretter, synkroniseres på tværs af dine enheder. Dine laboratorieværdier forbliver i Apple Helbred og forlader det aldrig."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dein Kartenlayout, die von dir vergebenen Spitznamen und Referenzbereiche sowie die von dir erstellten KI-Spezialisten werden zwischen deinen Geräten synchronisiert. Deine Laborwerte bleiben in Apple Health und verlassen es nie."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Η διάταξη των καρτών σας, τα ψευδώνυμα και τα εύρη αναφοράς που ορίζετε, και οι ειδικοί AI που δημιουργείτε συγχρονίζονται στις συσκευές σας. Οι εργαστηριακές σας τιμές παραμένουν στο Apple Υγεία και δεν το εγκαταλείπουν ποτέ."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La disposición de tus tarjetas, los apodos y rangos de referencia que definas y los especialistas de IA que crees se sincronizan entre tus dispositivos. Tus valores de laboratorio permanecen en Apple Salud y nunca salen de ahí."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Korttiasettelusi, antamasi lempinimet ja viitevälit sekä luomasi tekoälyasiantuntijat synkronoituvat laitteidesi välillä. Laboratorioarvosi pysyvät Apple Terveys -sovelluksessa eivätkä poistu sieltä."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La disposition de vos cartes, les surnoms et plages de référence que vous définissez, ainsi que les spécialistes IA que vous créez se synchronisent entre vos appareils. Vos valeurs de laboratoire restent dans Apple Santé et n'en sortent jamais."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raspored kartica, nadimci i referentni rasponi koje postavite te AI specijalisti koje izradite sinkroniziraju se među vašim uređajima. Vaše laboratorijske vrijednosti ostaju u Apple Zdravlje i nikada ga ne napuštaju."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A kártyaelrendezése, az Ön által megadott becenevek és referenciatartományok, valamint az Ön által létrehozott MI-szakemberek szinkronizálódnak az eszközei között. A laboreredményei az Apple Egészség appban maradnak, és soha nem hagyják el."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il layout delle tue schede, i soprannomi e gli intervalli di riferimento che imposti e gli specialisti IA che crei si sincronizzano tra i tuoi dispositivi. I tuoi valori di laboratorio restano in Apple Salute e non la lasciano mai."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カードのレイアウト、設定したニックネームと基準範囲、作成した AI 専門医がデバイス間で同期されます。検査値は Appleヘルスケア に保存されたままで、外部に出ることはありません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je kaartindeling, de bijnamen en referentiebereiken die je instelt en de AI-specialisten die je maakt, worden tussen je apparaten gesynchroniseerd. Je labwaarden blijven in Apple Gezondheid en verlaten het nooit."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Układ kart, nadane nazwy i zakresy referencyjne oraz utworzeni przez Ciebie specjaliści AI synchronizują się między Twoimi urządzeniami. Twoje wyniki laboratoryjne pozostają w Apple Zdrowie i nigdy go nie opuszczają."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O layout dos seus cartões, os apelidos e intervalos de referência que você definir e os especialistas de IA que você criar são sincronizados entre seus dispositivos. Seus valores de laboratório permanecem no Apple Saúde e nunca saem dele."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O esquema dos seus cartões, as alcunhas e os intervalos de referência que definir e os especialistas de IA que criar são sincronizados entre os seus dispositivos. Os seus valores laboratoriais permanecem no Apple Saúde e nunca saem dele."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aspectul cardurilor, poreclele și intervalele de referință pe care le setezi și specialiștii AI pe care îi creezi se sincronizează între dispozitivele tale. Valorile tale de laborator rămân în Apple Sănătate și nu îl părăsesc niciodată."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Раскладка карточек, заданные вами псевдонимы и референсные диапазоны, а также созданные вами ИИ-специалисты синхронизируются между вашими устройствами. Ваши лабораторные значения остаются в Apple Здоровье и никогда его не покидают."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rozloženie kariet, prezývky a referenčné rozsahy, ktoré nastavíte, a špecialisti s umelou inteligenciou, ktorých vytvoríte, sa synchronizujú medzi vašimi zariadeniami. Vaše laboratórne hodnoty zostávajú v Apple Zdravie a nikdy ho neopustia."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Din kortlayout, smeknamnen och referensintervallen du anger samt AI-specialisterna du skapar synkroniseras mellan dina enheter. Dina labbvärden stannar i Apple Hälsa och lämnar det aldrig."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kart düzeniniz, belirlediğiniz takma adlar ve referans aralıkları ile oluşturduğunuz yapay zekâ uzmanları cihazlarınız arasında senkronize edilir. Laboratuvar değerleriniz Apple Sağlık'ta kalır ve oradan asla çıkmaz."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Розкладка карток, задані вами псевдоніми та референсні діапазони, а також створені вами ШІ-спеціалісти синхронізуються між вашими пристроями. Ваші лабораторні значення залишаються в Apple Здоров'я і ніколи його не залишають."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的卡片布局、你设置的昵称和参考范围，以及你创建的 AI 专科医生会在你的设备之间同步。你的化验数值保留在 Apple 健康中，绝不会离开。"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
