@@ -18,6 +18,10 @@ final class ChatViewModel {
     private let reports: [LabReport]
     /// The user's self-reported conditions/diagnoses, shared with the specialist.
     private let healthContext: String
+    /// Identity of the saved conversation this view model reads from / writes to.
+    private let conversationID: UUID
+    /// Persists the conversation after each turn (into the history store).
+    private let onUpdate: @MainActor (ChatConversation) -> Void
     private let service = LabChatService()
     private let reporter = ChatToolReporter()
     private var sendTask: Task<Void, Never>?
@@ -28,13 +32,36 @@ final class ChatViewModel {
     /// they're buffered here and flushed onto the first assistant message.
     private var bufferedActivities: [ChatToolActivity] = []
 
-    init(persona: MedicalPersona, reports: [LabReport], healthContext: String) {
+    init(
+        persona: MedicalPersona,
+        reports: [LabReport],
+        healthContext: String,
+        conversation: ChatConversation,
+        onUpdate: @escaping @MainActor (ChatConversation) -> Void
+    ) {
         self.persona = persona
         self.reports = reports
         self.healthContext = healthContext
+        self.conversationID = conversation.id
+        self.onUpdate = onUpdate
+        self.messages = conversation.messages
         reporter.setHandler { [weak self] activity in
             Task { @MainActor [weak self] in self?.record(activity) }
         }
+    }
+
+    /// Saves the current conversation (title derived from the first user
+    /// message) back to the history store.
+    private func persist() {
+        let firstUser = messages.first(where: { $0.role == .user })?.text ?? ""
+        let saved = messages.filter { !($0.role == .assistant && $0.text.isEmpty) }
+        onUpdate(ChatConversation(
+            id: conversationID,
+            personaID: persona.id,
+            title: String(firstUser.prefix(80)),
+            messages: saved,
+            updatedAt: Date()
+        ))
     }
 
     /// Attaches a data-access event to the current reply, or buffers it when one
@@ -97,22 +124,13 @@ final class ChatViewModel {
             }
             self.currentAssistantID = nil
             self.isResponding = false
+            self.persist()
         }
     }
 
     /// Cancels an in-flight reply (the partial text so far is kept).
     func stop() {
         sendTask?.cancel()
-    }
-
-    /// Clears the conversation and starts a fresh session with the same persona.
-    func newConversation() {
-        sendTask?.cancel()
-        messages.removeAll()
-        bufferedActivities.removeAll()
-        currentAssistantID = nil
-        errorMessage = nil
-        Task { await service.reset(); await start() }
     }
 
     private func update(id: UUID, text rawText: String, complete: Bool) {

@@ -8,12 +8,13 @@ import Foundation
 /// decision (see `CloudSyncOptInView`) and Settings lets the user change it.
 ///
 /// **What syncs:** `labDisplayPrefs` (the dashboard card layout plus the user's
-/// nicknames for codes) and `medicalPersonas` (the AI-chat specialists the user
-/// created, plus which one is selected — see `PersonaStore`).
+/// nicknames for codes), `medicalPersonas` (the AI-chat specialists the user
+/// created, plus which one is selected — see `PersonaStore`), and `chatHistory`
+/// (recent AI-chat conversations, capped — see `ChatHistoryStore`).
 /// **What never syncs:** lab values — those live in Apple Health by design (see
 /// CLAUDE.md); patient metadata; and the user's free-text health context
 /// (`userHealthContext`), which stays device-local. No network call here ever
-/// carries lab data; the iCloud KVS holds only the tiny layout/persona blobs.
+/// carries lab data; the iCloud KVS holds only small text blobs.
 ///
 /// ### Mechanism
 /// The synced value lives in `UserDefaults.standard` behind an `@AppStorage`
@@ -37,11 +38,13 @@ final class CloudSyncService {
     /// The `@AppStorage` flag that gates syncing. Written by onboarding/Settings.
     static let enabledKey = "iCloudSyncEnabled"
 
-    /// The exact `@AppStorage` keys we roam — layout + the user's AI
-    /// specialists. Never lab data, patient metadata, or the health context.
+    /// The exact `@AppStorage` keys we roam — layout, the user's AI specialists,
+    /// and recent chat history. Never lab data, patient metadata, or the health
+    /// context.
     static let syncedKeys: Set<String> = [
         "labDisplayPrefs",          // dashboard card sorting / pinning / hiding / nicknames
-        PersonaStore.storageKey     // user-created AI-chat specialists + selection
+        PersonaStore.storageKey,    // user-created AI-chat specialists + selection
+        ChatHistoryStore.storageKey // recent AI-chat conversations (capped)
     ]
 
     private let store = NSUbiquitousKeyValueStore.default

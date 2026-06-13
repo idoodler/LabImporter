@@ -87,6 +87,9 @@
 		AACH0000000000000000BBAA /* ChatContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACH0000000000000000FBAA /* ChatContainerView.swift */; };
 		AACH0000000000000000BCAA /* ChatIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACH0000000000000000FCAA /* ChatIntroView.swift */; };
 		AACH0000000000000000BFAA /* HealthProfileEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACH0000000000000000FFAA /* HealthProfileEditor.swift */; };
+
+		AACH0000000000000000B0AA /* ChatConversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACH0000000000000000F0AA /* ChatConversation.swift */; };
+		AACH0000000000000000BEAA /* ConversationListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACH0000000000000000FEAA /* ConversationListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -191,6 +194,9 @@
 		AACH0000000000000000FBAA /* ChatContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatContainerView.swift; sourceTree = "<group>"; };
 		AACH0000000000000000FCAA /* ChatIntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatIntroView.swift; sourceTree = "<group>"; };
 		AACH0000000000000000FFAA /* HealthProfileEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthProfileEditor.swift; sourceTree = "<group>"; };
+
+		AACH0000000000000000F0AA /* ChatConversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConversation.swift; sourceTree = "<group>"; };
+		AACH0000000000000000FEAA /* ConversationListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationListView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -258,6 +264,7 @@
 				AACH0000000000000000F1AA /* MedicalPersona.swift */,
 				AACH0000000000000000F2AA /* PersonaStore.swift */,
 				AACH0000000000000000F3AA /* ChatMessage.swift */,
+				AACH0000000000000000F0AA /* ChatConversation.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -414,6 +421,7 @@
 				AACH0000000000000000F9AA /* PersonaPickerView.swift */,
 				AACH0000000000000000FAAA /* PersonaEditorView.swift */,
 				AACH0000000000000000FFAA /* HealthProfileEditor.swift */,
+				AACH0000000000000000FEAA /* ConversationListView.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -694,6 +702,8 @@
 				AACH0000000000000000BBAA /* ChatContainerView.swift in Sources */,
 				AACH0000000000000000BCAA /* ChatIntroView.swift in Sources */,
 				AACH0000000000000000BFAA /* HealthProfileEditor.swift in Sources */,
+				AACH0000000000000000B0AA /* ChatConversation.swift in Sources */,
+				AACH0000000000000000BEAA /* ConversationListView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -164,9 +164,11 @@ Config.xcconfig  # BUNDLE_IDENTIFIER = dev.idoodler.$(DEVELOPMENT_TEAM).labimpor
   specialists the user creates.
 - **iCloud sync** (opt-in, `CloudSyncService`, via `NSUbiquitousKeyValueStore`)
   roams only the keys in `CloudSyncService.syncedKeys`: `labDisplayPrefs` (card
-  layout + nicknames + ranges) and `medicalPersonas` (the user's custom AI-chat
-  specialists + which one is selected). Add a key there to make it roam. Lab
-  values (Apple Health), patient metadata, and the chat's free-text health
+  layout + nicknames + ranges), `medicalPersonas` (the user's custom AI-chat
+  specialists + which one is selected), and `chatHistory` (recent AI-chat
+  conversations — capped at `ChatHistoryStore.maxConversations` so the synced
+  blob stays well under the KVS ~1 MB quota). Add a key there to make it roam.
+  Lab values (Apple Health), patient metadata, and the chat's free-text health
   context (`userHealthContext`) deliberately **do not** sync. Keep the
   `CloudSyncOptInView` copy in step with this list — it tells the user what syncs.
 - Reports are reloaded on `HomeView` `.task`, on returning from the review sheet,

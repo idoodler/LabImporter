@@ -4,10 +4,6 @@ import SwiftUI
 /// an empty state with suggested prompts, and the input bar. The model work
 /// runs on-device via `ChatViewModel` → `LabChatService`.
 struct ChatView: View {
-    let reports: [LabReport]
-    /// Called when the user wants to pick a different specialist.
-    let onChangePersona: () -> Void
-
     @State private var viewModel: ChatViewModel
     @FocusState private var inputFocused: Bool
 
@@ -16,11 +12,16 @@ struct ChatView: View {
         persona: MedicalPersona,
         reports: [LabReport],
         healthContext: String = "",
-        onChangePersona: @escaping () -> Void
+        conversation: ChatConversation,
+        onUpdate: @escaping @MainActor (ChatConversation) -> Void
     ) {
-        self.reports = reports
-        self.onChangePersona = onChangePersona
-        _viewModel = State(initialValue: ChatViewModel(persona: persona, reports: reports, healthContext: healthContext))
+        _viewModel = State(initialValue: ChatViewModel(
+            persona: persona,
+            reports: reports,
+            healthContext: healthContext,
+            conversation: conversation,
+            onUpdate: onUpdate
+        ))
     }
 
     private var persona: MedicalPersona { viewModel.persona }
@@ -33,7 +34,6 @@ struct ChatView: View {
         .background { CategoryBackground(colors: [persona.color]) }
         .navigationTitle(persona.name)
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar { toolbarItems }
         .task { await viewModel.start() }
     }
 
@@ -187,36 +187,18 @@ struct ChatView: View {
             .multilineTextAlignment(.center)
             .frame(maxWidth: .infinity)
     }
-
-    // MARK: - Toolbar
-
-    @ToolbarContentBuilder
-    private var toolbarItems: some ToolbarContent {
-        ToolbarItem(placement: .topBarTrailing) {
-            Menu {
-                Button {
-                    onChangePersona()
-                } label: {
-                    Label("Change Specialist", systemImage: "person.2.badge.gearshape")
-                }
-                Button {
-                    viewModel.newConversation()
-                } label: {
-                    Label("New Conversation", systemImage: "square.and.pencil")
-                }
-                .disabled(viewModel.isEmpty)
-            } label: {
-                Image(systemName: "ellipsis.circle")
-            }
-        }
-    }
 }
 
 // MARK: - Previews
 
 #Preview("Empty") {
     NavigationStack {
-        ChatView(persona: MedicalPersona.builtIns[1], reports: LabReport.sampleHistory, onChangePersona: {})
+        ChatView(
+            persona: MedicalPersona.builtIns[1],
+            reports: LabReport.sampleHistory,
+            conversation: ChatConversation(personaID: "diabetes"),
+            onUpdate: { _ in }
+        )
     }
 }
 
@@ -228,7 +210,12 @@ struct ChatView: View {
 
 #Preview("Dark") {
     NavigationStack {
-        ChatView(persona: MedicalPersona.builtIns[2], reports: LabReport.sampleHistory, onChangePersona: {})
+        ChatView(
+            persona: MedicalPersona.builtIns[2],
+            reports: LabReport.sampleHistory,
+            conversation: ChatConversation(personaID: "heart"),
+            onUpdate: { _ in }
+        )
     }
     .preferredColorScheme(.dark)
 }

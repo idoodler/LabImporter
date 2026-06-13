@@ -3,7 +3,7 @@ import Foundation
 /// A piece of the user's data a specialist accessed to answer — surfaced in the
 /// chat for transparency (both the snapshot read at conversation start and any
 /// follow-up tool calls map to one of these).
-enum ChatToolActivity: String, Identifiable, Equatable, Sendable, CaseIterable {
+enum ChatToolActivity: String, Identifiable, Equatable, Sendable, Codable, CaseIterable {
     case latestLabs
     case labHistory
     case vitals
@@ -33,8 +33,8 @@ enum ChatToolActivity: String, Identifiable, Equatable, Sendable, CaseIterable {
 /// A single message in an AI chat conversation. Conversations live only in
 /// memory for the duration of the chat — like the rest of the app there is no
 /// database, and nothing about the conversation is written to Health or iCloud.
-struct ChatMessage: Identifiable, Equatable, Sendable {
-    enum Role: Sendable {
+struct ChatMessage: Identifiable, Equatable, Sendable, Codable {
+    enum Role: String, Sendable, Codable {
         case user
         case assistant
     }

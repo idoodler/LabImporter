@@ -55974,6 +55974,746 @@
           }
         }
       }
+    },
+    "Conversations" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разговори"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Converses"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Konverzace"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Samtaler"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unterhaltungen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Συνομιλίες"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversaciones"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keskustelut"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversations"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Razgovori"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beszélgetések"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversazioni"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "会話"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gesprekken"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rozmowy"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversas"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversas"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversații"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разговоры"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Konverzácie"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Konversationer"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sohbetler"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Розмови"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "对话"
+          }
+        }
+      }
+    },
+    "No conversations yet" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Все още няма разговори"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encara no hi ha converses"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zatím žádné konverzace"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingen samtaler endnu"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noch keine Unterhaltungen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Δεν υπάρχουν ακόμη συνομιλίες"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no hay conversaciones"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ei vielä keskusteluja"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune conversation pour l'instant"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Još nema razgovora"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Még nincsenek beszélgetések"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ancora nessuna conversazione"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "まだ会話がありません"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nog geen gesprekken"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brak rozmów"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma conversa ainda"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ainda sem conversas"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicio conversație încă"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пока нет разговоров"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zatiaľ žiadne konverzácie"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inga konversationer än"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Henüz sohbet yok"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поки немає розмов"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有对话"
+          }
+        }
+      }
+    },
+    "Conversation unavailable" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разговорът е недостъпен"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversa no disponible"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Konverzace není dostupná"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Samtale utilgængelig"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unterhaltung nicht verfügbar"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Η συνομιλία δεν είναι διαθέσιμη"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversación no disponible"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keskustelu ei ole käytettävissä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversation indisponible"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Razgovor nije dostupan"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A beszélgetés nem érhető el"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversazione non disponibile"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "会話を利用できません"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gesprek niet beschikbaar"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rozmowa niedostępna"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversa indisponível"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversa indisponível"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversație indisponibilă"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разговор недоступен"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Konverzácia nie je dostupná"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Konversationen är inte tillgänglig"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sohbet kullanılamıyor"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Розмова недоступна"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "对话不可用"
+          }
+        }
+      }
+    },
+    "Specialist" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Специалист"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Especialista"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Specialista"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Specialist"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spezialist"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ειδικός"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Especialista"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Asiantuntija"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spécialiste"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Specijalist"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Szakember"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Specialista"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "専門医"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Specialist"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Specjalista"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Especialista"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Especialista"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Specialist"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Специалист"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Špecialista"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Specialist"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uzman"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Спеціаліст"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "专科医生"
+          }
+        }
+      }
+    },
+    "Your card layout, the nicknames and reference ranges you set, the AI specialists you create, and your chat history sync across your devices. Your lab values stay in Apple Health and never leave it." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Оформлението на картите, псевдонимите и референтните диапазони, които задавате, AI специалистите, които създавате, и историята на разговорите ви се синхронизират между устройствата ви. Стойностите от изследванията остават в Apple Здраве и никога не го напускат."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La disposició de les targetes, els àlies i els intervals de referència que defineixes, els especialistes d'IA que crees i l'historial de xat se sincronitzen entre els teus dispositius. Els teus valors de laboratori es queden a Apple Salut i no en surten mai."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rozvržení karet, přezdívky a referenční rozsahy, které nastavíte, specialisté s umělou inteligencí, které vytvoříte, a historie chatu se synchronizují mezi vašimi zařízeními. Vaše laboratorní hodnoty zůstávají v Apple Zdraví a nikdy je neopustí."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dit kortlayout, de kælenavne og referenceintervaller, du angiver, de AI-specialister, du opretter, og din chathistorik synkroniseres på tværs af dine enheder. Dine laboratorieværdier forbliver i Apple Helbred og forlader det aldrig."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dein Kartenlayout, die von dir vergebenen Spitznamen und Referenzbereiche, die von dir erstellten KI-Spezialisten und dein Chatverlauf werden zwischen deinen Geräten synchronisiert. Deine Laborwerte bleiben in Apple Health und verlassen es nie."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Η διάταξη των καρτών σας, τα ψευδώνυμα και τα εύρη αναφοράς που ορίζετε, οι ειδικοί AI που δημιουργείτε και το ιστορικό συνομιλιών σας συγχρονίζονται στις συσκευές σας. Οι εργαστηριακές σας τιμές παραμένουν στο Apple Υγεία και δεν το εγκαταλείπουν ποτέ."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La disposición de tus tarjetas, los apodos y rangos de referencia que definas, los especialistas de IA que crees y tu historial de chat se sincronizan entre tus dispositivos. Tus valores de laboratorio permanecen en Apple Salud y nunca salen de ahí."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Korttiasettelusi, antamasi lempinimet ja viitevälit, luomasi tekoälyasiantuntijat ja keskusteluhistoriasi synkronoituvat laitteidesi välillä. Laboratorioarvosi pysyvät Apple Terveys -sovelluksessa eivätkä poistu sieltä."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La disposition de vos cartes, les surnoms et plages de référence que vous définissez, les spécialistes IA que vous créez et votre historique de discussion se synchronisent entre vos appareils. Vos valeurs de laboratoire restent dans Apple Santé et n'en sortent jamais."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raspored kartica, nadimci i referentni rasponi koje postavite, AI specijalisti koje izradite i povijest razgovora sinkroniziraju se među vašim uređajima. Vaše laboratorijske vrijednosti ostaju u Apple Zdravlje i nikada ga ne napuštaju."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A kártyaelrendezése, az Ön által megadott becenevek és referenciatartományok, az Ön által létrehozott MI-szakemberek és a csevegési előzményei szinkronizálódnak az eszközei között. A laboreredményei az Apple Egészség appban maradnak, és soha nem hagyják el."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il layout delle tue schede, i soprannomi e gli intervalli di riferimento che imposti, gli specialisti IA che crei e la cronologia delle chat si sincronizzano tra i tuoi dispositivi. I tuoi valori di laboratorio restano in Apple Salute e non la lasciano mai."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カードのレイアウト、設定したニックネームと基準範囲、作成した AI 専門医、チャット履歴がデバイス間で同期されます。検査値は Appleヘルスケア に保存されたままで、外部に出ることはありません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je kaartindeling, de bijnamen en referentiebereiken die je instelt, de AI-specialisten die je maakt en je chatgeschiedenis worden tussen je apparaten gesynchroniseerd. Je labwaarden blijven in Apple Gezondheid en verlaten het nooit."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Układ kart, nadane nazwy i zakresy referencyjne, utworzeni specjaliści AI oraz historia czatu synchronizują się między Twoimi urządzeniami. Twoje wyniki laboratoryjne pozostają w Apple Zdrowie i nigdy go nie opuszczają."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O layout dos seus cartões, os apelidos e intervalos de referência que você definir, os especialistas de IA que você criar e seu histórico de conversas são sincronizados entre seus dispositivos. Seus valores de laboratório permanecem no Apple Saúde e nunca saem dele."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O esquema dos seus cartões, as alcunhas e os intervalos de referência que definir, os especialistas de IA que criar e o seu histórico de conversas são sincronizados entre os seus dispositivos. Os seus valores laboratoriais permanecem no Apple Saúde e nunca saem dele."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aspectul cardurilor, poreclele și intervalele de referință pe care le setezi, specialiștii AI pe care îi creezi și istoricul conversațiilor se sincronizează între dispozitivele tale. Valorile tale de laborator rămân în Apple Sănătate și nu îl părăsesc niciodată."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Раскладка карточек, заданные вами псевдонимы и референсные диапазоны, созданные вами ИИ-специалисты и история чата синхронизируются между вашими устройствами. Ваши лабораторные значения остаются в Apple Здоровье и никогда его не покидают."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rozloženie kariet, prezývky a referenčné rozsahy, ktoré nastavíte, špecialisti s umelou inteligenciou, ktorých vytvoríte, a história četu sa synchronizujú medzi vašimi zariadeniami. Vaše laboratórne hodnoty zostávajú v Apple Zdravie a nikdy ho neopustia."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Din kortlayout, smeknamnen och referensintervallen du anger, AI-specialisterna du skapar och din chatthistorik synkroniseras mellan dina enheter. Dina labbvärden stannar i Apple Hälsa och lämnar det aldrig."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kart düzeniniz, belirlediğiniz takma adlar ve referans aralıkları, oluşturduğunuz yapay zekâ uzmanları ve sohbet geçmişiniz cihazlarınız arasında senkronize edilir. Laboratuvar değerleriniz Apple Sağlık'ta kalır ve oradan asla çıkmaz."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Розкладка карток, задані вами псевдоніми та референсні діапазони, створені вами ШІ-спеціалісти та історія чату синхронізуються між вашими пристроями. Ваші лабораторні значення залишаються в Apple Здоров'я і ніколи його не залишають."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的卡片布局、你设置的昵称和参考范围、你创建的 AI 专科医生，以及你的聊天记录会在你的设备之间同步。你的化验数值保留在 Apple 健康中，绝不会离开。"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

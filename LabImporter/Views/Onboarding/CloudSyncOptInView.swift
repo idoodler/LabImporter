@@ -25,9 +25,9 @@ struct CloudSyncOptInView: View {
                 color: LabCategory.cardiac.color,
                 title: "Layout, Names & Specialists",
                 description: """
-                Your card layout, the nicknames and reference ranges you set, and the AI \
-                specialists you create sync across your devices. Your lab values stay in Apple \
-                Health and never leave it.
+                Your card layout, the nicknames and reference ranges you set, the AI specialists \
+                you create, and your chat history sync across your devices. Your lab values stay in \
+                Apple Health and never leave it.
                 """
             ),
             Benefit(
