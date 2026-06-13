@@ -64,9 +64,9 @@ struct ConversationListView: View {
                     Text(persona?.name ?? String(localized: "Specialist"))
                         .font(.body.weight(.semibold))
                         .foregroundStyle(.primary)
-                    Text(conversation.title.isEmpty
-                         ? Text(conversation.updatedAt, format: .relative(presentation: .named))
-                         : Text(conversation.title))
+                    (conversation.title.isEmpty
+                        ? Text(conversation.updatedAt, format: .relative(presentation: .named))
+                        : Text(conversation.title))
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
