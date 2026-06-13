@@ -103,7 +103,7 @@ struct ChatMessageBubble: View {
 
 private struct TypingIndicator: View {
     let accent: Color
-    @State private var phase = 0.0
+    @State private var animating = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
@@ -112,24 +112,21 @@ private struct TypingIndicator: View {
                 Circle()
                     .fill(accent.opacity(0.7))
                     .frame(width: 7, height: 7)
-                    .scaleEffect(scale(for: index))
+                    .scaleEffect(animating ? 1.0 : 0.55)
+                    .opacity(animating ? 1.0 : 0.45)
+                    // Each dot runs the same forever-repeating pulse, staggered
+                    // by a delay so they bounce in sequence.
+                    .animation(
+                        reduceMotion ? nil
+                            : .easeInOut(duration: 0.5)
+                                .repeatForever(autoreverses: true)
+                                .delay(Double(index) * 0.18),
+                        value: animating
+                    )
             }
         }
         .accessibilityLabel(Text("Assistant is typing"))
-        .onAppear {
-            guard !reduceMotion else { return }
-            withAnimation(.easeInOut(duration: 0.6).repeatForever(autoreverses: true)) {
-                phase = 1
-            }
-        }
-    }
-
-    private func scale(for index: Int) -> CGFloat {
-        guard !reduceMotion else { return 1 }
-        // Stagger the three dots so they pulse in sequence.
-        let offset = Double(index) * 0.25
-        let wave = sin((phase + offset) * .pi * 2)
-        return 1 + 0.35 * CGFloat(max(0, wave))
+        .onAppear { animating = true }
     }
 }
 
