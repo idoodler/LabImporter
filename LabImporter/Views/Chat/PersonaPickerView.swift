@@ -69,9 +69,9 @@ struct PersonaPickerView: View {
                     Text("Your Health Profile")
                         .font(.body.weight(.semibold))
                         .foregroundStyle(.primary)
-                    Text(healthContext.isEmpty
-                         ? Text("Add conditions like your diabetes type for tailored answers")
-                         : Text(healthContext))
+                    (healthContext.isEmpty
+                        ? Text("Add conditions like your diabetes type for tailored answers")
+                        : Text(healthContext))
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .lineLimit(2)
