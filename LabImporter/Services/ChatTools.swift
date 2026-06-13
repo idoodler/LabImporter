@@ -158,6 +158,10 @@ struct VitalsTool: Tool {
     func call(arguments: Arguments) async throws -> String {
         let days = min(max(arguments.days, 1), 365)
         let service = HealthKitService.shared
+        // Ask for read access on demand, the first time the model reaches for
+        // this data. HealthKit only surfaces the system sheet for types the user
+        // hasn't decided on yet, so repeat calls are no-ops.
+        await service.requestVitalsAuthorization()
         var blocks: [String] = []
 
         for kind in HealthKitService.VitalKind.allCases {

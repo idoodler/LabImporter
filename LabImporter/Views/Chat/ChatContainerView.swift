@@ -2,8 +2,9 @@ import SwiftUI
 
 /// Top-level host for the AI chat feature, presented modally from the dashboard.
 /// Coordinates the three states — first-run intro, specialist picker, and the
-/// conversation — plus persona persistence and the lazy Health-data permission
-/// request (made only once the user has seen the intro, never at app launch).
+/// conversation — plus persona persistence. Health-data permission isn't
+/// requested here: the chat tools ask for access on demand the first time a
+/// specialist actually reaches for that data (see `ChatTools`).
 struct ChatContainerView: View {
     let reports: [LabReport]
 
@@ -41,12 +42,9 @@ struct ChatContainerView: View {
         .sheet(item: $personaToEdit) { persona in
             PersonaEditorView(existing: persona) { store.upsert($0) }
         }
-        // Request vitals/glucose access only after the intro is acknowledged, so
-        // the system sheet never appears before the explainer.
-        .task(id: hasSeenChatIntro) {
-            guard hasSeenChatIntro else { return }
-            await HealthKitService.shared.requestVitalsAuthorization()
-        }
+        // Health-data access is requested on demand by the chat tools the moment
+        // a specialist first reaches for it (see ChatTools) — not eagerly here —
+        // so the system permission sheet only appears when it's actually needed.
         .onAppear(perform: restoreSelectionOnce)
     }
 
