@@ -28,7 +28,7 @@ struct ChatMessageBubble: View {
                 .padding(.vertical, 12)
                 .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 20))
         } else {
-            Text(message.text)
+            Text(displayText)
                 .font(.body)
                 .foregroundStyle(isUser ? Color.white : Color.primary)
                 .textSelection(.enabled)
@@ -38,6 +38,20 @@ struct ChatMessageBubble: View {
                 .padding(.vertical, 11)
                 .background(bubbleBackground)
         }
+    }
+
+    /// The assistant replies in Markdown (bold headings, etc.); render it so the
+    /// syntax doesn't show literally, while preserving the line breaks between
+    /// sections. The user's own message is shown verbatim. Falls back to plain
+    /// text if a (possibly mid-stream, unclosed) snippet can't be parsed.
+    private var displayText: AttributedString {
+        guard !isUser else { return AttributedString(message.text) }
+        let options = AttributedString.MarkdownParsingOptions(
+            interpretedSyntax: .inlineOnlyPreservingWhitespace,
+            failurePolicy: .returnPartiallyParsedIfPossible
+        )
+        return (try? AttributedString(markdown: message.text, options: options))
+            ?? AttributedString(message.text)
     }
 
     @ViewBuilder
