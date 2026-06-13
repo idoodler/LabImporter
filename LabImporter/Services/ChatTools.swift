@@ -142,14 +142,17 @@ struct LatestLabsTool: Tool {
 struct VitalsTool: Tool {
     let name = "getVitals"
     let description = """
-    Read the user's recent vital signs and glucose readings logged in Apple \
-    Health — blood glucose, body weight, BMI, blood pressure and resting heart \
-    rate. Returns the latest reading and the range over the window for each \
-    metric that has data. ALWAYS call this for any question about blood \
-    sugar/glucose, weight, blood pressure or heart rate — that data is in Apple \
-    Health, not in the lab reports — and call it whenever bringing lifestyle or \
-    vital context into the conversation.
+    Read the user's recent vital signs and metrics logged in Apple Health that \
+    are relevant to this specialist (e.g. blood glucose, insulin and carbs for \
+    diabetes; blood pressure, heart-rate variability and VO2 max for the heart). \
+    Returns the latest reading and the range over the window for each metric \
+    with data. ALWAYS call this for any question about blood sugar/glucose, \
+    weight, blood pressure, heart rate or other vitals — that data lives in \
+    Apple Health, not the lab reports.
     """
+
+    /// The Apple Health metrics this specialist reads, derived from its domains.
+    let kinds: [HealthKitService.VitalKind]
 
     @Generable
     struct Arguments {
@@ -160,13 +163,13 @@ struct VitalsTool: Tool {
     func call(arguments: Arguments) async throws -> String {
         let days = min(max(arguments.days, 1), 365)
         let service = HealthKitService.shared
-        // Ask for read access on demand, the first time the model reaches for
-        // this data. HealthKit only surfaces the system sheet for types the user
-        // hasn't decided on yet, so repeat calls are no-ops.
-        await service.requestVitalsAuthorization()
+        // Ask for read access to just this specialist's metrics, on demand, the
+        // first time the model reaches for them. HealthKit only surfaces the
+        // system sheet for types the user hasn't decided on yet.
+        await service.requestAuthorization(for: kinds)
         var blocks: [String] = []
 
-        for kind in HealthKitService.VitalKind.allCases {
+        for kind in kinds {
             let readings = (try? await service.readings(for: kind, days: days)) ?? []
             guard let latest = readings.first else { continue }
             let values = readings.map(\.value)

@@ -7,13 +7,21 @@ struct PersonaPickerView: View {
     let builtIns: [MedicalPersona]
     let custom: [MedicalPersona]
     let selectedID: String?
+    /// The user's saved conditions/diagnoses (empty if none yet), shown on the
+    /// health-profile row.
+    let healthContext: String
     let onSelect: (MedicalPersona) -> Void
     let onCreate: () -> Void
     let onEdit: (MedicalPersona) -> Void
     let onDelete: (MedicalPersona) -> Void
+    let onEditProfile: () -> Void
 
     var body: some View {
         List {
+            Section("About You") {
+                healthProfileRow
+            }
+
             Section {
                 ForEach(builtIns) { persona in
                     row(for: persona)
@@ -44,6 +52,38 @@ struct PersonaPickerView: View {
         }
         .navigationTitle("Choose a Specialist")
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var healthProfileRow: some View {
+        Button(action: onEditProfile) {
+            HStack(spacing: 14) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(LabCategory.endocrine.color.gradient)
+                        .frame(width: 44, height: 44)
+                    Image(systemName: "person.text.rectangle.fill")
+                        .font(.title3)
+                        .foregroundStyle(.white)
+                }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Your Health Profile")
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(.primary)
+                    Text(healthContext.isEmpty
+                         ? Text("Add conditions like your diabetes type for tailored answers")
+                         : Text(healthContext))
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                }
+                Spacer(minLength: 8)
+                Image(systemName: "chevron.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 
     private func row(for persona: MedicalPersona) -> some View {
@@ -98,7 +138,8 @@ struct PersonaPickerView: View {
             builtIns: MedicalPersona.builtIns,
             custom: [.sampleCustom],
             selectedID: "diabetes",
-            onSelect: { _ in }, onCreate: {}, onEdit: { _ in }, onDelete: { _ in }
+            healthContext: "Type 1 diabetes since 2015",
+            onSelect: { _ in }, onCreate: {}, onEdit: { _ in }, onDelete: { _ in }, onEditProfile: {}
         )
     }
 }
@@ -109,7 +150,8 @@ struct PersonaPickerView: View {
             builtIns: MedicalPersona.builtIns,
             custom: [],
             selectedID: nil,
-            onSelect: { _ in }, onCreate: {}, onEdit: { _ in }, onDelete: { _ in }
+            healthContext: "",
+            onSelect: { _ in }, onCreate: {}, onEdit: { _ in }, onDelete: { _ in }, onEditProfile: {}
         )
     }
     .preferredColorScheme(.dark)

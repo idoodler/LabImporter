@@ -87,6 +87,7 @@
 		AACH0000000000000000BBAA /* ChatContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACH0000000000000000FBAA /* ChatContainerView.swift */; };
 		AACH0000000000000000BCAA /* ChatIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACH0000000000000000FCAA /* ChatIntroView.swift */; };
 		AACH0000000000000000BEAA /* ChatEntryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACH0000000000000000FEAA /* ChatEntryButton.swift */; };
+		AACH0000000000000000BFAA /* HealthProfileEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACH0000000000000000FFAA /* HealthProfileEditor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -191,6 +192,7 @@
 		AACH0000000000000000FBAA /* ChatContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatContainerView.swift; sourceTree = "<group>"; };
 		AACH0000000000000000FCAA /* ChatIntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatIntroView.swift; sourceTree = "<group>"; };
 		AACH0000000000000000FEAA /* ChatEntryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEntryButton.swift; sourceTree = "<group>"; };
+		AACH0000000000000000FFAA /* HealthProfileEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthProfileEditor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -414,6 +416,7 @@
 				AACH0000000000000000F9AA /* PersonaPickerView.swift */,
 				AACH0000000000000000FAAA /* PersonaEditorView.swift */,
 				AACH0000000000000000FEAA /* ChatEntryButton.swift */,
+				AACH0000000000000000FFAA /* HealthProfileEditor.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -694,6 +697,7 @@
 				AACH0000000000000000BBAA /* ChatContainerView.swift in Sources */,
 				AACH0000000000000000BCAA /* ChatIntroView.swift in Sources */,
 				AACH0000000000000000BEAA /* ChatEntryButton.swift in Sources */,
+				AACH0000000000000000BFAA /* HealthProfileEditor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

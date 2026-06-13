@@ -12,10 +12,15 @@ struct ChatView: View {
     @FocusState private var inputFocused: Bool
 
     @MainActor
-    init(persona: MedicalPersona, reports: [LabReport], onChangePersona: @escaping () -> Void) {
+    init(
+        persona: MedicalPersona,
+        reports: [LabReport],
+        healthContext: String = "",
+        onChangePersona: @escaping () -> Void
+    ) {
         self.reports = reports
         self.onChangePersona = onChangePersona
-        _viewModel = State(initialValue: ChatViewModel(persona: persona, reports: reports))
+        _viewModel = State(initialValue: ChatViewModel(persona: persona, reports: reports, healthContext: healthContext))
     }
 
     private var persona: MedicalPersona { viewModel.persona }

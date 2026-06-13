@@ -54051,6 +54051,894 @@
           }
         }
       }
+    },
+    "About You" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "За вас"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sobre tu"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O vás"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Om dig"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Über dich"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Σχετικά με εσάς"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sobre ti"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tietoja sinusta"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "À propos de vous"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O vama"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Önről"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Su di te"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "あなたについて"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Over jou"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Tobie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sobre você"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sobre si"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Despre tine"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "О вас"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O vás"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Om dig"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hakkınızda"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Про вас"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关于你"
+          }
+        }
+      }
+    },
+    "Your Health Profile" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вашият здравен профил"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El teu perfil de salut"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Váš zdravotní profil"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Din helbredsprofil"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dein Gesundheitsprofil"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Το προφίλ υγείας σας"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu perfil de salud"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terveysprofiilisi"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre profil de santé"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vaš zdravstveni profil"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Az egészségügyi profilja"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il tuo profilo sanitario"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "あなたの健康プロフィール"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jouw gezondheidsprofiel"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Twój profil zdrowia"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seu perfil de saúde"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O seu perfil de saúde"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Profilul tău de sănătate"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваш профиль здоровья"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Váš zdravotný profil"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Din hälsoprofil"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sağlık profiliniz"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваш профіль здоров’я"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的健康档案"
+          }
+        }
+      }
+    },
+    "Add conditions like your diabetes type for tailored answers" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавете състояния като типа диабет за персонализирани отговори"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afegeix afeccions com el teu tipus de diabetis per a respostes personalitzades"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Přidejte stavy jako typ cukrovky pro přizpůsobené odpovědi"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tilføj tilstande som din diabetestype for skræddersyede svar"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ergänze Erkrankungen wie deinen Diabetestyp für passendere Antworten"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Προσθέστε παθήσεις όπως τον τύπο διαβήτη σας για εξατομικευμένες απαντήσεις"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añade afecciones como tu tipo de diabetes para respuestas personalizadas"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lisää sairauksia, kuten diabetestyyppisi, räätälöityjä vastauksia varten"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajoutez des affections comme votre type de diabète pour des réponses adaptées"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dodajte stanja poput vrste dijabetesa za prilagođene odgovore"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adjon meg állapotokat, például a cukorbetegség típusát a személyre szabott válaszokért"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aggiungi condizioni come il tuo tipo di diabete per risposte su misura"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "糖尿病のタイプなどの状態を追加して、回答を最適化"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voeg aandoeningen toe, zoals je diabetestype, voor afgestemde antwoorden"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dodaj schorzenia, np. typ cukrzycy, aby uzyskać dopasowane odpowiedzi"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicione condições como seu tipo de diabetes para respostas personalizadas"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicione condições como o seu tipo de diabetes para respostas personalizadas"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adaugă afecțiuni precum tipul de diabet pentru răspunsuri personalizate"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавьте состояния, например тип диабета, для персонализированных ответов"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pridajte stavy ako typ cukrovky pre prispôsobené odpovede"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lägg till tillstånd som din diabetestyp för anpassade svar"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yanıtların kişiselleştirilmesi için diyabet türünüz gibi durumları ekleyin"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Додайте стани, як-от ваш тип діабету, для персоналізованих відповідей"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加糖尿病类型等状况以获得贴合你的回答"
+          }
+        }
+      }
+    },
+    "Conditions & Diagnoses" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Състояния и диагнози"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afeccions i diagnòstics"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stavy a diagnózy"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tilstande og diagnoser"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erkrankungen & Diagnosen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Παθήσεις και διαγνώσεις"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afecciones y diagnósticos"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sairaudet ja diagnoosit"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Affections et diagnostics"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stanja i dijagnoze"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Állapotok és diagnózisok"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Condizioni e diagnosi"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "状態と診断"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aandoeningen en diagnoses"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schorzenia i diagnozy"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Condições e diagnósticos"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Condições e diagnósticos"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afecțiuni și diagnostice"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Состояния и диагнозы"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stavy a diagnózy"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tillstånd och diagnoser"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durumlar ve tanılar"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Стани та діагнози"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "状况与诊断"
+          }
+        }
+      }
+    },
+    "e.g. Type 1 diabetes since 2015, high blood pressure" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "напр. диабет тип 1 от 2015 г., високо кръвно налягане"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "p. ex. diabetis tipus 1 des del 2015, pressió alta"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "např. cukrovka 1. typu od roku 2015, vysoký krevní tlak"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "f.eks. type 1-diabetes siden 2015, forhøjet blodtryk"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "z. B. Typ-1-Diabetes seit 2015, Bluthochdruck"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "π.χ. διαβήτης τύπου 1 από το 2015, υψηλή πίεση"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "p. ej. diabetes tipo 1 desde 2015, presión alta"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "esim. tyypin 1 diabetes vuodesta 2015, korkea verenpaine"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ex. diabète de type 1 depuis 2015, hypertension"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "npr. dijabetes tipa 1 od 2015., visok krvni tlak"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pl. 1-es típusú cukorbetegség 2015 óta, magas vérnyomás"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "es. diabete di tipo 1 dal 2015, pressione alta"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例：2015年から1型糖尿病、高血圧"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bijv. diabetes type 1 sinds 2015, hoge bloeddruk"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "np. cukrzyca typu 1 od 2015 r., wysokie ciśnienie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ex.: diabetes tipo 1 desde 2015, pressão alta"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ex.: diabetes tipo 1 desde 2015, tensão alta"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ex. diabet de tip 1 din 2015, tensiune mare"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "напр. диабет 1 типа с 2015 г., высокое давление"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "napr. cukrovka 1. typu od roku 2015, vysoký krvný tlak"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "t.ex. typ 1-diabetes sedan 2015, högt blodtryck"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "örn. 2015’ten beri tip 1 diyabet, yüksek tansiyon"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "напр. діабет 1 типу з 2015 р., високий тиск"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如：2015 年起 1 型糖尿病、高血压"
+          }
+        }
+      }
+    },
+    "Share conditions you'd like every specialist to consider, like your diabetes type. It stays on your device and helps tailor explanations — it doesn't replace a diagnosis from a professional." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Споделете състояния, които искате всеки специалист да вземе предвид, например типа диабет. Те остават на вашето устройство и помагат за персонализиране на обясненията — но не заместват диагноза от специалист."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comparteix afeccions que vulguis que cada especialista tingui en compte, com el teu tipus de diabetis. Es queden al teu dispositiu i ajuden a personalitzar les explicacions; no substitueixen el diagnòstic d’un professional."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sdílejte stavy, které má každý specialista zohlednit, například typ cukrovky. Zůstávají ve vašem zařízení a pomáhají přizpůsobit vysvětlení — nenahrazují diagnózu od odborníka."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Del tilstande, som hver specialist skal tage højde for, f.eks. din diabetestype. De forbliver på din enhed og hjælper med at tilpasse forklaringer – men erstatter ikke en diagnose fra en fagperson."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teile Erkrankungen, die jeder Spezialist berücksichtigen soll, etwa deinen Diabetestyp. Sie bleiben auf deinem Gerät und helfen, Erklärungen anzupassen – ersetzen aber keine Diagnose durch Fachpersonal."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Μοιραστείτε παθήσεις που θέλετε να λάβει υπόψη κάθε ειδικός, όπως τον τύπο διαβήτη σας. Παραμένουν στη συσκευή σας και βοηθούν στην προσαρμογή των εξηγήσεων — δεν αντικαθιστούν διάγνωση από επαγγελματία."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comparte afecciones que quieras que cada especialista tenga en cuenta, como tu tipo de diabetes. Se quedan en tu dispositivo y ayudan a personalizar las explicaciones; no sustituyen un diagnóstico profesional."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jaa sairaudet, jotka haluat jokaisen asiantuntijan huomioivan, kuten diabetestyyppisi. Ne pysyvät laitteellasi ja auttavat räätälöimään selityksiä – mutta eivät korvaa ammattilaisen diagnoosia."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indiquez les affections que chaque spécialiste doit prendre en compte, comme votre type de diabète. Elles restent sur votre appareil et aident à adapter les explications — sans remplacer le diagnostic d’un professionnel."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Podijelite stanja koja želite da svaki specijalist uzme u obzir, poput vrste dijabetesa. Ostaju na vašem uređaju i pomažu prilagoditi objašnjenja — ali ne zamjenjuju dijagnozu stručnjaka."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ossza meg azokat az állapotokat, amelyeket minden szakembernek figyelembe kell vennie, például a cukorbetegség típusát. A készülékén maradnak, és segítenek személyre szabni a magyarázatokat – de nem helyettesítik a szakember diagnózisát."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Condividi le condizioni che vuoi che ogni specialista consideri, come il tuo tipo di diabete. Restano sul tuo dispositivo e aiutano a personalizzare le spiegazioni, ma non sostituiscono la diagnosi di un professionista."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "糖尿病のタイプなど、各専門医に考慮してほしい状態を共有しましょう。情報はデバイスに留まり、説明の最適化に役立ちますが、専門家による診断の代わりにはなりません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deel aandoeningen waarmee elke specialist rekening moet houden, zoals je diabetestype. Ze blijven op je apparaat en helpen uitleg af te stemmen — maar vervangen geen diagnose van een professional."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Udostępnij schorzenia, które ma uwzględnić każdy specjalista, np. typ cukrzycy. Pozostają na Twoim urządzeniu i pomagają dopasować wyjaśnienia — nie zastępują diagnozy specjalisty."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartilhe condições que você quer que cada especialista considere, como seu tipo de diabetes. Elas ficam no seu dispositivo e ajudam a personalizar as explicações — mas não substituem um diagnóstico profissional."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partilhe condições que queira que cada especialista considere, como o seu tipo de diabetes. Ficam no seu dispositivo e ajudam a personalizar as explicações — mas não substituem um diagnóstico profissional."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partajează afecțiunile pe care vrei să le ia în considerare fiecare specialist, precum tipul de diabet. Rămân pe dispozitivul tău și ajută la personalizarea explicațiilor — dar nu înlocuiesc un diagnostic profesionist."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Укажите состояния, которые должен учитывать каждый специалист, например тип диабета. Они остаются на вашем устройстве и помогают персонализировать объяснения, но не заменяют диагноз специалиста."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zdieľajte stavy, ktoré má každý špecialista zohľadniť, napríklad typ cukrovky. Zostávajú vo vašom zariadení a pomáhajú prispôsobiť vysvetlenia — nenahrádzajú diagnózu od odborníka."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dela tillstånd som varje specialist bör beakta, som din diabetestyp. De stannar på din enhet och hjälper till att anpassa förklaringar – men ersätter inte en diagnos från en fackperson."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Her uzmanın dikkate almasını istediğiniz durumları, örneğin diyabet türünüzü paylaşın. Bilgiler cihazınızda kalır ve açıklamaların kişiselleştirilmesine yardımcı olur; ancak bir uzmanın tanısının yerini tutmaz."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поділіться станами, які має враховувати кожен спеціаліст, наприклад вашим типом діабету. Вони залишаються на вашому пристрої й допомагають персоналізувати пояснення, але не замінюють діагноз фахівця."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分享你希望每位专科医生考虑的状况，例如你的糖尿病类型。这些信息保留在你的设备上，有助于让解释更贴合你，但不能替代专业人士的诊断。"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

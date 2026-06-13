@@ -16,12 +16,15 @@ final class ChatViewModel {
     var errorMessage: String?
 
     private let reports: [LabReport]
+    /// The user's self-reported conditions/diagnoses, shared with the specialist.
+    private let healthContext: String
     private let service = LabChatService()
     private var sendTask: Task<Void, Never>?
 
-    init(persona: MedicalPersona, reports: [LabReport]) {
+    init(persona: MedicalPersona, reports: [LabReport], healthContext: String) {
         self.persona = persona
         self.reports = reports
+        self.healthContext = healthContext
     }
 
     var canSend: Bool {
@@ -33,7 +36,7 @@ final class ChatViewModel {
     /// Spins up the persona's session (prewarming the model) before the first
     /// message so the initial reply isn't gated on a cold start.
     func start() async {
-        await service.startConversation(persona: persona, reports: reports)
+        await service.startConversation(persona: persona, reports: reports, healthContext: healthContext)
     }
 
     func send() {

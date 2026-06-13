@@ -13,10 +13,14 @@ struct ChatContainerView: View {
     /// Gates the one-time chat intro. Defaults `false` so existing installs see
     /// it the first time they open the chat after updating.
     @AppStorage("hasSeenChatIntro") private var hasSeenChatIntro = false
+    /// The user's self-reported conditions/diagnoses, shared with every
+    /// specialist as background (e.g. their diabetes type). Local to the device.
+    @AppStorage("userHealthContext") private var healthContext = ""
 
     @State private var activePersona: MedicalPersona?
     @State private var personaToEdit: MedicalPersona?
     @State private var isCreatingPersona = false
+    @State private var isEditingProfile = false
     @State private var didRestore = false
 
     var body: some View {
@@ -42,6 +46,9 @@ struct ChatContainerView: View {
         .sheet(item: $personaToEdit) { persona in
             PersonaEditorView(existing: persona) { store.upsert($0) }
         }
+        .sheet(isPresented: $isEditingProfile) {
+            HealthProfileEditor(healthContext: $healthContext)
+        }
         // Health-data access is requested on demand by the chat tools the moment
         // a specialist first reaches for it (see ChatTools) — not eagerly here —
         // so the system permission sheet only appears when it's actually needed.
@@ -51,7 +58,7 @@ struct ChatContainerView: View {
     @ViewBuilder
     private var content: some View {
         if let persona = activePersona {
-            ChatView(persona: persona, reports: reports) {
+            ChatView(persona: persona, reports: reports, healthContext: healthContext) {
                 activePersona = nil
             }
             // Re-identify per persona so switching specialist rebuilds the
@@ -62,10 +69,12 @@ struct ChatContainerView: View {
                 builtIns: MedicalPersona.builtIns,
                 custom: store.customPersonas,
                 selectedID: store.selectedID,
+                healthContext: healthContext,
                 onSelect: select,
                 onCreate: { isCreatingPersona = true },
                 onEdit: { personaToEdit = $0 },
-                onDelete: { store.delete(id: $0.id) }
+                onDelete: { store.delete(id: $0.id) },
+                onEditProfile: { isEditingProfile = true }
             )
         }
     }
