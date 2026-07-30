@@ -34,9 +34,13 @@ struct DashboardView: View {
         ScrollView {
             VStack(spacing: 20) {
                 greeting
-                metricSections
-                if showsFewValuesHint {
-                    fewValuesHint
+                if let onlyMetric = soleMetric {
+                    heroCard(for: onlyMetric)
+                } else {
+                    metricSections
+                    if showsFewValuesHint {
+                        fewValuesHint
+                    }
                 }
                 footer
             }
@@ -198,13 +202,30 @@ struct DashboardView: View {
         }
     }
 
+    // MARK: - Hero card
+
+    /// The dashboard's single metric, when that's all the user has. Rather than
+    /// stranding one small grid card above a generic "import more" filler, the
+    /// dashboard leads with a large featured card for that value instead.
+    private var soleMetric: MetricData? {
+        sortedMetrics.count == 1 ? sortedMetrics.first : nil
+    }
+
+    private func heroCard(for metric: MetricData) -> some View {
+        HeroMetricCard(
+            metric: metric,
+            onSelectTrend: { trendSheet = TrendSheet(code: metric.entry.code) },
+            importMenu: { importMenuItems }
+        )
+    }
+
     // MARK: - Few-values hint
 
-    /// With only one or two metrics there are no sparklines yet and the grid
-    /// leaves the screen mostly empty, so a gentle card explains why and offers a
-    /// one-tap path to import another report and start building trends.
+    /// A single metric gets the dedicated `heroCard` treatment instead (see
+    /// `soleMetric`), so this hint only fires for exactly two metrics: still too
+    /// few for a balanced grid, but past the point of featuring just one.
     private var showsFewValuesHint: Bool {
-        (1...2).contains(sortedMetrics.count)
+        sortedMetrics.count == 2
     }
 
     private var fewValuesHint: some View {
@@ -334,30 +355,6 @@ struct DashboardView: View {
         return result
     }
 
-    // MARK: - Code names for order sheet
-
-    private var allCodeNames: [CodeName] {
-        var seen = Set<String>()
-        var result: [CodeName] = []
-        for report in reports {
-            for entry in report.entries where seen.insert(entry.code).inserted {
-                result.append(CodeName(code: entry.code, name: entry.resolvedName))
-            }
-        }
-        return result
-    }
-
-    // MARK: - Pin helpers
-
-    private func togglePin(_ code: String) {
-        var updated = prefs
-        if updated.pinnedCodes.contains(code) {
-            updated.pinnedCodes.removeAll { $0 == code }
-        } else {
-            updated.pinnedCodes.append(code)
-        }
-        prefs = updated
-    }
 }
 
 // MARK: - Greeting
@@ -389,33 +386,28 @@ private extension DashboardView {
     }
 }
 
-// MARK: - CategoryBackground
+// MARK: - Code names & pin helpers
 
-/// A soft, low-opacity wash of the dashboard's metric category colors — a subtle
-/// tint behind the content in the spirit of the Health app. Falls back to a
-/// gentle accent tint when there are no metrics yet.
-struct CategoryBackground: View {
-    let colors: [Color]
-
-    private let anchors: [UnitPoint] = [.topLeading, .topTrailing, .bottomLeading]
-
-    var body: some View {
-        ZStack {
-            ForEach(Array(palette.enumerated()), id: \.offset) { index, color in
-                RadialGradient(
-                    colors: [color.opacity(0.16), .clear],
-                    center: anchors[index % anchors.count],
-                    startRadius: 0,
-                    endRadius: 480
-                )
+private extension DashboardView {
+    var allCodeNames: [CodeName] {
+        var seen = Set<String>()
+        var result: [CodeName] = []
+        for report in reports {
+            for entry in report.entries where seen.insert(entry.code).inserted {
+                result.append(CodeName(code: entry.code, name: entry.resolvedName))
             }
         }
-        .ignoresSafeArea()
-        .allowsHitTesting(false)
+        return result
     }
 
-    private var palette: [Color] {
-        colors.isEmpty ? [Color.accentColor.opacity(0.6)] : colors
+    func togglePin(_ code: String) {
+        var updated = prefs
+        if updated.pinnedCodes.contains(code) {
+            updated.pinnedCodes.removeAll { $0 == code }
+        } else {
+            updated.pinnedCodes.append(code)
+        }
+        prefs = updated
     }
 }
 
@@ -438,16 +430,31 @@ struct CategoryBackground: View {
 #Preview("Few values") {
     NavigationStack {
         DashboardView(
-            reports: [LabReport(
-                id: UUID(),
-                date: Date(timeIntervalSince1970: 1_780_000_000),
-                patientName: "Max Mustermann",
-                authorName: "Laborzentrum München",
-                entries: [
-                    LabReport.Entry(id: UUID(), code: "4548-4", name: "HbA1c",
-                                    displayValue: "5.4", numericValue: 5.4, unit: "%")
-                ]
-            )],
+            reports: [.pairValueReport],
+            onScan: {}, onPickFile: {}, onPaste: {}, onManual: {},
+            scannerAvailable: true,
+            clipboardAvailable: false,
+            isProcessing: false
+        )
+    }
+}
+
+#Preview("Single Value") {
+    NavigationStack {
+        DashboardView(
+            reports: [.soleValueReport()],
+            onScan: {}, onPickFile: {}, onPaste: {}, onManual: {},
+            scannerAvailable: true,
+            clipboardAvailable: false,
+            isProcessing: false
+        )
+    }
+}
+
+#Preview("Single Value · Trend") {
+    NavigationStack {
+        DashboardView(
+            reports: .soleValueTrend,
             onScan: {}, onPickFile: {}, onPaste: {}, onManual: {},
             scannerAvailable: true,
             clipboardAvailable: false,

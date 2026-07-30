@@ -59,6 +59,48 @@ extension LabReport {
     }
 }
 
+extension LabReport {
+    /// A single-entry report (just HbA1c) — used by dashboard/hero-card previews
+    /// that exercise the "only one tracked value" state.
+    static func soleValueReport(value: Double = 5.4, daysAgo: Double = 0) -> LabReport {
+        let day: TimeInterval = 86_400
+        let anchor = Date(timeIntervalSince1970: 1_780_000_000)
+        return LabReport(
+            id: UUID(),
+            date: anchor.addingTimeInterval(-daysAgo * day),
+            patientName: "Max Mustermann",
+            authorName: "Laborzentrum München",
+            entries: [
+                Entry(id: UUID(), code: "4548-4", name: "HbA1c",
+                      displayValue: String(format: "%.1f", value), numericValue: value, unit: "%")
+            ]
+        )
+    }
+
+    /// Two readings of the sole tracked value, ~90 days apart, so the hero
+    /// card's sparkline has a real trend to draw.
+    static var soleValueTrend: [LabReport] {
+        [soleValueReport(value: 5.9, daysAgo: 92), soleValueReport(value: 5.4, daysAgo: 0)]
+    }
+
+    /// Two entries in one report — the dashboard's "few values" hint preview
+    /// state: not enough metrics for a balanced grid, but more than one.
+    static var pairValueReport: LabReport {
+        LabReport(
+            id: UUID(),
+            date: Date(timeIntervalSince1970: 1_780_000_000),
+            patientName: "Max Mustermann",
+            authorName: "Laborzentrum München",
+            entries: [
+                Entry(id: UUID(), code: "4548-4", name: "HbA1c",
+                      displayValue: "5.4", numericValue: 5.4, unit: "%"),
+                Entry(id: UUID(), code: "2093-3", name: "Cholesterol",
+                      displayValue: "180", numericValue: 180, unit: "mg/dL")
+            ]
+        )
+    }
+}
+
 extension LabValue {
     /// A short, mixed set for review/edit previews: a few ordinary values, one
     /// fuzzily-resolved suggestion to confirm, and one value with no LOINC code

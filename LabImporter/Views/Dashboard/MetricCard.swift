@@ -135,7 +135,11 @@ struct MetricCard: View {
             }
 
             if metric.history.count > 1 {
-                sparkline
+                MetricSparklineChart(history: metric.history, categoryColor: categoryColor, referenceRange: referenceRange)
+                    // Grow to absorb the card's remaining vertical space instead of
+                    // leaving a fixed-height chart with blank padding beneath it.
+                    // `minHeight` keeps a sensible floor when a card's row is short.
+                    .frame(minHeight: 44, maxHeight: .infinity)
             } else {
                 Spacer(minLength: 44)
             }
@@ -148,10 +152,20 @@ struct MetricCard: View {
                 .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
         )
     }
+}
 
-    private var sparkline: some View {
+// MARK: - MetricSparklineChart
+
+/// The line+area+point sparkline shared by the grid's `MetricCard` and the
+/// dashboard's single-metric hero card. Callers control size via `.frame`.
+struct MetricSparklineChart: View {
+    let history: [SparkPoint]
+    let categoryColor: Color
+    let referenceRange: ReferenceRange?
+
+    var body: some View {
         Chart {
-            ForEach(metric.history) { point in
+            ForEach(history) { point in
                 LineMark(
                     x: .value("Date", point.date),
                     y: .value("Value", point.value)
@@ -195,9 +209,52 @@ struct MetricCard: View {
         }
         .chartXAxis(.hidden)
         .chartYAxis(.hidden)
-        // Grow to absorb the card's remaining vertical space instead of leaving a
-        // fixed-height chart with blank padding beneath it. `minHeight` keeps a
-        // sensible floor when a card's row is short.
-        .frame(minHeight: 44, maxHeight: .infinity)
     }
 }
+
+// MARK: - Previews
+
+#if DEBUG
+#Preview("Sparkline") {
+    MetricSparklineChart(
+        history: [
+            SparkPoint(date: Date(timeIntervalSince1970: 1_700_000_000), value: 6.5),
+            SparkPoint(date: Date(timeIntervalSince1970: 1_710_000_000), value: 6.3),
+            SparkPoint(date: Date(timeIntervalSince1970: 1_720_000_000), value: 6.2)
+        ],
+        categoryColor: LabCategory.glycemic.color,
+        referenceRange: ReferenceRange(low: 4.0, high: 5.6)
+    )
+    .frame(height: 120)
+    .padding()
+}
+
+#Preview("Sparkline · No Range") {
+    MetricSparklineChart(
+        history: [
+            SparkPoint(date: Date(timeIntervalSince1970: 1_700_000_000), value: 6.5),
+            SparkPoint(date: Date(timeIntervalSince1970: 1_710_000_000), value: 6.3),
+            SparkPoint(date: Date(timeIntervalSince1970: 1_720_000_000), value: 6.2)
+        ],
+        categoryColor: LabCategory.glycemic.color,
+        referenceRange: nil
+    )
+    .frame(height: 120)
+    .padding()
+}
+
+#Preview("Sparkline · Dark") {
+    MetricSparklineChart(
+        history: [
+            SparkPoint(date: Date(timeIntervalSince1970: 1_700_000_000), value: 6.5),
+            SparkPoint(date: Date(timeIntervalSince1970: 1_710_000_000), value: 6.3),
+            SparkPoint(date: Date(timeIntervalSince1970: 1_720_000_000), value: 6.2)
+        ],
+        categoryColor: LabCategory.glycemic.color,
+        referenceRange: ReferenceRange(low: 4.0, high: 5.6)
+    )
+    .frame(height: 120)
+    .padding()
+    .preferredColorScheme(.dark)
+}
+#endif
