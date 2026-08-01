@@ -25,9 +25,13 @@ enum MetricTrend {
         guard history.count > 1 else { return nil }
         let latest = history[history.count - 1].value
         let previous = history[history.count - 2].value
-        if latest > previous { self = .rising }
-        else if latest < previous { self = .falling }
-        else { self = .steady }
+        if latest > previous {
+            self = .rising
+        } else if latest < previous {
+            self = .falling
+        } else {
+            self = .steady
+        }
     }
 
     var symbol: String {
