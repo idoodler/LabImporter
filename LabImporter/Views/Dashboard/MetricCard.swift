@@ -15,6 +15,38 @@ struct MetricData: Identifiable {
     let history: [SparkPoint]
 }
 
+/// Direction of a metric's latest reading relative to the previous one, shared
+/// by the grid's `MetricCard` and the single-metric `HeroMetricCard`. `nil`
+/// when there's no prior value to compare against.
+enum MetricTrend {
+    case rising, falling, steady
+
+    init?(history: [SparkPoint]) {
+        guard history.count > 1 else { return nil }
+        let latest = history[history.count - 1].value
+        let previous = history[history.count - 2].value
+        if latest > previous { self = .rising }
+        else if latest < previous { self = .falling }
+        else { self = .steady }
+    }
+
+    var symbol: String {
+        switch self {
+        case .rising: return "arrow.up.right"
+        case .falling: return "arrow.down.right"
+        case .steady: return "arrow.right"
+        }
+    }
+
+    var accessibilityLabel: Text {
+        switch self {
+        case .rising: return Text("Trending up")
+        case .falling: return Text("Trending down")
+        case .steady: return Text("No change")
+        }
+    }
+}
+
 // MARK: - MetricCard
 
 struct MetricCard: View {
@@ -42,37 +74,7 @@ struct MetricCard: View {
         return .primary
     }
 
-    /// Direction of the latest reading relative to the previous one, used to show
-    /// a small trend arrow in the overview. `nil` when there is no prior value to
-    /// compare against.
-    private enum Trend {
-        case rising, falling, steady
-
-        var symbol: String {
-            switch self {
-            case .rising: return "arrow.up.right"
-            case .falling: return "arrow.down.right"
-            case .steady: return "arrow.right"
-            }
-        }
-
-        var accessibilityLabel: Text {
-            switch self {
-            case .rising: return Text("Trending up")
-            case .falling: return Text("Trending down")
-            case .steady: return Text("No change")
-            }
-        }
-    }
-
-    private var trend: Trend? {
-        guard metric.history.count > 1 else { return nil }
-        let latest = metric.history[metric.history.count - 1].value
-        let previous = metric.history[metric.history.count - 2].value
-        if latest > previous { return .rising }
-        if latest < previous { return .falling }
-        return .steady
-    }
+    private var trend: MetricTrend? { MetricTrend(history: metric.history) }
 
     /// The colored category "dock" at the card's top-left. When a trend is
     /// available it doubles as the trend indicator and hosts a directional

@@ -454,7 +454,7 @@ private extension DashboardView {
 #Preview("Single Value · Trend") {
     NavigationStack {
         DashboardView(
-            reports: .soleValueTrend,
+            reports: LabReport.soleValueTrend,
             onScan: {}, onPickFile: {}, onPaste: {}, onManual: {},
             scannerAvailable: true,
             clipboardAvailable: false,

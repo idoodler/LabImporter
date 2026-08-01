@@ -34,6 +34,8 @@
 		AABB000000000000000066AA /* ReportDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000067AA /* ReportDetailView.swift */; };
 		AABB000000000000000068AA /* TrendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000069AA /* TrendsView.swift */; };
 		AABB000000000000000070AA /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000071AA /* DashboardView.swift */; };
+		AABB0000000000000000CB01 /* CategoryBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000CB02 /* CategoryBackground.swift */; };
+		AABB0000000000000000HM01 /* HeroMetricCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000HM02 /* HeroMetricCard.swift */; };
 		AABB000000000000000072AA /* ImportLandingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000073AA /* ImportLandingView.swift */; };
 		AABB000000000000000074AA /* LabDisplayPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000075AA /* LabDisplayPreferences.swift */; };
 		AABB000000000000000077AA /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000076AA /* Localizable.xcstrings */; };
@@ -142,6 +144,8 @@
 		AABB0000000000000000C1DE /* CodePickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodePickerSheet.swift; sourceTree = "<group>"; };
 		AABB0000000000000000C3DE /* UnsupportedDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsupportedDeviceView.swift; sourceTree = "<group>"; };
 		AABB0000000000000000CC02 /* MetricCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricCard.swift; sourceTree = "<group>"; };
+		AABB0000000000000000CB02 /* CategoryBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryBackground.swift; sourceTree = "<group>"; };
+		AABB0000000000000000HM02 /* HeroMetricCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroMetricCard.swift; sourceTree = "<group>"; };
 		AABB0000000000000000D0AA /* CloudSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncService.swift; sourceTree = "<group>"; };
 		AASP000000000000000002AA /* SpotlightIndexService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightIndexService.swift; sourceTree = "<group>"; };
 		AASP000000000000000004AA /* SpotlightOptInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightOptInView.swift; sourceTree = "<group>"; };
@@ -328,6 +332,8 @@
 			children = (
 				AABB000000000000000071AA /* DashboardView.swift */,
 				AABB0000000000000000CC02 /* MetricCard.swift */,
+				AABB0000000000000000CB02 /* CategoryBackground.swift */,
+				AABB0000000000000000HM02 /* HeroMetricCard.swift */,
 				AAFF0000000000000000F401 /* ValueDescriptionCard.swift */,
 				AAFF0000000000000000F501 /* TrendWindow.swift */,
 				AABB000000000000000069AA /* TrendsView.swift */,
@@ -619,6 +625,8 @@
 				AABB000000000000000068AA /* TrendsView.swift in Sources */,
 				AABB000000000000000070AA /* DashboardView.swift in Sources */,
 				AABB0000000000000000CC01 /* MetricCard.swift in Sources */,
+				AABB0000000000000000CB01 /* CategoryBackground.swift in Sources */,
+				AABB0000000000000000HM01 /* HeroMetricCard.swift in Sources */,
 				AABB000000000000000072AA /* ImportLandingView.swift in Sources */,
 				AABB0000000000000000C0AA /* MorphingCategoryBackground.swift in Sources */,
 				AABB000000000000000074AA /* LabDisplayPreferences.swift in Sources */,

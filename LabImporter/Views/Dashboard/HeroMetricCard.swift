@@ -20,6 +20,8 @@ struct HeroMetricCard<ImportMenu: View>: View {
 
     private var hasTrend: Bool { metric.history.count > 1 }
 
+    private var trend: MetricTrend? { MetricTrend(history: metric.history) }
+
     private var category: LabCategory { LabCategory.forCode(metric.entry.code) }
 
     private var referenceRange: ReferenceRange? {
@@ -72,12 +74,7 @@ struct HeroMetricCard<ImportMenu: View>: View {
 
     private var header: some View {
         HStack(spacing: 10) {
-            Image(systemName: category.icon)
-                .font(.system(size: 17, weight: .semibold))
-                .foregroundStyle(.white)
-                .frame(width: 40, height: 40)
-                .background(category.color.gradient, in: Circle())
-                .accessibilityHidden(true)
+            dockIcon
             VStack(alignment: .leading, spacing: 1) {
                 Text(metric.entry.resolvedName)
                     .font(.headline)
@@ -87,6 +84,29 @@ struct HeroMetricCard<ImportMenu: View>: View {
             }
             Spacer(minLength: 0)
         }
+    }
+
+    /// The category-colored circle at the card's top-left. Once there's a
+    /// trend to show, it doubles as the trend indicator (a directional arrow,
+    /// matching the grid's `MetricCard` dock); with a single reading there's
+    /// no direction yet, so it falls back to the category icon.
+    @ViewBuilder
+    private var dockIcon: some View {
+        if let trend {
+            dockCircle(systemName: trend.symbol, weight: .heavy)
+                .accessibilityLabel(trend.accessibilityLabel)
+        } else {
+            dockCircle(systemName: category.icon, weight: .semibold)
+                .accessibilityHidden(true)
+        }
+    }
+
+    private func dockCircle(systemName: String, weight: Font.Weight) -> some View {
+        Image(systemName: systemName)
+            .font(.system(size: 17, weight: weight))
+            .foregroundStyle(.white)
+            .frame(width: 40, height: 40)
+            .background(category.color.gradient, in: Circle())
     }
 
     private var valueRow: some View {
