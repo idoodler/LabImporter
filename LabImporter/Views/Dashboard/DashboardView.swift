@@ -425,7 +425,6 @@ private extension DashboardView {
         )
     }
 }
-#endif
 
 #Preview("Few values") {
     NavigationStack {
@@ -474,3 +473,4 @@ private extension DashboardView {
         )
     }
 }
+#endif
