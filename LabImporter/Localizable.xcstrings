@@ -47539,6 +47539,4890 @@
           }
         }
       }
+    },
+    "Siri & Shortcuts" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri и преки пътища"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri i Dreceres"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri a Zkratky"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri og Genveje"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri & Kurzbefehle"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri και Συντομεύσεις"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri y accesos directos"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri ja pikakomennot"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri et raccourcis"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri i Prečaci"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri és Parancsikonok"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri e Comandi Rapidi"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siriとショートカット"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri en Opdrachten"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri i Skróty"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri e Atalhos"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri e Atalhos"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri și Comenzi rapide"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri и команды"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri a Skratky"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri och Genvägar"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri ve Kısayollar"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri та Команди"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri 与快捷指令"
+          }
+        }
+      }
+    },
+    "Ask Siri About Your Values" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Попитайте Siri за стойностите си"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pregunta a Siri pels teus valors"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeptejte se Siri na své hodnoty"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spørg Siri om dine værdier"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri nach deinen Werten fragen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ρωτήστε τη Siri για τις τιμές σας"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pregúntale a Siri por tus valores"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kysy Siriltä arvoistasi"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demandez à Siri vos valeurs"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pitajte Siri o svojim vrijednostima"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kérdezd meg a Sirit az értékeidről"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chiedi a Siri i tuoi valori"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siriに数値を聞く"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vraag Siri naar je waarden"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zapytaj Siri o swoje wyniki"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pergunte à Siri sobre seus valores"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pergunte à Siri sobre os seus valores"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Întreabă Siri despre valorile tale"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Спросите Siri о своих показателях"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opýtajte sa Siri na svoje hodnoty"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fråga Siri om dina värden"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Değerlerini Siri'ye sor"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запитайте Siri про свої показники"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "向 Siri 询问你的数值"
+          }
+        }
+      }
+    },
+    "Let Siri answer questions and start scans — entirely on-device." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Позволете на Siri да отговаря на въпроси и да стартира сканирания — изцяло на устройството."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deixa que el Siri respongui preguntes i iniciï escanejos — totalment al dispositiu."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nechte Siri odpovídat na otázky a spouštět skenování — zcela v zařízení."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lad Siri besvare spørgsmål og starte scanninger — helt på enheden."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lass Siri Fragen beantworten und Scans starten – vollständig auf dem Gerät."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αφήστε τη Siri να απαντά σε ερωτήσεις και να ξεκινά σαρώσεις — εξ ολοκλήρου στη συσκευή."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deja que Siri responda preguntas e inicie escaneos, totalmente en el dispositivo."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anna Sirin vastata kysymyksiin ja käynnistää skannauksia — täysin laitteella."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laissez Siri répondre à vos questions et lancer des numérisations — entièrement sur l'appareil."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neka Siri odgovara na pitanja i pokreće skeniranja — u potpunosti na uređaju."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hagyd, hogy a Siri válaszoljon a kérdésekre, és indítson szkenneléseket — teljes egészében a készüléken."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lascia che Siri risponda alle domande e avvii le scansioni, interamente sul dispositivo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siriに質問への回答やスキャンの開始をお任せ — すべてデバイス上で処理されます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laat Siri vragen beantwoorden en scans starten — volledig op het apparaat."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pozwól Siri odpowiadać na pytania i rozpoczynać skanowanie — całkowicie na urządzeniu."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deixe a Siri responder perguntas e iniciar digitalizações — totalmente no dispositivo."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deixe a Siri responder a perguntas e iniciar digitalizações — totalmente no dispositivo."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasă Siri să răspundă la întrebări și să pornească scanări — în întregime pe dispozitiv."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Позвольте Siri отвечать на вопросы и запускать сканирование — полностью на устройстве."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nechajte Siri odpovedať na otázky a spúšťať skenovanie — úplne v zariadení."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Låt Siri svara på frågor och starta skanningar — helt på enheten."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri'nin soruları yanıtlamasına ve taramaları başlatmasına izin verin — tamamen cihaz üzerinde."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дозвольте Siri відповідати на запитання та запускати сканування — повністю на пристрої."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "让 Siri 回答问题并开始扫描——完全在设备本机处理。"
+          }
+        }
+      }
+    },
+    "Ask Siri Anytime" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Попитайте Siri по всяко време"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pregunta al Siri quan vulguis"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeptejte se Siri kdykoli"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spørg Siri når som helst"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frag Siri jederzeit"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ρωτήστε τη Siri οποτεδήποτε"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pregunta a Siri cuando quieras"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kysy Siriltä milloin vain"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demandez à Siri à tout moment"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pitajte Siri bilo kada"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kérdezd a Sirit bármikor"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chiedi a Siri in qualsiasi momento"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "いつでもSiriに質問"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vraag Siri altijd"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zapytaj Siri w dowolnym momencie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pergunte à Siri quando quiser"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pergunte à Siri quando quiser"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Întreabă Siri oricând"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Спрашивайте Siri в любое время"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opýtajte sa Siri kedykoľvek"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fråga Siri när som helst"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İstediğin zaman Siri'ye sor"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запитуйте Siri будь-коли"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "随时询问 Siri"
+          }
+        }
+      }
+    },
+    "Say “Ask LabImporter about my cholesterol” and Siri reads back your latest reading — but only for values you allow." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кажете „Попитай LabImporter за холестерола ми“ и Siri ще прочете последния ви резултат — но само за стойности, които сте разрешили."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Digues “Pregunta al LabImporter pel meu colesterol” i el Siri et llegirà l'última lectura — però només per als valors que permetis."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Řekněte „Zeptej se LabImporteru na můj cholesterol“ a Siri vám přečte poslední hodnotu — ale jen u hodnot, které povolíte."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sig “Spørg LabImporter om mit kolesterol”, og Siri læser din seneste værdi højt — men kun for værdier, du tillader."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sag „Frag LabImporter nach meinem Cholesterin“ und Siri liest dir deinen letzten Wert vor – aber nur für Werte, die du erlaubst."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Πείτε «Ρώτα το LabImporter για τη χοληστερίνη μου» και η Siri θα διαβάσει την τελευταία τιμή σας — αλλά μόνο για τιμές που επιτρέπετε."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Di «Pregúntale a LabImporter mi colesterol» y Siri te lee tu última lectura, pero solo para los valores que permitas."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sano “Kysy LabImporterilta kolesteroliarvoni” ja Siri lukee viimeisimmän tuloksesi ääneen — mutta vain arvoille, jotka sallit."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dites « Demande à LabImporter mon cholestérol » et Siri vous lit votre dernière valeur — mais uniquement pour les valeurs que vous autorisez."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recite „Pitaj LabImporter za moj kolesterol“ i Siri će pročitati vašu najnoviju vrijednost — ali samo za vrijednosti koje dopustite."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mondd: „Kérdezd meg a LabImportertől a koleszterinszintemet”, és a Siri felolvassa a legutóbbi értékedet — de csak azokat, amelyeket engedélyezel."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Di' “Chiedi a LabImporter il mio colesterolo” e Siri ti legge l'ultima lettura, ma solo per i valori che consenti."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「LabImporterにコレステロール値を聞いて」と言うと、Siriが最新の値を読み上げます — ただし許可した値のみです。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeg “Vraag LabImporter naar mijn cholesterol” en Siri leest je laatste meting voor — maar alleen voor waarden die je toestaat."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Powiedz „Zapytaj LabImporter o mój cholesterol”, a Siri odczyta Twój najnowszy wynik — ale tylko dla wartości, na które zezwolisz."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diga “Pergunte ao LabImporter meu colesterol” e a Siri lê sua última leitura em voz alta — mas só para valores que você permitir."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diga “Pergunta ao LabImporter o meu colesterol” e a Siri lê a sua última leitura em voz alta — mas só para valores que permitir."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spune „Întreabă LabImporter despre colesterolul meu” și Siri îți va citi cea mai recentă valoare — dar doar pentru valorile pe care le permiți."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скажите «Спроси у LabImporter мой холестерин», и Siri озвучит ваш последний показатель — но только для значений, которые вы разрешили."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Povedzte „Opýtaj sa LabImporteru na môj cholesterol“ a Siri prečíta vašu poslednú hodnotu — ale iba pre hodnoty, ktoré povolíte."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Säg “Fråga LabImporter om mitt kolesterolvärde” så läser Siri upp ditt senaste värde — men bara för värden du tillåter."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“LabImporter'a kolesterolümü sor” deyin, Siri en son değerinizi okusun — ama yalnızca izin verdiğiniz değerler için."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скажіть «Запитай у LabImporter мій холестерин», і Siri озвучить ваш останній показник — але лише для значень, які ви дозволили."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "对 Siri 说“问问 LabImporter 我的胆固醇”，Siri 就会读出你最新的数值——但仅限于你允许的数值。"
+          }
+        }
+      }
+    },
+    "Start a Scan Hands-Free" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Стартирайте сканиране без ръце"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicia un escaneig sense mans"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spusťte skenování bez použití rukou"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start en scanning håndfrit"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scan freihändig starten"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ξεκινήστε μια σάρωση χωρίς χέρια"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicia un escaneo sin usar las manos"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Käynnistä skannaus kädet vapaana"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lancer une numérisation mains libres"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pokrenite skeniranje bez korištenja ruku"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indíts kihangosított szkennelést"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avvia una scansione a mani libere"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ハンズフリーでスキャンを開始"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start een scan handsfree"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rozpocznij skanowanie bez użycia rąk"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicie uma digitalização sem usar as mãos"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicie uma digitalização sem usar as mãos"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pornește o scanare fără a folosi mâinile"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Начните сканирование без помощи рук"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spustite skenovanie bez použitia rúk"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Starta en skanning helt handsfree"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elleriniz meşgulken tarama başlatın"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Розпочніть сканування без допомоги рук"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "免提开始扫描"
+          }
+        }
+      }
+    },
+    "“Scan a lab report in LabImporter” opens the scanner instantly — no health data involved." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "„Сканирай лабораторен резултат в LabImporter“ отваря скенера незабавно — без участие на здравни данни."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“Escaneja un informe de laboratori a LabImporter” obre l'escàner a l'instant — sense cap dada de salut implicada."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "„Naskenovat laboratorní zprávu v LabImporteru“ okamžitě otevře skener — bez jakýchkoli zdravotních údajů."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“Scan en laboratorierapport i LabImporter” åbner straks scanneren — uden sundhedsdata involveret."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "„Scanne einen Laborbericht in LabImporter“ öffnet sofort den Scanner – ganz ohne Gesundheitsdaten."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«Σάρωσε μια εργαστηριακή αναφορά στο LabImporter» ανοίγει αμέσως τον σαρωτή — χωρίς καμία εμπλοκή δεδομένων υγείας."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«Escanea un informe de laboratorio en LabImporter» abre el escáner al instante, sin datos de salud implicados."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "”Skannaa laboratorioraportti LabImporterissa” avaa skannerin heti — mitään terveystietoja ei käytetä."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "« Scanner un rapport de laboratoire dans LabImporter » ouvre le scanner instantanément — aucune donnée de santé impliquée."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "„Skeniraj laboratorijski nalaz u LabImporteru“ odmah otvara skener — bez ikakvih zdravstvenih podataka."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A „Szkennelj be egy laborleletet a LabImporterben” azonnal megnyitja a szkennelést — semmilyen egészségügyi adat nem érintett."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“Scansiona un referto di laboratorio in LabImporter” apre subito lo scanner, senza coinvolgere dati sanitari."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「LabImporterで検査報告書をスキャン」と言うとすぐにスキャナーが開きます — 健康データは一切関与しません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“Scan een laboratoriumrapport in LabImporter” opent direct de scanner — zonder gezondheidsgegevens."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "„Zeskanuj wynik badania w LabImporter” od razu otwiera skaner — bez udziału danych zdrowotnych."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“Digitalizar um relatório laboratorial no LabImporter” abre o scanner na hora — sem envolver dados de saúde."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“Digitalizar um relatório laboratorial no LabImporter” abre o scanner de imediato — sem envolver dados de saúde."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "„Scanează un raport de laborator în LabImporter” deschide instantaneu scanerul — fără implicarea vreunei date medicale."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«Отсканировать анализ в LabImporter» мгновенно открывает сканер — без участия данных о здоровье."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "„Naskenuj laboratórnu správu v LabImporteri“ okamžite otvorí skener — bez akýchkoľvek zdravotných údajov."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "”Skanna en labbrapport i LabImporter” öppnar skannern direkt — utan att någon hälsodata är inblandad."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“LabImporter'da bir laboratuvar raporu tara” taramayı anında açar — hiçbir sağlık verisi kullanılmaz."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«Відсканувати аналіз у LabImporter» миттєво відкриває сканер — без участі даних про здоров'я."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "对 Siri 说“在 LabImporter 中扫描化验报告”即可立即打开扫描仪——不涉及任何健康数据。"
+          }
+        }
+      }
+    },
+    "You Choose What Siri Knows" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вие решавате какво знае Siri"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu decideixes què sap el Siri"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vy rozhodujete, co Siri ví"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du bestemmer, hvad Siri ved"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du entscheidest, was Siri weiß"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Εσείς αποφασίζετε τι γνωρίζει η Siri"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tú decides lo que Siri sabe"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sinä päätät, mitä Siri tietää"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous décidez ce que Siri sait"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vi odlučujete što Siri zna"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Te döntöd el, mit tud a Siri"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decidi tu cosa sa Siri"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siriが知る情報はあなたが決める"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jij bepaalt wat Siri weet"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ty decydujesz, co wie Siri"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você escolhe o que a Siri sabe"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolhe o que a Siri sabe"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu alegi ce știe Siri"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вы решаете, что известно Siri"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vy rozhodujete, čo Siri vie"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du bestämmer vad Siri vet"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri'nin ne bildiğine sen karar verirsin"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ви вирішуєте, що знає Siri"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "由你决定 Siri 知道什么"
+          }
+        }
+      }
+    },
+    "Nothing is shared until you allow it. Pick exactly which values Siri can access anytime in Settings." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нищо не се споделя, докато не го разрешите. По всяко време изберете в Настройки точно до кои стойности Siri да има достъп."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No es comparteix res fins que ho permetis. Tria en qualsevol moment als Ajustos exactament a quins valors pot accedir el Siri."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nic se nesdílí, dokud to nepovolíte. Kdykoli v Nastavení vyberte, ke kterým hodnotám může Siri přistupovat."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intet deles, før du tillader det. Vælg til enhver tid i Indstillinger præcis hvilke værdier Siri kan tilgå."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nichts wird geteilt, bevor du es erlaubst. Lege in den Einstellungen jederzeit genau fest, auf welche Werte Siri zugreifen darf."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Τίποτα δεν κοινοποιείται μέχρι να το επιτρέψετε. Επιλέξτε οποιαδήποτε στιγμή στις Ρυθμίσεις ακριβώς ποιες τιμές μπορεί να έχει πρόσβαση η Siri."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se comparte nada hasta que lo permitas. Elige en cualquier momento en Ajustes exactamente qué valores puede consultar Siri."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mitään ei jaeta, ennen kuin sallit sen. Valitse Asetuksissa milloin tahansa tarkalleen, mihin arvoihin Sirillä on pääsy."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rien n'est partagé tant que vous ne l'autorisez pas. Choisissez à tout moment dans Réglages les valeurs exactes auxquelles Siri peut accéder."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ništa se ne dijeli dok to ne dopustite. U Postavkama u bilo kojem trenutku odaberite točno kojim vrijednostima Siri može pristupiti."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Semmi sem kerül megosztásra, amíg nem engedélyezed. A Beállításokban bármikor pontosan kiválaszthatod, mely értékekhez férhet hozzá a Siri."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niente viene condiviso finché non lo consenti. Scegli in qualsiasi momento in Impostazioni esattamente quali valori Siri può utilizzare."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "許可するまで何も共有されません。設定でいつでも、Siriがアクセスできる値を正確に選べます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Er wordt niets gedeeld totdat jij het toestaat. Kies op elk moment in Instellingen precies welke waarden Siri mag gebruiken."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nic nie jest udostępniane, dopóki na to nie zezwolisz. W dowolnym momencie w Ustawieniach wybierz dokładnie, do których wartości Siri może mieć dostęp."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nada é compartilhado até você permitir. Escolha a qualquer momento em Ajustes exatamente quais valores a Siri pode acessar."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nada é partilhado até permitires. Escolhe em qualquer altura, nas Definições, exatamente que valores a Siri pode aceder."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nimic nu este partajat până nu permiți. Alege oricând din Setări exact la ce valori poate accesa Siri."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ничего не передаётся, пока вы не разрешите. В любой момент выбирайте в Настройках, к каким показателям Siri может иметь доступ."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nič sa nezdieľa, kým to nepovolíte. V Nastaveniach kedykoľvek presne vyberte, ku ktorým hodnotám môže mať Siri prístup."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inget delas förrän du tillåter det. Välj när som helst i Inställningar exakt vilka värden Siri får komma åt."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İzin vermediğiniz sürece hiçbir şey paylaşılmaz. Ayarlar'dan istediğiniz zaman Siri'nin hangi değerlere erişebileceğini tam olarak seçin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нічого не передається, доки ви не дозволите. У будь-який момент оберіть у Налаштуваннях, до яких показників Siri може мати доступ."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在你允许之前不会共享任何内容。你可以随时在“设置”中精确选择 Siri 可以访问哪些数值。"
+          }
+        }
+      }
+    },
+    "Siri runs the on-device model, the same one used to scan your reports. Nothing leaves this device." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri използва модела на устройството — същия, който сканира отчетите ви. Нищо не напуска това устройство."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El Siri utilitza el model al dispositiu, el mateix que escaneja els teus informes. Res surt d'aquest dispositiu."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri používá model přímo v zařízení, stejný, jaký skenuje vaše zprávy. Nic neopouští toto zařízení."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri bruger modellen på enheden, den samme som bruges til at scanne dine rapporter. Intet forlader denne enhed."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri nutzt das On-Device-Modell – dasselbe, mit dem deine Berichte gescannt werden. Nichts verlässt dieses Gerät."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Η Siri χρησιμοποιεί το μοντέλο εντός συσκευής, το ίδιο που χρησιμοποιείται για τη σάρωση των αναφορών σας. Τίποτα δεν εγκαταλείπει αυτή τη συσκευή."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri usa el modelo en el dispositivo, el mismo que se usa para escanear tus informes. Nada sale de este dispositivo."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri käyttää samaa laitteella toimivaa mallia, jota käytetään raporttiesi skannaamiseen. Mikään ei poistu tältä laitteelta."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri utilise le modèle sur l'appareil, le même que celui utilisé pour scanner vos rapports. Rien ne quitte cet appareil."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri koristi model na uređaju, isti onaj koji skenira vaše nalaze. Ništa ne napušta ovaj uređaj."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A Siri a készüléken futó modellt használja, ugyanazt, amely a leleteidet szkenneli. Semmi sem hagyja el ezt a készüléket."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri utilizza il modello sul dispositivo, lo stesso usato per scansionare i tuoi referti. Nulla lascia questo dispositivo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siriはレポートのスキャンに使われているのと同じオンデバイスモデルを使用します。データはこのデバイスの外に出ません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri gebruikt het model op het apparaat, hetzelfde model dat je rapporten scant. Er verlaat niets dit apparaat."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri korzysta z modelu na urządzeniu — tego samego, który skanuje Twoje wyniki. Nic nie opuszcza tego urządzenia."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A Siri usa o modelo no dispositivo, o mesmo usado para digitalizar seus relatórios. Nada sai deste dispositivo."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A Siri usa o modelo no dispositivo, o mesmo utilizado para digitalizar os seus relatórios. Nada sai deste dispositivo."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri folosește modelul de pe dispozitiv, același folosit la scanarea rapoartelor tale. Nimic nu părăsește acest dispozitiv."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri использует ту же модель на устройстве, что и для сканирования отчётов. Ничего не покидает это устройство."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri používa model priamo v zariadení, rovnaký, aký skenuje vaše správy. Nič neopúšťa toto zariadenie."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri använder modellen på enheten, samma som används för att skanna dina rapporter. Inget lämnar den här enheten."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri, raporlarınızı taramak için kullanılanla aynı cihaz üzerindeki modeli kullanır. Hiçbir şey bu cihazdan çıkmaz."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri використовує ту саму модель на пристрої, що й для сканування звітів. Нічого не залишає цей пристрій."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri 使用的是设备端模型，与扫描报告所用的模型相同。任何内容都不会离开此设备。"
+          }
+        }
+      }
+    },
+    "Some Siri intelligence features may arrive later in the EU under regional requirements." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Някои функции на Siri Intelligence може да пристигнат по-късно в ЕС поради регионални изисквания."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Algunes funcions de Siri Intelligence poden arribar més tard a la UE a causa de requisits regionals."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Některé funkce Siri Intelligence mohou být v EU dostupné později kvůli regionálním požadavkům."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nogle Siri Intelligence-funktioner kan komme senere i EU på grund af regionale krav."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einige Siri-Intelligence-Funktionen kommen aufgrund regionaler Vorgaben in der EU möglicherweise später."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ορισμένες λειτουργίες Siri Intelligence ενδέχεται να διατεθούν αργότερα στην ΕΕ λόγω περιφερειακών απαιτήσεων."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Algunas funciones de Siri Intelligence pueden llegar más tarde en la UE debido a requisitos regionales."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Osa Siri Intelligence -ominaisuuksista saattaa saapua EU:hun myöhemmin alueellisten vaatimusten vuoksi."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Certaines fonctionnalités de Siri Intelligence peuvent arriver plus tard dans l'UE en raison d'exigences régionales."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neke značajke Siri Intelligence mogu stići kasnije u EU zbog regionalnih zahtjeva."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Egyes Siri Intelligence funkciók a regionális előírások miatt később érkezhetnek meg az EU-ban."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alcune funzionalità di Siri Intelligence potrebbero arrivare più tardi nell'UE per requisiti regionali."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一部のSiri Intelligence機能は、地域要件によりEUでの提供が遅れる場合があります。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sommige Siri Intelligence-functies komen mogelijk later beschikbaar in de EU vanwege regionale vereisten."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niektóre funkcje Siri Intelligence mogą pojawić się w UE później ze względu na wymogi regionalne."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alguns recursos do Siri Intelligence podem chegar mais tarde na UE devido a exigências regionais."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Algumas funcionalidades do Siri Intelligence podem chegar mais tarde na UE devido a requisitos regionais."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unele funcții Siri Intelligence pot ajunge mai târziu în UE din cauza cerințelor regionale."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Некоторые функции Siri Intelligence могут появиться в ЕС позже из-за региональных требований."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niektoré funkcie Siri Intelligence môžu byť v EÚ dostupné neskôr z dôvodu regionálnych požiadaviek."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vissa Siri Intelligence-funktioner kan komma senare inom EU på grund av regionala krav."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bazı Siri Intelligence özellikleri, bölgesel gereklilikler nedeniyle AB'de daha sonra kullanıma sunulabilir."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Деякі функції Siri Intelligence можуть з'явитися в ЄС пізніше через регіональні вимоги."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "由于地区法规要求，部分 Siri 智能功能在欧盟地区可能会延后推出。"
+          }
+        }
+      }
+    },
+    "Enable Siri & Shortcuts" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Включване на Siri и преки пътища"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activa el Siri i les dreceres"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Povolit Siri a Zkratky"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktivér Siri og Genveje"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri & Kurzbefehle aktivieren"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ενεργοποίηση Siri και Συντομεύσεων"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activar Siri y accesos directos"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ota Siri ja pikakomennot käyttöön"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activer Siri et raccourcis"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Omogući Siri i Prečace"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri és Parancsikonok engedélyezése"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attiva Siri e Comandi Rapidi"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siriとショートカットを有効にする"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri en Opdrachten inschakelen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Włącz Siri i Skróty"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ativar Siri e Atalhos"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ativar Siri e Atalhos"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activează Siri și Comenzi rapide"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Включить Siri и команды"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Povoliť Siri a Skratky"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktivera Siri och Genvägar"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri ve Kısayolları Etkinleştir"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Увімкнути Siri та Команди"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启用 Siri 与快捷指令"
+          }
+        }
+      }
+    },
+    "Allow Siri Access" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разрешаване на достъп за Siri"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permet l'accés al Siri"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Povolit přístup Siri"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tillad Siri-adgang"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri-Zugriff erlauben"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Να επιτρέπεται η πρόσβαση στη Siri"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permitir acceso a Siri"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salli Siri-käyttöoikeus"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autoriser l'accès à Siri"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dopusti pristup Siriju"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri hozzáférés engedélyezése"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consenti l'accesso a Siri"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siriのアクセスを許可"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri-toegang toestaan"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zezwól na dostęp Siri"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permitir acesso à Siri"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permitir acesso à Siri"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permite accesul Siri"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разрешить доступ Siri"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Povoliť prístup Siri"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tillåt Siri-åtkomst"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri Erişimine İzin Ver"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дозволити доступ Siri"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "允许 Siri 访问"
+          }
+        }
+      }
+    },
+    "Let Siri answer questions and start scans for LabImporter. You still choose exactly which values it can read." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Позволете на Siri да отговаря на въпроси и да стартира сканирания за LabImporter. Вие все така избирате точно кои стойности може да чете."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deixa que el Siri respongui preguntes i iniciï escanejos per al LabImporter. Continues triant tu exactament quins valors pot llegir."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nechte Siri odpovídat na otázky a spouštět skenování pro LabImporter. Stále přesně vy rozhodujete, které hodnoty smí číst."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lad Siri besvare spørgsmål og starte scanninger for LabImporter. Du bestemmer stadig præcis hvilke værdier den må læse."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lass Siri Fragen zu LabImporter beantworten und Scans starten. Du entscheidest weiterhin genau, welche Werte sie lesen darf."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αφήστε τη Siri να απαντά σε ερωτήσεις και να ξεκινά σαρώσεις για το LabImporter. Εσείς εξακολουθείτε να επιλέγετε ακριβώς ποιες τιμές μπορεί να διαβάζει."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deja que Siri responda preguntas e inicie escaneos para LabImporter. Sigues eligiendo exactamente qué valores puede leer."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anna Sirin vastata kysymyksiin ja käynnistää skannauksia LabImporterille. Päätät edelleen tarkalleen, mitä arvoja se saa lukea."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laissez Siri répondre aux questions et lancer des numérisations pour LabImporter. Vous choisissez toujours exactement les valeurs qu'elle peut lire."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neka Siri odgovara na pitanja i pokreće skeniranja za LabImporter. I dalje vi točno birate koje vrijednosti može čitati."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hagyd, hogy a Siri válaszoljon a kérdésekre, és indítson szkenneléseket a LabImporterhez. Továbbra is pontosan te döntöd el, mely értékeket olvashatja."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lascia che Siri risponda alle domande e avvii le scansioni per LabImporter. Continui a scegliere esattamente quali valori può leggere."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SiriにLabImporterへの質問への回答やスキャンの開始をお任せできます。どの値を読み取れるかは引き続きあなたが決めます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laat Siri vragen beantwoorden en scans starten voor LabImporter. Jij kiest nog steeds precies welke waarden ze mag lezen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pozwól Siri odpowiadać na pytania i rozpoczynać skanowanie dla LabImporter. Nadal to Ty decydujesz, które wartości może odczytywać."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deixe a Siri responder perguntas e iniciar digitalizações para o LabImporter. Você continua escolhendo exatamente quais valores ela pode ler."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deixe a Siri responder a perguntas e iniciar digitalizações para o LabImporter. Continua a escolher exatamente que valores ela pode ler."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasă Siri să răspundă la întrebări și să pornească scanări pentru LabImporter. Tu alegi în continuare exact ce valori poate citi."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разрешите Siri отвечать на вопросы и запускать сканирование для LabImporter. Вы по-прежнему сами выбираете, какие показатели она может озвучивать."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nechajte Siri odpovedať na otázky a spúšťať skenovanie pre LabImporter. Stále presne vy rozhodujete, ktoré hodnoty môže čítať."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Låt Siri svara på frågor och starta skanningar för LabImporter. Du väljer fortfarande exakt vilka värden den får läsa."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri'nin LabImporter için soruları yanıtlamasına ve taramaları başlatmasına izin verin. Hangi değerleri okuyabileceğine yine siz karar verirsiniz."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дозвольте Siri відповідати на запитання та запускати сканування для LabImporter. Ви й надалі самі обираєте, які показники вона може озвучувати."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "让 Siri 为 LabImporter 回答问题并开始扫描。你仍然可以精确决定它能读取哪些数值。"
+          }
+        }
+      }
+    },
+    "Manage Siri Access" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Управление на достъпа на Siri"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gestiona l'accés al Siri"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spravovat přístup Siri"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Administrer Siri-adgang"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri-Zugriff verwalten"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Διαχείριση πρόσβασης Siri"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gestionar acceso a Siri"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hallitse Siri-käyttöoikeutta"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gérer l'accès à Siri"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Upravljanje pristupom Siriju"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri hozzáférés kezelése"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gestisci accesso a Siri"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siriのアクセスを管理"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri-toegang beheren"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zarządzaj dostępem Siri"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gerenciar acesso à Siri"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gerir acesso à Siri"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gestionează accesul Siri"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Управление доступом Siri"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spravovať prístup Siri"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hantera Siri-åtkomst"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri Erişimini Yönet"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Керування доступом Siri"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "管理 Siri 访问权限"
+          }
+        }
+      }
+    },
+    "Values Siri Can Answer" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Стойности, на които Siri може да отговаря"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valors que el Siri pot respondre"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hodnoty, na které Siri smí odpovídat"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Værdier, Siri kan svare på"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Werte, die Siri beantworten darf"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Τιμές που μπορεί να απαντήσει η Siri"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valores que Siri puede responder"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arvot, joihin Siri voi vastata"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valeurs que Siri peut communiquer"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vrijednosti na koje Siri može odgovoriti"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Értékek, amelyekre a Siri válaszolhat"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valori che Siri può comunicare"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siriが回答できる値"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waarden die Siri mag beantwoorden"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wartości, na które Siri może odpowiadać"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valores que a Siri pode responder"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valores que a Siri pode responder"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valori la care Siri poate răspunde"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показатели, о которых может отвечать Siri"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hodnoty, na ktoré môže Siri odpovedať"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Värden Siri kan svara på"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri'nin Yanıtlayabileceği Değerler"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показники, про які може відповідати Siri"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri 可以回答的数值"
+          }
+        }
+      }
+    },
+    "Off by default. Turn on a value to let Siri read back its latest reading when you ask." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Изключено по подразбиране. Включете стойност, за да може Siri да прочита последния ѝ резултат при запитване."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desactivat per defecte. Activa un valor perquè el Siri en llegeixi la darrera lectura quan ho demanis."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ve výchozím nastavení vypnuto. Zapněte hodnotu, aby ji Siri na požádání přečetla nahlas."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Slået fra som standard. Slå en værdi til, så Siri læser dens seneste måling højt, når du spørger."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standardmäßig deaktiviert. Aktiviere einen Wert, damit Siri auf Nachfrage den neuesten Messwert vorliest."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Απενεργοποιημένο από προεπιλογή. Ενεργοποιήστε μια τιμή ώστε η Siri να διαβάζει την τελευταία μέτρηση όταν ρωτάτε."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desactivado de forma predeterminada. Activa un valor para que Siri lea en voz alta su última lectura cuando lo pidas."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pois päältä oletuksena. Ota arvo käyttöön, jotta Siri voi lukea sen uusimman tuloksen kysyessäsi."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Désactivé par défaut. Activez une valeur pour que Siri lise sa dernière mesure quand vous le demandez."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zadano isključeno. Uključite vrijednost kako bi Siri pročitao njezinu najnoviju vrijednost kad pitate."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alapértelmezés szerint kikapcsolva. Kapcsold be az értéket, hogy a Siri felolvassa a legutóbbi mérést, ha megkérdezed."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disattivato per impostazione predefinita. Attiva un valore per far leggere a Siri la sua ultima lettura quando lo chiedi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デフォルトではオフです。値をオンにすると、質問した際にSiriが最新の測定値を読み上げます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standaard uitgeschakeld. Zet een waarde aan zodat Siri de laatste meting voorleest wanneer je het vraagt."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Domyślnie wyłączone. Włącz wartość, aby Siri odczytywała jej najnowszy wynik, gdy o to poprosisz."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desativado por padrão. Ative um valor para que a Siri leia sua última leitura em voz alta quando você perguntar."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desativado por predefinição. Ativa um valor para que a Siri leia a sua última leitura em voz alta quando perguntares."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dezactivat implicit. Activează o valoare pentru ca Siri să îți citească cea mai recentă valoare atunci când întrebi."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "По умолчанию выключено. Включите значение, чтобы Siri озвучивала его последний показатель по запросу."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Predvolene vypnuté. Zapnite hodnotu, aby ju Siri na požiadanie prečítala nahlas."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avstängt som standard. Slå på ett värde så att Siri läser upp dess senaste mätning när du frågar."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Varsayılan olarak kapalıdır. Sorduğunuzda Siri'nin en son değeri okumasını istediğiniz değeri açın."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "За замовчуванням вимкнено. Увімкніть значення, щоб Siri озвучувала його останній показник на запит."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "默认关闭。开启某个数值后，你询问时 Siri 就会读出其最新读数。"
+          }
+        }
+      }
+    },
+    "Start a Scan via Siri" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Стартиране на сканиране чрез Siri"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicia un escaneig mitjançant el Siri"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spustit skenování přes Siri"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start en scanning via Siri"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scan über Siri starten"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Έναρξη σάρωσης μέσω Siri"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar un escaneo mediante Siri"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Käynnistä skannaus Sirin kautta"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lancer une numérisation via Siri"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pokreni skeniranje putem Sirija"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Szkennelés indítása a Sirin keresztül"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avvia una scansione tramite Siri"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri経由でスキャンを開始"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start een scan via Siri"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rozpocznij skanowanie przez Siri"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar uma digitalização via Siri"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar uma digitalização através da Siri"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pornește o scanare prin Siri"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запуск сканирования через Siri"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spustiť skenovanie cez Siri"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Starta en skanning via Siri"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri ile Tarama Başlat"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запуск сканування через Siri"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过 Siri 开始扫描"
+          }
+        }
+      }
+    },
+    "Say “Scan a lab report” to Siri to open the scanner — never touches a lab value." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кажете на Siri „Сканирай лабораторен резултат“, за да отворите скенера — никога не засяга лабораторна стойност."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Digues “Escaneja un informe de laboratori” al Siri per obrir l'escàner — mai no toca cap valor de laboratori."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Řekněte Siri „Naskenovat laboratorní zprávu“ pro otevření skeneru — nikdy se přitom nedotkne žádné laboratorní hodnoty."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sig “Scan en laboratorierapport” til Siri for at åbne scanneren — rører aldrig en laboratorieværdi."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sag zu Siri „Scanne einen Laborbericht“, um den Scanner zu öffnen – dabei wird nie ein Laborwert berührt."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Πείτε «Σάρωσε μια εργαστηριακή αναφορά» στη Siri για να ανοίξει ο σαρωτής — δεν αγγίζει ποτέ κάποια εργαστηριακή τιμή."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Di «Escanea un informe de laboratorio» a Siri para abrir el escáner: nunca toca ningún valor de laboratorio."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sano Sirille ”Skannaa laboratorioraportti” avataksesi skannerin — se ei koskaan koske mitään laboratorioarvoa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dites « Scanner un rapport de laboratoire » à Siri pour ouvrir le scanner — cela ne touche jamais une valeur de laboratoire."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recite Siriju „Skeniraj laboratorijski nalaz“ za otvaranje skenera — nikada ne dira laboratorijsku vrijednost."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mondd a Sirinek: „Szkennelj be egy laborleletet”, hogy megnyíljon a szkennelés — ez soha nem érint egyetlen laborértéket sem."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Di' “Scansiona un referto di laboratorio” a Siri per aprire lo scanner — non tocca mai un valore di laboratorio."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siriに「検査報告書をスキャン」と言うとスキャナーが開きます — 検査値には一切触れません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeg “Scan een laboratoriumrapport” tegen Siri om de scanner te openen — raakt nooit een laboratoriumwaarde."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Powiedz Siri „Zeskanuj wynik badania”, aby otworzyć skaner — nigdy nie dotyczy to żadnej wartości badania."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diga “Digitalizar um relatório laboratorial” à Siri para abrir o scanner — nunca envolve um valor laboratorial."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diga “Digitalizar um relatório laboratorial” à Siri para abrir o scanner — nunca envolve um valor laboratorial."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spune-i lui Siri „Scanează un raport de laborator” pentru a deschide scanerul — nu implică niciodată vreo valoare de laborator."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скажите Siri «Отсканировать анализ», чтобы открыть сканер — это никогда не затрагивает сами показатели."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Povedzte Siri „Naskenuj laboratórnu správu“ na otvorenie skenera — nikdy sa nedotkne žiadnej laboratórnej hodnoty."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Säg “Skanna en labbrapport” till Siri för att öppna skannern — rör aldrig ett labbvärde."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tarayıcıyı açmak için Siri'ye “Laboratuvar raporu tara” deyin — hiçbir laboratuvar değerine dokunmaz."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скажіть Siri «Відсканувати аналіз», щоб відкрити сканер — це ніколи не стосується самих показників."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "对 Siri 说“扫描化验报告”即可打开扫描仪——绝不会涉及任何化验数值。"
+          }
+        }
+      }
+    },
+    "On-Screen Awareness" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разпознаване на екрана"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconeixement en pantalla"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rozpoznávání obsahu obrazovky"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skærmgenkendelse"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bildschirmerkennung"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αναγνώριση οθόνης"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconocimiento en pantalla"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Näytön tunnistus"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconnaissance à l'écran"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prepoznavanje sadržaja zaslona"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Képernyőfelismerés"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Riconoscimento sullo schermo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画面認識"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schermherkenning"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rozpoznawanie zawartości ekranu"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconhecimento em tela"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconhecimento no ecrã"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recunoașterea ecranului"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Распознавание содержимого экрана"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rozpoznávanie obsahu obrazovky"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skärmigenkänning"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ekran Farkındalığı"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Розпізнавання вмісту екрана"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "屏幕感知"
+          }
+        }
+      }
+    },
+    "While reviewing a report, let Siri see the values shown on screen — useful for hands-free corrections." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Докато преглеждате отчет, позволете на Siri да вижда стойностите на екрана — полезно за корекции без ръце."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mentre revises un informe, deixa que el Siri vegi els valors que es mostren a la pantalla — útil per a correccions sense mans."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Při kontrole zprávy nechte Siri vidět hodnoty zobrazené na obrazovce — užitečné pro opravy bez použití rukou."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mens du gennemgår en rapport, kan du lade Siri se de værdier, der vises på skærmen — nyttigt til håndfrie rettelser."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lass Siri beim Überprüfen eines Berichts die angezeigten Werte sehen – praktisch für freihändige Korrekturen."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Κατά την επισκόπηση μιας αναφοράς, αφήστε τη Siri να βλέπει τις τιμές που εμφανίζονται στην οθόνη — χρήσιμο για διορθώσεις χωρίς χέρια."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al revisar un informe, deja que Siri vea los valores mostrados en pantalla, útil para correcciones sin usar las manos."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kun tarkistat raporttia, anna Sirin nähdä näytöllä näkyvät arvot — hyödyllistä kädet vapaana tehtäviin korjauksiin."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pendant la vérification d'un rapport, laissez Siri voir les valeurs affichées à l'écran — utile pour des corrections mains libres."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dok pregledavate nalaz, dopustite Siriju da vidi vrijednosti prikazane na zaslonu — korisno za ispravke bez korištenja ruku."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Amikor egy leletet ellenőrzöl, engedd, hogy a Siri lássa a képernyőn megjelenő értékeket — hasznos kihangosított javításokhoz."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durante la revisione di un referto, lascia che Siri veda i valori mostrati sullo schermo — utile per correzioni a mani libere."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レポートの確認中に、画面に表示された値をSiriが認識できるようにします — ハンズフリーでの修正に便利です。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laat Siri tijdens het controleren van een rapport de waarden op het scherm zien — handig voor handsfree correcties."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Podczas przeglądania wyniku pozwól Siri widzieć wartości wyświetlane na ekranie — przydatne do poprawek bez użycia rąk."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ao revisar um relatório, deixe a Siri ver os valores mostrados na tela — útil para correções sem usar as mãos."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ao rever um relatório, deixe a Siri ver os valores apresentados no ecrã — útil para correções sem usar as mãos."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "În timp ce revizuiești un raport, lasă Siri să vadă valorile afișate pe ecran — util pentru corecții fără a folosi mâinile."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Во время проверки отчёта позвольте Siri видеть значения на экране — удобно для исправлений без помощи рук."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Počas kontroly správy nechajte Siri vidieť hodnoty zobrazené na obrazovke — užitočné pre opravy bez použitia rúk."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Medan du granskar en rapport, låt Siri se värdena som visas på skärmen — praktiskt för handsfree-korrigeringar."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bir raporu incelerken Siri'nin ekranda gösterilen değerleri görmesine izin verin — elleriniz meşgulken düzeltme yapmak için kullanışlıdır."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Під час перегляду звіту дозвольте Siri бачити значення на екрані — зручно для виправлень без допомоги рук."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在查看报告时，允许 Siri 看到屏幕上显示的数值——便于免提修正。"
+          }
+        }
+      }
+    },
+    "Add to Siri & Spotlight" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавяне към Siri и Spotlight"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afegeix al Siri i a la Spotlight"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Přidat do Siri a Spotlight"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Føj til Siri og Spotlight"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zu Siri & Spotlight hinzufügen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Προσθήκη στη Siri και στο Spotlight"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir a Siri y Spotlight"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lisää Siriin ja Spotlightiin"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter à Siri et Spotlight"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dodaj u Siri i Spotlight"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hozzáadás a Sirihez és a Spotlighthoz"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aggiungi a Siri e Spotlight"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SiriとSpotlightに追加"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toevoegen aan Siri en Spotlight"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dodaj do Siri i Spotlight"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicionar à Siri e Spotlight"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicionar à Siri e Spotlight"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adaugă la Siri și Spotlight"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавить в Siri и Spotlight"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pridať do Siri a Spotlight"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lägg till i Siri och Spotlight"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri ve Spotlight'a Ekle"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Додати до Siri та Spotlight"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加到 Siri 与聚焦搜索"
+          }
+        }
+      }
+    },
+    "Let Siri and Spotlight suggest values you've allowed — names only, never a reading." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Позволете на Siri и Spotlight да предлагат разрешените от вас стойности — само имена, никога резултат."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deixa que el Siri i la Spotlight suggereixin els valors que has permès — només noms, mai una lectura."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nechte Siri a Spotlight navrhovat hodnoty, které jste povolili — pouze názvy, nikdy naměřenou hodnotu."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lad Siri og Spotlight foreslå værdier, du har tilladt — kun navne, aldrig en måling."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lass Siri und Spotlight die von dir erlaubten Werte vorschlagen – nur Namen, nie ein Messwert."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αφήστε τη Siri και το Spotlight να προτείνουν τιμές που έχετε επιτρέψει — μόνο ονόματα, ποτέ μια μέτρηση."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deja que Siri y Spotlight sugieran los valores que has permitido: solo nombres, nunca una lectura."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anna Sirin ja Spotlightin ehdottaa sallimiasi arvoja — vain nimiä, ei koskaan mittaustulosta."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laissez Siri et Spotlight suggérer les valeurs que vous avez autorisées — uniquement les noms, jamais une mesure."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dopustite Siriju i Spotlightu da predlažu vrijednosti koje ste dopustili — samo nazivi, nikad izmjerena vrijednost."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engedd, hogy a Siri és a Spotlight javasolja az általad engedélyezett értékeket — csak a neveket, sosem a mért értéket."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lascia che Siri e Spotlight suggeriscano i valori che hai consentito: solo i nomi, mai una lettura."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "許可した値のみをSiriとSpotlightが提案できるようにします — 名前のみで、測定値は含まれません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laat Siri en Spotlight de waarden voorstellen die je hebt toegestaan — alleen namen, nooit een meting."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pozwól Siri i Spotlight sugerować dozwolone przez Ciebie wartości — tylko nazwy, nigdy wynik."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deixe a Siri e a Spotlight sugerirem os valores que você permitiu — apenas nomes, nunca uma leitura."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deixe a Siri e a Spotlight sugerirem os valores que permitiu — apenas nomes, nunca uma leitura."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasă Siri și Spotlight să sugereze valorile pe care le-ai permis — doar numele, niciodată o valoare măsurată."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Позвольте Siri и Spotlight предлагать разрешённые вами показатели — только названия, никогда не сами значения."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nechajte Siri a Spotlight navrhovať hodnoty, ktoré ste povolili — iba názvy, nikdy nameranú hodnotu."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Låt Siri och Spotlight föreslå värden du har tillåtit — endast namn, aldrig ett uppmätt värde."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri ve Spotlight'ın izin verdiğiniz değerleri önermesine izin verin — yalnızca adlar, asla bir ölçüm değeri değil."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дозвольте Siri та Spotlight пропонувати дозволені вами показники — лише назви, ніколи самі значення."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "允许 Siri 和聚焦搜索建议你已允许的数值——仅名称，绝不包含读数。"
+          }
+        }
+      }
+    },
+    "Import a report to choose which values Siri can access." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Импортирайте отчет, за да изберете до кои стойности Siri да има достъп."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importa un informe per triar a quins valors pot accedir el Siri."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importujte zprávu a vyberte, ke kterým hodnotám může Siri přistupovat."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importér en rapport for at vælge, hvilke værdier Siri kan tilgå."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importiere einen Bericht, um festzulegen, auf welche Werte Siri zugreifen darf."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Εισαγάγετε μια αναφορά για να επιλέξετε σε ποιες τιμές μπορεί να έχει πρόσβαση η Siri."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importa un informe para elegir a qué valores puede acceder Siri."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tuo raportti valitaksesi, mihin arvoihin Sirillä on pääsy."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importez un rapport pour choisir les valeurs auxquelles Siri peut accéder."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uvezite nalaz da odaberete kojim vrijednostima Siri može pristupiti."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importálj egy leletet, hogy kiválaszthasd, mely értékekhez férhet hozzá a Siri."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importa un referto per scegliere a quali valori Siri può accedere."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レポートをインポートして、Siriがアクセスできる値を選択してください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importeer een rapport om te kiezen welke waarden Siri mag gebruiken."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zaimportuj wynik, aby wybrać, do których wartości Siri może mieć dostęp."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importe um relatório para escolher quais valores a Siri pode acessar."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importe um relatório para escolher a que valores a Siri pode aceder."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importă un raport pentru a alege la ce valori poate accesa Siri."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Импортируйте отчёт, чтобы выбрать, к каким показателям может иметь доступ Siri."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importujte správu a vyberte, ku ktorým hodnotám môže mať Siri prístup."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importera en rapport för att välja vilka värden Siri får komma åt."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri'nin hangi değerlere erişebileceğini seçmek için bir rapor içe aktarın."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Імпортуйте звіт, щоб вибрати, до яких показників може мати доступ Siri."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入一份报告，即可选择 Siri 可以访问哪些数值。"
+          }
+        }
+      }
+    },
+    "Ask About a Lab Value" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запитване за лабораторна стойност"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pregunta per un valor de laboratori"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeptat se na laboratorní hodnotu"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spørg om en laboratorieværdi"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nach einem Laborwert fragen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ερώτηση για εργαστηριακή τιμή"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preguntar por un valor de laboratorio"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kysy laboratorioarvoa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demander une valeur de laboratoire"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pitaj o laboratorijskoj vrijednosti"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kérdezz egy laborértékről"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chiedi un valore di laboratorio"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "検査値について質問"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vraag naar een laboratoriumwaarde"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zapytaj o wartość badania"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Perguntar sobre um valor laboratorial"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Perguntar sobre um valor laboratorial"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Întreabă despre o valoare de laborator"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Спросить о лабораторном показателе"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opýtať sa na laboratórnu hodnotu"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fråga om ett labbvärde"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bir Laboratuvar Değeri Sor"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запитати про лабораторний показник"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "询问化验数值"
+          }
+        }
+      }
+    },
+    "Reads back your most recent reading for a value you've allowed Siri to access." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прочита на глас последния ви резултат за стойност, до която сте разрешили достъп на Siri."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Llegeix en veu alta la teva lectura més recent per a un valor al qual has permès l'accés del Siri."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nahlas přečte vaši nejnovější hodnotu pro hodnotu, ke které jste Siri povolili přístup."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Læser din seneste måling højt for en værdi, du har givet Siri adgang til."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Liest deinen neuesten Messwert für einen Wert vor, auf den du Siri Zugriff erlaubt hast."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Διαβάζει φωναχτά την πιο πρόσφατη μέτρησή σας για μια τιμή στην οποία έχετε επιτρέψει πρόσβαση στη Siri."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lee en voz alta tu lectura más reciente para un valor al que has permitido acceder a Siri."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lukee ääneen uusimman tuloksesi arvolle, johon olet sallinut Sirin pääsyn."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lit à voix haute votre dernière mesure pour une valeur à laquelle vous avez autorisé Siri à accéder."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Naglas čita vašu najnoviju izmjerenu vrijednost za vrijednost kojoj ste dopustili pristup Siriju."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Felolvassa a legutóbbi mért értékedet egy olyan értékhez, amelyhez engedélyezted a Siri hozzáférését."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Legge ad alta voce la tua lettura più recente per un valore a cui hai consentito l'accesso a Siri."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siriのアクセスを許可した値について、最新の測定値を読み上げます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leest je meest recente meting voor van een waarde waartoe je Siri toegang hebt gegeven."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Odczytuje na głos Twój najnowszy wynik dla wartości, do której zezwoliłeś Siri na dostęp."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lê em voz alta sua leitura mais recente de um valor ao qual você permitiu que a Siri acessasse."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lê em voz alta a sua leitura mais recente de um valor ao qual permitiu que a Siri acedesse."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Citește cu voce tare cea mai recentă valoare măsurată pentru o valoare la care ai permis accesul lui Siri."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Озвучивает ваш последний показатель для значения, доступ к которому вы разрешили Siri."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nahlas prečíta vašu najnovšiu hodnotu pre hodnotu, ku ktorej ste povolili prístup Siri."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Läser upp ditt senaste mätvärde för ett värde du har tillåtit Siri att komma åt."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri'nin erişmesine izin verdiğiniz bir değer için en son ölçümünüzü sesli olarak okur."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Озвучує ваш останній показник для значення, доступ до якого ви дозволили Siri."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "为你已允许 Siri 访问的数值朗读最新读数。"
+          }
+        }
+      }
+    },
+    "Scan a Lab Report" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сканиране на лабораторен резултат"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escaneja un informe de laboratori"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Naskenovat laboratorní zprávu"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scan en laboratorierapport"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laborbericht scannen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Σάρωση εργαστηριακής αναφοράς"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escanear un informe de laboratorio"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skannaa laboratorioraportti"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Numériser un rapport de laboratoire"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skeniraj laboratorijski nalaz"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laborlelet szkennelése"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scansiona un referto di laboratorio"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "検査報告書をスキャン"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laboratoriumrapport scannen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeskanuj wynik badania"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Digitalizar um relatório laboratorial"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Digitalizar um relatório laboratorial"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scanează un raport de laborator"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отсканировать анализ"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Naskenovať laboratórnu správu"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skanna en labbrapport"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laboratuvar Raporu Tara"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Відсканувати аналіз"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "扫描化验报告"
+          }
+        }
+      }
+    },
+    "Opens LabImporter's scanner to capture a new report." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отваря скенера на LabImporter за заснемане на нов отчет."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obre l'escàner del LabImporter per capturar un nou informe."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otevře skener LabImporteru pro zachycení nové zprávy."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Åbner LabImporters scanner for at indfange en ny rapport."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffnet den Scanner von LabImporter, um einen neuen Bericht zu erfassen."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ανοίγει τον σαρωτή του LabImporter για τη λήψη μιας νέας αναφοράς."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre el escáner de LabImporter para capturar un nuevo informe."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avaa LabImporterin skannerin uuden raportin tallentamiseksi."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvre le scanner de LabImporter pour capturer un nouveau rapport."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otvara LabImporterov skener za snimanje novog nalaza."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Megnyitja a LabImporter szkennelését egy új lelet rögzítéséhez."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apre lo scanner di LabImporter per acquisire un nuovo referto."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporterのスキャナーを開いて新しいレポートを取り込みます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opent de scanner van LabImporter om een nieuw rapport vast te leggen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otwiera skaner LabImporter, aby przechwycić nowy wynik."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre o scanner do LabImporter para capturar um novo relatório."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre o scanner do LabImporter para captar um novo relatório."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deschide scanerul LabImporter pentru a captura un raport nou."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открывает сканер LabImporter для захвата нового отчёта."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otvorí skener LabImporteru na zachytenie novej správy."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öppnar LabImporters skanner för att fånga en ny rapport."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeni bir raporu yakalamak için LabImporter'ın tarayıcısını açar."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Відкриває сканер LabImporter для захоплення нового звіту."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开 LabImporter 的扫描仪以拍摄新的报告。"
+          }
+        }
+      }
+    },
+    "Siri access for %@ isn't turned on yet. Allow it in LabImporter's Settings." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Достъпът на Siri до %@ все още не е включен. Разрешете го в Настройки на LabImporter."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'accés del Siri a %@ encara no està activat. Permet-lo als Ajustos del LabImporter."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Přístup Siri k %@ zatím není povolen. Povolte ho v Nastavení LabImporteru."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri-adgang til %@ er endnu ikke slået til. Tillad det i LabImporters Indstillinger."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Siri-Zugriff für %@ ist noch nicht aktiviert. Erlaube ihn in den Einstellungen von LabImporter."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Η πρόσβαση της Siri στο %@ δεν έχει ενεργοποιηθεί ακόμα. Επιτρέψτε το στις Ρυθμίσεις του LabImporter."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El acceso de Siri a %@ aún no está activado. Permítelo en los ajustes de LabImporter."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sirin pääsy kohteeseen %@ ei ole vielä käytössä. Salli se LabImporterin asetuksissa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'accès Siri pour %@ n'est pas encore activé. Autorisez-le dans les réglages de LabImporter."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pristup Sirija za %@ još nije uključen. Dopustite ga u Postavkama LabImportera."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A Siri hozzáférése a(z) %@ értékhez még nincs bekapcsolva. Engedélyezd a LabImporter Beállításaiban."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'accesso di Siri per %@ non è ancora attivo. Consentilo nelle Impostazioni di LabImporter."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@へのSiriアクセスはまだ有効になっていません。LabImporterの設定で許可してください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri-toegang voor %@ staat nog niet aan. Sta dit toe in de instellingen van LabImporter."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dostęp Siri do %@ nie jest jeszcze włączony. Zezwól na niego w Ustawieniach LabImporter."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O acesso da Siri a %@ ainda não está ativado. Permita em Ajustes do LabImporter."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O acesso da Siri a %@ ainda não está ativado. Permita nas Definições do LabImporter."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accesul Siri la %@ nu este încă activat. Permite-l din Setările LabImporter."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Доступ Siri к «%@» пока не включён. Разрешите его в настройках LabImporter."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prístup Siri k %@ zatiaľ nie je povolený. Povoľte ho v Nastaveniach LabImporteru."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri-åtkomst för %@ är inte påslagen än. Tillåt det i LabImporters inställningar."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ için Siri erişimi henüz açık değil. LabImporter Ayarları'ndan izin verin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Доступ Siri до «%@» ще не увімкнено. Дозвольте його в Налаштуваннях LabImporter."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "尚未开启 Siri 对“%@”的访问权限。请在 LabImporter 的设置中允许。"
+          }
+        }
+      }
+    },
+    "I don't have a reading for %@ yet." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Все още нямам резултат за %@."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encara no tinc cap lectura per a %@."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro %@ zatím nemám žádnou hodnotu."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jeg har ikke en måling for %@ endnu."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für %@ liegt noch kein Messwert vor."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Δεν έχω ακόμα μέτρηση για %@."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todavía no tengo una lectura de %@."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kohteelle %@ ei ole vielä tulosta."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je n'ai pas encore de mesure pour %@."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Za %@ još nemam izmjerenu vrijednost."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A(z) %@ értékhez még nincs mért adatom."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non ho ancora una lettura per %@."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@の測定値はまだありません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ik heb nog geen meting voor %@."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie mam jeszcze wyniku dla %@."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ainda não tenho uma leitura para %@."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ainda não tenho uma leitura para %@."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Încă nu am o valoare măsurată pentru %@."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "У меня пока нет показателя для «%@»."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pre %@ zatiaľ nemám žiadnu hodnotu."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jag har inget mätvärde för %@ än."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ için henüz bir ölçüm değeri yok."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "У мене поки немає показника для «%@»."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "尚无“%@”的读数。"
+          }
+        }
+      }
+    },
+    "Your latest %@ was %@." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Последният ви резултат за %@ беше %@."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La teva última lectura de %@ va ser %@."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vaše poslední hodnota %@ byla %@."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Din seneste måling af %@ var %@."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dein letzter Wert für %@ war %@."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Η πιο πρόσφατη τιμή σας για %@ ήταν %@."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu última lectura de %@ fue %@."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Viimeisin tuloksesi kohteelle %@ oli %@."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre dernière valeur pour %@ était %@."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vaša najnovija izmjerena vrijednost za %@ bila je %@."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A legutóbbi %@ értéked %@ volt."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La tua ultima lettura di %@ era %@."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@の最新の測定値は%@でした。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je laatste meting voor %@ was %@."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Twój ostatni wynik dla %@ to %@."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sua última leitura de %@ foi %@."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A sua última leitura de %@ foi %@."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cea mai recentă valoare pentru %@ a fost %@."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваш последний показатель «%@» — %@."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vaša posledná hodnota %@ bola %@."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ditt senaste värde för %@ var %@."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En son %@ değeriniz %@ idi."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваш останній показник «%@» — %@."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”的最新读数为%@。"
+          }
+        }
+      }
+    },
+    "Starting a scan via Siri isn't turned on yet. Allow it in LabImporter's Settings." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Стартирането на сканиране чрез Siri все още не е включено. Разрешете го в Настройки на LabImporter."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar un escaneig mitjançant el Siri encara no està activat. Permet-lo als Ajustos del LabImporter."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spuštění skenování přes Siri zatím není povoleno. Povolte ho v Nastavení LabImporteru."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start af en scanning via Siri er endnu ikke slået til. Tillad det i LabImporters Indstillinger."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Starten eines Scans über Siri ist noch nicht aktiviert. Erlaube es in den Einstellungen von LabImporter."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Η έναρξη σάρωσης μέσω Siri δεν έχει ενεργοποιηθεί ακόμα. Επιτρέψτε το στις Ρυθμίσεις του LabImporter."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar un escaneo mediante Siri aún no está activado. Permítelo en los ajustes de LabImporter."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skannauksen käynnistäminen Sirin kautta ei ole vielä käytössä. Salli se LabImporterin asetuksissa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le lancement d'une numérisation via Siri n'est pas encore activé. Autorisez-le dans les réglages de LabImporter."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pokretanje skeniranja putem Sirija još nije uključeno. Dopustite ga u Postavkama LabImportera."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A szkennelés Sirin keresztüli indítása még nincs bekapcsolva. Engedélyezd a LabImporter Beállításaiban."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'avvio di una scansione tramite Siri non è ancora attivo. Consentilo nelle Impostazioni di LabImporter."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri経由でのスキャン開始はまだ有効になっていません。LabImporterの設定で許可してください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Een scan starten via Siri staat nog niet aan. Sta dit toe in de instellingen van LabImporter."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rozpoczynanie skanowania przez Siri nie jest jeszcze włączone. Zezwól na to w Ustawieniach LabImporter."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar uma digitalização via Siri ainda não está ativado. Permita em Ajustes do LabImporter."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar uma digitalização através da Siri ainda não está ativado. Permita nas Definições do LabImporter."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pornirea unei scanări prin Siri nu este încă activată. Permite-o din Setările LabImporter."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запуск сканирования через Siri пока не включён. Разрешите его в настройках LabImporter."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spustenie skenovania cez Siri zatiaľ nie je povolené. Povoľte ho v Nastaveniach LabImporteru."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Att starta en skanning via Siri är inte påslaget än. Tillåt det i LabImporters inställningar."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri ile tarama başlatma henüz açık değil. LabImporter Ayarları'ndan izin verin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запуск сканування через Siri ще не увімкнено. Дозвольте його в Налаштуваннях LabImporter."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "尚未开启通过 Siri 开始扫描的功能。请在 LabImporter 的设置中允许。"
+          }
+        }
+      }
+    },
+    "Opening LabImporter's scanner…" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отваряне на скенера на LabImporter…"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S'està obrint l'escàner del LabImporter…"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otevírá se skener LabImporteru…"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Åbner LabImporters scanner…"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Scanner von LabImporter wird geöffnet …"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Άνοιγμα του σαρωτή του LabImporter…"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abriendo el escáner de LabImporter…"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avataan LabImporterin skanneria…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouverture du scanner de LabImporter…"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otvaranje LabImporterovog skenera…"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A LabImporter szkennelésének megnyitása…"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apertura dello scanner di LabImporter…"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporterのスキャナーを開いています…"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scanner van LabImporter wordt geopend…"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otwieranie skanera LabImporter…"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrindo o scanner do LabImporter…"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A abrir o scanner do LabImporter…"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se deschide scanerul LabImporter…"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открывается сканер LabImporter…"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otvára sa skener LabImporteru…"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öppnar LabImporters skanner…"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter'ın tarayıcısı açılıyor…"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Відкривається сканер LabImporter…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在打开 LabImporter 的扫描仪…"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

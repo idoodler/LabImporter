@@ -37,25 +37,35 @@ LabImporter/
 │   ├── LabValue.swift          # editable in-memory value (used in Review flow)
 │   ├── LabReport.swift         # a saved report (Codable); .asLabValues bridges to LabValue
 │   ├── LabMapping.swift        # thin catalog adapter: LOINC code ↔ display name ↔ CDA export / loinc.org URL
-│   └── LabDisplayPreferences.swift  # pinned/ordered/hidden + per-code nicknames (RawRepresentable for @AppStorage)
+│   ├── LabDisplayPreferences.swift  # pinned/ordered/hidden + per-code nicknames (RawRepresentable for @AppStorage)
+│   └── SiriExposurePreferences.swift  # what's exposed to Siri (RawRepresentable for @AppStorage) — see "Siri & App Intents"
 ├── Services/
 │   ├── OCRService.swift        # actor; Vision text recognition + PDFKit rendering
 │   ├── LabParserService.swift  # actor; Foundation Models @Generable structured parse
 │   ├── HealthKitService.swift  # actor (.shared); read/write/delete HKCDADocumentSample + CDA XML parser
 │   ├── CDAExportService.swift  # struct; builds C-CDA R2.1 Lab Report XML + UCUM unit mapping
 │   └── LoincDirectory.swift    # Sendable singleton; in-memory index over the bundled LOINC catalog
+├── Intents/                    # App Intents — Siri's only integration path (SiriKit is retired)
+│   ├── LabImporterShortcuts.swift  # AppShortcutsProvider; declares phrases for both intents
+│   ├── AskLabValueIntent.swift  # reads back a value's latest reading, gated by SiriExposurePreferences
+│   ├── StartLabScanIntent.swift  # opens the scanner (openAppWhenRun); never touches a value
+│   ├── LabMetricEntity.swift    # AppEntity + IndexedEntity; the only source of "which metrics can Siri see"
+│   ├── SiriOnScreenContext.swift  # lock-protected bridge: Review sheet → Siri's on-screen-awareness suggestions
+│   └── SiriActionBridge.swift   # lock-protected bridge: StartLabScanIntent → the live HomeView's scan flow
 └── Views/                     # SwiftUI screens, grouped by feature
     ├── Home/
-    │   └── HomeView.swift          # orchestrates the whole import flow + report loading
-    ├── Onboarding/             # WelcomeView, DisclaimerView, HealthPermissionView,
-    │                           #   CloudSyncOptInView, OnboardingScaffold (first-launch gates)
+    │   ├── HomeView.swift          # orchestrates the whole import flow + report loading
+    │   └── SidebarSection.swift    # iPad sidebar section enum
+    ├── Onboarding/             # WelcomeView, DisclaimerView, HealthPermissionView, CloudSyncOptInView,
+    │                           #   SpotlightOptInView, SiriIntelligenceOptInView, OnboardingScaffold (first-launch gates)
     ├── Import/                 # ImportLandingView (scan/file/paste/manual entry points),
     │                           #   DocumentScannerView (VNDocumentCameraViewController), LabImportEngine
     ├── Review/                 # ReviewView (+Preview), ReviewHeaderCard, LabValueRowView,
     │                           #   AddValueSheet, CodePickerSheet, LoincBrowserView
     ├── Dashboard/              # DashboardView (Swift Charts cards), MetricCard, TrendsView
     ├── History/                # HistoryView (saved reports list), ReportDetailView
-    ├── Settings/               # SettingsView (patient metadata + display prefs), LabSortEditor, RenameLabAlert
+    ├── Settings/               # SettingsView (patient metadata + display prefs), LabSortEditor, RenameLabAlert,
+    │                           #   SiriAccessEditor (per-metric + per-capability Siri opt-in)
     └── Shared/                 # MorphingCategoryBackground, PreviewSampleData,
                                 #   UnsupportedDeviceView (also defines enum DeviceSupport.isSupported)
 
@@ -174,6 +184,44 @@ Config.xcconfig  # BUNDLE_IDENTIFIER = dev.idoodler.$(DEVELOPMENT_TEAM).labimpor
   the variation is obvious (`#Preview("Dark")`, `#Preview("Empty")`). Drive them
   from `PreviewSampleData` / the model `sample*` fixtures rather than ad-hoc data.
   New or edited views are not done until their previews cover every variation.
+
+### Siri & App Intents
+- SiriKit is retired; **App Intents is the only path into Siri**. Everything
+  lives in `Intents/` and stays feature-detectable/self-contained — no
+  separate extension target, no `NSUserActivityTypes`/`IntentsSupported`
+  Info.plist entries (those are SiriKit-era).
+- **Exposure is opt-in, never implied.** `SiriExposurePreferences`
+  (`Models/SiriExposurePreferences.swift`) is the single source of truth for
+  what Siri may do: a master `isEnabled` switch (set in onboarding via
+  `SiriIntelligenceOptInView`, or later in Settings), a per-LOINC-code
+  `allowedCodes` allow-list (empty by default — enabling Siri alone exposes
+  *no* value), and separate toggles for the scan shortcut, on-screen
+  awareness, and knowledge-graph indexing. `SiriAccessEditor` is the Settings
+  screen that edits all of it. Every intent/query re-checks this preference
+  itself (never trusts that a value was allowed when a Shortcut was built) —
+  see `AskLabValueIntent.perform()` and `LabMetricEntityQuery`.
+- **`LabMetricEntity`** (`AppEntity` + `IndexedEntity`) is the *only* place
+  metrics are exposed to Siri's on-device knowledge graph: its query filters
+  by `allowedCodes` for resolution and additionally by
+  `allowKnowledgeIndexing` for proactive suggestions/donation. Never build a
+  second path that exposes entities without going through it.
+- App Intents run outside SwiftUI's environment — sometimes before any view
+  exists (a cold launch via `StartLabScanIntent.openAppWhenRun`). Two small
+  lock-protected singletons bridge that gap instead of `@AppStorage`
+  bindings or `@Observable` state: `SiriOnScreenContext` (Review sheet →
+  what's currently on screen) and `SiriActionBridge` (the intent → the live
+  `HomeView`'s scan flow, queuing the request if the app isn't running yet).
+  Follow this pattern — don't reach for `NotificationCenter` or a new
+  `@AppStorage` flag for intent → view communication.
+- `ParameterSummary`/`AppShortcut` phrase strings (the `Summary(...)` in an
+  intent and the `phrases:` in `LabImporterShortcuts`) are **not** localized
+  in `Localizable.xcstrings` today — their String Catalog extraction format
+  wasn't verified against a real Xcode toolchain, so they're left as English
+  source rather than risking a malformed catalog entry. Everything a user
+  actually reads or hears (dialogs, titles, descriptions, all Settings/
+  onboarding UI) *is* fully localized the normal way. If you verify the
+  phrase/summary extraction format in Xcode, localize them and remove this
+  note.
 
 ## Build, run & lint
 

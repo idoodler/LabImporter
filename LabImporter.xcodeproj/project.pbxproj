@@ -75,6 +75,17 @@
 		AAFF0000000000000000F402 /* ValueDescriptionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFF0000000000000000F401 /* ValueDescriptionCard.swift */; };
 		AAFF0000000000000000F502 /* TrendWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFF0000000000000000F501 /* TrendWindow.swift */; };
 		D24B3094F0FD8A93BB70A34F /* ScreenshotMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C897701053C6666E95989E84 /* ScreenshotMode.swift */; };
+		AASI000000000000000001AA /* SiriExposurePreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASI000000000000000002AA /* SiriExposurePreferences.swift */; };
+		AASI000000000000000003AA /* SiriOnScreenContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASI000000000000000004AA /* SiriOnScreenContext.swift */; };
+		AASI000000000000000005AA /* SiriActionBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASI000000000000000006AA /* SiriActionBridge.swift */; };
+		AASI000000000000000007AA /* LabMetricEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASI000000000000000008AA /* LabMetricEntity.swift */; };
+		AASI000000000000000009AA /* AskLabValueIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASI000000000000000010AA /* AskLabValueIntent.swift */; };
+		AASI000000000000000011AA /* StartLabScanIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASI000000000000000012AA /* StartLabScanIntent.swift */; };
+		AASI000000000000000013AA /* LabImporterShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASI000000000000000014AA /* LabImporterShortcuts.swift */; };
+		AASI000000000000000015AA /* SiriIntelligenceOptInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASI000000000000000016AA /* SiriIntelligenceOptInView.swift */; };
+		AASI000000000000000017AA /* SiriAccessEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASI000000000000000018AA /* SiriAccessEditor.swift */; };
+		AASI000000000000000020AA /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASI000000000000000021AA /* AppInfo.swift */; };
+		AASI000000000000000022AA /* SidebarSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASI000000000000000023AA /* SidebarSection.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -167,6 +178,17 @@
 		AAFF0000000000000000F401 /* ValueDescriptionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueDescriptionCard.swift; sourceTree = "<group>"; };
 		AAFF0000000000000000F501 /* TrendWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendWindow.swift; sourceTree = "<group>"; };
 		C897701053C6666E95989E84 /* ScreenshotMode.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScreenshotMode.swift; sourceTree = "<group>"; };
+		AASI000000000000000002AA /* SiriExposurePreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiriExposurePreferences.swift; sourceTree = "<group>"; };
+		AASI000000000000000004AA /* SiriOnScreenContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiriOnScreenContext.swift; sourceTree = "<group>"; };
+		AASI000000000000000006AA /* SiriActionBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiriActionBridge.swift; sourceTree = "<group>"; };
+		AASI000000000000000008AA /* LabMetricEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabMetricEntity.swift; sourceTree = "<group>"; };
+		AASI000000000000000010AA /* AskLabValueIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AskLabValueIntent.swift; sourceTree = "<group>"; };
+		AASI000000000000000012AA /* StartLabScanIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartLabScanIntent.swift; sourceTree = "<group>"; };
+		AASI000000000000000014AA /* LabImporterShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabImporterShortcuts.swift; sourceTree = "<group>"; };
+		AASI000000000000000016AA /* SiriIntelligenceOptInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiriIntelligenceOptInView.swift; sourceTree = "<group>"; };
+		AASI000000000000000018AA /* SiriAccessEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiriAccessEditor.swift; sourceTree = "<group>"; };
+		AASI000000000000000021AA /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
+		AASI000000000000000023AA /* SidebarSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarSection.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -212,6 +234,7 @@
 				AABB000000000000000012AA /* Models */,
 				AABB000000000000000013AA /* Services */,
 				AABB000000000000000014AA /* Views */,
+				AASI000000000000000019AA /* Intents */,
 				AABB000000000000000032AA /* Assets.xcassets */,
 				AABB000000000000000076AA /* Localizable.xcstrings */,
 				AABB000000000000000033AA /* Info.plist */,
@@ -231,6 +254,7 @@
 				AABB000000000000000061AA /* LabReport.swift */,
 				AABB000000000000000075AA /* LabDisplayPreferences.swift */,
 				AAED000000000000000011AA /* PDFExportOptions.swift */,
+				AASI000000000000000002AA /* SiriExposurePreferences.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -266,6 +290,19 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		AASI000000000000000019AA /* Intents */ = {
+			isa = PBXGroup;
+			children = (
+				AASI000000000000000014AA /* LabImporterShortcuts.swift */,
+				AASI000000000000000010AA /* AskLabValueIntent.swift */,
+				AASI000000000000000012AA /* StartLabScanIntent.swift */,
+				AASI000000000000000008AA /* LabMetricEntity.swift */,
+				AASI000000000000000004AA /* SiriOnScreenContext.swift */,
+				AASI000000000000000006AA /* SiriActionBridge.swift */,
+			);
+			path = Intents;
+			sourceTree = "<group>";
+		};
 		AABB000000000000000015AA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -285,6 +322,7 @@
 			children = (
 				AABB000000000000000026AA /* HomeView.swift */,
 				AASP000000000000000006AA /* SearchPresentationCoordinator.swift */,
+				AASI000000000000000023AA /* SidebarSection.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -297,6 +335,7 @@
 				636BA85D2FCC52EE006E8E71 /* HealthPermissionView.swift */,
 				AABB0000000000000000D2AA /* CloudSyncOptInView.swift */,
 				AASP000000000000000004AA /* SpotlightOptInView.swift */,
+				AASI000000000000000016AA /* SiriIntelligenceOptInView.swift */,
 				AABB0000000000000000F6AA /* OnboardingScaffold.swift */,
 			);
 			path = Onboarding;
@@ -358,6 +397,8 @@
 				AABBCC0000000000000004AA /* RenameLabAlert.swift */,
 				AAFF0000000000000000F301 /* ReferenceRangeEditor.swift */,
 				AABBCC0000000000000006AA /* BuildInfoCard.swift */,
+				AASI000000000000000018AA /* SiriAccessEditor.swift */,
+				AASI000000000000000021AA /* AppInfo.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -638,6 +679,17 @@
 				AABBCC0000000000000005AA /* BuildInfoCard.swift in Sources */,
 				AABB0000000000000000C2DE /* UnsupportedDeviceView.swift in Sources */,
 				D24B3094F0FD8A93BB70A34F /* ScreenshotMode.swift in Sources */,
+				AASI000000000000000001AA /* SiriExposurePreferences.swift in Sources */,
+				AASI000000000000000003AA /* SiriOnScreenContext.swift in Sources */,
+				AASI000000000000000005AA /* SiriActionBridge.swift in Sources */,
+				AASI000000000000000007AA /* LabMetricEntity.swift in Sources */,
+				AASI000000000000000009AA /* AskLabValueIntent.swift in Sources */,
+				AASI000000000000000011AA /* StartLabScanIntent.swift in Sources */,
+				AASI000000000000000013AA /* LabImporterShortcuts.swift in Sources */,
+				AASI000000000000000015AA /* SiriIntelligenceOptInView.swift in Sources */,
+				AASI000000000000000017AA /* SiriAccessEditor.swift in Sources */,
+				AASI000000000000000020AA /* AppInfo.swift in Sources */,
+				AASI000000000000000022AA /* SidebarSection.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

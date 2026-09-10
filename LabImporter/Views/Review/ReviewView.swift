@@ -24,8 +24,7 @@ struct ReviewView: View {
     @State private var didSeedMetadata = false
 
     // Snapshot the sheet opened with, to warn only about discarding real edits.
-    // @State (not let) so it's captured once and preserved across re-inits, paired
-    // with `labValues` — else a re-render re-derives it (fresh `asLabValues` UUIDs).
+    // @State (not let): captured once and preserved across re-inits, unlike a re-derived `asLabValues`.
     @State private var initialLabValues: [LabValue]
     @State private var initialReportDate: Date
 
@@ -135,6 +134,7 @@ struct ReviewView: View {
             configureImportEngine()
             seedMetadataFromReport()
         }
+        .reportsToSiriOnScreenContext(labValues)
         .registersAsSearchEditor(onClose: attemptClose)
         .sheet(isPresented: Binding(
             get: { cdaShareURL != nil },

@@ -45,3 +45,31 @@ extension LabReport {
             .max { (counts[$0] ?? 0) < (counts[$1] ?? 0) }
     }
 }
+
+extension Array where Element == LabReport {
+    /// The most recent numeric reading for `code` across every report, or
+    /// `nil` if none exists. Mirrors `SpotlightIndexService`'s "latest metric"
+    /// reduction for a single code; used by the Siri value-query intent.
+    func latestEntry(for code: String) -> (entry: LabReport.Entry, date: Date)? {
+        var latest: (entry: LabReport.Entry, date: Date)?
+        for report in self {
+            for entry in report.entries where entry.code == code && entry.numericValue != nil {
+                if let current = latest, current.date >= report.date { continue }
+                latest = (entry, report.date)
+            }
+        }
+        return latest
+    }
+
+    /// Distinct LOINC codes with at least one numeric reading, across every
+    /// report — the universe Siri exposure can be granted over.
+    var distinctNumericCodes: Set<String> {
+        var codes = Set<String>()
+        for report in self {
+            for entry in report.entries where entry.numericValue != nil {
+                codes.insert(entry.code)
+            }
+        }
+        return codes
+    }
+}
