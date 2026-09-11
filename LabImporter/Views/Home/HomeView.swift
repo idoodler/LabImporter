@@ -50,18 +50,22 @@ struct HomeView: View {
     // iPad sidebar state
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
     @State private var sidebarSelection: SidebarSection? = .dashboard
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
 
-    /// Whether to present the iPad sidebar split view. Keyed off the device
-    /// idiom rather than `horizontalSizeClass` on purpose: a large iPhone flips
-    /// between compact (portrait) and regular (landscape) on every rotation, and
-    /// driving the root layout off that swaps the whole navigation container —
-    /// tearing down any pushed screen and dumping the user back on the
-    /// dashboard. The idiom is stable across rotation, so the iPhone keeps its
-    /// `NavigationStack` (and its navigation state) and only the iPad gets the
-    /// sidebar. `NavigationSplitView` still collapses itself when an iPad is
-    /// horizontally compact (Slide Over), so no behavior is lost there.
+    /// Whether to present the iPad-style sidebar split view. Idiom alone used
+    /// to be the whole check — a regular iPhone flips `horizontalSizeClass`
+    /// between compact (portrait) and regular (landscape) on every rotation,
+    /// and driving the root layout off that tears down navigation state on
+    /// every turn. Requiring *both* size classes regular keeps that property
+    /// (no iPhone is ever regular×regular) while also picking up unfolded
+    /// foldables: an iPhone Duo's inner display reports `.phone` idiom but is
+    /// regular×regular like an iPad, while its folded/cover screen behaves
+    /// like a normal compact iPhone. `NavigationSplitView` still collapses
+    /// itself when horizontally compact (Slide Over, or the Duo folded).
     private var usesSidebarLayout: Bool {
         UIDevice.current.userInterfaceIdiom == .pad
+            || (horizontalSizeClass == .regular && verticalSizeClass == .regular)
     }
 
     var body: some View {
