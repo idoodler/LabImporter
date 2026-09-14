@@ -10,9 +10,10 @@ import Foundation
 /// index would also surface these in Spotlight, duplicating
 /// `SpotlightIndexService` (the dedicated, always-on Spotlight feature).
 /// This entity stays scoped to Siri's own proactive suggestions, gated by
-/// `SiriExposurePreferences.allowedCodes` and, for the suggestion feed
-/// specifically, `allowKnowledgeIndexing`. See `LabMetricEntityQuery` for
-/// exactly how each control gates the entity.
+/// `SiriExposurePreferences.isCodeAllowed(_:)` (either every value, or only
+/// `allowedCodes`) and, for the suggestion feed specifically,
+/// `allowKnowledgeIndexing`. See `LabMetricEntityQuery` for exactly how each
+/// control gates the entity.
 struct LabMetricEntity: AppEntity {
     static var typeDisplayRepresentation: TypeDisplayRepresentation {
         TypeDisplayRepresentation(name: "Lab Value")
@@ -31,13 +32,14 @@ struct LabMetricEntity: AppEntity {
 
 struct LabMetricEntityQuery: EntityQuery {
     /// Resolves specific codes, e.g. when Siri already has a parameter value
-    /// from a previously built Shortcut. Filtered only by the per-metric
-    /// opt-in — a metric the user allowed must keep working even after they
-    /// turn off proactive knowledge-graph suggestions.
+    /// from a previously built Shortcut. Filtered by whichever access mode is
+    /// active — every value, or just the per-metric opt-in — via
+    /// `isValueExposed`, so a metric the user allowed keeps working even after
+    /// they turn off proactive knowledge-graph suggestions.
     func entities(for identifiers: [String]) async throws -> [LabMetricEntity] {
         let prefs = SiriExposurePreferences.current()
         guard prefs.isEnabled else { return [] }
-        let allowed = Set(identifiers).intersection(prefs.allowedSet)
+        let allowed = Set(identifiers).filter(prefs.isValueExposed)
         guard !allowed.isEmpty else { return [] }
         return allowed.map { LabMetricEntity(id: $0, name: LabMapping.displayName(for: $0)) }
     }
@@ -46,7 +48,8 @@ struct LabMetricEntityQuery: EntityQuery {
     /// as Siri's own proactive suggestions (not Spotlight — this entity isn't
     /// `IndexedEntity`). Prioritizes whatever's currently visible in the
     /// Review sheet ("on-screen awareness") when that's enabled, then adds
-    /// every allowed, knowledge-indexed metric the user actually has data for.
+    /// every knowledge-indexed metric the user actually has data for —
+    /// every tracked code while `allowAllValues` is on, else just `allowedCodes`.
     func suggestedEntities() async throws -> [LabMetricEntity] {
         let prefs = SiriExposurePreferences.current()
         guard prefs.isEnabled else { return [] }
@@ -57,8 +60,7 @@ struct LabMetricEntityQuery: EntityQuery {
         }
         if prefs.allowKnowledgeIndexing {
             let reports = (try? await HealthKitService.shared.loadCDADocuments()) ?? []
-            let tracked = reports.distinctNumericCodes
-            codes += prefs.allowedCodes.filter { prefs.isKnowledgeIndexed($0) && tracked.contains($0) }
+            codes += reports.distinctNumericCodes.filter(prefs.isKnowledgeIndexed)
         }
 
         var seen = Set<String>()

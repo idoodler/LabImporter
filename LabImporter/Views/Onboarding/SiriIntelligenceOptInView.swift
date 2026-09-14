@@ -1,22 +1,25 @@
 import SwiftUI
 
 /// Onboarding step that introduces Siri & Shortcuts support (App Intents —
-/// SiriKit's replacement) and asks, up front, whether to turn it on and which
-/// capabilities to allow. Mirrors `SpotlightOptInView`: the decision is
-/// recorded via `onDecision`, which the host persists and uses to clear the
-/// onboarding gate. The three toggles below map straight onto
-/// `SiriExposurePreferences`' capability flags — mirroring `SiriAccessEditor`
-/// so the choice made here isn't a black box. Which *values* Siri may read
-/// back stays a separate, per-metric opt-in made later in Settings: no report
-/// has been imported yet at this point in onboarding, so there's nothing to
-/// list — nothing is exposed just because onboarding says yes.
+/// SiriKit's replacement) and asks, up front, whether to turn it on, which
+/// values it may read back, and which capabilities to allow. Mirrors
+/// `SpotlightOptInView`: the decision is recorded via `onDecision`, which the
+/// host persists and uses to clear the onboarding gate. The capability
+/// toggles below map straight onto `SiriExposurePreferences`' flags —
+/// mirroring `SiriAccessEditor` so the choice made here isn't a black box.
+/// Picking "Selected Values" here doesn't list any metric yet — no report has
+/// been imported at this point in onboarding — it just opts into the
+/// per-metric allow-list, populated later in Settings; nothing is exposed
+/// until then.
 struct SiriIntelligenceOptInView: View {
-    /// Called with the user's choices: the master switch, then the four
-    /// capability flags (scan shortcut, on-screen awareness, knowledge
-    /// indexing, in-app search) mirrored from the toggles on screen. The host
-    /// writes them into `SiriExposurePreferences` and dismisses the gate.
+    /// Called with the user's choices: the master switch, the value-access
+    /// mode, then the capability flags (scan shortcut, on-screen awareness,
+    /// knowledge indexing, in-app search) mirrored from the toggles on
+    /// screen. The host writes them into `SiriExposurePreferences` and
+    /// dismisses the gate.
     let onDecision: (
         _ enabled: Bool,
+        _ allowAllValues: Bool,
         _ allowScanShortcut: Bool,
         _ allowOnScreenAwareness: Bool,
         _ allowKnowledgeIndexing: Bool,
@@ -25,6 +28,7 @@ struct SiriIntelligenceOptInView: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var appeared = false
+    @State private var allowAllValues = false
     @State private var allowScanShortcut = true
     @State private var allowOnScreenAwareness = false
     @State private var allowKnowledgeIndexing = false
@@ -97,6 +101,9 @@ struct SiriIntelligenceOptInView: View {
         VStack(alignment: .leading, spacing: 22) {
             BenefitRow(benefit: askBenefit)
                 .onboardingRow(appeared: appeared, delay: 0.15, reduceMotion: reduceMotion)
+
+            ValueAccessPicker(allowAllValues: $allowAllValues)
+                .onboardingRow(appeared: appeared, delay: 0.19, reduceMotion: reduceMotion)
 
             CapabilityToggleRow(
                 icon: "doc.viewfinder",
@@ -209,7 +216,7 @@ struct SiriIntelligenceOptInView: View {
     private var buttons: some View {
         VStack(spacing: 12) {
             Button {
-                onDecision(true, allowScanShortcut, allowOnScreenAwareness, allowKnowledgeIndexing, allowInAppSearch)
+                onDecision(true, allowAllValues, allowScanShortcut, allowOnScreenAwareness, allowKnowledgeIndexing, allowInAppSearch)
             } label: {
                 Text("Enable Siri & Shortcuts")
                     .frame(maxWidth: .infinity)
@@ -218,7 +225,7 @@ struct SiriIntelligenceOptInView: View {
             .controlSize(.large)
 
             Button {
-                onDecision(false, allowScanShortcut, allowOnScreenAwareness, allowKnowledgeIndexing, allowInAppSearch)
+                onDecision(false, allowAllValues, allowScanShortcut, allowOnScreenAwareness, allowKnowledgeIndexing, allowInAppSearch)
             } label: {
                 Text("Not Now")
                     .frame(maxWidth: .infinity)
@@ -325,18 +332,67 @@ private struct CapabilityToggleRow: View {
     }
 }
 
+// MARK: - Value access picker
+
+/// The choice behind `SiriExposurePreferences.allowAllValues`: read back
+/// everything tracked (now and later), or start from nothing and pick values
+/// individually in Settings. Same icon+title+description language as
+/// `CapabilityToggleRow`, but a segmented choice instead of a toggle since the
+/// two options are mutually exclusive.
+private struct ValueAccessPicker: View {
+    @Binding var allowAllValues: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .center, spacing: 18) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: [.pink, .pink.opacity(0.7)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 58, height: 58)
+                        .shadow(color: .pink.opacity(0.35), radius: 6, x: 0, y: 3)
+                    Image(systemName: "checkmark.shield")
+                        .font(.title2)
+                        .foregroundStyle(.white)
+                }
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Value Access")
+                        .font(.body.bold())
+                    Text(allowAllValues
+                         ? "Siri may read back every value you track — including any you add later."
+                         : "Choose exactly which values Siri may read back.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            Picker("Value Access", selection: $allowAllValues) {
+                Text("All Values").tag(true)
+                Text("Selected Values").tag(false)
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+        }
+    }
+}
+
 // MARK: - Preview
 
 #Preview("Light") {
-    SiriIntelligenceOptInView { _, _, _, _, _ in }
+    SiriIntelligenceOptInView { _, _, _, _, _, _ in }
 }
 
 #Preview("Dark") {
-    SiriIntelligenceOptInView { _, _, _, _, _ in }
+    SiriIntelligenceOptInView { _, _, _, _, _, _ in }
         .preferredColorScheme(.dark)
 }
 
 #Preview("Landscape") {
-    SiriIntelligenceOptInView { _, _, _, _, _ in }
+    SiriIntelligenceOptInView { _, _, _, _, _, _ in }
         .previewInterfaceOrientation(.landscapeLeft)
 }

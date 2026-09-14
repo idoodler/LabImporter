@@ -45,9 +45,28 @@ struct SiriAccessEditor: View {
 
     // MARK: - Per-value access
 
+    private var accessModeSection: some View {
+        Section {
+            Picker("Value Access", selection: $prefs.allowAllValues) {
+                Text("All Values").tag(true)
+                Text("Selected Values").tag(false)
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+        } footer: {
+            Text(prefs.allowAllValues
+                 ? "Siri may read back every value you track — including any you add later."
+                 : "Choose exactly which values Siri may read back below.")
+        }
+    }
+
     @ViewBuilder
     private var valuesSection: some View {
-        if allCodes.isEmpty {
+        accessModeSection
+
+        if prefs.allowAllValues {
+            EmptyView()
+        } else if allCodes.isEmpty {
             Section {
                 Text("Import a report to choose which values Siri can access.")
                     .foregroundStyle(.secondary)
@@ -98,6 +117,17 @@ struct SiriAccessEditor: View {
     @Previewable @State var prefs = SiriExposurePreferences()
     NavigationStack {
         SiriAccessEditor(prefs: $prefs, allCodes: [])
+    }
+}
+
+#Preview("All Values") {
+    @Previewable @State var prefs: SiriExposurePreferences = {
+        var prefs = SiriExposurePreferences()
+        prefs.allowAllValues = true
+        return prefs
+    }()
+    NavigationStack {
+        SiriAccessEditor(prefs: $prefs, allCodes: CodeName.sampleCodes)
     }
 }
 
