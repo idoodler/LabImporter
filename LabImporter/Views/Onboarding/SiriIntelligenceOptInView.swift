@@ -1,45 +1,32 @@
 import SwiftUI
 
 /// Onboarding step that introduces Siri & Shortcuts support (App Intents —
-/// SiriKit's replacement) and asks, up front, whether to turn it on at all.
-/// Mirrors `SpotlightOptInView`: the decision is recorded via `onDecision`,
-/// which the host persists and uses to clear the onboarding gate. Turning it
-/// on only enables the scan shortcut (no health data); which values Siri may
-/// read back stays a separate, per-metric opt-in made later in Settings
-/// (`SiriAccessEditor`) — nothing is exposed just because onboarding says yes.
+/// SiriKit's replacement) and asks, up front, whether to turn it on and which
+/// capabilities to allow. Mirrors `SpotlightOptInView`: the decision is
+/// recorded via `onDecision`, which the host persists and uses to clear the
+/// onboarding gate. The three toggles below map straight onto
+/// `SiriExposurePreferences`' capability flags — mirroring `SiriAccessEditor`
+/// so the choice made here isn't a black box. Which *values* Siri may read
+/// back stays a separate, per-metric opt-in made later in Settings: no report
+/// has been imported yet at this point in onboarding, so there's nothing to
+/// list — nothing is exposed just because onboarding says yes.
 struct SiriIntelligenceOptInView: View {
-    /// Called with the user's choice (`true` = turn on Siri & Shortcuts). The
-    /// host stores the preference and dismisses the gate.
-    let onDecision: (Bool) -> Void
+    /// Called with the user's choices: the master switch, then the three
+    /// capability flags (scan shortcut, on-screen awareness, knowledge
+    /// indexing) mirrored from the toggles on screen. The host writes them
+    /// into `SiriExposurePreferences` and dismisses the gate.
+    let onDecision: (
+        _ enabled: Bool,
+        _ allowScanShortcut: Bool,
+        _ allowOnScreenAwareness: Bool,
+        _ allowKnowledgeIndexing: Bool
+    ) -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var appeared = false
-
-    private var benefits: [Benefit] {
-        [
-            Benefit(
-                icon: "waveform.path.ecg",
-                color: LabCategory.cardiac.color,
-                title: "Ask Siri Anytime",
-                description: """
-                Say “Ask LabImporter about my cholesterol” and Siri reads back your latest \
-                reading — but only for values you allow.
-                """
-            ),
-            Benefit(
-                icon: "doc.viewfinder",
-                color: LabCategory.bloodGas.color,
-                title: "Start a Scan Hands-Free",
-                description: "“Scan a lab report in LabImporter” opens the scanner instantly — no health data involved."
-            ),
-            Benefit(
-                icon: "hand.raised.fill",
-                color: LabCategory.hepatic.color,
-                title: "You Choose What Siri Knows",
-                description: "Nothing is shared until you allow it. Pick exactly which values Siri can access anytime in Settings."
-            )
-        ]
-    }
+    @State private var allowScanShortcut = true
+    @State private var allowOnScreenAwareness = false
+    @State private var allowKnowledgeIndexing = false
 
     var body: some View {
         OnboardingScaffold {
@@ -71,10 +58,16 @@ struct SiriIntelligenceOptInView: View {
                         )
                     )
                     .frame(width: 180, height: 180)
+                // Color first, white second: unlike the other onboarding heroes'
+                // icons, "waveform.and.mic" renders its dominant mic-body layer
+                // in the *first* palette color — putting `.white` there left a
+                // mostly-white glyph sitting on a soft, mostly-transparent glow,
+                // unreadable against a light-mode background. Purple as the
+                // primary layer keeps it legible in both themes.
                 Image(systemName: "waveform.and.mic")
                     .font(.system(size: 84, weight: .semibold))
                     .symbolRenderingMode(.palette)
-                    .foregroundStyle(.white, Color.purple.gradient)
+                    .foregroundStyle(Color.purple.gradient, .white)
                     .shadow(color: .purple.opacity(0.35), radius: 18, x: 0, y: 8)
             }
             VStack(spacing: 6) {
@@ -100,21 +93,53 @@ struct SiriIntelligenceOptInView: View {
 
     private var benefitCard: some View {
         VStack(alignment: .leading, spacing: 22) {
-            ForEach(Array(benefits.enumerated()), id: \.offset) { index, benefit in
-                BenefitRow(benefit: benefit)
-                    .opacity(appeared ? 1 : 0)
-                    .offset(y: appeared ? 0 : 20)
-                    .animation(
-                        reduceMotion ? nil : .smooth(duration: 0.6).delay(0.15 + Double(index) * 0.08),
-                        value: appeared
-                    )
-            }
+            BenefitRow(benefit: askBenefit)
+                .onboardingRow(appeared: appeared, delay: 0.15, reduceMotion: reduceMotion)
+
+            CapabilityToggleRow(
+                icon: "doc.viewfinder",
+                color: LabCategory.bloodGas.color,
+                title: "Start a Scan Hands-Free",
+                description: "“Scan a lab report in LabImporter” opens the scanner instantly — no health data involved.",
+                isOn: $allowScanShortcut
+            )
+            .onboardingRow(appeared: appeared, delay: 0.23, reduceMotion: reduceMotion)
+
+            CapabilityToggleRow(
+                icon: "eye",
+                color: .teal,
+                title: "On-Screen Awareness",
+                description: "While reviewing a report, let Siri see the values shown on screen — useful for hands-free corrections.",
+                isOn: $allowOnScreenAwareness
+            )
+            .onboardingRow(appeared: appeared, delay: 0.31, reduceMotion: reduceMotion)
+
+            CapabilityToggleRow(
+                icon: "sparkle.magnifyingglass",
+                color: .orange,
+                title: "Add to Siri & Spotlight",
+                description: "Let Siri and Spotlight suggest values you've allowed — names only, never a reading.",
+                isOn: $allowKnowledgeIndexing
+            )
+            .onboardingRow(appeared: appeared, delay: 0.39, reduceMotion: reduceMotion)
         }
         .padding(24)
         .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 28))
         .overlay(
             RoundedRectangle(cornerRadius: 28)
                 .stroke(Color.primary.opacity(0.08), lineWidth: 0.5)
+        )
+    }
+
+    private var askBenefit: Benefit {
+        Benefit(
+            icon: "waveform.path.ecg",
+            color: LabCategory.cardiac.color,
+            title: "Ask Siri Anytime",
+            description: """
+            Say “Ask LabImporter about my cholesterol” and Siri reads back your latest \
+            reading — but only for values you allow.
+            """
         )
     }
 
@@ -173,7 +198,7 @@ struct SiriIntelligenceOptInView: View {
     private var buttons: some View {
         VStack(spacing: 12) {
             Button {
-                onDecision(true)
+                onDecision(true, allowScanShortcut, allowOnScreenAwareness, allowKnowledgeIndexing)
             } label: {
                 Text("Enable Siri & Shortcuts")
                     .frame(maxWidth: .infinity)
@@ -182,7 +207,7 @@ struct SiriIntelligenceOptInView: View {
             .controlSize(.large)
 
             Button {
-                onDecision(false)
+                onDecision(false, allowScanShortcut, allowOnScreenAwareness, allowKnowledgeIndexing)
             } label: {
                 Text("Not Now")
                     .frame(maxWidth: .infinity)
@@ -191,6 +216,17 @@ struct SiriIntelligenceOptInView: View {
             .controlSize(.large)
         }
         .opacity(appeared ? 1 : 0)
+    }
+}
+
+// MARK: - Row entrance animation
+
+private extension View {
+    /// Shared fade/slide-in used by every row in the benefit card.
+    func onboardingRow(appeared: Bool, delay: Double, reduceMotion: Bool) -> some View {
+        opacity(appeared ? 1 : 0)
+            .offset(y: appeared ? 0 : 20)
+            .animation(reduceMotion ? nil : .smooth(duration: 0.6).delay(delay), value: appeared)
     }
 }
 
@@ -235,18 +271,61 @@ private struct BenefitRow: View {
     }
 }
 
+// MARK: - Capability toggle row
+
+/// Same visual language as `BenefitRow`, but interactive — this is the row
+/// type that actually asks the user what to share, one capability at a time.
+private struct CapabilityToggleRow: View {
+    let icon: String
+    let color: Color
+    let title: LocalizedStringKey
+    let description: LocalizedStringKey
+    @Binding var isOn: Bool
+
+    var body: some View {
+        Toggle(isOn: $isOn) {
+            HStack(alignment: .center, spacing: 18) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: [color, color.opacity(0.7)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 58, height: 58)
+                        .shadow(color: color.opacity(0.35), radius: 6, x: 0, y: 3)
+                    Image(systemName: icon)
+                        .font(.title2)
+                        .foregroundStyle(.white)
+                }
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(title)
+                        .font(.body.bold())
+                    Text(description)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+        }
+        .tint(color)
+    }
+}
+
 // MARK: - Preview
 
 #Preview("Light") {
-    SiriIntelligenceOptInView { _ in }
+    SiriIntelligenceOptInView { _, _, _, _ in }
 }
 
 #Preview("Dark") {
-    SiriIntelligenceOptInView { _ in }
+    SiriIntelligenceOptInView { _, _, _, _ in }
         .preferredColorScheme(.dark)
 }
 
 #Preview("Landscape") {
-    SiriIntelligenceOptInView { _ in }
+    SiriIntelligenceOptInView { _, _, _, _ in }
         .previewInterfaceOrientation(.landscapeLeft)
 }

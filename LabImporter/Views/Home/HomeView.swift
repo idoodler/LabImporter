@@ -400,10 +400,11 @@ private extension HomeView {
             }
             .transition(.opacity)
         } else if !hasChosenSiriIntelligence {
-            SiriIntelligenceOptInView { enabled in
-                var prefs = siriPrefs
-                prefs.isEnabled = enabled
-                siriPrefs = prefs
+            SiriIntelligenceOptInView { enabled, allowScanShortcut, allowOnScreenAwareness, allowKnowledgeIndexing in
+                siriPrefs.isEnabled = enabled
+                siriPrefs.allowScanShortcut = allowScanShortcut
+                siriPrefs.allowOnScreenAwareness = allowOnScreenAwareness
+                siriPrefs.allowKnowledgeIndexing = allowKnowledgeIndexing
                 withAnimation(.smooth(duration: 0.35)) { hasChosenSiriIntelligence = true }
             }
             .transition(.opacity)
