@@ -50648,298 +50648,298 @@
         }
       }
     },
-    "Add to Siri & Spotlight" : {
+    "Add to Siri Suggestions" : {
       "localizations" : {
         "bg" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Добавяне към Siri и Spotlight"
+            "value" : "Добавяне към предложенията на Siri"
           }
         },
         "ca" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Afegeix al Siri i a la Spotlight"
+            "value" : "Afegeix als suggeriments del Siri"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Přidat do Siri a Spotlight"
+            "value" : "Přidat do návrhů Siri"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Føj til Siri og Spotlight"
+            "value" : "Føj til Siri-forslag"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zu Siri & Spotlight hinzufügen"
+            "value" : "Zu Siri-Vorschlägen hinzufügen"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Προσθήκη στη Siri και στο Spotlight"
+            "value" : "Προσθήκη στις προτάσεις της Siri"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Añadir a Siri y Spotlight"
+            "value" : "Añadir a las sugerencias de Siri"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lisää Siriin ja Spotlightiin"
+            "value" : "Lisää Sirin ehdotuksiin"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ajouter à Siri et Spotlight"
+            "value" : "Ajouter aux suggestions Siri"
           }
         },
         "hr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dodaj u Siri i Spotlight"
+            "value" : "Dodaj u Sirijeve prijedloge"
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hozzáadás a Sirihez és a Spotlighthoz"
+            "value" : "Hozzáadás a Siri javaslataihoz"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aggiungi a Siri e Spotlight"
+            "value" : "Aggiungi ai suggerimenti di Siri"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SiriとSpotlightに追加"
+            "value" : "Siriの提案に追加"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Toevoegen aan Siri en Spotlight"
+            "value" : "Toevoegen aan Siri-suggesties"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dodaj do Siri i Spotlight"
+            "value" : "Dodaj do sugestii Siri"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Adicionar à Siri e Spotlight"
+            "value" : "Adicionar às sugestões da Siri"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Adicionar à Siri e Spotlight"
+            "value" : "Adicionar às sugestões da Siri"
           }
         },
         "ro" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Adaugă la Siri și Spotlight"
+            "value" : "Adaugă la sugestiile Siri"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Добавить в Siri и Spotlight"
+            "value" : "Добавить в предложения Siri"
           }
         },
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pridať do Siri a Spotlight"
+            "value" : "Pridať do návrhov Siri"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lägg till i Siri och Spotlight"
+            "value" : "Lägg till i Siri-förslag"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Siri ve Spotlight'a Ekle"
+            "value" : "Siri Önerilerine Ekle"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Додати до Siri та Spotlight"
+            "value" : "Додати до пропозицій Siri"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "添加到 Siri 与聚焦搜索"
+            "value" : "添加到 Siri 建议"
           }
         }
       }
     },
-    "Let Siri and Spotlight suggest values you've allowed — names only, never a reading." : {
+    "Let Siri suggest values you've allowed — names only, never a reading." : {
       "localizations" : {
         "bg" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Позволете на Siri и Spotlight да предлагат разрешените от вас стойности — само имена, никога резултат."
+            "value" : "Позволете на Siri да предлага разрешените от вас стойности — само имена, никога резултат."
           }
         },
         "ca" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Deixa que el Siri i la Spotlight suggereixin els valors que has permès — només noms, mai una lectura."
+            "value" : "Deixa que el Siri suggereixi els valors que has permès — només noms, mai una lectura."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nechte Siri a Spotlight navrhovat hodnoty, které jste povolili — pouze názvy, nikdy naměřenou hodnotu."
+            "value" : "Nechte Siri navrhovat hodnoty, které jste povolili — pouze názvy, nikdy naměřenou hodnotu."
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lad Siri og Spotlight foreslå værdier, du har tilladt — kun navne, aldrig en måling."
+            "value" : "Lad Siri foreslå værdier, du har tilladt — kun navne, aldrig en måling."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lass Siri und Spotlight die von dir erlaubten Werte vorschlagen – nur Namen, nie ein Messwert."
+            "value" : "Lass Siri die von dir erlaubten Werte vorschlagen – nur Namen, nie ein Messwert."
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Αφήστε τη Siri και το Spotlight να προτείνουν τιμές που έχετε επιτρέψει — μόνο ονόματα, ποτέ μια μέτρηση."
+            "value" : "Αφήστε τη Siri να προτείνει τιμές που έχετε επιτρέψει — μόνο ονόματα, ποτέ μια μέτρηση."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Deja que Siri y Spotlight sugieran los valores que has permitido: solo nombres, nunca una lectura."
+            "value" : "Deja que Siri sugiera los valores que has permitido: solo nombres, nunca una lectura."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Anna Sirin ja Spotlightin ehdottaa sallimiasi arvoja — vain nimiä, ei koskaan mittaustulosta."
+            "value" : "Anna Sirin ehdottaa sallimiasi arvoja — vain nimiä, ei koskaan mittaustulosta."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Laissez Siri et Spotlight suggérer les valeurs que vous avez autorisées — uniquement les noms, jamais une mesure."
+            "value" : "Laissez Siri suggérer les valeurs que vous avez autorisées — uniquement les noms, jamais une mesure."
           }
         },
         "hr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dopustite Siriju i Spotlightu da predlažu vrijednosti koje ste dopustili — samo nazivi, nikad izmjerena vrijednost."
+            "value" : "Dopustite Siriju da predlaže vrijednosti koje ste dopustili — samo nazivi, nikad izmjerena vrijednost."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Engedd, hogy a Siri és a Spotlight javasolja az általad engedélyezett értékeket — csak a neveket, sosem a mért értéket."
+            "value" : "Engedd, hogy a Siri javasolja az általad engedélyezett értékeket — csak a neveket, sosem a mért értéket."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lascia che Siri e Spotlight suggeriscano i valori che hai consentito: solo i nomi, mai una lettura."
+            "value" : "Lascia che Siri suggerisca i valori che hai consentito: solo i nomi, mai una lettura."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "許可した値のみをSiriとSpotlightが提案できるようにします — 名前のみで、測定値は含まれません。"
+            "value" : "許可した値のみをSiriが提案できるようにします — 名前のみで、測定値は含まれません。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Laat Siri en Spotlight de waarden voorstellen die je hebt toegestaan — alleen namen, nooit een meting."
+            "value" : "Laat Siri de waarden voorstellen die je hebt toegestaan — alleen namen, nooit een meting."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pozwól Siri i Spotlight sugerować dozwolone przez Ciebie wartości — tylko nazwy, nigdy wynik."
+            "value" : "Pozwól Siri sugerować dozwolone przez Ciebie wartości — tylko nazwy, nigdy wynik."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Deixe a Siri e a Spotlight sugerirem os valores que você permitiu — apenas nomes, nunca uma leitura."
+            "value" : "Deixe a Siri sugerir os valores que você permitiu — apenas nomes, nunca uma leitura."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Deixe a Siri e a Spotlight sugerirem os valores que permitiu — apenas nomes, nunca uma leitura."
+            "value" : "Deixe a Siri sugerir os valores que permitiu — apenas nomes, nunca uma leitura."
           }
         },
         "ro" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lasă Siri și Spotlight să sugereze valorile pe care le-ai permis — doar numele, niciodată o valoare măsurată."
+            "value" : "Lasă Siri să sugereze valorile pe care le-ai permis — doar numele, niciodată o valoare măsurată."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Позвольте Siri и Spotlight предлагать разрешённые вами показатели — только названия, никогда не сами значения."
+            "value" : "Позвольте Siri предлагать разрешённые вами показатели — только названия, никогда не сами значения."
           }
         },
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nechajte Siri a Spotlight navrhovať hodnoty, ktoré ste povolili — iba názvy, nikdy nameranú hodnotu."
+            "value" : "Nechajte Siri navrhovať hodnoty, ktoré ste povolili — iba názvy, nikdy nameranú hodnotu."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Låt Siri och Spotlight föreslå värden du har tillåtit — endast namn, aldrig ett uppmätt värde."
+            "value" : "Låt Siri föreslå värden du har tillåtit — endast namn, aldrig ett uppmätt värde."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Siri ve Spotlight'ın izin verdiğiniz değerleri önermesine izin verin — yalnızca adlar, asla bir ölçüm değeri değil."
+            "value" : "Siri'nin izin verdiğiniz değerleri önermesine izin verin — yalnızca adlar, asla bir ölçüm değeri değil."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Дозвольте Siri та Spotlight пропонувати дозволені вами показники — лише назви, ніколи самі значення."
+            "value" : "Дозвольте Siri пропонувати дозволені вами показники — лише назви, ніколи самі значення."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "允许 Siri 和聚焦搜索建议你已允许的数值——仅名称，绝不包含读数。"
+            "value" : "允许 Siri 建议你已允许的数值——仅名称，绝不包含读数。"
           }
         }
       }

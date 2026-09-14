@@ -6,13 +6,14 @@ import Foundation
 /// separately and re-checks exposure before speaking it, so merely resolving
 /// or suggesting an entity never surfaces a value.
 ///
-/// Conforms to `IndexedEntity` so metrics the user allows can be donated to
-/// the on-device Siri/Spotlight knowledge graph — "teach Siri about my
-/// data" — while staying opt-in per metric via
-/// `SiriExposurePreferences.allowedCodes`, and, for the proactive
-/// knowledge-graph donation specifically, `allowKnowledgeIndexing`. See
-/// `LabMetricEntityQuery` for exactly how each control gates the entity.
-struct LabMetricEntity: AppEntity, IndexedEntity {
+/// Deliberately **not** `IndexedEntity`: donating to the on-device system
+/// index would also surface these in Spotlight, duplicating
+/// `SpotlightIndexService` (the dedicated, always-on Spotlight feature).
+/// This entity stays scoped to Siri's own proactive suggestions, gated by
+/// `SiriExposurePreferences.allowedCodes` and, for the suggestion feed
+/// specifically, `allowKnowledgeIndexing`. See `LabMetricEntityQuery` for
+/// exactly how each control gates the entity.
+struct LabMetricEntity: AppEntity {
     static var typeDisplayRepresentation: TypeDisplayRepresentation {
         TypeDisplayRepresentation(name: "Lab Value")
     }
@@ -42,8 +43,8 @@ struct LabMetricEntityQuery: EntityQuery {
     }
 
     /// Offered to Siri for autocomplete when asking `AskLabValueIntent`, and
-    /// donated to the on-device knowledge graph so Siri can suggest a tracked
-    /// value proactively. Prioritizes whatever's currently visible in the
+    /// as Siri's own proactive suggestions (not Spotlight — this entity isn't
+    /// `IndexedEntity`). Prioritizes whatever's currently visible in the
     /// Review sheet ("on-screen awareness") when that's enabled, then adds
     /// every allowed, knowledge-indexed metric the user actually has data for.
     func suggestedEntities() async throws -> [LabMetricEntity] {

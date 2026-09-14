@@ -25,9 +25,10 @@ struct SiriExposurePreferences: RawRepresentable, Equatable {
     /// default: it's the most sensitive surface, since it can include
     /// unsaved edits the user hasn't confirmed yet.
     var allowOnScreenAwareness = false
-    /// Lets allowed metrics be donated to the on-device Siri/Spotlight
-    /// knowledge graph as proactive suggestions (names only, never a
-    /// reading). Off by default.
+    /// Lets allowed metrics appear in Siri's own proactive suggestions
+    /// (names only, never a reading). Deliberately separate from Spotlight —
+    /// see `SpotlightSearch` for the dedicated Spotlight feature. Off by
+    /// default.
     var allowKnowledgeIndexing = false
 
     init() {}

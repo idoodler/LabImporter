@@ -28,13 +28,13 @@ struct SiriAccessEditor: View {
                 SettingsRowLabel("On-Screen Awareness", systemImage: "eye", color: .teal)
             }
             Toggle(isOn: $prefs.allowKnowledgeIndexing) {
-                SettingsRowLabel("Add to Siri & Spotlight", systemImage: "sparkle.magnifyingglass", color: .orange)
+                SettingsRowLabel("Add to Siri Suggestions", systemImage: "sparkles", color: .orange)
             }
         } footer: {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Say “Scan a lab report” to Siri to open the scanner — never touches a lab value.")
                 Text("While reviewing a report, let Siri see the values shown on screen — useful for hands-free corrections.")
-                Text("Let Siri and Spotlight suggest values you've allowed — names only, never a reading.")
+                Text("Let Siri suggest values you've allowed — names only, never a reading.")
             }
         }
     }

@@ -49,7 +49,7 @@ LabImporter/
 │   ├── LabImporterShortcuts.swift  # AppShortcutsProvider; declares phrases for both intents
 │   ├── AskLabValueIntent.swift  # reads back a value's latest reading, gated by SiriExposurePreferences
 │   ├── StartLabScanIntent.swift  # opens the scanner (openAppWhenRun); never touches a value
-│   ├── LabMetricEntity.swift    # AppEntity + IndexedEntity; the only source of "which metrics can Siri see"
+│   ├── LabMetricEntity.swift    # AppEntity (not IndexedEntity — see "Siri & App Intents"); the only source of "which metrics can Siri see"
 │   ├── SiriOnScreenContext.swift  # lock-protected bridge: Review sheet → Siri's on-screen-awareness suggestions
 │   └── SiriActionBridge.swift   # lock-protected bridge: StartLabScanIntent → the live HomeView's scan flow
 └── Views/                     # SwiftUI screens, grouped by feature
@@ -200,11 +200,18 @@ Config.xcconfig  # BUNDLE_IDENTIFIER = dev.idoodler.$(DEVELOPMENT_TEAM).labimpor
   screen that edits all of it. Every intent/query re-checks this preference
   itself (never trusts that a value was allowed when a Shortcut was built) —
   see `AskLabValueIntent.perform()` and `LabMetricEntityQuery`.
-- **`LabMetricEntity`** (`AppEntity` + `IndexedEntity`) is the *only* place
-  metrics are exposed to Siri's on-device knowledge graph: its query filters
-  by `allowedCodes` for resolution and additionally by
-  `allowKnowledgeIndexing` for proactive suggestions/donation. Never build a
-  second path that exposes entities without going through it.
+- **`LabMetricEntity`** (`AppEntity`) is the *only* place metrics are exposed
+  to Siri's own suggestions: its query filters by `allowedCodes` for
+  resolution and additionally by `allowKnowledgeIndexing` for proactive
+  suggestions. It deliberately does **not** conform to `IndexedEntity` —
+  that would also donate these metrics to the system search index, i.e.
+  Spotlight, duplicating `SpotlightIndexService` (`Services/`), which is the
+  single, dedicated Spotlight feature (opted into separately via
+  `SpotlightOptInView`/`SpotlightSearch.showLatestValueKey` and covering
+  *every* tracked metric, not just Siri-allowed ones). Never build a second
+  path that exposes entities to Siri without going through
+  `LabMetricEntity`, and never make it `IndexedEntity` — that would
+  reintroduce the duplicate Spotlight surface.
 - App Intents run outside SwiftUI's environment — sometimes before any view
   exists (a cold launch via `StartLabScanIntent.openAppWhenRun`). Two small
   lock-protected singletons bridge that gap instead of `@AppStorage`

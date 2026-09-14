@@ -115,10 +115,10 @@ struct SiriIntelligenceOptInView: View {
             .onboardingRow(appeared: appeared, delay: 0.31, reduceMotion: reduceMotion)
 
             CapabilityToggleRow(
-                icon: "sparkle.magnifyingglass",
+                icon: "sparkles",
                 color: .orange,
-                title: "Add to Siri & Spotlight",
-                description: "Let Siri and Spotlight suggest values you've allowed — names only, never a reading.",
+                title: "Add to Siri Suggestions",
+                description: "Let Siri suggest values you've allowed — names only, never a reading.",
                 isOn: $allowKnowledgeIndexing
             )
             .onboardingRow(appeared: appeared, delay: 0.39, reduceMotion: reduceMotion)
