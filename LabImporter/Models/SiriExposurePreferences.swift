@@ -30,6 +30,12 @@ struct SiriExposurePreferences: RawRepresentable, Equatable {
     /// see `SpotlightSearch` for the dedicated Spotlight feature. Off by
     /// default.
     var allowKnowledgeIndexing = false
+    /// Lets Siri/Spotlight's "Search in LabImporter" system search
+    /// (`SearchLabValuesIntent`) open the app straight to a matching tracked
+    /// value's trend. Never speaks or returns a reading — it only navigates,
+    /// the same as tapping the app icon and searching by hand — so like
+    /// `allowScanShortcut` it's on by default once the master switch is on.
+    var allowInAppSearch = true
 
     init() {}
 
@@ -42,13 +48,15 @@ struct SiriExposurePreferences: RawRepresentable, Equatable {
         allowScanShortcut = decoded.allowScanShortcut
         allowOnScreenAwareness = decoded.allowOnScreenAwareness
         allowKnowledgeIndexing = decoded.allowKnowledgeIndexing
+        allowInAppSearch = decoded.allowInAppSearch
     }
 
     var rawValue: String {
         let payload = Payload(isEnabled: isEnabled, allowedCodes: allowedCodes,
                                allowScanShortcut: allowScanShortcut,
                                allowOnScreenAwareness: allowOnScreenAwareness,
-                               allowKnowledgeIndexing: allowKnowledgeIndexing)
+                               allowKnowledgeIndexing: allowKnowledgeIndexing,
+                               allowInAppSearch: allowInAppSearch)
         return (try? JSONEncoder().encode(payload)).flatMap { String(data: $0, encoding: .utf8) } ?? ""
     }
 
@@ -62,6 +70,9 @@ struct SiriExposurePreferences: RawRepresentable, Equatable {
     /// Whether the scan shortcut is available to Siri.
     var canStartScan: Bool { isEnabled && allowScanShortcut }
 
+    /// Whether Siri/Spotlight's in-app search may open the app.
+    var canSearch: Bool { isEnabled && allowInAppSearch }
+
     /// Whether `code` may be proactively suggested to / indexed by Siri.
     func isKnowledgeIndexed(_ code: String) -> Bool {
         isEnabled && allowKnowledgeIndexing && allowedSet.contains(code)
@@ -73,6 +84,31 @@ struct SiriExposurePreferences: RawRepresentable, Equatable {
         var allowScanShortcut: Bool
         var allowOnScreenAwareness: Bool
         var allowKnowledgeIndexing: Bool
+        var allowInAppSearch: Bool
+
+        init(isEnabled: Bool, allowedCodes: [String], allowScanShortcut: Bool,
+             allowOnScreenAwareness: Bool, allowKnowledgeIndexing: Bool, allowInAppSearch: Bool) {
+            self.isEnabled = isEnabled
+            self.allowedCodes = allowedCodes
+            self.allowScanShortcut = allowScanShortcut
+            self.allowOnScreenAwareness = allowOnScreenAwareness
+            self.allowKnowledgeIndexing = allowKnowledgeIndexing
+            self.allowInAppSearch = allowInAppSearch
+        }
+
+        // Custom decoding so a blob persisted before `allowInAppSearch` existed
+        // defaults it to `true` instead of failing to decode — which would
+        // otherwise reset every other Siri preference via the `try?` in
+        // `init?(rawValue:)`.
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            isEnabled = try container.decode(Bool.self, forKey: .isEnabled)
+            allowedCodes = try container.decode([String].self, forKey: .allowedCodes)
+            allowScanShortcut = try container.decode(Bool.self, forKey: .allowScanShortcut)
+            allowOnScreenAwareness = try container.decode(Bool.self, forKey: .allowOnScreenAwareness)
+            allowKnowledgeIndexing = try container.decode(Bool.self, forKey: .allowKnowledgeIndexing)
+            allowInAppSearch = try container.decodeIfPresent(Bool.self, forKey: .allowInAppSearch) ?? true
+        }
     }
 }
 

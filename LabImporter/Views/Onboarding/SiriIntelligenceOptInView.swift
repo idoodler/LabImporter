@@ -11,15 +11,16 @@ import SwiftUI
 /// has been imported yet at this point in onboarding, so there's nothing to
 /// list — nothing is exposed just because onboarding says yes.
 struct SiriIntelligenceOptInView: View {
-    /// Called with the user's choices: the master switch, then the three
+    /// Called with the user's choices: the master switch, then the four
     /// capability flags (scan shortcut, on-screen awareness, knowledge
-    /// indexing) mirrored from the toggles on screen. The host writes them
-    /// into `SiriExposurePreferences` and dismisses the gate.
+    /// indexing, in-app search) mirrored from the toggles on screen. The host
+    /// writes them into `SiriExposurePreferences` and dismisses the gate.
     let onDecision: (
         _ enabled: Bool,
         _ allowScanShortcut: Bool,
         _ allowOnScreenAwareness: Bool,
-        _ allowKnowledgeIndexing: Bool
+        _ allowKnowledgeIndexing: Bool,
+        _ allowInAppSearch: Bool
     ) -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -27,6 +28,7 @@ struct SiriIntelligenceOptInView: View {
     @State private var allowScanShortcut = true
     @State private var allowOnScreenAwareness = false
     @State private var allowKnowledgeIndexing = false
+    @State private var allowInAppSearch = true
 
     var body: some View {
         OnboardingScaffold {
@@ -122,6 +124,15 @@ struct SiriIntelligenceOptInView: View {
                 isOn: $allowKnowledgeIndexing
             )
             .onboardingRow(appeared: appeared, delay: 0.39, reduceMotion: reduceMotion)
+
+            CapabilityToggleRow(
+                icon: "magnifyingglass",
+                color: .green,
+                title: "Search Your Values",
+                description: "Let Siri or Spotlight's search jump straight to a tracked value's trend.",
+                isOn: $allowInAppSearch
+            )
+            .onboardingRow(appeared: appeared, delay: 0.47, reduceMotion: reduceMotion)
         }
         .padding(24)
         .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 28))
@@ -198,7 +209,7 @@ struct SiriIntelligenceOptInView: View {
     private var buttons: some View {
         VStack(spacing: 12) {
             Button {
-                onDecision(true, allowScanShortcut, allowOnScreenAwareness, allowKnowledgeIndexing)
+                onDecision(true, allowScanShortcut, allowOnScreenAwareness, allowKnowledgeIndexing, allowInAppSearch)
             } label: {
                 Text("Enable Siri & Shortcuts")
                     .frame(maxWidth: .infinity)
@@ -207,7 +218,7 @@ struct SiriIntelligenceOptInView: View {
             .controlSize(.large)
 
             Button {
-                onDecision(false, allowScanShortcut, allowOnScreenAwareness, allowKnowledgeIndexing)
+                onDecision(false, allowScanShortcut, allowOnScreenAwareness, allowKnowledgeIndexing, allowInAppSearch)
             } label: {
                 Text("Not Now")
                     .frame(maxWidth: .infinity)
@@ -317,15 +328,15 @@ private struct CapabilityToggleRow: View {
 // MARK: - Preview
 
 #Preview("Light") {
-    SiriIntelligenceOptInView { _, _, _, _ in }
+    SiriIntelligenceOptInView { _, _, _, _, _ in }
 }
 
 #Preview("Dark") {
-    SiriIntelligenceOptInView { _, _, _, _ in }
+    SiriIntelligenceOptInView { _, _, _, _, _ in }
         .preferredColorScheme(.dark)
 }
 
 #Preview("Landscape") {
-    SiriIntelligenceOptInView { _, _, _, _ in }
+    SiriIntelligenceOptInView { _, _, _, _, _ in }
         .previewInterfaceOrientation(.landscapeLeft)
 }

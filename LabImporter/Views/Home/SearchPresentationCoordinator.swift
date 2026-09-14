@@ -101,3 +101,38 @@ private struct SearchEditorRegistration: ViewModifier {
             .onChange(of: coordinator?.closeRequest) { _, _ in onClose() }
     }
 }
+
+// MARK: - Siri/Spotlight "Search in LabImporter"
+
+extension View {
+    /// Presents the search-results sheet opened by Siri/Spotlight's "Search in
+    /// LabImporter" (`SearchLabValuesIntent`), wiring `SiriActionBridge`'s search
+    /// handler for as long as this view is on screen. A plain sheet — unlike the
+    /// Spotlight metric detail above, it never collides with a Review editor.
+    func presentsSearchResults(reports: [LabReport]) -> some View {
+        modifier(SearchResultsPresentation(reports: reports))
+    }
+}
+
+private struct SearchResultsPresentation: ViewModifier {
+    let reports: [LabReport]
+    @State private var term: String?
+
+    private struct Request: Identifiable {
+        let term: String
+        var id: String { term }
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .sheet(item: Binding(
+                get: { term.map(Request.init) },
+                set: { if $0 == nil { term = nil } }
+            )) { request in
+                MetricSearchResultsView(reports: reports, initialTerm: request.term)
+            }
+            .onAppear {
+                SiriActionBridge.shared.setSearchHandler { term = $0 }
+            }
+    }
+}
