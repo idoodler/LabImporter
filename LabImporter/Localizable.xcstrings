@@ -1,6 +1,302 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Let Siri Answer New Values?" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Да отговаря ли Siri за новите стойности?"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vols que el Siri respongui els valors nous?"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Má Siri odpovídat na nové hodnoty?"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skal Siri svare på nye værdier?"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soll Siri neue Werte beantworten?"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Να απαντά η Siri για τις νέες τιμές;"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Quieres que Siri responda los valores nuevos?"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saako Siri vastata uusista arvoista?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri doit-elle répondre aux nouvelles valeurs ?"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neka Siri odgovara na nove vrijednosti?"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Válaszoljon a Siri az új értékekre?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vuoi che Siri risponda ai nuovi valori?"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新しい値についてSiriに答えさせますか？"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moet Siri nieuwe waarden beantwoorden?"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Czy Siri ma odpowiadać na nowe wartości?"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quer que a Siri responda os novos valores?"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quer que a Siri responda aos novos valores?"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vrei ca Siri să răspundă la valorile noi?"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разрешить Siri отвечать о новых показателях?"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Má Siri odpovedať na nové hodnoty?"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ska Siri svara på nya värden?"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri yeni değerleri yanıtlasın mı?"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дозволити Siri відповідати про нові показники?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "让 Siri 回答新的数值吗？"
+          }
+        }
+      }
+    },
+    "You just tracked new values Siri hasn't been asked about. Turn on any you'd like Siri to read back." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Току-що добавихте нови стойности, за които Siri още не е питана. Включете тези, които искате Siri да чете на глас."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acabes d'afegir valors nous que encara no s'han preguntat al Siri. Activa els que vulguis que el Siri llegeixi en veu alta."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Právě jste přidali nové hodnoty, na které se Siri ještě neptala. Zapněte ty, které má Siri číst nahlas."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du har lige sporet nye værdier, som Siri ikke er blevet spurgt om. Slå dem til, du vil have Siri til at læse højt."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du hast gerade neue Werte erfasst, nach denen Siri noch nicht gefragt wurde. Aktiviere die, die Siri vorlesen darf."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Μόλις παρακολουθήσατε νέες τιμές για τις οποίες δεν έχει ερωτηθεί η Siri. Ενεργοποιήστε όσες θέλετε να διαβάζει η Siri."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acabas de registrar valores nuevos sobre los que no se ha preguntado a Siri. Activa los que quieras que Siri lea en voz alta."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lisäsit juuri uusia arvoja, joista Siriltä ei ole vielä kysytty. Ota käyttöön ne, jotka haluat Sirin lukevan ääneen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous venez de suivre de nouvelles valeurs dont Siri n'a pas encore été informée. Activez celles que Siri peut lire à voix haute."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Upravo ste pratili nove vrijednosti o kojima Siri još nije pitana. Uključite one koje želite da Siri naglas pročita."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Most vettél fel új értékeket, amelyekről a Sirit még nem kérdezték meg. Kapcsold be azokat, amelyeket a Siri felolvashat."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hai appena registrato nuovi valori su cui Siri non è ancora stata interrogata. Attiva quelli che vuoi far leggere a Siri."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siriにまだ確認されていない新しい値を追跡しました。Siriに読み上げてほしい値をオンにしてください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je hebt zojuist nieuwe waarden bijgehouden waarnaar Siri nog niet is gevraagd. Zet aan welke Siri mag voorlezen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Właśnie zaczęto śledzić nowe wartości, o które Siri jeszcze nie pytano. Włącz te, które ma odczytywać Siri."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você acabou de acompanhar novos valores sobre os quais a Siri ainda não foi consultada. Ative os que quiser que a Siri leia em voz alta."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acabou de acompanhar novos valores sobre os quais a Siri ainda não foi consultada. Ative os que quiser que a Siri leia em voz alta."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tocmai ai urmărit valori noi despre care Siri nu a fost încă întrebată. Activează-le pe cele pe care vrei ca Siri să le citească."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вы только что добавили новые показатели, о которых Siri ещё не спрашивали. Включите те, которые Siri может озвучивать."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Práve ste sledovali nové hodnoty, na ktoré sa Siri ešte nepýtala. Zapnite tie, ktoré má Siri nahlas prečítať."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du har precis spårat nya värden som Siri inte har tillfrågats om. Slå på de du vill att Siri ska läsa upp."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri'ye henüz sorulmamış yeni değerler eklediniz. Siri'nin sesli okumasını istediklerinizi açın."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ви щойно додали нові показники, про які Siri ще не запитували. Увімкніть ті, які Siri може озвучувати."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你刚刚跟踪了 Siri 尚未被询问过的新数值。请打开你希望 Siri 读出的数值。"
+          }
+        }
+      }
+    },
     "Value Access" : {
       "localizations" : {
         "bg" : {

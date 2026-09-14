@@ -94,11 +94,7 @@ struct SiriAccessEditor: View {
     private func allowedBinding(for code: String) -> Binding<Bool> {
         Binding(
             get: { prefs.allowedSet.contains(code) },
-            set: { isOn in
-                var codes = Set(prefs.allowedCodes)
-                if isOn { codes.insert(code) } else { codes.remove(code) }
-                prefs.allowedCodes = Array(codes)
-            }
+            set: { prefs.setAllowed($0, for: code) }
         )
     }
 }

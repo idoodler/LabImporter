@@ -136,4 +136,17 @@ extension Array where Element == LabValue {
         }
         return result
     }
+
+    /// Exportable codes (selected, numeric, LOINC-mapped) this save is about to
+    /// introduce that Siri hasn't been asked about yet — the set
+    /// `NewValuesSiriPromptView` should offer. Empty whenever there's nothing
+    /// to decide: Siri is off, or `allowAllValues` already covers everything.
+    func undecidedSiriCodes(prefs: SiriExposurePreferences) -> [CodeName] {
+        guard prefs.isEnabled, !prefs.allowAllValues else { return [] }
+        let decided = Set(prefs.decidedCodes)
+        var seen = Set<String>()
+        return filter { $0.isSelected && $0.numericValue != nil && LabMapping.loincCode(for: $0.code) != nil }
+            .filter { !decided.contains($0.code) && seen.insert($0.code).inserted }
+            .map { CodeName(code: $0.code, name: $0.resolvedName) }
+    }
 }

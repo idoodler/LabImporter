@@ -22,6 +22,8 @@ struct ReviewView: View {
     @State private var showAddValue = false
     @State private var importEngine = LabImportEngine()
     @State private var didSeedMetadata = false
+    @AppStorage(SiriExposurePreferences.storageKey) private var siriPrefs = SiriExposurePreferences()
+    @State private var siriPromptCodes: [CodeName] = []
 
     // Snapshot the sheet opened with, to warn only about discarding real edits.
     // @State (not let): captured once and preserved across re-inits, unlike a re-derived `asLabValues`.
@@ -57,8 +59,7 @@ struct ReviewView: View {
         let indices: [Int]
     }
 
-    // Indices into `labValues` for LOINC-mapped values, grouped by clinical
-    // category in canonical order. Indices (not copies) keep rows live bindings.
+    // LOINC-mapped `labValues` indices (not copies, so rows stay live bindings), grouped by category.
     private var valueGroups: [ValueGroup] {
         let supported = labValues.indices.filter { LabMapping.loincCode(for: labValues[$0].code) != nil }
         let grouped = Dictionary(grouping: supported) { LabCategory.forCode(labValues[$0].code) }
@@ -148,6 +149,7 @@ struct ReviewView: View {
         .sheet(isPresented: $showAddValue) {
             AddValueSheet { labValues.append($0) }
         }
+        .promptsForNewSiriValues(codes: $siriPromptCodes, prefs: $siriPrefs, onDismiss: finishSave)
         .alert("Export Error", isPresented: .constant(cdaError != nil)) {
             Button("OK") { cdaError = nil }
         } message: { Text(cdaError ?? "") }
@@ -311,16 +313,14 @@ struct ReviewView: View {
             }
         }
     }
-
 }
 
 // MARK: - Views
 
 private extension ReviewView {
-
     /// Lets the user grow the open report with the same "known methods" used to
-    /// create one — scan, file, paste — plus manual entry. Imported values are
-    /// appended to the current set (see `configureImportEngine`).
+    /// create one — scan, file, paste, manual entry — appending to the current
+    /// set (see `configureImportEngine`).
     var addValueMenu: some View {
         Menu {
             Button {
@@ -391,9 +391,8 @@ private extension ReviewView {
 
     func attemptClose() { if hasEdits { showDiscardAlert = true } else { dismiss() } }
 
-    /// Whether the report date or any lab value differs from what the sheet
-    /// opened with — drives the discard confirmation. Patient/author/biometrics
-    /// live in `@AppStorage` and persist, so they aren't discardable edits.
+    /// Whether the report date or any lab value differs from what the sheet opened with — drives the discard
+    /// confirmation. Patient/author/biometrics live in `@AppStorage` and persist, so they aren't discardable edits.
     var hasEdits: Bool {
         guard reportDate == initialReportDate,
               labValues.count == initialLabValues.count else { return true }
@@ -407,10 +406,8 @@ private extension ReviewView {
         }
     }
 
-    /// When editing a saved report, populate the patient/author fields from that
-    /// report (they otherwise default to the global `@AppStorage` values, which
-    /// would both hide the report's author and silently overwrite it on save).
-    /// Runs once; new reports keep the stored defaults.
+    /// When editing a saved report, populate the patient/author fields from that report (they otherwise default to
+    /// the global `@AppStorage` values, hiding/overwriting the report's own). Runs once; new reports keep the defaults.
     func seedMetadataFromReport() {
         guard !didSeedMetadata else { return }
         didSeedMetadata = true
@@ -494,6 +491,8 @@ private extension ReviewView {
     }
     func finishSave() {
         replaceWarning = nil
+        siriPromptCodes = labValues.undecidedSiriCodes(prefs: siriPrefs)
+        guard siriPromptCodes.isEmpty else { return }
         onSaved?()
         dismiss()
     }

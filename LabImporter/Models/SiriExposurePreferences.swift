@@ -23,6 +23,12 @@ struct SiriExposurePreferences: RawRepresentable, Equatable {
     /// Settings. `false` by default: never default a health app to its most
     /// permissive setting, even when the master switch is already on.
     var allowAllValues = false
+    /// Codes the user has already been asked about while in Selected-Values
+    /// mode — whichever way they answered (`NewValuesSiriPromptView`,
+    /// `SiriAccessEditor`). Lets a newly imported value be offered exactly
+    /// once instead of nagging on every future save; a code the user declined
+    /// stays here without ever joining `allowedCodes`.
+    var decidedCodes: [String] = []
     /// Lets Siri open the scanner ("Scan a lab report in LabImporter"). Never
     /// touches a health value, so it's the one thing on by default once the
     /// master switch is on.
@@ -53,6 +59,7 @@ struct SiriExposurePreferences: RawRepresentable, Equatable {
         isEnabled = decoded.isEnabled
         allowedCodes = decoded.allowedCodes
         allowAllValues = decoded.allowAllValues
+        decidedCodes = decoded.decidedCodes
         allowScanShortcut = decoded.allowScanShortcut
         allowOnScreenAwareness = decoded.allowOnScreenAwareness
         allowKnowledgeIndexing = decoded.allowKnowledgeIndexing
@@ -61,7 +68,7 @@ struct SiriExposurePreferences: RawRepresentable, Equatable {
 
     var rawValue: String {
         let payload = Payload(isEnabled: isEnabled, allowedCodes: allowedCodes, allowAllValues: allowAllValues,
-                               allowScanShortcut: allowScanShortcut,
+                               decidedCodes: decidedCodes, allowScanShortcut: allowScanShortcut,
                                allowOnScreenAwareness: allowOnScreenAwareness,
                                allowKnowledgeIndexing: allowKnowledgeIndexing,
                                allowInAppSearch: allowInAppSearch)
@@ -74,6 +81,21 @@ struct SiriExposurePreferences: RawRepresentable, Equatable {
     /// `allowAllValues` is on, else only an explicitly allowed one.
     func isCodeAllowed(_ code: String) -> Bool {
         allowAllValues || allowedSet.contains(code)
+    }
+
+    /// Turns Siri access for `code` on or off, keeping `allowedCodes` a set.
+    mutating func setAllowed(_ allowed: Bool, for code: String) {
+        var codes = allowedSet
+        if allowed { codes.insert(code) } else { codes.remove(code) }
+        allowedCodes = Array(codes)
+    }
+
+    /// Marks `codes` as decided so `NewValuesSiriPromptView` never asks about
+    /// them again, regardless of which way each was answered.
+    mutating func markDecided<S: Sequence>(_ codes: S) where S.Element == String {
+        var decided = Set(decidedCodes)
+        decided.formUnion(codes)
+        decidedCodes = Array(decided)
     }
 
     /// Whether Siri may read and speak `code`'s latest value out loud.
@@ -96,16 +118,18 @@ struct SiriExposurePreferences: RawRepresentable, Equatable {
         var isEnabled: Bool
         var allowedCodes: [String]
         var allowAllValues: Bool
+        var decidedCodes: [String]
         var allowScanShortcut: Bool
         var allowOnScreenAwareness: Bool
         var allowKnowledgeIndexing: Bool
         var allowInAppSearch: Bool
 
-        init(isEnabled: Bool, allowedCodes: [String], allowAllValues: Bool, allowScanShortcut: Bool,
-             allowOnScreenAwareness: Bool, allowKnowledgeIndexing: Bool, allowInAppSearch: Bool) {
+        init(isEnabled: Bool, allowedCodes: [String], allowAllValues: Bool, decidedCodes: [String],
+             allowScanShortcut: Bool, allowOnScreenAwareness: Bool, allowKnowledgeIndexing: Bool, allowInAppSearch: Bool) {
             self.isEnabled = isEnabled
             self.allowedCodes = allowedCodes
             self.allowAllValues = allowAllValues
+            self.decidedCodes = decidedCodes
             self.allowScanShortcut = allowScanShortcut
             self.allowOnScreenAwareness = allowOnScreenAwareness
             self.allowKnowledgeIndexing = allowKnowledgeIndexing
@@ -116,12 +140,15 @@ struct SiriExposurePreferences: RawRepresentable, Equatable {
         // defaults that flag instead of failing to decode — which would
         // otherwise reset every other Siri preference via the `try?` in
         // `init?(rawValue:)`. `allowAllValues` defaults to `false`: a missing
-        // key must never silently grant access to every value.
+        // key must never silently grant access to every value. A missing
+        // `decidedCodes` defaults to empty, which is exactly correct: nothing
+        // has been decided yet, so existing values get one gentle prompt.
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             isEnabled = try container.decode(Bool.self, forKey: .isEnabled)
             allowedCodes = try container.decode([String].self, forKey: .allowedCodes)
             allowAllValues = try container.decodeIfPresent(Bool.self, forKey: .allowAllValues) ?? false
+            decidedCodes = try container.decodeIfPresent([String].self, forKey: .decidedCodes) ?? []
             allowScanShortcut = try container.decode(Bool.self, forKey: .allowScanShortcut)
             allowOnScreenAwareness = try container.decode(Bool.self, forKey: .allowOnScreenAwareness)
             allowKnowledgeIndexing = try container.decode(Bool.self, forKey: .allowKnowledgeIndexing)
