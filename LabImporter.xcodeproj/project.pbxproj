@@ -86,6 +86,9 @@
 		AASI000000000000000017AA /* SiriAccessEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASI000000000000000018AA /* SiriAccessEditor.swift */; };
 		AASI000000000000000020AA /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASI000000000000000021AA /* AppInfo.swift */; };
 		AASI000000000000000022AA /* SidebarSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASI000000000000000023AA /* SidebarSection.swift */; };
+		AAMS000000000000000001AA /* MetricSearchResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAMS000000000000000002AA /* MetricSearchResultsView.swift */; };
+		AANV000000000000000001AA /* NewValuesSiriPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AANV000000000000000002AA /* NewValuesSiriPromptView.swift */; };
+		AASI000000000000000025AA /* SearchLabValuesIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASI000000000000000026AA /* SearchLabValuesIntent.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -190,6 +193,9 @@
 		AASI000000000000000021AA /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
 		AASI000000000000000023AA /* SidebarSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarSection.swift; sourceTree = "<group>"; };
 		AASI000000000000000024AA /* build_pr.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = build_pr.yml; sourceTree = "<group>"; };
+		AAMS000000000000000002AA /* MetricSearchResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricSearchResultsView.swift; sourceTree = "<group>"; };
+		AANV000000000000000002AA /* NewValuesSiriPromptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewValuesSiriPromptView.swift; sourceTree = "<group>"; };
+		AASI000000000000000026AA /* SearchLabValuesIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchLabValuesIntent.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -297,6 +303,7 @@
 				AASI000000000000000014AA /* LabImporterShortcuts.swift */,
 				AASI000000000000000010AA /* AskLabValueIntent.swift */,
 				AASI000000000000000012AA /* StartLabScanIntent.swift */,
+				AASI000000000000000026AA /* SearchLabValuesIntent.swift */,
 				AASI000000000000000008AA /* LabMetricEntity.swift */,
 				AASI000000000000000004AA /* SiriOnScreenContext.swift */,
 				AASI000000000000000006AA /* SiriActionBridge.swift */,
@@ -363,6 +370,7 @@
 				AABB0000000000000000F4AA /* AddValueSheet.swift */,
 				AABB0000000000000000C1DE /* CodePickerSheet.swift */,
 				AABB000000000000000094AA /* LoincBrowserView.swift */,
+				AANV000000000000000002AA /* NewValuesSiriPromptView.swift */,
 			);
 			path = Review;
 			sourceTree = "<group>";
@@ -377,6 +385,7 @@
 				AAFF0000000000000000F401 /* ValueDescriptionCard.swift */,
 				AAFF0000000000000000F501 /* TrendWindow.swift */,
 				AABB000000000000000069AA /* TrendsView.swift */,
+				AAMS000000000000000002AA /* MetricSearchResultsView.swift */,
 			);
 			path = Dashboard;
 			sourceTree = "<group>";
@@ -692,6 +701,9 @@
 				AASI000000000000000017AA /* SiriAccessEditor.swift in Sources */,
 				AASI000000000000000020AA /* AppInfo.swift in Sources */,
 				AASI000000000000000022AA /* SidebarSection.swift in Sources */,
+				AASI000000000000000025AA /* SearchLabValuesIntent.swift in Sources */,
+				AAMS000000000000000001AA /* MetricSearchResultsView.swift in Sources */,
+				AANV000000000000000001AA /* NewValuesSiriPromptView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
