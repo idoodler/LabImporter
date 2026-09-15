@@ -61,9 +61,16 @@ actor HealthKitService {
 
     // MARK: - Read
 
+    /// Deliberately does **not** call `requestAuthorization` — that's done once
+    /// up front (`requestInitialAuthorization`, at onboarding). Calling it again
+    /// here is what was forcing Siri to foreground the app on every
+    /// `AskLabValueIntent`/`LabMetricEntityQuery` read: `requestAuthorization`
+    /// *can* present a system sheet, so the OS conservatively activates the app
+    /// whenever an App Intent calls it, even when authorization is already
+    /// granted and no sheet would actually appear. A query against
+    /// already-granted permissions needs no such call.
     func loadCDADocuments() async throws -> [LabReport] {
         guard let documentType = cdaType else { return [] }
-        try await store.requestAuthorization(toShare: [documentType], read: [documentType])
 
         let sources = try await appSources(for: documentType)
         let predicate = HKQuery.predicateForObjects(from: sources)
