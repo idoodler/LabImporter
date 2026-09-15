@@ -12,8 +12,10 @@ import Foundation
 /// This entity stays scoped to Siri's own proactive suggestions, gated by
 /// `SiriExposurePreferences.isCodeAllowed(_:)` (either every value, or only
 /// `allowedCodes`) and, for the suggestion feed specifically,
-/// `allowKnowledgeIndexing`. See `LabMetricEntityQuery` for exactly how each
-/// control gates the entity.
+/// `allowKnowledgeIndexing`. Its query conforms to `EntityStringQuery` so a
+/// spoken/typed name resolves directly — without it Siri can't match free
+/// text to this parameter at all. See `LabMetricEntityQuery` for exactly how
+/// each control gates the entity.
 struct LabMetricEntity: AppEntity {
     static var typeDisplayRepresentation: TypeDisplayRepresentation {
         TypeDisplayRepresentation(name: "Lab Value")
@@ -30,7 +32,7 @@ struct LabMetricEntity: AppEntity {
     }
 }
 
-struct LabMetricEntityQuery: EntityQuery {
+struct LabMetricEntityQuery: EntityStringQuery {
     /// Resolves specific codes, e.g. when Siri already has a parameter value
     /// from a previously built Shortcut. Filtered by whichever access mode is
     /// active — every value, or just the per-metric opt-in — via
@@ -42,6 +44,24 @@ struct LabMetricEntityQuery: EntityQuery {
         let allowed = Set(identifiers).filter(prefs.isValueExposed)
         guard !allowed.isEmpty else { return [] }
         return allowed.map { LabMetricEntity(id: $0, name: LabMapping.displayName(for: $0)) }
+    }
+
+    /// Resolves a spoken/typed name (e.g. "HbA1c") straight to its entity —
+    /// without this, Siri has no way to match free text to `$metric` at all
+    /// and silently reinterprets the whole utterance as something else (it was
+    /// falling through to `SearchLabValuesIntent`, opening the app, instead of
+    /// `AskLabValueIntent` answering in place). Same case/diacritic-insensitive
+    /// substring match as `MetricSearchResultsView`, scoped to exposed codes.
+    func entities(matching string: String) async throws -> [LabMetricEntity] {
+        let prefs = SiriExposurePreferences.current()
+        guard prefs.isEnabled else { return [] }
+        let reports = (try? await HealthKitService.shared.loadCDADocuments()) ?? []
+        let needle = string.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
+        return reports.distinctNumericCodes
+            .filter(prefs.isValueExposed)
+            .map { ($0, LabMapping.displayName(for: $0)) }
+            .filter { $0.1.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil).contains(needle) }
+            .map { LabMetricEntity(id: $0.0, name: $0.1) }
     }
 
     /// Offered to Siri for autocomplete when asking `AskLabValueIntent`, and
