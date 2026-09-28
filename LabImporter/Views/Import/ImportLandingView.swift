@@ -13,6 +13,10 @@ struct ImportLandingView: View {
     /// button to avoid duplicating it. Defaults to `true` so the standalone
     /// (iPhone) presentation still reaches Settings before any reports exist.
     var showsLibraryToolbarItems = true
+    /// Opens Settings through the host's shared navigation state (so it
+    /// survives a layout swap). `nil` falls back to a local sheet, e.g. in
+    /// previews.
+    var onShowSettings: (() -> Void)?
 
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
     @State private var showSettings = false
@@ -47,7 +51,7 @@ struct ImportLandingView: View {
             if showsLibraryToolbarItems {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        showSettings = true
+                        if let onShowSettings { onShowSettings() } else { showSettings = true }
                     } label: {
                         Image(systemName: "gearshape")
                     }

@@ -55,7 +55,7 @@ LabImporter/
 └── Views/                     # SwiftUI screens, grouped by feature
     ├── Home/
     │   ├── HomeView.swift          # orchestrates the whole import flow + report loading
-    │   └── SidebarSection.swift    # iPad sidebar section enum
+    │   └── SidebarSection.swift    # sidebar section enum; also the shared nav state across layouts
     ├── Onboarding/             # WelcomeView, DisclaimerView, HealthPermissionView, CloudSyncOptInView,
     │                           #   SpotlightOptInView, SiriIntelligenceOptInView, OnboardingScaffold (first-launch gates)
     ├── Import/                 # ImportLandingView (scan/file/paste/manual entry points),

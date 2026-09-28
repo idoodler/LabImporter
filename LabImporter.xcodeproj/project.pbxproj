@@ -15,6 +15,7 @@
 		AABB000000000000000044AA /* LabParserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000024AA /* LabParserService.swift */; };
 		AABB000000000000000045AA /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000025AA /* HealthKitService.swift */; };
 		AABB000000000000000046AA /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000026AA /* HomeView.swift */; };
+		AAEE000000000000000001AA /* HomeView+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAEE000000000000000002AA /* HomeView+Preview.swift */; };
 		AABB000000000000000047AA /* ReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000027AA /* ReviewView.swift */; };
 		AABB000000000000000048AA /* LabValueRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000028AA /* LabValueRowView.swift */; };
 		AABB000000000000000052AA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000032AA /* Assets.xcassets */; };
@@ -101,6 +102,7 @@
 		AABB000000000000000024AA /* LabParserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabParserService.swift; sourceTree = "<group>"; };
 		AABB000000000000000025AA /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
 		AABB000000000000000026AA /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		AAEE000000000000000002AA /* HomeView+Preview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeView+Preview.swift"; sourceTree = "<group>"; };
 		AABB000000000000000027AA /* ReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewView.swift; sourceTree = "<group>"; };
 		AABB000000000000000028AA /* LabValueRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabValueRowView.swift; sourceTree = "<group>"; };
 		AABB000000000000000032AA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -329,6 +331,7 @@
 			isa = PBXGroup;
 			children = (
 				AABB000000000000000026AA /* HomeView.swift */,
+				AAEE000000000000000002AA /* HomeView+Preview.swift */,
 				AASP000000000000000006AA /* SearchPresentationCoordinator.swift */,
 				AASI000000000000000023AA /* SidebarSection.swift */,
 			);
@@ -656,6 +659,7 @@
 				AAED000000000000000018AA /* PDFReportComposer.swift in Sources */,
 				AAED00000000000000001AAA /* PDFTrendPageViews.swift in Sources */,
 				AABB000000000000000046AA /* HomeView.swift in Sources */,
+				AAEE000000000000000001AA /* HomeView+Preview.swift in Sources */,
 				AABB000000000000000047AA /* ReviewView.swift in Sources */,
 				AACC000000000000000001AA /* ReviewView+Preview.swift in Sources */,
 				AACC000000000000000003AA /* PreviewSampleData.swift in Sources */,

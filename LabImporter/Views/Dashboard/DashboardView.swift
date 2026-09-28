@@ -17,6 +17,10 @@ struct DashboardView: View {
     /// hides its own toolbar chrome to avoid duplicating them. Defaults to `true`
     /// so the standalone (iPhone) presentation is unchanged.
     var showsLibraryToolbarItems = true
+    /// Opens Settings through the host's shared navigation state (so it
+    /// survives a layout swap). `nil` falls back to a local sheet, e.g. in
+    /// previews.
+    var onShowSettings: (() -> Void)?
 
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
     @AppStorage("patientName") private var patientName: String = ""
@@ -54,14 +58,15 @@ struct DashboardView: View {
         .toolbar {
             if showsLibraryToolbarItems {
                 ToolbarItem(placement: .topBarLeading) {
-                    NavigationLink(destination: HistoryView(initialReports: reports)) {
+                    // Value-based so the push lives in the host's shared path.
+                    NavigationLink(value: SidebarSection.reports) {
                         Image(systemName: "doc.text")
                     }
                     .accessibilityLabel("Reports")
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        showSettings = true
+                        if let onShowSettings { onShowSettings() } else { showSettings = true }
                     } label: {
                         Image(systemName: "gearshape")
                     }
@@ -169,7 +174,7 @@ struct DashboardView: View {
         .padding(.horizontal, 2)
     }
 
-    /// Two fixed columns on compact widths (iPhone); on regular widths (iPad) the
+    /// Two fixed columns on compact widths (iPhone); on regular widths (iPad, unfolded Duo) the
     /// cards flow to fill the wider canvas with a sensible minimum so they don't
     /// stretch into a sparse two-up grid. With only one or two metrics the
     /// two-up grid would strand a card in a half-empty row, so it collapses to a

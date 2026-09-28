@@ -47,34 +47,29 @@ struct HomeView: View {
     @AppStorage(SpotlightSearch.showLatestValueKey) private var showLatestValueInSearch = false
     @AppStorage(SiriExposurePreferences.storageKey) private var siriPrefs = SiriExposurePreferences()
 
-    // iPad sidebar state
+    // Layout state
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
-    @State private var sidebarSelection: SidebarSection? = .dashboard
+    /// Navigation state shared by both layouts (sidebar selection / pushed
+    /// Reports + Settings sheet), so swapping layouts — folding an iPhone Duo,
+    /// resizing an iPad window — keeps the user's place.
+    @State private var selectedSection: SidebarSection? = .dashboard
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
 
-    /// Whether to present the iPad-style sidebar split view. Idiom alone used
-    /// to be the whole check — a regular iPhone flips `horizontalSizeClass`
-    /// between compact (portrait) and regular (landscape) on every rotation,
-    /// and driving the root layout off that tears down navigation state on
-    /// every turn. Requiring *both* size classes regular keeps that property
-    /// (no iPhone is ever regular×regular) while also picking up unfolded
-    /// foldables: an iPhone Duo's inner display reports `.phone` idiom but is
-    /// regular×regular like an iPad, while its folded/cover screen behaves
-    /// like a normal compact iPhone. `NavigationSplitView` still collapses
-    /// itself when horizontally compact (Slide Over, or the Duo folded).
+    /// Sidebar split view only when *both* size classes are regular — never the
+    /// device idiom. Full-screen iPad and unfolded iPhone Duo qualify; no iPhone
+    /// does (rotation only flips the horizontal class), nor does a narrow iPad
+    /// window or the folded Duo, which get the compact stack.
     private var usesSidebarLayout: Bool {
-        UIDevice.current.userInterfaceIdiom == .pad
-            || (horizontalSizeClass == .regular && verticalSizeClass == .regular)
+        horizontalSizeClass == .regular && verticalSizeClass == .regular
     }
 
     var body: some View {
-        // The layout adapts to the device — a sidebar split view on iPad and the
-        // original stack on iPhone — while the import overlay, review sheet,
-        // report loading and onboarding stay shared across both so behavior is
-        // identical no matter how the content is presented. See
-        // `usesSidebarLayout` for why this is keyed off the idiom, not the size
-        // class, so rotating an iPhone doesn't reset navigation.
+        // The layout adapts to the size classes — a sidebar split view when
+        // regular×regular and a stack otherwise — while the import overlay,
+        // review sheet, report loading and onboarding stay shared across both so
+        // behavior is identical no matter how the content is presented. See
+        // `usesSidebarLayout` for why rotating an iPhone never swaps layouts.
         Group {
             if usesSidebarLayout {
                 splitRoot
@@ -111,8 +106,8 @@ struct HomeView: View {
             .onAppear { searchPresentation.didPresentDetail() }
         }
         .environment(searchPresentation).presentsSearchResults(reports: reports)
-        // "Navigate back" also returns the iPad sidebar to the dashboard.
-        .onChange(of: searchPresentation.navResetToken) { _, _ in sidebarSelection = .dashboard }
+        // "Navigate back" also returns either layout to the dashboard.
+        .onChange(of: searchPresentation.navResetToken) { _, _ in selectedSection = .dashboard }
         .onChange(of: onboardingComplete) { _, done in if done { flushPendingImport(); flushPendingDeepLink() } }
         .task {
             if ScreenshotMode.isActive {
@@ -194,20 +189,27 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Compact layout (iPhone)
+    // MARK: - Compact layout (iPhone, folded Duo, narrow iPad window)
 
     private var compactRoot: some View {
-        NavigationStack {
+        // `selectedSection` as the stack: Reports is pushed, Settings is a sheet.
+        NavigationStack(path: Binding(get: { selectedSection == .reports ? [SidebarSection.reports] : [] },
+                                      set: { selectedSection = $0.last ?? .dashboard })) {
             mainContent(showsLibraryToolbarItems: true)
+                .navigationDestination(for: SidebarSection.self) { _ in HistoryView(initialReports: reports) }
         }
         .id(searchPresentation.navResetToken) // re-identified to pop to root on a deep link
+        .sheet(isPresented: Binding(get: { selectedSection == .settings },
+                                    set: { if !$0 { selectedSection = .dashboard } })) {
+            SettingsView(prefs: $prefs, allCodes: allCodeNames)
+        }
     }
 
-    // MARK: - Regular layout (iPad)
+    // MARK: - Regular layout (full-screen iPad, unfolded Duo)
 
     private var splitRoot: some View {
         NavigationSplitView {
-            List(selection: $sidebarSelection) {
+            List(selection: $selectedSection) {
                 ForEach(SidebarSection.allCases) { section in
                     Label(section.title, systemImage: section.icon)
                         .tag(section)
@@ -228,7 +230,7 @@ struct HomeView: View {
 
     @ViewBuilder
     private var detailColumn: some View {
-        switch sidebarSelection ?? .dashboard {
+        switch selectedSection ?? .dashboard {
         case .dashboard:
             NavigationStack {
                 mainContent(showsLibraryToolbarItems: false)
@@ -261,7 +263,8 @@ struct HomeView: View {
                 scannerAvailable: VNDocumentCameraViewController.isSupported,
                 clipboardAvailable: clipboardHasContent,
                 isProcessing: importEngine.isProcessing,
-                showsLibraryToolbarItems: showsLibraryToolbarItems
+                showsLibraryToolbarItems: showsLibraryToolbarItems,
+                onShowSettings: { selectedSection = .settings }
             )
         } else {
             DashboardView(
@@ -273,7 +276,8 @@ struct HomeView: View {
                 scannerAvailable: VNDocumentCameraViewController.isSupported,
                 clipboardAvailable: clipboardHasContent,
                 isProcessing: importEngine.isProcessing,
-                showsLibraryToolbarItems: showsLibraryToolbarItems
+                showsLibraryToolbarItems: showsLibraryToolbarItems,
+                onShowSettings: { selectedSection = .settings }
             )
         }
     }
@@ -304,7 +308,7 @@ struct HomeView: View {
     }
 
     /// Distinct lab codes across all reports, used to populate the Settings
-    /// sort/visibility editor when Settings is shown as a sidebar detail.
+    /// sort/visibility editor in either layout.
     private var allCodeNames: [CodeName] {
         var seen = Set<String>()
         var result: [CodeName] = []
@@ -494,7 +498,3 @@ private extension HomeView {
     func setupScreenshotMode() {}
 }
 #endif
-
-#Preview {
-    HomeView()
-}
