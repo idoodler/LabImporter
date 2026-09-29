@@ -37,6 +37,20 @@ struct ReviewActionBar: View {
     let onSave: () -> Void
     let onShare: () -> Void
 
+    /// Short screens (iPhone and folded iPhone Duo in landscape) put the two
+    /// buttons side by side so the pinned bar doesn't eat a third of the height.
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+
+    /// Height of the top strip over which the material fades in. The buttons sit
+    /// below it, so content scrolling underneath never shows through behind them.
+    private let fadeHeight: CGFloat = 20
+
+    private var buttonLayout: AnyLayout {
+        verticalSizeClass == .compact
+            ? AnyLayout(HStackLayout(spacing: 12))
+            : AnyLayout(VStackLayout(spacing: 10))
+    }
+
     var body: some View {
         VStack(spacing: 10) {
             if hasDuplicates {
@@ -49,7 +63,7 @@ struct ReviewActionBar: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
 
-            VStack(spacing: 10) {
+            buttonLayout {
                 Button("Save to Health Records", action: onSave)
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
@@ -65,16 +79,16 @@ struct ReviewActionBar: View {
         }
         .padding(.horizontal)
         .padding(.bottom)
-        .padding(.top, 16)
+        .padding(.top, fadeHeight)
         .background {
             Rectangle()
                 .fill(.regularMaterial)
                 .mask {
-                    LinearGradient(
-                        colors: [.clear, .black],
-                        startPoint: .top,
-                        endPoint: UnitPoint(x: 0.5, y: 0.3)
-                    )
+                    VStack(spacing: 0) {
+                        LinearGradient(colors: [.clear, .black], startPoint: .top, endPoint: .bottom)
+                            .frame(height: fadeHeight)
+                        Rectangle()
+                    }
                 }
                 .ignoresSafeArea(edges: .bottom)
         }
@@ -366,6 +380,28 @@ struct CategorySectionHeader: View {
     VStack {
         Spacer()
         ReviewActionBar(isEnabled: true, onSave: {}, onShare: {})
+    }
+}
+
+#Preview("Action Bar – Landscape", traits: .landscapeLeft) {
+    VStack {
+        Spacer()
+        ReviewActionBar(isEnabled: true, onSave: {}, onShare: {})
+    }
+}
+
+#Preview("Action Bar – Dark") {
+    VStack {
+        Spacer()
+        ReviewActionBar(isEnabled: true, onSave: {}, onShare: {})
+    }
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Action Bar – Duplicates") {
+    VStack {
+        Spacer()
+        ReviewActionBar(isEnabled: false, hasDuplicates: true, onSave: {}, onShare: {})
     }
 }
 
