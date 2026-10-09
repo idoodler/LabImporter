@@ -47,6 +47,11 @@ struct ImportLandingView: View {
         .background { MorphingCategoryBackground() }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+        // On the iPad sidebar detail (`showsLibraryToolbarItems == false`)
+        // there's nothing to put in this bar — the sidebar already exposes
+        // Settings — so hide it outright instead of showing an empty inline
+        // bar above the hero.
+        .toolbar(showsLibraryToolbarItems ? .visible : .hidden, for: .navigationBar)
         .toolbar {
             if showsLibraryToolbarItems {
                 ToolbarItem(placement: .topBarTrailing) {

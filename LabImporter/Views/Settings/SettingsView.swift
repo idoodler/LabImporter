@@ -191,6 +191,7 @@ struct SettingsView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .accessibilityHint("Opens in Safari")
     }
 }
 

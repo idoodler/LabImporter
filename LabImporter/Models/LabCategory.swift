@@ -38,11 +38,19 @@ enum LabCategory: String, CaseIterable, Sendable {
         case .coagulation:  return .indigo
         case .nutrition:    return .mint
         case .microbiology: return .cyan
-        case .urinalysis:   return Color(red: 0.78, green: 0.66, blue: 0.20)
-        case .drug:         return Color(red: 0.85, green: 0.30, blue: 0.55)
+        case .urinalysis:   return Self.urinalysisGold
+        case .drug:         return Self.drugRose
         case .other:        return .gray
         }
     }
+
+    // Every other case above uses a named system color; these two are the
+    // only categories without a distinct one left in SwiftUI's standard set
+    // (all 13 are already spoken for), so they're fixed custom colors
+    // instead — deliberately the same in light and dark, named here rather
+    // than inlined so they read as palette entries like their neighbors.
+    private static let urinalysisGold = Color(red: 0.78, green: 0.66, blue: 0.20)
+    private static let drugRose = Color(red: 0.85, green: 0.30, blue: 0.55)
 
     /// Human-readable, localized name for the category — used as section headers
     /// when lab values are grouped by clinical panel.

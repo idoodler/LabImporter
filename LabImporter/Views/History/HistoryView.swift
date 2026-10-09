@@ -27,11 +27,13 @@ struct HistoryView: View {
     var body: some View {
         Group {
             if reports.isEmpty {
-                ContentUnavailableView(
-                    "No Reports Yet",
-                    systemImage: "doc.text.magnifyingglass",
-                    description: Text("Import a lab report and save it to Apple Health to see it here.")
-                )
+                ContentUnavailableView {
+                    Label("No Reports Yet", systemImage: "doc.text.magnifyingglass")
+                } description: {
+                    Text("Import a lab report and save it to Apple Health to see it here.")
+                } actions: {
+                    NewReportImportButton(onSaved: { Task { await loadReports() } })
+                }
             } else {
                 reportList
             }
@@ -445,10 +447,23 @@ private struct CategoryDots: View {
 
 // MARK: - Preview
 
-#Preview("History") {
+#Preview("Empty") {
     NavigationStack {
         HistoryView()
     }
+}
+
+#Preview("Populated") {
+    NavigationStack {
+        HistoryView(initialReports: LabReport.sampleHistory)
+    }
+}
+
+#Preview("Dark") {
+    NavigationStack {
+        HistoryView(initialReports: LabReport.sampleHistory)
+    }
+    .preferredColorScheme(.dark)
 }
 
 #if DEBUG

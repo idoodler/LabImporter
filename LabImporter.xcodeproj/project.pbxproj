@@ -33,6 +33,7 @@
 		AAED00000000000000001AAA /* PDFTrendPageViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAED00000000000000001BAA /* PDFTrendPageViews.swift */; };
 		AABB000000000000000060AA /* LabReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000061AA /* LabReport.swift */; };
 		AABB000000000000000064AA /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000065AA /* HistoryView.swift */; };
+		AAEE000000000000000011AA /* NewReportImportButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAEE000000000000000012AA /* NewReportImportButton.swift */; };
 		AABB000000000000000066AA /* ReportDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000067AA /* ReportDetailView.swift */; };
 		AABB000000000000000068AA /* TrendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000069AA /* TrendsView.swift */; };
 		AAEE000000000000000005AA /* TrendsView+Accessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAEE000000000000000006AA /* TrendsView+Accessibility.swift */; };
@@ -124,6 +125,7 @@
 		AAED00000000000000001BAA /* PDFTrendPageViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFTrendPageViews.swift; sourceTree = "<group>"; };
 		AABB000000000000000061AA /* LabReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabReport.swift; sourceTree = "<group>"; };
 		AABB000000000000000065AA /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		AAEE000000000000000012AA /* NewReportImportButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewReportImportButton.swift; sourceTree = "<group>"; };
 		AABB000000000000000067AA /* ReportDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportDetailView.swift; sourceTree = "<group>"; };
 		AABB000000000000000069AA /* TrendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendsView.swift; sourceTree = "<group>"; };
 		AAEE000000000000000006AA /* TrendsView+Accessibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TrendsView+Accessibility.swift"; sourceTree = "<group>"; };
@@ -399,6 +401,7 @@
 			isa = PBXGroup;
 			children = (
 				AABB000000000000000065AA /* HistoryView.swift */,
+				AAEE000000000000000012AA /* NewReportImportButton.swift */,
 				AABB000000000000000067AA /* ReportDetailView.swift */,
 			);
 			path = History;
@@ -680,6 +683,7 @@
 				AABB0000000000000000F3AA /* AddValueSheet.swift in Sources */,
 				AABB000000000000000060AA /* LabReport.swift in Sources */,
 				AABB000000000000000064AA /* HistoryView.swift in Sources */,
+				AAEE000000000000000011AA /* NewReportImportButton.swift in Sources */,
 				AABB000000000000000066AA /* ReportDetailView.swift in Sources */,
 				AABB000000000000000068AA /* TrendsView.swift in Sources */,
 				AAEE000000000000000005AA /* TrendsView+Accessibility.swift in Sources */,
