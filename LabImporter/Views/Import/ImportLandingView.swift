@@ -139,13 +139,7 @@ struct ImportLandingView: View {
             .controlSize(.large)
         }
         .padding(24)
-        // Glass (rather than plain material) so the card matches the glass
-        // chrome of the import flow's processing HUD — see `ProcessingHUD`.
-        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 28))
-        .overlay(
-            RoundedRectangle(cornerRadius: 28)
-                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
-        )
+        .cardSurface(cornerRadius: 28)
     }
 }
 

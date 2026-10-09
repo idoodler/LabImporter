@@ -32,11 +32,7 @@ struct ValueDescriptionCard: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
-            .overlay(
-                RoundedRectangle(cornerRadius: 20)
-                    .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
-            )
+            .cardSurface()
             .padding(.horizontal)
         }
         .buttonStyle(.plain)

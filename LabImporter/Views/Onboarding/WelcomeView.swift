@@ -100,11 +100,7 @@ struct WelcomeView: View {
             }
         }
         .padding(24)
-        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 28))
-        .overlay(
-            RoundedRectangle(cornerRadius: 28)
-                .stroke(Color.primary.opacity(0.08), lineWidth: 0.5)
-        )
+        .cardSurface(cornerRadius: 28)
     }
 
     // MARK: - Footer

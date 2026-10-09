@@ -153,11 +153,7 @@ struct MetricCard: View {
         }
         .padding(14)
         .frame(maxWidth: .infinity, minHeight: 158, alignment: .topLeading)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
-        .overlay(
-            RoundedRectangle(cornerRadius: 20)
-                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
-        )
+        .cardSurface()
     }
 }
 

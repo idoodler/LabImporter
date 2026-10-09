@@ -73,6 +73,7 @@
 		AACC000000000000000003AA /* PreviewSampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACC000000000000000004AA /* PreviewSampleData.swift */; };
 		AAFF0000000000000000F102 /* ReferenceRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFF0000000000000000F101 /* ReferenceRange.swift */; };
 		AAFF0000000000000000F202 /* RangeStatusBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFF0000000000000000F201 /* RangeStatusBadge.swift */; };
+		AAEE000000000000000009AA /* CardSurface.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAEE000000000000000010AA /* CardSurface.swift */; };
 		AAFF0000000000000000F302 /* ReferenceRangeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFF0000000000000000F301 /* ReferenceRangeEditor.swift */; };
 		AAFF0000000000000000F402 /* ValueDescriptionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFF0000000000000000F401 /* ValueDescriptionCard.swift */; };
 		AAFF0000000000000000F502 /* TrendWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFF0000000000000000F501 /* TrendWindow.swift */; };
@@ -180,6 +181,7 @@
 		AACC000000000000000004AA /* PreviewSampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSampleData.swift; sourceTree = "<group>"; };
 		AAFF0000000000000000F101 /* ReferenceRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferenceRange.swift; sourceTree = "<group>"; };
 		AAFF0000000000000000F201 /* RangeStatusBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeStatusBadge.swift; sourceTree = "<group>"; };
+		AAEE000000000000000010AA /* CardSurface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardSurface.swift; sourceTree = "<group>"; };
 		AAFF0000000000000000F301 /* ReferenceRangeEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferenceRangeEditor.swift; sourceTree = "<group>"; };
 		AAFF0000000000000000F401 /* ValueDescriptionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueDescriptionCard.swift; sourceTree = "<group>"; };
 		AAFF0000000000000000F501 /* TrendWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendWindow.swift; sourceTree = "<group>"; };
@@ -424,6 +426,7 @@
 				AACC000000000000000004AA /* PreviewSampleData.swift */,
 				AABB0000000000000000C3DE /* UnsupportedDeviceView.swift */,
 				AAFF0000000000000000F201 /* RangeStatusBadge.swift */,
+				AAEE000000000000000010AA /* CardSurface.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -639,6 +642,7 @@
 				AABB000000000000000042AA /* LabMapping.swift in Sources */,
 				AAFF0000000000000000F102 /* ReferenceRange.swift in Sources */,
 				AAFF0000000000000000F202 /* RangeStatusBadge.swift in Sources */,
+				AAEE000000000000000009AA /* CardSurface.swift in Sources */,
 				AAFF0000000000000000F302 /* ReferenceRangeEditor.swift in Sources */,
 				AAFF0000000000000000F402 /* ValueDescriptionCard.swift in Sources */,
 				AAFF0000000000000000F502 /* TrendWindow.swift in Sources */,

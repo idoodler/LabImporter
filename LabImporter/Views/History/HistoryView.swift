@@ -240,11 +240,7 @@ struct HistoryView: View {
         .padding(.vertical, 18)
         .padding(.horizontal, 12)
         .frame(maxWidth: .infinity)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22))
-        .overlay(
-            RoundedRectangle(cornerRadius: 22)
-                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
-        )
+        .cardSurface(cornerRadius: 22)
     }
 
     private func stat(value: String, label: String) -> some View {

@@ -240,11 +240,7 @@ extension TrendsView {
             chartBody
         }
         .padding()
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
-        .overlay(
-            RoundedRectangle(cornerRadius: 20)
-                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
-        )
+        .cardSurface()
     }
 
     /// Fixed readout above the plot, Apple-Health style: while scrubbing it

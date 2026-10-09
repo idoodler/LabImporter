@@ -203,7 +203,7 @@ struct HomeView: View {
         NavigationSplitView {
             List(selection: $selectedSection) {
                 ForEach(SidebarSection.allCases) { section in
-                    Label(section.title, systemImage: section.icon)
+                    Label(section.title, systemImage: section == selectedSection ? section.selectedIcon : section.icon)
                         .tag(section)
                 }
             }
