@@ -36,7 +36,7 @@ struct WelcomeView: View {
     }
 
     var body: some View {
-        OnboardingScaffold {
+        OnboardingScaffold(step: 1, totalSteps: 4) {
             hero
         } card: {
             featureCard
@@ -100,11 +100,7 @@ struct WelcomeView: View {
             }
         }
         .padding(24)
-        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 28))
-        .overlay(
-            RoundedRectangle(cornerRadius: 28)
-                .stroke(Color.primary.opacity(0.08), lineWidth: 0.5)
-        )
+        .cardSurface(cornerRadius: 28)
     }
 
     // MARK: - Footer
@@ -146,6 +142,7 @@ private struct FeatureRow: View {
                 Image(systemName: feature.icon)
                     .font(.title2)
                     .foregroundStyle(.white)
+                    .accessibilityHidden(true)
             }
             VStack(alignment: .leading, spacing: 3) {
                 Text(feature.title)
@@ -156,6 +153,7 @@ private struct FeatureRow: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
+        .accessibilityElement(children: .combine)
     }
 }
 

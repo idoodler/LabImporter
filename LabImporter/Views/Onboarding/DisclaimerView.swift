@@ -6,6 +6,8 @@ import SwiftUI
 /// wall of legal text — and requires an explicit acknowledgement to continue.
 struct DisclaimerView: View {
     let onAcknowledge: () -> Void
+    /// Returns to the welcome screen. `nil` hides the back button.
+    var onBack: (() -> Void)?
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var appeared = false
@@ -34,7 +36,7 @@ struct DisclaimerView: View {
     }
 
     var body: some View {
-        OnboardingScaffold {
+        OnboardingScaffold(step: 2, totalSteps: 4, onBack: onBack) {
             hero
         } card: {
             pointCard
@@ -103,11 +105,7 @@ struct DisclaimerView: View {
             }
         }
         .padding(24)
-        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 28))
-        .overlay(
-            RoundedRectangle(cornerRadius: 28)
-                .stroke(Color.primary.opacity(0.08), lineWidth: 0.5)
-        )
+        .cardSurface(cornerRadius: 28)
     }
 
     // MARK: - Footer
@@ -149,6 +147,7 @@ private struct PointRow: View {
                 Image(systemName: point.icon)
                     .font(.title2)
                     .foregroundStyle(.white)
+                    .accessibilityHidden(true)
             }
             VStack(alignment: .leading, spacing: 3) {
                 Text(point.title)
@@ -159,6 +158,7 @@ private struct PointRow: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -166,4 +166,13 @@ private struct PointRow: View {
 
 #Preview {
     DisclaimerView { }
+}
+
+#Preview("With Back Button") {
+    DisclaimerView(onAcknowledge: { }, onBack: { })
+}
+
+#Preview("Dark") {
+    DisclaimerView(onAcknowledge: { }, onBack: { })
+        .preferredColorScheme(.dark)
 }

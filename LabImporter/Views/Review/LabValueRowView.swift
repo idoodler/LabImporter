@@ -29,6 +29,8 @@ struct LabValueRowView: View {
                     .foregroundStyle(value.isSelected ? Color.accentColor : Color.secondary)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Include in Export")
+            .accessibilityValue(value.isSelected ? "Included" : "Excluded")
 
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 4) {
@@ -46,6 +48,7 @@ struct LabValueRowView: View {
                         Image(systemName: "doc.badge.minus")
                             .font(.caption2)
                             .foregroundStyle(.tertiary)
+                            .accessibilityLabel("No LOINC Code")
                             .help("No LOINC code — excluded from CDA export")
                     }
 

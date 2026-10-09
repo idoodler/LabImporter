@@ -124,6 +124,8 @@ private struct LabTestPickerList: View {
             .padding(.vertical, 2)
         }
         .foregroundStyle(.primary)
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(isSelected ? [.isSelected] : [])
     }
 
     private func select(_ newCode: String, _ newName: String) {

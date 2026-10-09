@@ -53,6 +53,7 @@ struct SiriAccessEditor: View {
             }
             .pickerStyle(.segmented)
             .labelsHidden()
+            .accessibilityLabel("Value Access")
         } footer: {
             Text(prefs.allowAllValues
                  ? "Siri may read back every value you track — including any you add later."

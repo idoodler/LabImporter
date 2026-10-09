@@ -23,4 +23,10 @@ enum SidebarSection: String, CaseIterable, Identifiable {
         case .settings: return "gearshape"
         }
     }
+
+    /// The `.fill` counterpart of `icon`, shown while this section is the
+    /// sidebar's current selection — matching how `LabSortEditor`'s pin icon
+    /// (and system sidebars like Settings/Mail) switch glyph weight on
+    /// selection rather than relying solely on the system's highlight color.
+    var selectedIcon: String { "\(icon).fill" }
 }

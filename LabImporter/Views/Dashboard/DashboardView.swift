@@ -260,11 +260,7 @@ struct DashboardView: View {
         // Cap and center the card so it stays a readable column rather than
         // stretching across an iPad's detail pane.
         .frame(maxWidth: 480)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
-        .overlay(
-            RoundedRectangle(cornerRadius: 20)
-                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
-        )
+        .cardSurface()
         .frame(maxWidth: .infinity)
     }
 

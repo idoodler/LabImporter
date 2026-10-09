@@ -12,6 +12,7 @@ struct HistoryView: View {
     @State private var editMode: EditMode = .inactive
     @State private var selection: Set<UUID> = []
     @State private var showExport = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     /// Seeds the list with the reports the parent already has in memory so the
     /// toolbar (Export / Edit) and content render populated on the very first
@@ -26,11 +27,13 @@ struct HistoryView: View {
     var body: some View {
         Group {
             if reports.isEmpty {
-                ContentUnavailableView(
-                    "No Reports Yet",
-                    systemImage: "doc.text.magnifyingglass",
-                    description: Text("Import a lab report and save it to Apple Health to see it here.")
-                )
+                ContentUnavailableView {
+                    Label("No Reports Yet", systemImage: "doc.text.magnifyingglass")
+                } description: {
+                    Text("Import a lab report and save it to Apple Health to see it here.")
+                } actions: {
+                    NewReportImportButton(onSaved: { Task { await loadReports() } })
+                }
             } else {
                 reportList
             }
@@ -115,7 +118,7 @@ struct HistoryView: View {
         ToolbarItem(placement: .topBarTrailing) {
             if !reports.isEmpty {
                 Button {
-                    withAnimation { toggleEditing() }
+                    withAnimation(reduceMotion ? nil : .default) { toggleEditing() }
                 } label: {
                     Image(systemName: editMode.isEditing ? "checkmark" : "checklist")
                 }
@@ -239,11 +242,7 @@ struct HistoryView: View {
         .padding(.vertical, 18)
         .padding(.horizontal, 12)
         .frame(maxWidth: .infinity)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22))
-        .overlay(
-            RoundedRectangle(cornerRadius: 22)
-                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
-        )
+        .cardSurface(cornerRadius: 22)
     }
 
     private func stat(value: String, label: String) -> some View {
@@ -448,10 +447,23 @@ private struct CategoryDots: View {
 
 // MARK: - Preview
 
-#Preview("History") {
+#Preview("Empty") {
     NavigationStack {
         HistoryView()
     }
+}
+
+#Preview("Populated") {
+    NavigationStack {
+        HistoryView(initialReports: LabReport.sampleHistory)
+    }
+}
+
+#Preview("Dark") {
+    NavigationStack {
+        HistoryView(initialReports: LabReport.sampleHistory)
+    }
+    .preferredColorScheme(.dark)
 }
 
 #if DEBUG

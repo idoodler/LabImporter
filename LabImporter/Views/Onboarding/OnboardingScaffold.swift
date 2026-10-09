@@ -1,7 +1,8 @@
 import SwiftUI
 
 /// Shared adaptive layout for the full-screen onboarding steps (Welcome,
-/// Disclaimer, Health permission, iCloud sync, Unsupported device).
+/// Disclaimer, Health permission, the combined Extras opt-in, Unsupported
+/// device).
 ///
 /// All of those screens are built from the same three pieces — a `hero`
 /// (large icon + title + subtitle), a `card` of feature/benefit rows, and a
@@ -21,17 +22,35 @@ import SwiftUI
 /// live in the slot views, so they keep working regardless of which layout is
 /// active.
 struct OnboardingScaffold<Hero: View, Card: View, Footer: View>: View {
+    private let step: Int?
+    private let totalSteps: Int
+    private let onBack: (() -> Void)?
     private let hero: Hero
     private let card: Card
     private let footer: Footer
 
     @Environment(\.verticalSizeClass) private var verticalSizeClass
 
+    /// - Parameters:
+    ///   - step: This screen's 1-based position in the mandatory onboarding
+    ///     sequence, shown as "Step `step` of `totalSteps`". `nil` (the
+    ///     default) hides the indicator entirely — most callers outside the
+    ///     mandatory flow (e.g. `UnsupportedDeviceView`) want that.
+    ///   - onBack: When non-`nil`, shows a leading back button above `hero`
+    ///     that calls it. `nil` (the default, and always on the first step)
+    ///     hides the button rather than disabling it, since there's nowhere
+    ///     to go back to.
     init(
+        step: Int? = nil,
+        totalSteps: Int = 1,
+        onBack: (() -> Void)? = nil,
         @ViewBuilder hero: () -> Hero,
         @ViewBuilder card: () -> Card,
         @ViewBuilder footer: () -> Footer = { EmptyView() }
     ) {
+        self.step = step
+        self.totalSteps = totalSteps
+        self.onBack = onBack
         self.hero = hero()
         self.card = card()
         self.footer = footer()
@@ -47,12 +66,54 @@ struct OnboardingScaffold<Hero: View, Card: View, Footer: View>: View {
         }
     }
 
+    // MARK: - Progress / back
+
+    /// Reserves its own layout space above `hero` (rather than an overlay) so
+    /// the back button and step indicator never compete with the hero icon/
+    /// title for the same pixels. Within the mandatory flow this always
+    /// renders — even on step 1, with no back button — so its height stays
+    /// constant and `hero` doesn't jump as `onBack` appears/disappears across
+    /// steps; callers that pass neither `step` nor `onBack` get no row at all,
+    /// unchanged from before this existed.
+    @ViewBuilder
+    private var progressRow: some View {
+        if step != nil || onBack != nil {
+            HStack {
+                Group {
+                    if let onBack {
+                        Button(action: onBack) {
+                            Image(systemName: "chevron.backward")
+                                .font(.body.weight(.semibold))
+                        }
+                        .accessibilityLabel("Back")
+                    } else {
+                        Color.clear
+                    }
+                }
+                .frame(width: 44, height: 44)
+
+                Spacer(minLength: 0)
+
+                if let step {
+                    Text("Step \(step) of \(totalSteps)")
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer(minLength: 0)
+                Color.clear.frame(width: 44, height: 44)
+            }
+            .padding(.horizontal, 8)
+        }
+    }
+
     // MARK: - Portrait (regular height)
 
     private var portraitLayout: some View {
         GeometryReader { proxy in
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: 0) {
+                    progressRow
                     Spacer(minLength: 16)
                     hero
                     Spacer(minLength: 16)
@@ -76,8 +137,11 @@ struct OnboardingScaffold<Hero: View, Card: View, Footer: View>: View {
         GeometryReader { proxy in
             HStack(spacing: 0) {
                 column(centredIn: proxy.size.height) {
-                    hero
-                        .padding(.horizontal, 16)
+                    VStack(spacing: 0) {
+                        progressRow
+                        hero
+                            .padding(.horizontal, 16)
+                    }
                 }
                 column(centredIn: proxy.size.height) {
                     VStack(spacing: 20) {

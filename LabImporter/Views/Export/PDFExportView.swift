@@ -34,12 +34,13 @@ struct PDFExportView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
+            List {
                 appearanceSection
                 sectionsSection
                 if options.includeTrends { timeRangeSection }
                 valuesSection
             }
+            .listStyle(.insetGrouped)
             .navigationTitle("Export PDF")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

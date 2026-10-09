@@ -47,6 +47,11 @@ struct ImportLandingView: View {
         .background { MorphingCategoryBackground() }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+        // On the iPad sidebar detail (`showsLibraryToolbarItems == false`)
+        // there's nothing to put in this bar — the sidebar already exposes
+        // Settings — so hide it outright instead of showing an empty inline
+        // bar above the hero.
+        .toolbar(showsLibraryToolbarItems ? .visible : .hidden, for: .navigationBar)
         .toolbar {
             if showsLibraryToolbarItems {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -139,13 +144,7 @@ struct ImportLandingView: View {
             .controlSize(.large)
         }
         .padding(24)
-        // Glass (rather than plain material) so the card matches the glass
-        // chrome of the import flow's processing HUD — see `ProcessingHUD`.
-        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 28))
-        .overlay(
-            RoundedRectangle(cornerRadius: 28)
-                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
-        )
+        .cardSurface(cornerRadius: 28)
     }
 }
 

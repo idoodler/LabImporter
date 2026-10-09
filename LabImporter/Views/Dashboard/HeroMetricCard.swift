@@ -18,6 +18,12 @@ struct HeroMetricCard<ImportMenu: View>: View {
     let onSelectTrend: () -> Void
     @ViewBuilder let importMenu: () -> ImportMenu
 
+    /// The hero number's base size at the system Dynamic Type setting —
+    /// scaled relative to `.largeTitle` so this data (not decoration, unlike
+    /// the fixed-size glyphs elsewhere in the app) still grows under larger
+    /// accessibility text sizes instead of staying visually frozen.
+    @ScaledMetric(relativeTo: .largeTitle) private var valueFontSize: CGFloat = 44
+
     private var hasTrend: Bool { metric.history.count > 1 }
 
     private var trend: MetricTrend? { MetricTrend(history: metric.history) }
@@ -65,11 +71,7 @@ struct HeroMetricCard<ImportMenu: View>: View {
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 24))
-        .overlay(
-            RoundedRectangle(cornerRadius: 24)
-                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
-        )
+        .cardSurface(cornerRadius: 24)
     }
 
     private var header: some View {
@@ -112,7 +114,7 @@ struct HeroMetricCard<ImportMenu: View>: View {
     private var valueRow: some View {
         HStack(alignment: .firstTextBaseline, spacing: 4) {
             Text(metric.entry.displayValue)
-                .font(.system(size: 44, weight: .bold))
+                .font(.system(size: valueFontSize, weight: .bold))
                 .foregroundStyle(valueForeground)
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)

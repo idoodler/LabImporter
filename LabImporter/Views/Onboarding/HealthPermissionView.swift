@@ -4,6 +4,8 @@ import UIKit
 
 struct HealthPermissionView: View {
     let onGranted: () -> Void
+    /// Returns to the disclaimer step. `nil` hides the back button.
+    var onBack: (() -> Void)?
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var appeared = false
@@ -34,7 +36,7 @@ struct HealthPermissionView: View {
     }
 
     var body: some View {
-        OnboardingScaffold {
+        OnboardingScaffold(step: 3, totalSteps: 4, onBack: onBack) {
             hero
         } card: {
             benefitCard
@@ -109,11 +111,7 @@ struct HealthPermissionView: View {
             }
         }
         .padding(24)
-        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 28))
-        .overlay(
-            RoundedRectangle(cornerRadius: 28)
-                .stroke(Color.primary.opacity(0.08), lineWidth: 0.5)
-        )
+        .cardSurface(cornerRadius: 28)
     }
 
     // MARK: - Privacy note
@@ -212,6 +210,7 @@ private struct BenefitRow: View {
                 Image(systemName: benefit.icon)
                     .font(.title2)
                     .foregroundStyle(.white)
+                    .accessibilityHidden(true)
             }
             VStack(alignment: .leading, spacing: 3) {
                 Text(benefit.title)
@@ -222,6 +221,7 @@ private struct BenefitRow: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -229,4 +229,13 @@ private struct BenefitRow: View {
 
 #Preview {
     HealthPermissionView { }
+}
+
+#Preview("With Back Button") {
+    HealthPermissionView(onGranted: { }, onBack: { })
+}
+
+#Preview("Dark") {
+    HealthPermissionView(onGranted: { }, onBack: { })
+        .preferredColorScheme(.dark)
 }
