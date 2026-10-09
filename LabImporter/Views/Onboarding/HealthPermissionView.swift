@@ -4,6 +4,8 @@ import UIKit
 
 struct HealthPermissionView: View {
     let onGranted: () -> Void
+    /// Returns to the disclaimer step. `nil` hides the back button.
+    var onBack: (() -> Void)?
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var appeared = false
@@ -34,7 +36,7 @@ struct HealthPermissionView: View {
     }
 
     var body: some View {
-        OnboardingScaffold {
+        OnboardingScaffold(step: 3, totalSteps: 4, onBack: onBack) {
             hero
         } card: {
             benefitCard
@@ -231,4 +233,13 @@ private struct BenefitRow: View {
 
 #Preview {
     HealthPermissionView { }
+}
+
+#Preview("With Back Button") {
+    HealthPermissionView(onGranted: { }, onBack: { })
+}
+
+#Preview("Dark") {
+    HealthPermissionView(onGranted: { }, onBack: { })
+        .preferredColorScheme(.dark)
 }

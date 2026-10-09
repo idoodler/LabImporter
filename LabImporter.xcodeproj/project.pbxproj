@@ -43,6 +43,7 @@
 		AABB000000000000000074AA /* LabDisplayPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000075AA /* LabDisplayPreferences.swift */; };
 		AABB000000000000000077AA /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000076AA /* Localizable.xcstrings */; };
 		AABB000000000000000078AA /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000079AA /* WelcomeView.swift */; };
+		AAEE000000000000000007AA /* OnboardingExtrasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAEE000000000000000008AA /* OnboardingExtrasView.swift */; };
 		AABB000000000000000080AA /* DocumentScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000081AA /* DocumentScannerView.swift */; };
 		AABB000000000000000082AA /* VisionKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AABB000000000000000083AA /* VisionKit.framework */; };
 		AABB000000000000000084AA /* PDFKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AABB000000000000000085AA /* PDFKit.framework */; };
@@ -59,9 +60,7 @@
 		AABB0000000000000000CC01 /* MetricCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000CC02 /* MetricCard.swift */; };
 		AABB0000000000000000D1AA /* CloudSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000D0AA /* CloudSyncService.swift */; };
 		AASP000000000000000001AA /* SpotlightIndexService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASP000000000000000002AA /* SpotlightIndexService.swift */; };
-		AASP000000000000000003AA /* SpotlightOptInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASP000000000000000004AA /* SpotlightOptInView.swift */; };
 		AASP000000000000000005AA /* SearchPresentationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASP000000000000000006AA /* SearchPresentationCoordinator.swift */; };
-		AABB0000000000000000D3AA /* CloudSyncOptInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000D2AA /* CloudSyncOptInView.swift */; };
 		AABB0000000000000000E1AA /* DisclaimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000E2AA /* DisclaimerView.swift */; };
 		AABB0000000000000000F1AA /* LabImportEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000F2AA /* LabImportEngine.swift */; };
 		AABB0000000000000000F7AA /* ProcessingHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000F8AA /* ProcessingHUD.swift */; };
@@ -85,7 +84,6 @@
 		AASI000000000000000009AA /* AskLabValueIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASI000000000000000010AA /* AskLabValueIntent.swift */; };
 		AASI000000000000000011AA /* StartLabScanIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASI000000000000000012AA /* StartLabScanIntent.swift */; };
 		AASI000000000000000013AA /* LabImporterShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASI000000000000000014AA /* LabImporterShortcuts.swift */; };
-		AASI000000000000000015AA /* SiriIntelligenceOptInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASI000000000000000016AA /* SiriIntelligenceOptInView.swift */; };
 		AASI000000000000000017AA /* SiriAccessEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASI000000000000000018AA /* SiriAccessEditor.swift */; };
 		AASI000000000000000020AA /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASI000000000000000021AA /* AppInfo.swift */; };
 		AASI000000000000000022AA /* SidebarSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASI000000000000000023AA /* SidebarSection.swift */; };
@@ -133,6 +131,7 @@
 		AABB000000000000000075AA /* LabDisplayPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabDisplayPreferences.swift; sourceTree = "<group>"; };
 		AABB000000000000000076AA /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		AABB000000000000000079AA /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		AAEE000000000000000008AA /* OnboardingExtrasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingExtrasView.swift; sourceTree = "<group>"; };
 		AABB000000000000000081AA /* DocumentScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentScannerView.swift; sourceTree = "<group>"; };
 		AABB000000000000000083AA /* VisionKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VisionKit.framework; path = System/Library/Frameworks/VisionKit.framework; sourceTree = SDKROOT; };
 		AABB000000000000000085AA /* PDFKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PDFKit.framework; path = System/Library/Frameworks/PDFKit.framework; sourceTree = SDKROOT; };
@@ -168,9 +167,7 @@
 		AABB0000000000000000HM02 /* HeroMetricCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroMetricCard.swift; sourceTree = "<group>"; };
 		AABB0000000000000000D0AA /* CloudSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncService.swift; sourceTree = "<group>"; };
 		AASP000000000000000002AA /* SpotlightIndexService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightIndexService.swift; sourceTree = "<group>"; };
-		AASP000000000000000004AA /* SpotlightOptInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightOptInView.swift; sourceTree = "<group>"; };
 		AASP000000000000000006AA /* SearchPresentationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchPresentationCoordinator.swift; sourceTree = "<group>"; };
-		AABB0000000000000000D2AA /* CloudSyncOptInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncOptInView.swift; sourceTree = "<group>"; };
 		AABB0000000000000000E2AA /* DisclaimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisclaimerView.swift; sourceTree = "<group>"; };
 		AABB0000000000000000F2AA /* LabImportEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabImportEngine.swift; sourceTree = "<group>"; };
 		AABB0000000000000000F8AA /* ProcessingHUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessingHUD.swift; sourceTree = "<group>"; };
@@ -194,7 +191,6 @@
 		AASI000000000000000010AA /* AskLabValueIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AskLabValueIntent.swift; sourceTree = "<group>"; };
 		AASI000000000000000012AA /* StartLabScanIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartLabScanIntent.swift; sourceTree = "<group>"; };
 		AASI000000000000000014AA /* LabImporterShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabImporterShortcuts.swift; sourceTree = "<group>"; };
-		AASI000000000000000016AA /* SiriIntelligenceOptInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiriIntelligenceOptInView.swift; sourceTree = "<group>"; };
 		AASI000000000000000018AA /* SiriAccessEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiriAccessEditor.swift; sourceTree = "<group>"; };
 		AASI000000000000000021AA /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
 		AASI000000000000000023AA /* SidebarSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarSection.swift; sourceTree = "<group>"; };
@@ -347,11 +343,9 @@
 			isa = PBXGroup;
 			children = (
 				AABB000000000000000079AA /* WelcomeView.swift */,
+				AAEE000000000000000008AA /* OnboardingExtrasView.swift */,
 				AABB0000000000000000E2AA /* DisclaimerView.swift */,
 				636BA85D2FCC52EE006E8E71 /* HealthPermissionView.swift */,
-				AABB0000000000000000D2AA /* CloudSyncOptInView.swift */,
-				AASP000000000000000004AA /* SpotlightOptInView.swift */,
-				AASI000000000000000016AA /* SiriIntelligenceOptInView.swift */,
 				AABB0000000000000000F6AA /* OnboardingScaffold.swift */,
 			);
 			path = Onboarding;
@@ -655,7 +649,6 @@
 				AABB000000000000000091AA /* LoincDirectory.swift in Sources */,
 				AABB0000000000000000D1AA /* CloudSyncService.swift in Sources */,
 				AASP000000000000000001AA /* SpotlightIndexService.swift in Sources */,
-				AASP000000000000000003AA /* SpotlightOptInView.swift in Sources */,
 				AASP000000000000000005AA /* SearchPresentationCoordinator.swift in Sources */,
 				AABB000000000000000057AA /* CDAExportService.swift in Sources */,
 				AAED000000000000000010AA /* PDFExportOptions.swift in Sources */,
@@ -679,7 +672,6 @@
 				AABB0000000000000000F1AA /* LabImportEngine.swift in Sources */,
 				AABB0000000000000000F7AA /* ProcessingHUD.swift in Sources */,
 				636BA85E2FCC52EE006E8E71 /* HealthPermissionView.swift in Sources */,
-				AABB0000000000000000D3AA /* CloudSyncOptInView.swift in Sources */,
 				AABB0000000000000000F5AA /* OnboardingScaffold.swift in Sources */,
 				AABB0000000000000000F3AA /* AddValueSheet.swift in Sources */,
 				AABB000000000000000060AA /* LabReport.swift in Sources */,
@@ -695,6 +687,7 @@
 				AABB0000000000000000C0AA /* MorphingCategoryBackground.swift in Sources */,
 				AABB000000000000000074AA /* LabDisplayPreferences.swift in Sources */,
 				AABB000000000000000078AA /* WelcomeView.swift in Sources */,
+				AAEE000000000000000007AA /* OnboardingExtrasView.swift in Sources */,
 				AABB0000000000000000E1AA /* DisclaimerView.swift in Sources */,
 				AABB000000000000000086AA /* SettingsView.swift in Sources */,
 				AABBCC0000000000000001AA /* LabSortEditor.swift in Sources */,
@@ -709,7 +702,6 @@
 				AASI000000000000000009AA /* AskLabValueIntent.swift in Sources */,
 				AASI000000000000000011AA /* StartLabScanIntent.swift in Sources */,
 				AASI000000000000000013AA /* LabImporterShortcuts.swift in Sources */,
-				AASI000000000000000015AA /* SiriIntelligenceOptInView.swift in Sources */,
 				AASI000000000000000017AA /* SiriAccessEditor.swift in Sources */,
 				AASI000000000000000020AA /* AppInfo.swift in Sources */,
 				AASI000000000000000022AA /* SidebarSection.swift in Sources */,

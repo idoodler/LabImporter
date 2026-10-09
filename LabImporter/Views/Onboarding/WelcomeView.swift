@@ -36,7 +36,7 @@ struct WelcomeView: View {
     }
 
     var body: some View {
-        OnboardingScaffold {
+        OnboardingScaffold(step: 1, totalSteps: 4) {
             hero
         } card: {
             featureCard

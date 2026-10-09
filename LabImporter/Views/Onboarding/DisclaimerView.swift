@@ -6,6 +6,8 @@ import SwiftUI
 /// wall of legal text — and requires an explicit acknowledgement to continue.
 struct DisclaimerView: View {
     let onAcknowledge: () -> Void
+    /// Returns to the welcome screen. `nil` hides the back button.
+    var onBack: (() -> Void)?
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var appeared = false
@@ -34,7 +36,7 @@ struct DisclaimerView: View {
     }
 
     var body: some View {
-        OnboardingScaffold {
+        OnboardingScaffold(step: 2, totalSteps: 4, onBack: onBack) {
             hero
         } card: {
             pointCard
@@ -168,4 +170,13 @@ private struct PointRow: View {
 
 #Preview {
     DisclaimerView { }
+}
+
+#Preview("With Back Button") {
+    DisclaimerView(onAcknowledge: { }, onBack: { })
+}
+
+#Preview("Dark") {
+    DisclaimerView(onAcknowledge: { }, onBack: { })
+        .preferredColorScheme(.dark)
 }

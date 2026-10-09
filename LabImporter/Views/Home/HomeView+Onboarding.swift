@@ -3,62 +3,67 @@ import SwiftUI
 // MARK: - Onboarding flow
 
 extension HomeView {
-    /// Six-step onboarding: welcome → Apple Health → iCloud sync → Spotlight
-    /// search → Siri & Shortcuts → disclaimer. Each gate is mandatory, so the
-    /// same fullScreenCover stays up (swapping its inner view) until the user
-    /// clears them all.
+    /// Four mandatory steps: welcome → disclaimer → Apple Health → the
+    /// combined Extras opt-in (iCloud sync, Spotlight, Siri & Shortcuts).
+    /// Each gate is mandatory, so the same `fullScreenCover` stays up
+    /// (swapping its inner view, cross-fading via `transitionOnboarding`)
+    /// until the user clears them all. Every step but the first passes
+    /// `onBack` so a mis-tap doesn't require a reinstall to correct; each
+    /// step's own `OnboardingScaffold` renders the back button + step
+    /// indicator from that and the hard-coded `step`/`totalSteps` it passes.
     @ViewBuilder
     var onboardingFlow: some View {
-        if !hasSeenWelcome {
-            WelcomeView {
-                advanceOnboarding { hasSeenWelcome = true }
+        Group {
+            if !hasSeenWelcome {
+                WelcomeView {
+                    transitionOnboarding { hasSeenWelcome = true }
+                }
+            } else if !hasAcknowledgedDisclaimer {
+                DisclaimerView(
+                    onAcknowledge: { transitionOnboarding { hasAcknowledgedDisclaimer = true } },
+                    onBack: { transitionOnboarding { hasSeenWelcome = false } }
+                )
+            } else if !hasGrantedHealthAccess {
+                HealthPermissionView(
+                    onGranted: { transitionOnboarding { hasGrantedHealthAccess = true } },
+                    onBack: { transitionOnboarding { hasAcknowledgedDisclaimer = false } }
+                )
+            } else if !hasChosenExtras {
+                OnboardingExtrasView(
+                    onContinue: { iCloud, showLatestValue, siri in
+                        iCloudSyncEnabled = iCloud
+                        showLatestValueInSearch = showLatestValue
+                        siriPrefs.isEnabled = siri
+                        transitionOnboarding {
+                            hasChosenICloudSync = true
+                            hasChosenSpotlightSearch = true
+                            hasChosenSiriIntelligence = true
+                        }
+                    },
+                    onBack: { transitionOnboarding { hasGrantedHealthAccess = false } }
+                )
             }
-            .transition(.opacity)
-        } else if !hasGrantedHealthAccess {
-            HealthPermissionView {
-                advanceOnboarding { hasGrantedHealthAccess = true }
-            }
-            .transition(.opacity)
-        } else if !hasChosenICloudSync {
-            CloudSyncOptInView { enabled in
-                iCloudSyncEnabled = enabled
-                advanceOnboarding { hasChosenICloudSync = true }
-            }
-            .transition(.opacity)
-        } else if !hasChosenSpotlightSearch {
-            SpotlightOptInView { showValues in
-                showLatestValueInSearch = showValues
-                advanceOnboarding { hasChosenSpotlightSearch = true }
-            }
-            .transition(.opacity)
-        } else if !hasChosenSiriIntelligence {
-            SiriIntelligenceOptInView { enabled, allowAllValues, allowScanShortcut, allowOnScreenAwareness, allowKnowledgeIndexing, allowInAppSearch in
-                siriPrefs.isEnabled = enabled
-                siriPrefs.allowAllValues = allowAllValues
-                siriPrefs.allowScanShortcut = allowScanShortcut
-                siriPrefs.allowOnScreenAwareness = allowOnScreenAwareness
-                siriPrefs.allowKnowledgeIndexing = allowKnowledgeIndexing
-                siriPrefs.allowInAppSearch = allowInAppSearch
-                advanceOnboarding { hasChosenSiriIntelligence = true }
-            }
-            .transition(.opacity)
-        } else {
-            DisclaimerView {
-                advanceOnboarding { hasAcknowledgedDisclaimer = true }
-            }
-            .transition(.opacity)
         }
+        .transition(.opacity)
     }
 
     /// True once every onboarding gate is cleared, whichever step was last.
     var onboardingComplete: Bool {
-        hasSeenWelcome && hasAcknowledgedDisclaimer && hasGrantedHealthAccess && hasChosenICloudSync
-            && hasChosenSpotlightSearch && hasChosenSiriIntelligence
+        hasSeenWelcome && hasAcknowledgedDisclaimer && hasGrantedHealthAccess && hasChosenExtras
     }
 
-    /// Advances an onboarding gate, animating the cross-fade to the next step
-    /// unless Reduce Motion is on.
-    private func advanceOnboarding(_ update: () -> Void) {
+    /// The combined Extras step (iCloud sync, Spotlight, Siri) is gated by
+    /// all three of its underlying preferences at once — there's no separate
+    /// `hasChosenExtras` flag, so an install that already finished the old
+    /// six-step flow (where these were set one at a time) never sees the new
+    /// combined screen again.
+    private var hasChosenExtras: Bool {
+        hasChosenICloudSync && hasChosenSpotlightSearch && hasChosenSiriIntelligence
+    }
+
+    /// Advances or retreats an onboarding gate, animating the cross-fade to
+    /// the adjacent step unless Reduce Motion is on.
+    private func transitionOnboarding(_ update: () -> Void) {
         guard !reduceMotion else { update(); return }
         withAnimation(.smooth(duration: 0.35), update)
     }

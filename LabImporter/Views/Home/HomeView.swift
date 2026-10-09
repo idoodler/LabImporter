@@ -30,16 +30,13 @@ struct HomeView: View {
     /// welcome screen and before the Apple Health permission gate.
     @AppStorage("hasAcknowledgedDisclaimer") var hasAcknowledgedDisclaimer = false
     @AppStorage("hasGrantedHealthAccess") var hasGrantedHealthAccess = false
-    /// Whether the user has made the required up-front iCloud sync decision.
-    /// Gates entry into the app so no reports can be added before deciding.
+    /// These three flags are set together, by the single combined
+    /// `OnboardingExtrasView` step (`HomeView+Onboarding.swift`'s
+    /// `hasChosenExtras`) — kept as three separate keys only so an install
+    /// that already finished the old six-step flow, where each was set one
+    /// at a time, never sees the combined screen again.
     @AppStorage("hasChosenICloudSync") var hasChosenICloudSync = false
-    /// Whether the user has seen the Spotlight search introduction and made the
-    /// up-front decision about surfacing latest readings in search. Gates entry
-    /// like the iCloud step; defaults `false` so existing installs see it once.
     @AppStorage("hasChosenSpotlightSearch") var hasChosenSpotlightSearch = false
-    /// Whether the user has made the up-front Siri & Shortcuts decision. Gates
-    /// entry like the other onboarding steps; per-value access stays a
-    /// separate, later opt-in in Settings.
     @AppStorage("hasChosenSiriIntelligence") var hasChosenSiriIntelligence = false
     @AppStorage(CloudSyncService.enabledKey) var iCloudSyncEnabled = false
     /// Mirrors the Settings opt-in for surfacing the latest reading in Spotlight,
@@ -179,13 +176,7 @@ struct HomeView: View {
                   let code = DeepLink.metricCode(from: url) else { return }
             presentTrend(for: code)
         }
-        .fullScreenCover(isPresented: Binding(
-            get: {
-                !hasSeenWelcome || !hasAcknowledgedDisclaimer || !hasGrantedHealthAccess
-                    || !hasChosenICloudSync || !hasChosenSpotlightSearch || !hasChosenSiriIntelligence
-            },
-            set: { _ in }
-        )) {
+        .fullScreenCover(isPresented: Binding(get: { !onboardingComplete }, set: { _ in })) {
             onboardingFlow
         }
     }
@@ -328,8 +319,7 @@ struct HomeView: View {
     /// stashed and replayed once `WelcomeView` is dismissed — otherwise the
     /// review sheet would present beneath the welcome cover and stay hidden.
     private func handleIncomingFile(_ url: URL) {
-        guard hasSeenWelcome, hasAcknowledgedDisclaimer, hasGrantedHealthAccess,
-              hasChosenICloudSync, hasChosenSpotlightSearch, hasChosenSiriIntelligence else {
+        guard onboardingComplete else {
             pendingImportURL = url
             return
         }
@@ -404,8 +394,7 @@ private extension HomeView {
     /// coordinator navigates back to root (closing any open editor via its own
     /// confirmation) and presents the detail.
     func presentTrend(for code: String) {
-        guard hasSeenWelcome, hasAcknowledgedDisclaimer, hasGrantedHealthAccess, hasChosenICloudSync,
-              hasChosenSpotlightSearch, hasChosenSiriIntelligence, isLoaded, !reports.isEmpty else {
+        guard onboardingComplete, isLoaded, !reports.isEmpty else {
             pendingDeepLinkCode = code
             return
         }
