@@ -146,6 +146,7 @@ private struct FeatureRow: View {
                 Image(systemName: feature.icon)
                     .font(.title2)
                     .foregroundStyle(.white)
+                    .accessibilityHidden(true)
             }
             VStack(alignment: .leading, spacing: 3) {
                 Text(feature.title)
@@ -156,6 +157,7 @@ private struct FeatureRow: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
+        .accessibilityElement(children: .combine)
     }
 }
 

@@ -285,6 +285,7 @@ struct LoincTermDetailView: View {
         .overlay(
             Capsule().stroke(category.color.opacity(0.25), lineWidth: 0.5)
         )
+        .accessibilityElement(children: .combine)
     }
 
     // MARK: - Editing
@@ -326,6 +327,7 @@ struct LoincTermDetailView: View {
             }
             Spacer(minLength: 0)
         }
+        .accessibilityElement(children: .combine)
     }
 
     // The user's nickname for this test, shown as a plainly-labelled read-only
@@ -347,6 +349,7 @@ struct LoincTermDetailView: View {
             }
             Spacer(minLength: 0)
         }
+        .accessibilityElement(children: .combine)
     }
 
     @ViewBuilder

@@ -276,6 +276,7 @@ private struct BenefitRow: View {
                 Image(systemName: benefit.icon)
                     .font(.title2)
                     .foregroundStyle(.white)
+                    .accessibilityHidden(true)
             }
             VStack(alignment: .leading, spacing: 3) {
                 Text(benefit.title)
@@ -286,6 +287,7 @@ private struct BenefitRow: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -317,6 +319,7 @@ private struct CapabilityToggleRow: View {
                     Image(systemName: icon)
                         .font(.title2)
                         .foregroundStyle(.white)
+                        .accessibilityHidden(true)
                 }
                 VStack(alignment: .leading, spacing: 3) {
                     Text(title)
@@ -359,6 +362,7 @@ private struct ValueAccessPicker: View {
                     Image(systemName: "checkmark.shield")
                         .font(.title2)
                         .foregroundStyle(.white)
+                        .accessibilityHidden(true)
                 }
                 VStack(alignment: .leading, spacing: 3) {
                     Text("Value Access")
@@ -371,12 +375,14 @@ private struct ValueAccessPicker: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
+            .accessibilityElement(children: .combine)
             Picker("Value Access", selection: $allowAllValues) {
                 Text("All Values").tag(true)
                 Text("Selected Values").tag(false)
             }
             .pickerStyle(.segmented)
             .labelsHidden()
+            .accessibilityLabel("Value Access")
         }
     }
 }

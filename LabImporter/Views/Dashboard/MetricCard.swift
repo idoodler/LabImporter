@@ -117,6 +117,7 @@ struct MetricCard: View {
                     Image(systemName: "pin.fill")
                         .font(.caption2)
                         .foregroundStyle(Color.yellow)
+                        .accessibilityLabel("Pinned")
                 }
             }
 
@@ -215,6 +216,12 @@ struct MetricSparklineChart: View {
         }
         .chartXAxis(.hidden)
         .chartYAxis(.hidden)
+        // Decorative here: the card's value text, range badge, and trend arrow
+        // already say everything this sparkline shows, as text. Without this,
+        // Swift Charts' default per-mark accessibility would read every point
+        // three times over (once per Line/Area/Point mark) for every card in
+        // the dashboard grid.
+        .accessibilityHidden(true)
     }
 }
 

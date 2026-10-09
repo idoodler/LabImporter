@@ -1,3 +1,4 @@
+import Accessibility
 import SwiftUI
 import Charts
 
@@ -15,6 +16,7 @@ struct TrendsView: View {
     @AppStorage("trendsSelectedCode") private var selectedCode: String = ""
     @AppStorage("trendsWindow") private var window: TrendWindow = .year1
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var selectedDate: Date?
     /// Leading edge (oldest visible date) of the scrollable chart. Re-anchored to
     /// the latest reading whenever the metric or window changes.
@@ -30,7 +32,7 @@ struct TrendsView: View {
     private let selectionFeedback = UISelectionFeedbackGenerator()
     private let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
 
-    private struct DataPoint: Identifiable {
+    struct DataPoint: Identifiable {
         let id = UUID()
         let date: Date
         let value: Double
@@ -61,7 +63,7 @@ struct TrendsView: View {
         }
     }
 
-    private var dataPoints: [DataPoint] {
+    var dataPoints: [DataPoint] {
         reports
             .flatMap { report in
                 report.entries
@@ -74,7 +76,7 @@ struct TrendsView: View {
             .sorted { $0.date < $1.date }
     }
 
-    private var currentUnit: String { dataPoints.first?.unit ?? "" }
+    var currentUnit: String { dataPoints.first?.unit ?? "" }
 
     private var selectedDataPoint: DataPoint? {
         guard let selectedDate else { return nil }
@@ -96,7 +98,7 @@ struct TrendsView: View {
         return valueColor
     }
 
-    private var selectedName: String {
+    var selectedName: String {
         availableCodes.first(where: { $0.code == selectedCode })?.name ?? "Trends"
     }
 
@@ -267,7 +269,7 @@ extension TrendsView {
                     }
                 }
             }
-            .animation(.snappy(duration: 0.2), value: point.date)
+            .animation(reduceMotion ? nil : .snappy(duration: 0.2), value: point.date)
         }
     }
 
@@ -278,38 +280,48 @@ extension TrendsView {
                     RuleMark(y: .value(String(localized: "Low"), low))
                         .foregroundStyle(RangeStatus.low.color.opacity(0.45))
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 3]))
+                        .accessibilityHidden(true)
                 }
                 if let high = range.high {
                     RuleMark(y: .value(String(localized: "High"), high))
                         .foregroundStyle(RangeStatus.high.color.opacity(0.45))
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 3]))
+                        .accessibilityHidden(true)
                 }
             }
 
+            // Only `PointMark` carries VoiceOver content — `LineMark`/`AreaMark` plot
+            // the exact same date/value pairs and would otherwise triple-announce
+            // every reading.
             ForEach(dataPoints) { point in
                 LineMark(
                     x: .value(String(localized: "Date"), point.date),
                     y: .value(currentUnit, point.value)
                 )
                 .foregroundStyle(valueColor.opacity(0.9))
+                .accessibilityHidden(true)
 
                 PointMark(
                     x: .value(String(localized: "Date"), point.date),
                     y: .value(currentUnit, point.value)
                 )
                 .foregroundStyle(pointColor(point.value))
+                .accessibilityLabel(point.date.formatted(date: .abbreviated, time: .omitted))
+                .accessibilityValue(accessibilityValue(for: point))
 
                 AreaMark(
                     x: .value(String(localized: "Date"), point.date),
                     y: .value(currentUnit, point.value)
                 )
                 .foregroundStyle(valueColor.opacity(0.15))
+                .accessibilityHidden(true)
             }
 
             if let selected = selectedDataPoint {
                 RuleMark(x: .value(String(localized: "Date"), selected.date))
                     .foregroundStyle(.secondary.opacity(0.5))
                     .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
+                    .accessibilityHidden(true)
 
                 PointMark(
                     x: .value(String(localized: "Date"), selected.date),
@@ -323,8 +335,10 @@ extension TrendsView {
                             overflowResolution: .init(x: .disabled, y: .disabled)) {
                     selectedPointBubble
                 }
+                .accessibilityHidden(true)
             }
         }
+        .accessibilityChartDescriptor(self)
         .chartScrollableAxes(.horizontal)
         .chartXVisibleDomain(length: visibleDomainSeconds)
         .chartScrollPosition(x: $scrollPositionX)
@@ -346,6 +360,16 @@ extension TrendsView {
             }
         }
         .frame(minHeight: 260)
+    }
+
+    /// VoiceOver content for one plotted point: value, unit, and (when
+    /// out-of-range) the same "High"/"Low" word the on-screen badge shows —
+    /// reusing `RangeStatus.label` so this never drifts from the visual badge.
+    private func accessibilityValue(for point: DataPoint) -> Text {
+        let unitSuffix = point.unit.isEmpty ? Text(verbatim: "") : Text(verbatim: " \(point.unit)")
+        let valueText = Text(verbatim: formatValue(point.value)) + unitSuffix
+        guard let status = referenceRange?.status(for: point.value), status.isOutOfRange else { return valueText }
+        return valueText + Text(verbatim: ", ") + Text(status.label)
     }
 
     private var selectedPointBubble: some View {
@@ -394,7 +418,7 @@ extension TrendsView {
         }
     }
 
-    private func formatValue(_ value: Double) -> String {
+    func formatValue(_ value: Double) -> String {
         value.truncatingRemainder(dividingBy: 1) == 0 ? String(format: "%.0f", value) : String(format: "%.4g", value)
     }
 

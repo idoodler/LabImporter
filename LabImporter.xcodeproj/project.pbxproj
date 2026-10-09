@@ -16,6 +16,7 @@
 		AABB000000000000000045AA /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000025AA /* HealthKitService.swift */; };
 		AABB000000000000000046AA /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000026AA /* HomeView.swift */; };
 		AAEE000000000000000001AA /* HomeView+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAEE000000000000000002AA /* HomeView+Preview.swift */; };
+		AAEE000000000000000003AA /* HomeView+Onboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAEE000000000000000004AA /* HomeView+Onboarding.swift */; };
 		AABB000000000000000047AA /* ReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000027AA /* ReviewView.swift */; };
 		AABB000000000000000048AA /* LabValueRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000028AA /* LabValueRowView.swift */; };
 		AABB000000000000000052AA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000032AA /* Assets.xcassets */; };
@@ -34,6 +35,7 @@
 		AABB000000000000000064AA /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000065AA /* HistoryView.swift */; };
 		AABB000000000000000066AA /* ReportDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000067AA /* ReportDetailView.swift */; };
 		AABB000000000000000068AA /* TrendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000069AA /* TrendsView.swift */; };
+		AAEE000000000000000005AA /* TrendsView+Accessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAEE000000000000000006AA /* TrendsView+Accessibility.swift */; };
 		AABB000000000000000070AA /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000071AA /* DashboardView.swift */; };
 		AABB0000000000000000CB01 /* CategoryBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000CB02 /* CategoryBackground.swift */; };
 		AABB0000000000000000HM01 /* HeroMetricCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB0000000000000000HM02 /* HeroMetricCard.swift */; };
@@ -103,6 +105,7 @@
 		AABB000000000000000025AA /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
 		AABB000000000000000026AA /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		AAEE000000000000000002AA /* HomeView+Preview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeView+Preview.swift"; sourceTree = "<group>"; };
+		AAEE000000000000000004AA /* HomeView+Onboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeView+Onboarding.swift"; sourceTree = "<group>"; };
 		AABB000000000000000027AA /* ReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewView.swift; sourceTree = "<group>"; };
 		AABB000000000000000028AA /* LabValueRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabValueRowView.swift; sourceTree = "<group>"; };
 		AABB000000000000000032AA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -124,6 +127,7 @@
 		AABB000000000000000065AA /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
 		AABB000000000000000067AA /* ReportDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportDetailView.swift; sourceTree = "<group>"; };
 		AABB000000000000000069AA /* TrendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendsView.swift; sourceTree = "<group>"; };
+		AAEE000000000000000006AA /* TrendsView+Accessibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TrendsView+Accessibility.swift"; sourceTree = "<group>"; };
 		AABB000000000000000071AA /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		AABB000000000000000073AA /* ImportLandingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportLandingView.swift; sourceTree = "<group>"; };
 		AABB000000000000000075AA /* LabDisplayPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabDisplayPreferences.swift; sourceTree = "<group>"; };
@@ -332,6 +336,7 @@
 			children = (
 				AABB000000000000000026AA /* HomeView.swift */,
 				AAEE000000000000000002AA /* HomeView+Preview.swift */,
+				AAEE000000000000000004AA /* HomeView+Onboarding.swift */,
 				AASP000000000000000006AA /* SearchPresentationCoordinator.swift */,
 				AASI000000000000000023AA /* SidebarSection.swift */,
 			);
@@ -388,6 +393,7 @@
 				AAFF0000000000000000F401 /* ValueDescriptionCard.swift */,
 				AAFF0000000000000000F501 /* TrendWindow.swift */,
 				AABB000000000000000069AA /* TrendsView.swift */,
+				AAEE000000000000000006AA /* TrendsView+Accessibility.swift */,
 				AAMS000000000000000002AA /* MetricSearchResultsView.swift */,
 			);
 			path = Dashboard;
@@ -660,6 +666,7 @@
 				AAED00000000000000001AAA /* PDFTrendPageViews.swift in Sources */,
 				AABB000000000000000046AA /* HomeView.swift in Sources */,
 				AAEE000000000000000001AA /* HomeView+Preview.swift in Sources */,
+				AAEE000000000000000003AA /* HomeView+Onboarding.swift in Sources */,
 				AABB000000000000000047AA /* ReviewView.swift in Sources */,
 				AACC000000000000000001AA /* ReviewView+Preview.swift in Sources */,
 				AACC000000000000000003AA /* PreviewSampleData.swift in Sources */,
@@ -679,6 +686,7 @@
 				AABB000000000000000064AA /* HistoryView.swift in Sources */,
 				AABB000000000000000066AA /* ReportDetailView.swift in Sources */,
 				AABB000000000000000068AA /* TrendsView.swift in Sources */,
+				AAEE000000000000000005AA /* TrendsView+Accessibility.swift in Sources */,
 				AABB000000000000000070AA /* DashboardView.swift in Sources */,
 				AABB0000000000000000CC01 /* MetricCard.swift in Sources */,
 				AABB0000000000000000CB01 /* CategoryBackground.swift in Sources */,

@@ -149,6 +149,7 @@ private struct PointRow: View {
                 Image(systemName: point.icon)
                     .font(.title2)
                     .foregroundStyle(.white)
+                    .accessibilityHidden(true)
             }
             VStack(alignment: .leading, spacing: 3) {
                 Text(point.title)
@@ -159,6 +160,7 @@ private struct PointRow: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
+        .accessibilityElement(children: .combine)
     }
 }
 

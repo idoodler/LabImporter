@@ -111,6 +111,7 @@ struct ReviewView: View {
         .scrollDismissesKeyboard(.interactively)
         .scrollContentBackground(.hidden)
         .background { CategoryBackground(colors: backgroundColors) }
+        .interactiveDismissDisabled(hasEdits) // Avoids a swipe bypassing the discard confirmation below.
         .navigationTitle("Lab Report")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
@@ -206,7 +207,7 @@ struct ReviewView: View {
                         Image(systemName: "xmark.circle.fill")
                     }
                     .foregroundStyle(Color.secondary)
-                    .buttonStyle(.plain)
+                    .buttonStyle(.plain).accessibilityLabel("Clear Birthday")
                 }
             }
 

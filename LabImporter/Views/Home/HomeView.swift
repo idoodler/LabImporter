@@ -25,27 +25,27 @@ struct HomeView: View {
     /// A deep link that arrived before the app was ready (onboarding incomplete or
     /// reports not yet loaded); replayed once those gates clear.
     @State private var pendingDeepLinkCode: String?
-    @AppStorage("hasSeenWelcome") private var hasSeenWelcome = false
+    @AppStorage("hasSeenWelcome") var hasSeenWelcome = false
     /// Whether the user has acknowledged the medical disclaimer shown after the
     /// welcome screen and before the Apple Health permission gate.
-    @AppStorage("hasAcknowledgedDisclaimer") private var hasAcknowledgedDisclaimer = false
-    @AppStorage("hasGrantedHealthAccess") private var hasGrantedHealthAccess = false
+    @AppStorage("hasAcknowledgedDisclaimer") var hasAcknowledgedDisclaimer = false
+    @AppStorage("hasGrantedHealthAccess") var hasGrantedHealthAccess = false
     /// Whether the user has made the required up-front iCloud sync decision.
     /// Gates entry into the app so no reports can be added before deciding.
-    @AppStorage("hasChosenICloudSync") private var hasChosenICloudSync = false
+    @AppStorage("hasChosenICloudSync") var hasChosenICloudSync = false
     /// Whether the user has seen the Spotlight search introduction and made the
     /// up-front decision about surfacing latest readings in search. Gates entry
     /// like the iCloud step; defaults `false` so existing installs see it once.
-    @AppStorage("hasChosenSpotlightSearch") private var hasChosenSpotlightSearch = false
+    @AppStorage("hasChosenSpotlightSearch") var hasChosenSpotlightSearch = false
     /// Whether the user has made the up-front Siri & Shortcuts decision. Gates
     /// entry like the other onboarding steps; per-value access stays a
     /// separate, later opt-in in Settings.
-    @AppStorage("hasChosenSiriIntelligence") private var hasChosenSiriIntelligence = false
-    @AppStorage(CloudSyncService.enabledKey) private var iCloudSyncEnabled = false
+    @AppStorage("hasChosenSiriIntelligence") var hasChosenSiriIntelligence = false
+    @AppStorage(CloudSyncService.enabledKey) var iCloudSyncEnabled = false
     /// Mirrors the Settings opt-in for surfacing the latest reading in Spotlight,
     /// observed here so flipping it re-publishes the index right away.
-    @AppStorage(SpotlightSearch.showLatestValueKey) private var showLatestValueInSearch = false
-    @AppStorage(SiriExposurePreferences.storageKey) private var siriPrefs = SiriExposurePreferences()
+    @AppStorage(SpotlightSearch.showLatestValueKey) var showLatestValueInSearch = false
+    @AppStorage(SiriExposurePreferences.storageKey) var siriPrefs = SiriExposurePreferences()
 
     // Layout state
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
@@ -55,6 +55,7 @@ struct HomeView: View {
     @State private var selectedSection: SidebarSection? = .dashboard
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
 
     /// Sidebar split view only when *both* size classes are regular — never the
     /// device idiom. Full-screen iPad and unfolded iPhone Duo qualify; no iPhone
@@ -374,59 +375,6 @@ struct HomeView: View {
 // MARK: - Report loading & Spotlight deep links
 
 private extension HomeView {
-    /// Six-step onboarding: welcome → Apple Health → iCloud sync → Spotlight
-    /// search → Siri & Shortcuts → disclaimer. Each gate is mandatory, so the
-    /// same fullScreenCover stays up (swapping its inner view) until the user
-    /// clears them all.
-    @ViewBuilder
-    var onboardingFlow: some View {
-        if !hasSeenWelcome {
-            WelcomeView {
-                withAnimation(.smooth(duration: 0.35)) { hasSeenWelcome = true }
-            }
-            .transition(.opacity)
-        } else if !hasGrantedHealthAccess {
-            HealthPermissionView {
-                withAnimation(.smooth(duration: 0.35)) { hasGrantedHealthAccess = true }
-            }
-            .transition(.opacity)
-        } else if !hasChosenICloudSync {
-            CloudSyncOptInView { enabled in
-                iCloudSyncEnabled = enabled
-                withAnimation(.smooth(duration: 0.35)) { hasChosenICloudSync = true }
-            }
-            .transition(.opacity)
-        } else if !hasChosenSpotlightSearch {
-            SpotlightOptInView { showValues in
-                showLatestValueInSearch = showValues
-                withAnimation(.smooth(duration: 0.35)) { hasChosenSpotlightSearch = true }
-            }
-            .transition(.opacity)
-        } else if !hasChosenSiriIntelligence {
-            SiriIntelligenceOptInView { enabled, allowAllValues, allowScanShortcut, allowOnScreenAwareness, allowKnowledgeIndexing, allowInAppSearch in
-                siriPrefs.isEnabled = enabled
-                siriPrefs.allowAllValues = allowAllValues
-                siriPrefs.allowScanShortcut = allowScanShortcut
-                siriPrefs.allowOnScreenAwareness = allowOnScreenAwareness
-                siriPrefs.allowKnowledgeIndexing = allowKnowledgeIndexing
-                siriPrefs.allowInAppSearch = allowInAppSearch
-                withAnimation(.smooth(duration: 0.35)) { hasChosenSiriIntelligence = true }
-            }
-            .transition(.opacity)
-        } else {
-            DisclaimerView {
-                withAnimation(.smooth(duration: 0.35)) { hasAcknowledgedDisclaimer = true }
-            }
-            .transition(.opacity)
-        }
-    }
-
-    /// True once every onboarding gate is cleared, whichever step was last.
-    var onboardingComplete: Bool {
-        hasSeenWelcome && hasAcknowledgedDisclaimer && hasGrantedHealthAccess && hasChosenICloudSync
-            && hasChosenSpotlightSearch && hasChosenSiriIntelligence
-    }
-
     /// Wraps `loadReports` so it does nothing until the user has cleared the
     /// Apple Health permission gate. Without this guard, `.task` would call
     /// `requestAuthorization` and surface the system prompt before the

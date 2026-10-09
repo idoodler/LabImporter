@@ -193,6 +193,7 @@ private struct BenefitRow: View {
                 Image(systemName: benefit.icon)
                     .font(.title2)
                     .foregroundStyle(.white)
+                    .accessibilityHidden(true)
             }
             VStack(alignment: .leading, spacing: 3) {
                 Text(benefit.title)
@@ -203,6 +204,7 @@ private struct BenefitRow: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
+        .accessibilityElement(children: .combine)
     }
 }
 

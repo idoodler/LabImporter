@@ -12,6 +12,7 @@ struct HistoryView: View {
     @State private var editMode: EditMode = .inactive
     @State private var selection: Set<UUID> = []
     @State private var showExport = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     /// Seeds the list with the reports the parent already has in memory so the
     /// toolbar (Export / Edit) and content render populated on the very first
@@ -115,7 +116,7 @@ struct HistoryView: View {
         ToolbarItem(placement: .topBarTrailing) {
             if !reports.isEmpty {
                 Button {
-                    withAnimation { toggleEditing() }
+                    withAnimation(reduceMotion ? nil : .default) { toggleEditing() }
                 } label: {
                     Image(systemName: editMode.isEditing ? "checkmark" : "checklist")
                 }

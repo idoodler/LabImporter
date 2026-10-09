@@ -108,18 +108,19 @@ struct ReviewActionBar: View {
 /// has been removed.
 private struct HideWhileKeyboardVisible: ViewModifier {
     @State private var keyboardVisible = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     func body(content: Content) -> some View {
         Group {
             if !keyboardVisible {
-                content.transition(.move(edge: .bottom).combined(with: .opacity))
+                content.transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
-            withAnimation(.easeInOut(duration: 0.25)) { keyboardVisible = true }
+            withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.25)) { keyboardVisible = true }
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
-            withAnimation(.easeInOut(duration: 0.25)) { keyboardVisible = false }
+            withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.25)) { keyboardVisible = false }
         }
     }
 }
@@ -245,6 +246,7 @@ struct ReviewHeaderCard: View {
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
         .background(.green.opacity(0.12), in: Capsule())
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -270,6 +272,7 @@ struct CategoryChip: View {
         .overlay(
             Capsule().stroke(category.color.opacity(0.25), lineWidth: 0.5)
         )
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -315,6 +318,7 @@ struct UnsupportedValuesSection: View {
                 .font(.body)
                 .foregroundStyle(.tertiary)
                 .frame(width: 22)
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(value.resolvedName).font(.body)
@@ -335,6 +339,7 @@ struct UnsupportedValuesSection: View {
                 }
             }
         }
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -358,6 +363,7 @@ struct CategorySectionHeader: View {
                 .foregroundStyle(.secondary)
         }
         .textCase(nil)
+        .accessibilityElement(children: .combine)
     }
 }
 
