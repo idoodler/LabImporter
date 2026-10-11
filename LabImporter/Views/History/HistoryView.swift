@@ -453,6 +453,7 @@ private struct CategoryDots: View {
     }
 }
 
+#if DEBUG
 #Preview("Populated") {
     NavigationStack {
         HistoryView(initialReports: LabReport.sampleHistory)
@@ -466,7 +467,6 @@ private struct CategoryDots: View {
     .preferredColorScheme(.dark)
 }
 
-#if DEBUG
 #Preview("Report Row") {
     List {
         ReportRow(report: .sample)
