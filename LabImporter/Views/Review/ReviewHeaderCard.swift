@@ -215,6 +215,7 @@ struct ReviewHeaderCard: View {
                         }
                     }
                 }
+                .edgeFadeScroll()
             }
 
             if duplicateCount > 0 {

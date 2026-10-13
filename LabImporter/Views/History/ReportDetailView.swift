@@ -144,6 +144,7 @@ struct ReportDetailView: View {
                         }
                     }
                 }
+                .edgeFadeScroll()
             }
         }
         .padding(18)
