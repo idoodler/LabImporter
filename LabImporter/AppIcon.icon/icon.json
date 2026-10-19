@@ -1,68 +1,65 @@
 {
-  "color-space-for-untagged-svg-colors" : "srgb",
-  "fill" : {
-    "automatic-gradient" : "srgb:0.20000,0.55000,1.00000,1.00000"
-  },
-  "fill-specializations" : [
+  "color-space-for-untagged-svg-colors": "srgb",
+  "fill-specializations": [
     {
-      "value" : {
-        "automatic-gradient" : "srgb:0.20000,0.55000,1.00000,1.00000"
+      "value": {
+        "automatic-gradient": "srgb:0.20000,0.55000,1.00000,1.00000"
       }
     },
     {
-      "appearance" : "dark",
-      "value" : {
-        "automatic-gradient" : "srgb:0.05000,0.09000,0.20000,1.00000"
+      "appearance": "dark",
+      "value": {
+        "automatic-gradient": "srgb:0.05000,0.09000,0.20000,1.00000"
       }
     }
   ],
-  "groups" : [
+  "groups": [
     {
-      "layers" : [
+      "layers": [
         {
-          "glass" : true,
-          "image-name" : "heart.svg",
-          "name" : "heart"
+          "glass": true,
+          "image-name": "heart.svg",
+          "name": "heart"
         }
       ],
-      "name" : "Health",
-      "shadow" : {
-        "kind" : "neutral",
-        "opacity" : 0.5
+      "name": "Health",
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.5
       },
-      "translucency" : {
-        "enabled" : false,
-        "value" : 0.5
+      "translucency": {
+        "enabled": false,
+        "value": 0.5
       }
     },
     {
-      "layers" : [
+      "layers": [
         {
-          "glass" : true,
-          "image-name" : "flask.svg",
-          "name" : "flask"
+          "glass": true,
+          "image-name": "flask.svg",
+          "name": "flask"
         },
         {
-          "glass" : false,
-          "image-name" : "page.svg",
-          "name" : "page"
+          "glass": false,
+          "image-name": "page.svg",
+          "name": "page"
         }
       ],
-      "name" : "Report",
-      "shadow" : {
-        "kind" : "neutral",
-        "opacity" : 0.5
+      "name": "Report",
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.5
       },
-      "translucency" : {
-        "enabled" : false,
-        "value" : 0.5
+      "translucency": {
+        "enabled": false,
+        "value": 0.5
       }
     }
   ],
-  "supported-platforms" : {
-    "circles" : [
+  "supported-platforms": {
+    "circles": [
       "watchOS"
     ],
-    "squares" : "shared"
+    "squares": "shared"
   }
 }
