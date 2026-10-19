@@ -35,7 +35,8 @@ LabImporter/
 ├── Localizable.xcstrings        # all user-facing strings (String(localized:))
 ├── AppIcon.icon/               # app icon (Icon Composer); SVG layers from tools/generate_app_icon_layers.py,
 │                               #   previews rendered to docs/icon/ via ictool.
-│                               #   Assets.xcassets/AppIconPreview (in-app/launch image) uses the same renders.
+│                               #   Assets.xcassets/AppIconPreview (in-app, 1024px) and LaunchIcon (launch screen,
+│                               #   120pt @2x/@3x — must stay point-sized, UILaunchScreen draws it unscaled) use the same renders.
 ├── Models/
 │   ├── LabValue.swift          # editable in-memory value (used in Review flow)
 │   ├── LabReport.swift         # a saved report (Codable); .asLabValues bridges to LabValue
