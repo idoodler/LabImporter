@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The app icon's layers (LabImporter/AppIcon.icon/Assets/*.svg) as a vector:
+     blue report card, white result rows, pink heart. 1024-unit canvas. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="1024"
+    android:viewportHeight="1024">
+    <group android:pivotX="512" android:pivotY="512" android:scaleX="0.86" android:scaleY="0.86">
+        <path android:fillColor="#2F6BFF"
+            android:pathData="M269,170h288a76,76 0 0 1 76,76v388a76,76 0 0 1 -76,76h-288a76,76 0 0 1 -76,-76v-388a76,76 0 0 1 76,-76z" />
+        <path android:fillColor="#FFFFFF"
+            android:pathData="M289,264h248a24,24 0 0 1 0,48h-248a24,24 0 0 1 0,-48zM289,360h162a24,24 0 0 1 0,48h-162a24,24 0 0 1 0,-48zM289,456h102a24,24 0 0 1 0,48h-102a24,24 0 0 1 0,-48z" />
+        <path android:pathData="M627,838.8C577,802 441,718 441,612C441,544 489,494 543,494C591,494 623,522 641,560C659,522 691,494 739,494C793,494 841,544 841,612C841,718 705,802 655,838.8Q641,850 627,838.8Z">
+            <aapt:attr name="android:fillColor">
+                <gradient android:type="linear" android:startX="641" android:startY="494" android:endX="641" android:endY="850">
+                    <item android:offset="0" android:color="#FF7896" />
+                    <item android:offset="1" android:color="#FF1E50" />
+                </gradient>
+            </aapt:attr>
+        </path>
+    </group>
+</vector>

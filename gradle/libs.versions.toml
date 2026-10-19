@@ -1,0 +1,49 @@
+[versions]
+agp = "9.4.1"
+kotlin = "2.4.20"
+skie = "0.10.15"
+coroutines = "1.11.0"
+serialization = "1.12.0"
+datetime = "0.8.0"
+sqlite = "2.7.1"
+composeBom = "2026.09.00"
+material3 = "1.5.0-beta01"
+activityCompose = "1.13.0"
+lifecycle = "2.10.0"
+coreKtx = "1.17.0"
+healthConnect = "1.2.0-alpha06"
+genaiPrompt = "1.0.0-beta4"
+textRecognition = "16.0.1"
+documentScanner = "16.0.0"
+
+[libraries]
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "coroutines" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
+androidx-sqlite = { module = "androidx.sqlite:sqlite", version.ref = "sqlite" }
+androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
+compose-ui = { module = "androidx.compose.ui:ui" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+compose-material-icons = { module = "androidx.compose.material:material-icons-extended" }
+compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+compose-material3-navsuite = { module = "androidx.compose.material3:material3-adaptive-navigation-suite", version.ref = "material3" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
+health-connect = { module = "androidx.health.connect:connect-client", version.ref = "healthConnect" }
+mlkit-genai-prompt = { module = "com.google.mlkit:genai-prompt", version.ref = "genaiPrompt" }
+mlkit-text-recognition = { module = "com.google.mlkit:text-recognition", version.ref = "textRecognition" }
+mlkit-document-scanner = { module = "com.google.android.gms:play-services-mlkit-document-scanner", version.ref = "documentScanner" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-kmp-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+skie = { id = "co.touchlab.skie", version.ref = "skie" }

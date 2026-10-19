@@ -1,0 +1,300 @@
+package dev.idoodler.labimporter.core.loinc
+
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.SQLiteStatement
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import androidx.sqlite.driver.bundled.SQLITE_OPEN_READONLY
+import dev.idoodler.labimporter.core.platform.PlatformLock
+import dev.idoodler.labimporter.core.platform.withLock
+
+/** A common laboratory LOINC term resolved for the active app language. */
+data class LoincTerm(
+    val code: String,
+    /** Localized display name (English fallback). */
+    val name: String,
+    /** English name, used for the stable export display. */
+    val englishName: String,
+    /** Localized description, if distinct from the name. */
+    val description: String?,
+    /** LOINC's example UCUM units (may be empty). */
+    val ucum: String,
+    /** COMMON_TEST_RANK — lower is more commonly ordered. */
+    val rank: Int,
+)
+
+/** The full structured attributes of a LOINC term (loinc.org details page). */
+data class LoincDetail(
+    val code: String,
+    val name: String,
+    val description: String?,
+    val component: String,
+    val property: String,
+    val timing: String,
+    val system: String,
+    val scale: String,
+    val method: String,
+    val loincClass: String,
+    val status: String,
+    val longName: String,
+    val shortName: String,
+    val ucum: String,
+)
+
+/**
+ * Read-only index over the bundled LOINC catalog (`loinc.db`, produced by
+ * `tools/build_loinc_resource.py` — the same file both apps ship).
+ *
+ * Uses the *bundled* SQLite driver so FTS5 is guaranteed on every Android
+ * version and on iOS. A single connection is shared and serialized with a lock
+ * (queries take microseconds), which keeps lookups synchronous and callable
+ * from any thread.
+ *
+ * @param databasePath absolute path to `loinc.db` on disk.
+ * @param appLanguage the app's UI language tag (e.g. `de-DE`); resolved to a
+ *   language the catalog carries labels for, English otherwise.
+ */
+class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable {
+
+    private val lock = PlatformLock()
+    private val connection: SQLiteConnection? = runCatching {
+        BundledSQLiteDriver().open(databasePath, SQLITE_OPEN_READONLY)
+    }.getOrNull()
+
+    val version: String
+    val count: Int
+    val license: String
+
+    /** The app-language keys the catalog carries labels for (e.g. `en`, `pt-BR`). */
+    val languages: List<String>
+
+    /** The catalog language used for display (resolved from the app language). */
+    val language: String
+
+    private val termStatement = prepare(
+        """
+        SELECT (SELECT name FROM label WHERE code = ?1 AND lang = ?2),
+               (SELECT descr FROM label WHERE code = ?1 AND lang = ?2),
+               t.english, t.ucum, t.rank
+        FROM term t WHERE t.code = ?1
+        """,
+    )
+    private val searchStatement = prepare(
+        """
+        SELECT l.code,
+               (SELECT name FROM label WHERE code = l.code AND lang = ?2),
+               (SELECT descr FROM label WHERE code = l.code AND lang = ?2),
+               t.english, t.ucum, t.rank
+        FROM label_fts f
+        JOIN label l ON l.rowid = f.rowid
+        JOIN term t ON t.code = l.code
+        WHERE label_fts MATCH ?1 AND l.lang IN (?2, 'en')
+        GROUP BY l.code
+        ORDER BY t.rank
+        LIMIT ?3 OFFSET ?4
+        """,
+    )
+    private val topStatement = prepare(
+        """
+        SELECT t.code,
+               (SELECT name FROM label WHERE code = t.code AND lang = ?1),
+               (SELECT descr FROM label WHERE code = t.code AND lang = ?1),
+               t.english, t.ucum, t.rank
+        FROM term t ORDER BY t.rank LIMIT ?2 OFFSET ?3
+        """,
+    )
+    private val detailStatement = prepare(
+        """
+        SELECT (SELECT name FROM label WHERE code = ?1 AND lang = ?2),
+               (SELECT descr FROM label WHERE code = ?1 AND lang = ?2),
+               t.english, t.ucum, t.component, t.property, t.timing, t.system,
+               t.scale, t.method, t.loinc_class, t.status, t.long_name, t.short_name
+        FROM term t WHERE t.code = ?1
+        """,
+    )
+    private val classificationStatement = prepare("SELECT loinc_class, component FROM term WHERE code = ?1")
+
+    init {
+        version = scalar("SELECT value FROM meta WHERE key = 'version'").orEmpty()
+        count = scalar("SELECT count(*) FROM term")?.toIntOrNull() ?: 0
+        license = scalar("SELECT value FROM meta WHERE key = 'license'").orEmpty()
+        languages = scalar("SELECT value FROM meta WHERE key = 'languages'").orEmpty()
+            .split(',').map { it.trim() }.filter { it.isNotEmpty() }
+        language = matchLanguage(appLanguage) ?: "en"
+    }
+
+    val isAvailable: Boolean get() = connection != null && count > 0
+
+    /**
+     * Maps a free-form/BCP-47 tag (e.g. the parser's detected report language)
+     * to a catalog language, falling back to the app language. English is
+     * always searched alongside, so an unmatched tag still resolves via `en`.
+     */
+    fun resolvedLanguage(tag: String): String = matchLanguage(tag) ?: language
+
+    private fun matchLanguage(tag: String): String? {
+        val lower = tag.lowercase().replace('_', '-')
+        if (lower.isEmpty()) return null
+        languages.firstOrNull { it.lowercase() == lower }?.let { return it }
+        // Script/region variants the catalog keys differently.
+        if (lower.startsWith("zh")) languages.firstOrNull { it.lowercase().startsWith("zh") }?.let { return it }
+        val base = lower.substringBefore('-')
+        return languages.firstOrNull { it.lowercase().substringBefore('-') == base }
+    }
+
+    // region Lookups
+
+    fun term(code: String): LoincTerm? {
+        val trimmed = code.trim()
+        val statement = termStatement ?: return null
+        return lock.withLock {
+            statement.use(trimmed, language) {
+                if (!statement.step()) null else makeTerm(statement, base = 0, code = trimmed)
+            }
+        }
+    }
+
+    fun isKnownLoinc(code: String): Boolean = term(code) != null
+
+    /** LOINC class + component for a code, used to derive a display category. */
+    fun classification(code: String): Pair<String, String>? {
+        val statement = classificationStatement ?: return null
+        return lock.withLock {
+            statement.use(code.trim()) {
+                if (!statement.step()) null else (statement.text(0).orEmpty() to statement.text(1).orEmpty())
+            }
+        }
+    }
+
+    fun detail(code: String): LoincDetail? {
+        val trimmed = code.trim()
+        val statement = detailStatement ?: return null
+        return lock.withLock {
+            statement.use(trimmed, language) {
+                if (!statement.step()) return@use null
+                val english = statement.text(2) ?: trimmed
+                val name = statement.text(0) ?: english
+                val descr = statement.text(1)?.takeIf { it.isNotEmpty() && it != name }
+                LoincDetail(
+                    code = trimmed, name = name, description = descr,
+                    component = statement.text(4).orEmpty(), property = statement.text(5).orEmpty(),
+                    timing = statement.text(6).orEmpty(), system = statement.text(7).orEmpty(),
+                    scale = statement.text(8).orEmpty(), method = statement.text(9).orEmpty(),
+                    loincClass = statement.text(10).orEmpty(), status = statement.text(11).orEmpty(),
+                    longName = statement.text(12).orEmpty(), shortName = statement.text(13).orEmpty(),
+                    ucum = statement.text(3).orEmpty(),
+                )
+            }
+        }
+    }
+
+    /**
+     * Searches the catalog in [language] (plus English). An empty query lists
+     * the most commonly ordered terms instead.
+     */
+    fun search(query: String, language: String = this.language, limit: Int = 80, offset: Int = 0): List<LoincTerm> {
+        val match = ftsQuery(query)
+        return lock.withLock {
+            if (match != null) {
+                val statement = searchStatement ?: return@withLock emptyList()
+                try {
+                    statement.bindText(1, match)
+                    statement.bindText(2, language)
+                    statement.bindLong(3, limit.toLong())
+                    statement.bindLong(4, offset.toLong())
+                    collect(statement)
+                } finally {
+                    statement.reset(); statement.clearBindings()
+                }
+            } else {
+                val statement = topStatement ?: return@withLock emptyList()
+                try {
+                    statement.bindText(1, language)
+                    statement.bindLong(2, limit.toLong())
+                    statement.bindLong(3, offset.toLong())
+                    collect(statement)
+                } finally {
+                    statement.reset(); statement.clearBindings()
+                }
+            }
+        }
+    }
+
+    // endregion
+
+    override fun close() {
+        lock.withLock {
+            listOf(termStatement, searchStatement, topStatement, detailStatement, classificationStatement)
+                .forEach { it?.close() }
+            connection?.close()
+        }
+    }
+
+    // region Helpers
+
+    private fun prepare(sql: String): SQLiteStatement? =
+        connection?.let { runCatching { it.prepare(sql.trimIndent()) }.getOrNull() }
+
+    private fun scalar(sql: String): String? {
+        val conn = connection ?: return null
+        return runCatching {
+            conn.prepare(sql).let { statement ->
+                try {
+                    if (statement.step()) statement.text(0) else null
+                } finally {
+                    statement.close()
+                }
+            }
+        }.getOrNull()
+    }
+
+    private inline fun <T> SQLiteStatement.use(vararg args: String, block: () -> T): T {
+        try {
+            args.forEachIndexed { index, value -> bindText(index + 1, value) }
+            return block()
+        } finally {
+            reset(); clearBindings()
+        }
+    }
+
+    private fun collect(statement: SQLiteStatement): List<LoincTerm> {
+        val results = mutableListOf<LoincTerm>()
+        while (statement.step()) {
+            val code = statement.text(0).orEmpty()
+            results += makeTerm(statement, base = 1, code = code)
+        }
+        return results
+    }
+
+    private fun makeTerm(statement: SQLiteStatement, base: Int, code: String): LoincTerm {
+        val localized = statement.text(base)
+        val localizedDescr = statement.text(base + 1)
+        val english = statement.text(base + 2) ?: code
+        val name = localized ?: english
+        return LoincTerm(
+            code = code,
+            name = name,
+            englishName = english,
+            description = localizedDescr?.takeIf { it.isNotEmpty() && it != name },
+            ucum = statement.text(base + 3).orEmpty(),
+            rank = if (statement.isNull(base + 4)) 0 else statement.getLong(base + 4).toInt(),
+        )
+    }
+
+    private fun SQLiteStatement.text(index: Int): String? = if (isNull(index)) null else getText(index)
+
+    // endregion
+
+    companion object {
+        /**
+         * Turns free text into an FTS5 prefix query: `creat ser` →
+         * `"creat"* "ser"*`. Null when there are no usable tokens.
+         */
+        fun ftsQuery(query: String): String? {
+            val tokens = query.lowercase()
+                .split(Regex("[^\\p{L}\\p{N}]+"))
+                .filter { it.isNotEmpty() }
+            if (tokens.isEmpty()) return null
+            return tokens.joinToString(" ") { "\"$it\"*" }
+        }
+    }
+}
