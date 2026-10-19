@@ -45,13 +45,39 @@
           "fill-specializations" : [
             {
               "value" : {
-                "solid" : "display-p3:1.00000,0.21569,0.37255,1.00000"
+                "linear-gradient" : [
+                  "display-p3:1.00000,0.47059,0.58824,1.00000",
+                  "display-p3:1.00000,0.11765,0.31373,1.00000"
+                ],
+                "orientation" : {
+                  "start" : {
+                    "x" : 0.5,
+                    "y" : 0
+                  },
+                  "stop" : {
+                    "x" : 0.5,
+                    "y" : 1
+                  }
+                }
               }
             },
             {
               "appearance" : "dark",
               "value" : {
-                "solid" : "display-p3:1.00000,0.27059,0.42745,1.00000"
+                "linear-gradient" : [
+                  "display-p3:1.00000,0.50980,0.62745,1.00000",
+                  "display-p3:1.00000,0.17647,0.37255,1.00000"
+                ],
+                "orientation" : {
+                  "start" : {
+                    "x" : 0.5,
+                    "y" : 0
+                  },
+                  "stop" : {
+                    "x" : 0.5,
+                    "y" : 1
+                  }
+                }
               }
             },
             {
@@ -66,14 +92,16 @@
           "name" : "3-heart"
         }
       ],
+      "blur-material" : 0.5,
       "name" : "Heart",
       "shadow" : {
         "kind" : "layer-color",
-        "opacity" : 0.5
+        "opacity" : 1
       },
+      "specular" : true,
       "translucency" : {
         "enabled" : true,
-        "value" : 0.2
+        "value" : 0.5
       }
     },
     {
