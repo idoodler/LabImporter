@@ -92,7 +92,6 @@
           "name" : "3-heart"
         }
       ],
-      "blur-material" : 0.5,
       "name" : "Heart",
       "shadow" : {
         "kind" : "layer-color",
@@ -101,7 +100,7 @@
       "specular" : true,
       "translucency" : {
         "enabled" : true,
-        "value" : 0.5
+        "value" : 0.3
       }
     },
     {
