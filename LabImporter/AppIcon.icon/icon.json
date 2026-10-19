@@ -1,0 +1,129 @@
+{
+  "fill-specializations" : [
+    {
+      "value" : {
+        "linear-gradient" : [
+          "display-p3:0.24706,0.52157,1.00000,1.00000",
+          "display-p3:0.11765,0.29020,0.86275,1.00000"
+        ],
+        "orientation" : {
+          "start" : {
+            "x" : 0.5,
+            "y" : 0
+          },
+          "stop" : {
+            "x" : 0.5,
+            "y" : 1
+          }
+        }
+      }
+    },
+    {
+      "appearance" : "dark",
+      "value" : {
+        "linear-gradient" : [
+          "display-p3:0.10196,0.12941,0.21961,1.00000",
+          "display-p3:0.03137,0.03922,0.07843,1.00000"
+        ],
+        "orientation" : {
+          "start" : {
+            "x" : 0.5,
+            "y" : 0
+          },
+          "stop" : {
+            "x" : 0.5,
+            "y" : 1
+          }
+        }
+      }
+    }
+  ],
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "fill-specializations" : [
+            {
+              "value" : {
+                "solid" : "display-p3:1.00000,0.17647,0.33333,1.00000"
+              }
+            },
+            {
+              "appearance" : "dark",
+              "value" : {
+                "solid" : "display-p3:1.00000,0.27059,0.41176,1.00000"
+              }
+            }
+          ],
+          "glass" : true,
+          "image-name" : "heart.svg",
+          "name" : "heart"
+        },
+        {
+          "fill-specializations" : [
+            {
+              "value" : {
+                "solid" : "display-p3:0.18431,0.41961,1.00000,1.00000"
+              }
+            },
+            {
+              "appearance" : "dark",
+              "value" : {
+                "solid" : "display-p3:0.39216,0.82353,1.00000,1.00000"
+              }
+            }
+          ],
+          "glass" : true,
+          "image-name" : "bubbles.svg",
+          "name" : "bubbles"
+        }
+      ],
+      "lighting" : "individual",
+      "name" : "Contents",
+      "shadow" : {
+        "kind" : "layer-color",
+        "opacity" : 0.5
+      },
+      "specular" : true,
+      "translucency" : {
+        "enabled" : false,
+        "value" : 0.5
+      }
+    },
+    {
+      "layers" : [
+        {
+          "fill-specializations" : [
+            {
+              "value" : {
+                "solid" : "extended-gray:1.00000,1.00000"
+              }
+            },
+            {
+              "appearance" : "dark",
+              "value" : {
+                "solid" : "display-p3:0.25098,0.29804,0.43137,1.00000"
+              }
+            }
+          ],
+          "glass" : true,
+          "image-name" : "flask.svg",
+          "name" : "flask"
+        }
+      ],
+      "name" : "Flask",
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "specular" : true,
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.4
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "squares" : "shared"
+  }
+}

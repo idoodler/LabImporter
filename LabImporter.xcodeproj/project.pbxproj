@@ -20,6 +20,7 @@
 		AABB000000000000000047AA /* ReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000027AA /* ReviewView.swift */; };
 		AABB000000000000000048AA /* LabValueRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000028AA /* LabValueRowView.swift */; };
 		AABB000000000000000052AA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000032AA /* Assets.xcassets */; };
+		AAIC000000000000000002AA /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = AAIC000000000000000001AA /* AppIcon.icon */; };
 		AABB000000000000000053AA /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AABB000000000000000035AA /* HealthKit.framework */; };
 		AABB000000000000000054AA /* Vision.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AABB000000000000000036AA /* Vision.framework */; };
 		AABB000000000000000055AA /* FoundationModels.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AABB000000000000000037AA /* FoundationModels.framework */; };
@@ -110,6 +111,7 @@
 		AABB000000000000000027AA /* ReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewView.swift; sourceTree = "<group>"; };
 		AABB000000000000000028AA /* LabValueRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabValueRowView.swift; sourceTree = "<group>"; };
 		AABB000000000000000032AA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AAIC000000000000000001AA /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		AABB000000000000000033AA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AABB000000000000000034AA /* LabImporter.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LabImporter.entitlements; sourceTree = "<group>"; };
 		AABB000000000000000035AA /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
@@ -250,6 +252,7 @@
 				AABB000000000000000013AA /* Services */,
 				AABB000000000000000014AA /* Views */,
 				AASI000000000000000019AA /* Intents */,
+				AAIC000000000000000001AA /* AppIcon.icon */,
 				AABB000000000000000032AA /* Assets.xcassets */,
 				AABB000000000000000076AA /* Localizable.xcstrings */,
 				AABB000000000000000033AA /* Info.plist */,
@@ -584,6 +587,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AABB000000000000000052AA /* Assets.xcassets in Resources */,
+				AAIC000000000000000002AA /* AppIcon.icon in Resources */,
 				AABB000000000000000077AA /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
