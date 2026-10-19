@@ -33,6 +33,7 @@ LabImporter/
 ├── Info.plist                  # usage strings, document types (PDF/image), HealthKit
 ├── LabImporter.entitlements    # com.apple.developer.healthkit
 ├── Localizable.xcstrings        # all user-facing strings (String(localized:))
+├── AppIcon.icon/               # Icon Composer app icon (icon.json + Assets/*.svg layers); the target's App Icon = `AppIcon`
 ├── Models/
 │   ├── LabValue.swift          # editable in-memory value (used in Review flow)
 │   ├── LabReport.swift         # a saved report (Codable); .asLabValues bridges to LabValue
@@ -292,6 +293,12 @@ Required secrets: `GH_PAT`, `TEAMID`, `FASTLANE_ISSUER_ID`, `FASTLANE_KEY_ID`,
 `Config.xcconfig` is substituted from `TEAMID` at build time.
 
 ## Working in this repo
+
+- **App icon:** `LabImporter/AppIcon.icon` is an Icon Composer bundle (layers are
+  flat SVGs; no baked shadows/highlights — the system adds Liquid Glass). It is the
+  only app icon (deployment target is iOS 26, so no `.appiconset` fallback).
+  `AppIconPreview.imageset` is the in-app copy; `tools/render_icon_previews.py`
+  renders flat review PNGs into `docs/app-icon/`.
 
 - **Branch & commits:** never push to `main` unless explicitly told. Commit with
   clear messages; push with `git push -u origin <branch>`.
