@@ -3,8 +3,8 @@
     {
       "value" : {
         "linear-gradient" : [
-          "display-p3:0.24706,0.52157,1.00000,1.00000",
-          "display-p3:0.11765,0.29020,0.86275,1.00000"
+          "display-p3:0.29804,0.56471,1.00000,1.00000",
+          "display-p3:0.12941,0.35294,0.92157,1.00000"
         ],
         "orientation" : {
           "start" : {
@@ -13,7 +13,7 @@
           },
           "stop" : {
             "x" : 0.5,
-            "y" : 1
+            "y" : 0.7
           }
         }
       }
@@ -22,8 +22,8 @@
       "appearance" : "dark",
       "value" : {
         "linear-gradient" : [
-          "display-p3:0.10196,0.12941,0.21961,1.00000",
-          "display-p3:0.03137,0.03922,0.07843,1.00000"
+          "display-p3:0.12157,0.17255,0.32157,1.00000",
+          "display-p3:0.04706,0.06667,0.14118,1.00000"
         ],
         "orientation" : {
           "start" : {
@@ -32,7 +32,7 @@
           },
           "stop" : {
             "x" : 0.5,
-            "y" : 1
+            "y" : 0.7
           }
         }
       }
@@ -45,20 +45,39 @@
           "fill-specializations" : [
             {
               "value" : {
-                "solid" : "display-p3:1.00000,0.17647,0.33333,1.00000"
+                "solid" : "display-p3:1.00000,0.21569,0.37255,1.00000"
               }
             },
             {
               "appearance" : "dark",
               "value" : {
-                "solid" : "display-p3:1.00000,0.27059,0.41176,1.00000"
+                "solid" : "display-p3:1.00000,0.27059,0.42745,1.00000"
+              }
+            },
+            {
+              "appearance" : "tinted",
+              "value" : {
+                "solid" : "extended-gray:1.00000,1.00000"
               }
             }
           ],
           "glass" : true,
-          "image-name" : "heart.svg",
-          "name" : "heart"
-        },
+          "image-name" : "3-heart.svg",
+          "name" : "3-heart"
+        }
+      ],
+      "name" : "Heart",
+      "shadow" : {
+        "kind" : "layer-color",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.2
+      }
+    },
+    {
+      "layers" : [
         {
           "fill-specializations" : [
             {
@@ -69,29 +88,29 @@
             {
               "appearance" : "dark",
               "value" : {
-                "solid" : "display-p3:0.39216,0.82353,1.00000,1.00000"
+                "solid" : "display-p3:0.45098,0.69804,1.00000,1.00000"
+              }
+            },
+            {
+              "appearance" : "tinted",
+              "value" : {
+                "solid" : "extended-gray:0.00000,1.00000"
               }
             }
           ],
-          "glass" : true,
-          "image-name" : "bubbles.svg",
-          "name" : "bubbles"
-        }
-      ],
-      "lighting" : "individual",
-      "name" : "Contents",
-      "shadow" : {
-        "kind" : "layer-color",
-        "opacity" : 0.5
-      },
-      "specular" : true,
-      "translucency" : {
-        "enabled" : false,
-        "value" : 0.5
-      }
-    },
-    {
-      "layers" : [
+          "glass" : false,
+          "image-name" : "2-rows.svg",
+          "name" : "2-rows",
+          "opacity-specializations" : [
+            {
+              "value" : 0.85
+            },
+            {
+              "appearance" : "tinted",
+              "value" : 0.35
+            }
+          ]
+        },
         {
           "fill-specializations" : [
             {
@@ -102,24 +121,39 @@
             {
               "appearance" : "dark",
               "value" : {
-                "solid" : "display-p3:0.25098,0.29804,0.43137,1.00000"
+                "solid" : "display-p3:0.29020,0.34510,0.49020,1.00000"
+              }
+            },
+            {
+              "appearance" : "tinted",
+              "value" : {
+                "solid" : "extended-gray:1.00000,1.00000"
               }
             }
           ],
           "glass" : true,
-          "image-name" : "flask.svg",
-          "name" : "flask"
+          "image-name" : "1-card.svg",
+          "name" : "1-card",
+          "opacity-specializations" : [
+            {
+              "value" : 1
+            },
+            {
+              "appearance" : "tinted",
+              "value" : 0.5
+            }
+          ]
         }
       ],
-      "name" : "Flask",
+      "lighting" : "combined",
+      "name" : "Report",
       "shadow" : {
         "kind" : "neutral",
         "opacity" : 0.5
       },
-      "specular" : true,
       "translucency" : {
         "enabled" : true,
-        "value" : 0.4
+        "value" : 0.3
       }
     }
   ],

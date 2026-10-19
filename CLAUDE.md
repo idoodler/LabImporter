@@ -33,7 +33,8 @@ LabImporter/
 ├── Info.plist                  # usage strings, document types (PDF/image), HealthKit
 ├── LabImporter.entitlements    # com.apple.developer.healthkit
 ├── Localizable.xcstrings        # all user-facing strings (String(localized:))
-├── AppIcon.icon/               # app icon (Icon Composer, layered SVGs); previews rendered to docs/icon/ via ictool.
+├── AppIcon.icon/               # app icon (Icon Composer); SVG layers from tools/generate_app_icon_layers.py,
+│                               #   previews rendered to docs/icon/ via ictool.
 │                               #   Assets.xcassets/AppIconPreview (in-app/launch image) uses the same renders.
 ├── Models/
 │   ├── LabValue.swift          # editable in-memory value (used in Review flow)
