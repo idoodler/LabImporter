@@ -1,3 +1,4 @@
+import LabImporterCore
 import SwiftUI
 
 // A coarse clinical grouping derived from a LOINC term's class + component,
@@ -128,32 +129,17 @@ enum LabCategory: String, CaseIterable, Sendable {
     private static let cacheLock = NSLock()
     nonisolated(unsafe) private static var cache: [String: LabCategory] = [:]
 
-    // swiftlint:disable:next cyclomatic_complexity
+    /// Classification rules live in the shared Kotlin module so iOS and Android
+    /// colour every metric identically (LabImporterCore `LabCategory`).
     static func category(loincClass: String, component: String) -> LabCategory {
-        let cls = loincClass.uppercased()
-        // Classes that stand on their own, no component refinement needed.
-        if cls.hasPrefix("HEM/BC") || cls == "CELLMARK" { return .hematology }
-        if cls.hasPrefix("COAG") { return .coagulation }
-        if cls.hasPrefix("UA") { return .urinalysis }
-        if cls.hasPrefix("DRUG") { return .drug }
-        if cls.hasPrefix("MICRO") || cls.hasPrefix("ABXBACT") || cls.hasPrefix("SERO") { return .microbiology }
+        let shared = LabImporterCore.LabCategory.companion.category(loincClass: loincClass, component: component)
+        return LabCategory(sharedName: shared.name)
+    }
 
-        // Chemistry (and anything else): refine by component keywords.
-        let comp = component.lowercased()
-        func has(_ needles: String...) -> Bool { needles.contains { comp.contains($0) } }
-
-        if comp == "ph" || has("oxygen", "carbon dioxide", "po2", "pco2", "base excess") { return .bloodGas }
-        if has("cholesterol", "triglyceride", "lipoprotein", "hdl", "ldl") { return .lipids }
-        if has("glucose", "hemoglobin a1c", "hba1c", "fructosamine") { return .glycemic }
-        if has("troponin", "natriuretic peptide", "creatine kinase", "ck-mb") { return .cardiac }
-        if has("creatinine", "urea", "cystatin", "glomerular filtration") { return .renal }
-        if has("aminotransferase", "gamma glutamyl", "bilirubin", "alkaline phosphatase", "albumin") { return .hepatic }
-        if has("thyrotropin", "thyroxine", "triiodothyronine", "cortisol", "testosterone",
-               "estradiol", "insulin", "prolactin", "parathyrin") { return .endocrine }
-        if has("sodium", "potassium", "chloride", "calcium", "magnesium", "phosphate") { return .electrolytes }
-        if has("vitamin", "folate", "cobalamin", "ferritin", "iron", "25-hydroxy",
-               "calcidiol", "calcitriol", "transferrin") { return .nutrition }
-
-        return .other
+    /// Maps the shared enum's constant name (e.g. `BLOOD_GAS`) to this case (`bloodGas`).
+    private init(sharedName: String) {
+        let parts = sharedName.lowercased().split(separator: "_")
+        let camel = (parts.first.map(String.init) ?? "") + parts.dropFirst().map { $0.capitalized }.joined()
+        self = LabCategory(rawValue: camel) ?? .other
     }
 }

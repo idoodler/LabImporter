@@ -2,9 +2,10 @@ package dev.idoodler.labimporter.core.loinc
 
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.SQLiteStatement
-import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import androidx.sqlite.driver.bundled.SQLITE_OPEN_READONLY
 import dev.idoodler.labimporter.core.platform.PlatformLock
+import dev.idoodler.labimporter.core.platform.openReadOnlyDatabase
+import kotlin.experimental.ExperimentalObjCName
+import kotlin.native.ObjCName
 import dev.idoodler.labimporter.core.platform.withLock
 
 /** A common laboratory LOINC term resolved for the active app language. */
@@ -15,6 +16,8 @@ data class LoincTerm(
     /** English name, used for the stable export display. */
     val englishName: String,
     /** Localized description, if distinct from the name. */
+    @OptIn(ExperimentalObjCName::class)
+    @ObjCName("details")
     val description: String?,
     /** LOINC's example UCUM units (may be empty). */
     val ucum: String,
@@ -26,6 +29,8 @@ data class LoincTerm(
 data class LoincDetail(
     val code: String,
     val name: String,
+    @OptIn(ExperimentalObjCName::class)
+    @ObjCName("details")
     val description: String?,
     val component: String,
     val property: String,
@@ -44,8 +49,8 @@ data class LoincDetail(
  * Read-only index over the bundled LOINC catalog (`loinc.db`, produced by
  * `tools/build_loinc_resource.py` — the same file both apps ship).
  *
- * Uses the *bundled* SQLite driver so FTS5 is guaranteed on every Android
- * version and on iOS. A single connection is shared and serialized with a lock
+ * Android/JVM use the *bundled* SQLite driver so FTS5 is guaranteed on every
+ * OS version; iOS uses the system SQLite (see `openReadOnlyDatabase`). A single connection is shared and serialized with a lock
  * (queries take microseconds), which keeps lookups synchronous and callable
  * from any thread.
  *
@@ -56,9 +61,7 @@ data class LoincDetail(
 class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable {
 
     private val lock = PlatformLock()
-    private val connection: SQLiteConnection? = runCatching {
-        BundledSQLiteDriver().open(databasePath, SQLITE_OPEN_READONLY)
-    }.getOrNull()
+    private val connection: SQLiteConnection? = runCatching { openReadOnlyDatabase(databasePath) }.getOrNull()
 
     val version: String
     val count: Int

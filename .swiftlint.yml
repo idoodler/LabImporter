@@ -28,4 +28,8 @@ file_length:
   error: 800
 
 excluded:
+  - build              # Gradle/Xcode build output at the repo root
+  - shared/build       # SKIE-generated Swift for the shared Kotlin module
+  - androidApp
+  - .gradle
   - LabImporter.xcodeproj

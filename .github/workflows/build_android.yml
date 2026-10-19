@@ -1,0 +1,38 @@
+name: Build Android
+run-name: Build Android (${{ github.ref_name }})
+
+# Compiles and tests the shared KMP module and the Android app. Needs no
+# secrets: the APK is signed with the runner's debug key (test builds only).
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Shared tests, lint and APK
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v5
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Test, lint and assemble
+        run: ./gradlew :shared:jvmTest :androidApp:lintRelease :androidApp:assembleRelease
+
+      - name: Upload APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: labimporter-android
+          path: androidApp/build/outputs/apk/release/*.apk

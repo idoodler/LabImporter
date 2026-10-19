@@ -20,6 +20,13 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v5
 
+      # The Xcode "Build shared Kotlin" phase runs Gradle (shared/ KMP module).
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
       - name: SwiftLint
         run: |
           if ! command -v swiftlint &>/dev/null; then

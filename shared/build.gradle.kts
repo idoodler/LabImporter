@@ -11,7 +11,7 @@ plugins {
 kotlin {
     compilerOptions { freeCompilerArgs.add("-Xexpect-actual-classes") }
 
-    androidLibrary {
+    android {
         namespace = "dev.idoodler.labimporter.core"
         compileSdk = 37
         minSdk = 26
@@ -22,14 +22,17 @@ kotlin {
     // the real loinc.db (the bundled SQLite driver ships macOS/Linux natives).
     jvm()
 
-    // The iOS app links this as `LabCore.xcframework` (built by
-    // `./gradlew :shared:assembleLabCoreReleaseXCFramework`). SKIE bridges
-    // suspend functions/Flows to Swift async/AsyncSequence.
-    val xcf = XCFramework("LabCore")
+    // The iOS app links this as the static `LabImporterCore` framework: Xcode's
+    // "Build shared Kotlin" phase runs `embedAndSignAppleFrameworkForXcode`
+    // (an XCFramework is also available via
+    // `assembleLabImporterCoreReleaseXCFramework`). SKIE bridges suspend
+    // functions/Flows to Swift async/AsyncSequence.
+    val xcf = XCFramework("LabImporterCore")
     listOf(iosArm64(), iosSimulatorArm64()).forEach { target ->
         target.binaries.framework {
-            baseName = "LabCore"
+            baseName = "LabImporterCore"
             isStatic = true
+            binaryOption("bundleId", "dev.idoodler.labimporter.core")
             xcf.add(this)
         }
     }
@@ -44,8 +47,12 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             api(libs.kotlinx.datetime)
             api(libs.androidx.sqlite)
-            implementation(libs.androidx.sqlite.bundled)
         }
+        // Android/JVM bundle SQLite so FTS5 is guaranteed on every OS version;
+        // iOS uses the system SQLite (which ships FTS5) to avoid a second copy.
+        androidMain.dependencies { implementation(libs.androidx.sqlite.bundled) }
+        jvmMain.dependencies { implementation(libs.androidx.sqlite.bundled) }
+        iosMain.dependencies { implementation(libs.androidx.sqlite.framework) }
         commonTest.dependencies {
             implementation(kotlin("test"))
         }

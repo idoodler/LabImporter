@@ -532,6 +532,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = AABB000000000000000008AA /* Build configuration list for PBXNativeTarget "LabImporter" */;
 			buildPhases = (
+				4B1D0000000000000000C0DE /* Build shared Kotlin (LabImporterCore) */,
 				AABB000000000000000016AA /* Sources */,
 				AABB000000000000000017AA /* Frameworks */,
 				AABB000000000000000018AA /* Resources */,
@@ -609,6 +610,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "set -u\nINFO_PLIST=\"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\n[ -f \"$INFO_PLIST\" ] || exit 0\nBRANCH=$(cd \"${SRCROOT}\" && git rev-parse --abbrev-ref HEAD 2>/dev/null)\nCOMMIT=$(cd \"${SRCROOT}\" && git rev-parse --short HEAD 2>/dev/null)\nREPO_URL=$(cd \"${SRCROOT}\" && git config --get remote.origin.url 2>/dev/null)\n[ -n \"$BRANCH\" ] || BRANCH=unknown\n[ -n \"$COMMIT\" ] || COMMIT=unknown\n/usr/libexec/PlistBuddy -c \"Set :GitBranch $BRANCH\" \"$INFO_PLIST\" 2>/dev/null || /usr/libexec/PlistBuddy -c \"Add :GitBranch string $BRANCH\" \"$INFO_PLIST\"\n/usr/libexec/PlistBuddy -c \"Set :GitCommit $COMMIT\" \"$INFO_PLIST\" 2>/dev/null || /usr/libexec/PlistBuddy -c \"Add :GitCommit string $COMMIT\" \"$INFO_PLIST\"\n/usr/libexec/PlistBuddy -c \"Set :GitRepositoryURL $REPO_URL\" \"$INFO_PLIST\" 2>/dev/null || /usr/libexec/PlistBuddy -c \"Add :GitRepositoryURL string $REPO_URL\" \"$INFO_PLIST\"\nKOFI_JSON=$(ruby -ryaml -rjson -e 'begin; cfg = YAML.load_file(ARGV[0]); rescue StandardError; cfg = nil; end; cfg = {} unless cfg.is_a?(Hash); print JSON.generate(cfg)' \"${SRCROOT}/.github/FUNDING.yml\" 2>/dev/null)\n[ -n \"$KOFI_JSON\" ] || KOFI_JSON=\"{}\"\nFUNDING_B64=$(printf '%s' \"$KOFI_JSON\" | openssl base64 -A 2>/dev/null)\n/usr/libexec/PlistBuddy -c \"Set :FundingConfig $FUNDING_B64\" \"$INFO_PLIST\" 2>/dev/null || /usr/libexec/PlistBuddy -c \"Add :FundingConfig string $FUNDING_B64\" \"$INFO_PLIST\"\n";
+		};
+		4B1D0000000000000000C0DE /* Build shared Kotlin (LabImporterCore) */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Build shared Kotlin (LabImporterCore)";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\n# Builds the shared Kotlin Multiplatform module (shared/) as the static\n# LabImporterCore framework for the current SDK/arch/configuration.\nif [ \"YES\" = \"${OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED:-}\" ]; then exit 0; fi\ncd \"${SRCROOT}\"\n# Xcode doesn't inherit your shell environment: find a JDK (17+).\nif [ -z \"${JAVA_HOME:-}\" ] || [ ! -x \"${JAVA_HOME}/bin/java\" ]; then\n  for candidate in \"$(/usr/libexec/java_home 2>/dev/null)\" /opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home /opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home \"${JAVA_HOME_21_arm64:-}\" \"${JAVA_HOME_17_arm64:-}\"; do\n    if [ -n \"$candidate\" ] && [ -x \"$candidate/bin/java\" ]; then export JAVA_HOME=\"$candidate\"; break; fi\n  done\nfi\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
 		};
 		AABB000000000000000089AA /* Generate LOINC resource */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -861,7 +877,18 @@
 				DEFINES_MODULE = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+				);
 				GENERATE_INFOPLIST_FILE = NO;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					LabImporterCore,
+					"-lsqlite3",
+				);
 				INFOPLIST_FILE = LabImporter/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -892,7 +919,18 @@
 				DEFINES_MODULE = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+				);
 				GENERATE_INFOPLIST_FILE = NO;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					LabImporterCore,
+					"-lsqlite3",
+				);
 				INFOPLIST_FILE = LabImporter/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (

@@ -1,5 +1,6 @@
 import Foundation
 import FoundationModels
+import LabImporterCore
 
 // MARK: - Generable types for structured AI output
 
@@ -192,24 +193,9 @@ actor LabParserService {
     // MARK: - Foundation Models path
 
     private static func makeSession() -> LanguageModelSession {
-        LanguageModelSession(
-            instructions: """
-            You are a medical lab report parser. Extract every lab test entry from the provided text.
-            Lab reports follow the pattern: CODE: value unit; CODE2: value2 unit2; ...
-            Preserve codes exactly as printed in `code`. For each entry, also give the test's standard name in the
-            report's own language (do NOT translate it) so it can be matched to a coding system in that language.
-            German practice software (e.g. PatMed) prints terse vendor mnemonics like KREA, MALB-U, MDRD, HB-A1C,
-            C-PEPT, GADAAK or TSH-0 — keep the mnemonic in `code`, but always expand it to its full standard
-            clinical name in `name`; never leave `name` as the raw mnemonic.
-            Do NOT emit specimen, material, or annotation labels as entries — a "value" of 'Serum', 'EDTA-Plasma',
-            'Vollblut' or a standalone method tag (e.g. 'JDF-E.') is not a measured test and must be skipped.
-            Detect the language of the report and return it as a BCP-47 code (e.g. 'de', 'en') in reportLanguage.
-            Use '-' as rawValue when the result is negative or not detected.
-            If you can see a report date or blood draw date, return it in yyyy-MM-dd format; otherwise return an empty string.
-            Extract the patient's full name if visible; otherwise return an empty string for patientName.
-            Extract the lab or doctor name if visible; otherwise return an empty string for authorName.
-            """
-        )
+        // The instructions are shared with Android's Gemini Nano path
+        // (LabImporterCore `LabParsePrompt`), so both platforms extract alike.
+        LanguageModelSession(instructions: LabParsePrompt.shared.instructions)
     }
 
     /// Consumes the prewarmed session if one is waiting, else creates a fresh
@@ -234,13 +220,7 @@ actor LabParserService {
         // language is fully supported. Wrapping the report in a few sentences of
         // plain English gives the detector a reliable anchor without changing
         // what we ask it to extract (names stay in the report's own language).
-        let prompt = """
-        You are reading a laboratory test report. The report text below may be very short \
-        and consist mostly of abbreviated test codes, numbers and units. Read it carefully \
-        and extract every laboratory test value it contains. Here is the report text:
-
-        \(text)
-        """
+        let prompt = LabParsePrompt.shared.prompt(reportText: text, includeContract: false)
 
         do {
             // Stream the structured response instead of awaiting it whole:

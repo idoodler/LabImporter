@@ -74,6 +74,13 @@ jobs:
           fi
           swiftlint lint --strict --reporter github-actions-logging
 
+      # The Xcode "Build shared Kotlin" phase runs Gradle (shared/ KMP module).
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
       - name: Fastlane Build & Archive
         run: bundle exec fastlane build_labimporter
         env:

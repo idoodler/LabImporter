@@ -7,7 +7,7 @@
 
 <h1 align="center">LabImporter</h1>
 
-<p align="center">A native iOS app that imports lab report values into Apple Health using on-device AI.</p>
+<p align="center">Native iOS and Android apps that import lab report values into Apple Health / Health Connect using on-device AI.</p>
 
 Scan, import, or paste your lab report — the app uses Vision OCR and the on-device Foundation Models framework to extract values, lets you review and correct them, then saves them directly into Apple Health as a CDA clinical document.
 
@@ -122,6 +122,29 @@ After the first manual run succeeds, builds are triggered automatically on the *
 
 ---
 
+## Android (preview)
+
+The Android app (`androidApp/`) is a native Jetpack Compose app with **Material 3 Expressive** and Material You dynamic colour. It shares its business logic with iOS through a **Kotlin Multiplatform** module (`shared/`): LOINC catalog and search (the same `loinc.db`), LOINC resolution, the AI prompt and post-processing, categories, UCUM units, C-CDA export and the FHIR codec. The iOS app stays SwiftUI and links the same module as the static `LabImporterCore` framework.
+
+| Step | Android technology |
+|---|---|
+| Document input | ML Kit document scanner, system file picker (PDF/images), paste, manual entry, "Open with"/share |
+| Text extraction | ML Kit Text Recognition (bundled, Latin script) — PDFs are rendered with `PdfRenderer` |
+| Lab value parsing | **Gemini Nano** via the ML Kit GenAI Prompt API (on device, AICore). Devices without Gemini Nano fall back to a rule-based reader — every value still goes through review |
+| Storage | **Health Connect Medical Records** — FHIR R4 laboratory `Observation`s (Android 16+). Elsewhere, reports are kept privately in app storage (excluded from backup) and can be moved to Health Connect later |
+
+### Building the Android app
+
+Requires JDK 17+ and the Android SDK (platform 37). From the repo root:
+
+```bash
+./gradlew :androidApp:assembleRelease
+```
+
+The APKs land in `androidApp/build/outputs/apk/release/` (`arm64-v8a` for phones and Apple-silicon emulators). Release test builds are signed with the debug key. `./gradlew :shared:jvmTest` runs the shared unit tests against the real LOINC catalog.
+
+---
+
 ## Building locally with Xcode
 
 1. Clone the repository:
@@ -140,7 +163,7 @@ After the first manual run succeeds, builds are triggered automatically on the *
 
    Replace `YOUR_TEAM_ID` with your 10-character Apple Developer Team ID (from [developer.apple.com/account](https://developer.apple.com/account)). `Config.xcconfig` includes this file via `#include?`, so the team and bundle identifier resolve automatically. `Local.xcconfig` is gitignored — keep it out of the Xcode project (the include works purely on the file path) so your Team ID never lands in commits.
 
-4. Build and run on a connected device or simulator (iOS 26+).
+4. Build and run on a connected device or simulator (iOS 26+). The first build also compiles the shared Kotlin module via Gradle, so a JDK 17+ must be installed (e.g. `brew install openjdk@21`).
 
 > **Note:** The on-device Foundation Models framework requires a physical device with Apple Intelligence support. On unsupported hardware the app shows a "Device Not Supported" screen, since lab value parsing depends entirely on the on-device model.
 

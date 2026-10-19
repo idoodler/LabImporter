@@ -4,8 +4,9 @@ Guidance for AI assistants (and humans) working in this repository.
 
 ## What this is
 
-**LabImporter** is a native iOS app that imports lab report values into Apple
-Health using **on-device AI**. The pipeline is:
+**LabImporter** is a native iOS app — with an Android port (see "Android &
+shared Kotlin module") — that imports lab report values into Apple Health
+using **on-device AI**. The pipeline is:
 
 ```
 Document input  →  Text extraction  →  AI parsing  →  Review/correct  →  Save to Health
@@ -234,6 +235,53 @@ Config.xcconfig  # BUNDLE_IDENTIFIER = dev.idoodler.$(DEVELOPMENT_TEAM).labimpor
   phrase/summary extraction format in Xcode, localize them and remove this
   note.
 
+## Android & shared Kotlin module
+
+```
+shared/        # Kotlin Multiplatform (android, iosArm64, iosSimulatorArm64, jvm-for-tests)
+  src/commonMain/kotlin/dev/idoodler/labimporter/core/
+    LabCore.kt           # entry point: start(dbPath, appLanguage, prefsProvider)
+    model/               # LabValue, LabReport, LabMapping, LabCategory, ReferenceRange,
+                         #   LabDisplayPreferences (same JSON blob as iOS), MetricSeries
+    loinc/LoincDirectory # androidx.sqlite over the same loinc.db (bundled driver on
+                         #   Android/JVM, system SQLite on iOS)
+    export/              # Ucum, CdaExport (C-CDA R2.1), FhirLabCodec + FhirMigrator
+    parse/               # LabParsePrompt (shared AI prompt + JSON contract),
+                         #   LabParsePipeline (LOINC resolution, dedup), HeuristicLabParser
+androidApp/    # Jetpack Compose, Material 3 Expressive, dynamic colour
+  ai/LabParserService    # Gemini Nano (ML Kit GenAI Prompt API) → rule-based fallback
+  data/                  # HealthConnectReportStore (FHIR Medical Records), LocalReportStore
+  ui/                    # dashboard, history, import, review, settings, onboarding
+tools/xcstrings_to_android.py  # copies iOS translations into values-<lang>/strings.xml
+```
+
+- **Business logic belongs in `shared/`** whenever both platforms need it. The
+  iOS app consumes it as the static `LabImporterCore` framework, built by the
+  Xcode "Build shared Kotlin (LabImporterCore)" phase
+  (`./gradlew :shared:embedAndSignAppleFrameworkForXcode`; needs a JDK 17+).
+  SKIE bridges `suspend`/`Flow` to Swift `async`/`AsyncSequence`. So far iOS
+  uses the shared UCUM mapping, category rules and AI prompt; the Swift
+  `LoincDirectory`/`LabMapping`/models are the next candidates to replace.
+- **Android storage:** Health Connect *Medical Records* (FHIR R4 laboratory
+  `Observation`s, Android 16+, still `@ExperimentalPersonalHealthRecordApi`).
+  There's no `DiagnosticReport`, so each Observation carries its report id as a
+  `meta.tag`, plus a schema-version tag mirroring the CDA versioning — bump
+  `FhirLabCodec.SCHEMA_VERSION` and add a `FhirMigration` exactly like the CDA
+  rules below. Without Health Connect the same FHIR JSON is kept in
+  `noBackupFilesDir` (`LocalReportStore`) and moved over when the user connects.
+- **Android AI:** Gemini Nano via ML Kit GenAI Prompt API, using the shared
+  `LabParsePrompt`. Most devices (and all emulators) lack it; `HeuristicLabParser`
+  then reads `Label: value unit` lines and never fuzzy-matches bare mnemonics.
+- **Android strings:** English source in `androidApp/src/main/res/values/strings.xml`.
+  Reuse an iOS source string verbatim where one exists, then run
+  `python3 tools/xcstrings_to_android.py` — it regenerates every
+  `values-<lang>/strings.xml` (don't edit those) and lists Android-only strings
+  still needing translation into all shipped languages.
+- **Previews:** the same rule as SwiftUI — every composable screen ships
+  `@Preview`s for its variations (empty/populated, light/dark, sizes).
+- Build: `./gradlew :shared:jvmTest :androidApp:assembleRelease`
+  (`androidApp/build/outputs/apk/release/`). CI: `build_android.yml`.
+
 ## Build, run & lint
 
 ### Local (macOS, requires Xcode 26 / iOS 26 SDK)
@@ -273,6 +321,9 @@ and run in order on first setup:
    build number from the latest TestFlight build, builds, archives, uploads to
    TestFlight. Manual + scheduled (first Sunday monthly).
 5. **`lint.yml`** — SwiftLint on every PR to `main` (and manual dispatch).
+
+`build_android.yml` (every PR to `main`) runs the shared Kotlin tests, Android
+lint and builds the APKs — no secrets needed.
 
 Not part of that numbered setup sequence, but also on every PR to `main` (and
 manual dispatch): **`build_pr.yml`** — a plain `xcodebuild build` on
