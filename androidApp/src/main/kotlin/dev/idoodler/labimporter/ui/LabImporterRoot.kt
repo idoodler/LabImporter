@@ -42,6 +42,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.idoodler.labimporter.R
+import dev.idoodler.labimporter.ai.AiAvailability
+import dev.idoodler.labimporter.ai.DevelopmentStandIn
+import dev.idoodler.labimporter.ai.UnsupportedReason
 import dev.idoodler.labimporter.core.model.LabReport
 import dev.idoodler.labimporter.ui.dashboard.DashboardScreen
 import dev.idoodler.labimporter.ui.dashboard.TrendScreen
@@ -51,9 +54,12 @@ import dev.idoodler.labimporter.ui.importflow.ImportActions
 import dev.idoodler.labimporter.ui.importflow.ImportFabMenu
 import dev.idoodler.labimporter.ui.importflow.PasteTextScreen
 import dev.idoodler.labimporter.ui.importflow.ProcessingDialog
+import dev.idoodler.labimporter.ui.importflow.ProcessingStage
 import dev.idoodler.labimporter.ui.importflow.rememberImportActions
 import dev.idoodler.labimporter.ui.onboarding.OnboardingScreen
+import dev.idoodler.labimporter.ui.onboarding.UnsupportedDeviceScreen
 import dev.idoodler.labimporter.ui.review.ReviewScreen
+import dev.idoodler.labimporter.ui.settings.AiSettings
 import dev.idoodler.labimporter.ui.settings.SettingsScreen
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
@@ -102,6 +108,26 @@ fun LabImporterRoot(viewModel: AppViewModel) {
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refresh() }
 
+    // Like iOS: without the on-device AI there is no app, only the reason why.
+    val availability by viewModel.aiAvailability.collectAsStateWithLifecycle()
+    var lastUnsupported by rememberSaveable { mutableStateOf<UnsupportedReason?>(null) }
+    LaunchedEffect(availability) {
+        if (availability != AiAvailability.Checking) lastUnsupported = (availability as? AiAvailability.Unsupported)?.reason
+    }
+    // While "Check Again" runs the screen stays, showing that it's checking.
+    val unsupportedReason = (availability as? AiAvailability.Unsupported)?.reason
+        ?: lastUnsupported.takeIf { availability == AiAvailability.Checking }
+    unsupportedReason?.let { reason ->
+        UnsupportedDeviceScreen(
+            reason = reason,
+            checking = availability == AiAvailability.Checking,
+            onCheckAgain = viewModel::checkAiAgain,
+            standIn = DevelopmentStandIn.texts,
+            onUseStandIn = { viewModel.useDevelopmentStandIn(true) },
+        )
+        return
+    }
+
     if (!hasSeenWelcome) {
         OnboardingScreen(healthConnect, connectHealthConnect, onFinish = viewModel::finishOnboarding)
         return
@@ -135,8 +161,9 @@ fun LabImporterRoot(viewModel: AppViewModel) {
     Navigator(viewModel, healthConnect, connectHealthConnect, onPaste = { pasting = true })
 
     when (val state = importState) {
-        ImportState.ReadingDocument -> ProcessingDialog(null, viewModel::cancelImport)
-        is ImportState.Parsing -> ProcessingDialog(state.progress, viewModel::cancelImport)
+        ImportState.ReadingDocument -> ProcessingDialog(ProcessingStage.Reading, viewModel::cancelImport)
+        is ImportState.PreparingModel -> ProcessingDialog(ProcessingStage.PreparingModel(state.preparing.fraction), viewModel::cancelImport)
+        is ImportState.Parsing -> ProcessingDialog(ProcessingStage.Parsing(state.progress), viewModel::cancelImport)
         is ImportState.Failed -> AlertDialog(
             onDismissRequest = viewModel::cancelImport,
             title = { Text(stringResource(R.string.import_failed)) },
@@ -261,15 +288,15 @@ private fun Screen(
         Destination.Reports -> HistoryScreen(reports, onOpenReport = { push(Destination.Report(it.id)) }, onBack = pop)
         Destination.Settings -> {
             val patientName by viewModel.patientName.collectAsStateWithLifecycle()
-            val aiStatus by viewModel.aiStatus.collectAsStateWithLifecycle()
+            val aiAvailability by viewModel.aiAvailability.collectAsStateWithLifecycle()
+            val usingStandIn by viewModel.usingStandIn.collectAsStateWithLifecycle()
             SettingsScreen(
                 patientName = patientName,
                 onPatientName = viewModel::setPatientName,
                 healthConnect = healthConnect,
                 onConnectHealthConnect = connectHealthConnect,
                 onUseHealthConnect = viewModel::setUseHealthConnect,
-                aiStatus = aiStatus,
-                onDownloadModel = viewModel::downloadModel,
+                ai = AiSettings(aiAvailability, usingStandIn, onTryAgain = viewModel::checkAiAgain) { viewModel.useDevelopmentStandIn(false) },
                 preferences = preferences,
                 onUpdatePreferences = viewModel::updateDisplayPreferences,
                 softwareIdentity = viewModel.softwareIdentity,

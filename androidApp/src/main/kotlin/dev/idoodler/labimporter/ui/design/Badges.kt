@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.graphics.shapes.RoundedPolygon
 import dev.idoodler.labimporter.R
 import dev.idoodler.labimporter.core.model.LabCategory
+import dev.idoodler.labimporter.core.model.MetricTrend
 import dev.idoodler.labimporter.ui.components.labelRes
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 import androidx.compose.foundation.layout.Column
@@ -93,23 +94,13 @@ fun CategoryChip(category: LabCategory, count: Int?, modifier: Modifier = Modifi
     }
 }
 
-/** Direction of a metric between its last two readings. */
-enum class TrendDirection { UP, DOWN, FLAT }
-
-fun trendOf(previous: Double?, latest: Double): TrendDirection? = when {
-    previous == null -> null
-    latest - previous > 1e-9 -> TrendDirection.UP
-    latest - previous < -1e-9 -> TrendDirection.DOWN
-    else -> TrendDirection.FLAT
-}
-
-/** The iOS-style trend glyph: an arrow in a filled circle of the category colour. */
+/** The iOS-style trend glyph (shared rule, `MetricTrend`): an arrow in a filled circle of the category colour. */
 @Composable
-fun TrendBadge(direction: TrendDirection, color: Color, modifier: Modifier = Modifier, size: Dp = 22.dp) {
-    val (icon, label) = when (direction) {
-        TrendDirection.UP -> Icons.Rounded.NorthEast to R.string.trend_up
-        TrendDirection.DOWN -> Icons.Rounded.SouthEast to R.string.trend_down
-        TrendDirection.FLAT -> Icons.Rounded.East to R.string.trend_flat
+fun TrendBadge(trend: MetricTrend, color: Color, modifier: Modifier = Modifier, size: Dp = 22.dp) {
+    val (icon, label) = when (trend) {
+        MetricTrend.RISING -> Icons.Rounded.NorthEast to R.string.trend_up
+        MetricTrend.FALLING -> Icons.Rounded.SouthEast to R.string.trend_down
+        MetricTrend.STEADY -> Icons.Rounded.East to R.string.trend_flat
     }
     Box(modifier.size(size).background(color, CircleShape), contentAlignment = Alignment.Center) {
         Icon(icon, stringResource(label), tint = contentColorOn(color), modifier = Modifier.size(size * 0.62f))
@@ -137,7 +128,7 @@ private fun BadgesPreview() {
                     CategoryChip(LabCategory.LIPIDS, 4); Spacer(Modifier.width(6.dp)); CategoryChip(LabCategory.RENAL, 1)
                 }
                 Row(Modifier.padding(top = 8.dp)) {
-                    TrendDirection.entries.forEach { TrendBadge(it, LabCategory.ELECTROLYTES.color, Modifier.padding(4.dp)) }
+                    MetricTrend.entries.forEach { TrendBadge(it, LabCategory.ELECTROLYTES.color, Modifier.padding(4.dp)) }
                     ShapeBadge(MaterialShapes.Sunny, Color(0xFF7C4DFF), null, Modifier.padding(4.dp))
                 }
             }

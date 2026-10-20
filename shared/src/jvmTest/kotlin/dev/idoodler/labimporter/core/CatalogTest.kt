@@ -1,5 +1,6 @@
 package dev.idoodler.labimporter.core
 
+import dev.idoodler.labimporter.core.loinc.LoincDirectory
 import dev.idoodler.labimporter.core.model.LabCategory
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.core.model.LabMapping
@@ -82,6 +83,44 @@ class CatalogTest {
         assertNull(byName.getValue("-").numericValue)
         assertEquals("Max", result.patientName)
         assertEquals(kotlinx.datetime.LocalDate(2026, 5, 6), result.reportDate)
+    }
+
+    @Test
+    fun everydaySpellingsResolveThroughOtherLanguages() {
+        // German LOINC says "Creatinin"; reports and the model say "Kreatinin".
+        assertEquals("2160-0" to true, LabParsePipeline.resolveLoinc("KREA", "Kreatinin", "de"))
+    }
+
+    @Test
+    fun littleWordsDontBlockAMatch() {
+        val (code, suggested) = LabParsePipeline.resolveLoinc("MALB-U", "Albumin im Urin", "de")
+        assertTrue(suggested)
+        assertTrue(LabMapping.catalogName(code).contains("Urin"), LabMapping.catalogName(code))
+        assertEquals("albumin urin", LoincDirectory.withoutStopWords("Albumin im Urin"))
+        // Single letters and element symbols are never dropped; nothing to drop → null.
+        assertNull(LoincDirectory.withoutStopWords("Vitamin A"))
+        assertEquals("na serum", LoincDirectory.withoutStopWords("Na im Serum"))
+    }
+
+    @Test
+    fun spellingVariantsResolveByStem() {
+        // LOINC says "Cholesterol"; German reports say "Cholesterin".
+        assertEquals("2093-3" to true, LabParsePipeline.resolveLoinc("CHOL", "Cholesterin", "de"))
+        assertEquals("2085-9" to true, LabParsePipeline.resolveLoinc("HDL", "HDL-Cholesterin", "de"))
+        assertEquals("43396-1" to true, LabParsePipeline.resolveLoinc("NONHDL", "Non-HDL-Cholesterin", "de"))
+        assertEquals("2571-8" to true, LabParsePipeline.resolveLoinc("TRIG", "Triglyzeride", "de"))
+        assertEquals(listOf("cholesteri", "cholester", "choleste", "cholest", "choles"), LoincDirectory.stemmedQueries("Cholesterin"))
+        assertEquals(listOf("hdl cholesteri", "hdl cholester"), LoincDirectory.stemmedQueries("HDL-Cholesterin").take(2))
+        assertEquals(emptyList(), LoincDirectory.stemmedQueries("Eisen im Serum")) // No word long enough to cut.
+    }
+
+    @Test
+    fun aPrintedMnemonicMatchesOnlyAsAWholeWord() {
+        // Without a usable name, "KREA" must not become "Kreatinkinase" by prefix.
+        assertEquals("KREA" to false, LabParsePipeline.resolveLoinc("KREA", "", "de"))
+        val (tsh, suggested) = LabParsePipeline.resolveLoinc("TSH", "", "de")
+        assertTrue(suggested)
+        assertEquals("3016-3", tsh)
     }
 
     @Test

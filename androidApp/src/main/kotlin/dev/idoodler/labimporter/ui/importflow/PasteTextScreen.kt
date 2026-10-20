@@ -32,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.idoodler.labimporter.R
+import dev.idoodler.labimporter.ai.DevelopmentStandIn
 import dev.idoodler.labimporter.ui.preview.PreviewSamples
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 
@@ -66,8 +67,11 @@ fun PasteTextScreen(onCancel: () -> Unit, onSubmit: (String) -> Unit, initial: S
                 ),
                 modifier = Modifier.fillMaxSize().weight(1f),
             )
-            TextButton(onClick = { text = PreviewSamples.SAMPLE_REPORT_TEXT }, modifier = Modifier.padding(top = 8.dp)) {
-                Text(stringResource(R.string.insert_sample))
+            // Debug builds only.
+            val sample = DevelopmentStandIn.sampleReport
+            val label = DevelopmentStandIn.texts?.insertSample
+            if (sample != null && label != null) {
+                TextButton(onClick = { text = sample }, modifier = Modifier.padding(top = 8.dp)) { Text(label) }
             }
         }
     }

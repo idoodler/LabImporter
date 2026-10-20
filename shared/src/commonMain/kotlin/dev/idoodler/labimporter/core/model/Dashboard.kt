@@ -45,6 +45,9 @@ data class Metric(
 ) {
     val code: String get() = entry.code
     val name: String get() = entry.resolvedName
+
+    /** The latest reading's value (metrics exist only for numeric readings). */
+    val value: Double get() = checkNotNull(entry.numericValue) { "Metric $code has no numeric reading" }
     val category: LabCategory get() = LabCategory.forCode(entry.code)
     val trend: MetricTrend? get() = MetricTrend.of(history)
     val range: ReferenceRange? get() = LabMapping.referenceRange(entry.code)

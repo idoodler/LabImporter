@@ -66,8 +66,8 @@ import dev.idoodler.labimporter.R
 import dev.idoodler.labimporter.core.model.LabCategory
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.core.model.LabReport
-import dev.idoodler.labimporter.core.model.MetricSeries
-import dev.idoodler.labimporter.core.model.metricSeries
+import dev.idoodler.labimporter.core.model.Dashboard
+import dev.idoodler.labimporter.core.model.Metric
 import dev.idoodler.labimporter.ui.components.RangeBadge
 import dev.idoodler.labimporter.ui.components.formatDate
 import dev.idoodler.labimporter.ui.components.formatNumber
@@ -79,10 +79,8 @@ import dev.idoodler.labimporter.ui.design.MorphingShape
 import dev.idoodler.labimporter.ui.design.StatTile
 import dev.idoodler.labimporter.ui.design.TrendBadge
 import dev.idoodler.labimporter.ui.design.color
-import dev.idoodler.labimporter.ui.design.dominantColors
 import dev.idoodler.labimporter.ui.design.tabular
 import dev.idoodler.labimporter.ui.design.tintedSurface
-import dev.idoodler.labimporter.ui.design.trendOf
 import dev.idoodler.labimporter.ui.design.welcomePalette
 import dev.idoodler.labimporter.ui.importflow.ImportActions
 import dev.idoodler.labimporter.ui.importflow.ImportOptionCards
@@ -102,15 +100,16 @@ fun DashboardScreen(
     onOpenReports: () -> Unit = {},
     onOpenSettings: () -> Unit = {},
 ) {
-    val series = remember(reports, preferences) { reports.metricSeries(preferences) }
-    if (series.isEmpty() && isLoading) {
+    // Shared rules (LabImporterCore `Dashboard`), identical on iOS.
+    val metrics = remember(reports, preferences) { Dashboard.sorted(Dashboard.metrics(reports), preferences) }
+    if (metrics.isEmpty() && isLoading) {
         Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CategoryWash(welcomePalette, intensity = 0.6f)
             LoadingIndicator(Modifier.size(64.dp))
         }
         return
     }
-    if (series.isEmpty()) {
+    if (metrics.isEmpty()) {
         DashboardEmpty(importActions, onOpenReports.takeIf { reports.isNotEmpty() }, onOpenSettings, modifier)
         return
     }
@@ -118,11 +117,11 @@ fun DashboardScreen(
     var query by rememberSaveable { mutableStateOf("") }
     var searching by rememberSaveable { mutableStateOf(false) }
     var filter by rememberSaveable { mutableStateOf<LabCategory?>(null) }
-    val categories = remember(series) { series.groupingBy { it.category }.eachCount().entries.sortedByDescending { it.value } }
-    val filtered = remember(series, query, filter) {
-        series.filter { (filter == null || it.category == filter) && (query.isBlank() || it.name.contains(query, true) || it.code.contains(query)) }
+    val categories = remember(metrics) { metrics.groupingBy { it.category }.eachCount().entries.sortedByDescending { it.value } }
+    val filtered = remember(metrics, query, filter) {
+        metrics.filter { (filter == null || it.category == filter) && (query.isBlank() || it.name.contains(query, true) || it.code.contains(query)) }
     }
-    val wash = remember(series, filter) { filter?.let { listOf(it.color) } ?: dominantColors(series.map { it.category }) }
+    val wash = remember(metrics, filter) { filter?.let { listOf(it.color) } ?: Dashboard.backgroundCategories(metrics).map { it.color } }
 
     Box(modifier.fillMaxSize()) {
         CategoryWash(wash)
@@ -132,7 +131,7 @@ fun DashboardScreen(
             topBar = {
                 LargeFlexibleTopAppBar(
                     title = { Text(stringResource(R.string.dashboard_title), fontWeight = FontWeight.Bold) },
-                    subtitle = { Text(pluralStringResource(R.plurals.metric_count, series.size, series.size)) },
+                    subtitle = { Text(pluralStringResource(R.plurals.metric_count, metrics.size, metrics.size)) },
                     actions = {
                         IconButton(onClick = { searching = !searching; if (!searching) query = "" }) {
                             Icon(Icons.Rounded.Search, stringResource(R.string.search))
@@ -215,7 +214,7 @@ private fun CategoryFilterRow(categories: List<Pair<LabCategory, Int>>, selected
 
 /** Grid card: badge + name, the latest value, its trend and a gradient sparkline. */
 @Composable
-fun MetricCard(metric: MetricSeries, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun MetricCard(metric: Metric, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val color = metric.category.color
     Card(
         onClick = onClick,
@@ -237,16 +236,17 @@ fun MetricCard(metric: MetricSeries, onClick: () -> Unit, modifier: Modifier = M
             ValueLine(metric, valueSize = 34)
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 2.dp)) {
                 Text(
-                    formatDate(metric.latest.date, FormatStyle.MEDIUM), style = MaterialTheme.typography.labelMedium,
+                    formatDate(metric.date, FormatStyle.MEDIUM), style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f),
                 )
                 RangeBadge(metric.rangeStatus)
-                trendOf(metric.previous?.value, metric.latest.value)?.let { TrendBadge(it, color, Modifier.padding(start = 6.dp)) }
+                metric.trend?.let { TrendBadge(it, color, Modifier.padding(start = 6.dp)) }
             }
             Spacer(Modifier.height(10.dp))
+            // Like iOS: the sparkline covers the year before the latest reading.
             AreaChart(
-                metric.points.map { it.value }, color, Modifier.fillMaxWidth().height(64.dp),
-                range = metric.range, strokeWidth = 2.5.dp, showPoints = metric.points.size <= 8,
+                metric.history.map { it.value }, color, Modifier.fillMaxWidth().height(64.dp),
+                range = metric.range, strokeWidth = 2.5.dp, showPoints = metric.history.size <= 8,
             )
         }
     }
@@ -254,9 +254,9 @@ fun MetricCard(metric: MetricSeries, onClick: () -> Unit, modifier: Modifier = M
 
 /** Full-width card for pinned metrics (or a lone one): bigger number, taller chart, min/max/avg. */
 @Composable
-fun HeroMetricCard(metric: MetricSeries, pinned: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun HeroMetricCard(metric: Metric, pinned: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val color = metric.category.color
-    val values = metric.points.map { it.value }
+    val values = metric.history.map { it.value }
     Card(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
@@ -280,11 +280,11 @@ fun HeroMetricCard(metric: MetricSeries, pinned: Boolean, onClick: () -> Unit, m
             ValueLine(metric, valueSize = 52)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    formatDate(metric.latest.date, FormatStyle.LONG), style = MaterialTheme.typography.labelLarge,
+                    formatDate(metric.date, FormatStyle.LONG), style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f),
                 )
                 RangeBadge(metric.rangeStatus)
-                trendOf(metric.previous?.value, metric.latest.value)?.let { TrendBadge(it, color, Modifier.padding(start = 6.dp), size = 26.dp) }
+                metric.trend?.let { TrendBadge(it, color, Modifier.padding(start = 6.dp), size = 26.dp) }
             }
             AreaChart(
                 values, color, Modifier.fillMaxWidth().height(132.dp).padding(top = 12.dp),
@@ -302,17 +302,17 @@ fun HeroMetricCard(metric: MetricSeries, pinned: Boolean, onClick: () -> Unit, m
 }
 
 @Composable
-private fun ValueLine(metric: MetricSeries, valueSize: Int) {
+private fun ValueLine(metric: Metric, valueSize: Int) {
     Row(verticalAlignment = Alignment.Bottom) {
         Text(
-            formatNumber(metric.latest.value),
+            formatNumber(metric.value),
             style = MaterialTheme.typography.displaySmallEmphasized.tabular().copy(fontSize = valueSize.sp, lineHeight = (valueSize + 4).sp),
             fontWeight = FontWeight.Bold,
             color = if (metric.rangeStatus?.isOutOfRange == true) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
         )
         Spacer(Modifier.width(5.dp))
         Text(
-            metric.latest.unit, style = MaterialTheme.typography.titleSmall,
+            metric.entry.unit, style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = (valueSize / 7).dp),
         )
     }

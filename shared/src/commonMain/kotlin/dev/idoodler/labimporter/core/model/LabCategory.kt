@@ -31,6 +31,12 @@ enum class LabCategory(val argb: Long) {
         private val lock = PlatformLock()
         private val cache = mutableMapOf<String, LabCategory>()
 
+        /** [categories] by how often they occur, most first; ties in canonical order. */
+        fun ranked(categories: List<LabCategory>): List<LabCategory> {
+            val counts = categories.groupingBy { it }.eachCount()
+            return entries.filter { it in counts }.sortedByDescending { counts.getValue(it) }
+        }
+
         /** Best-effort category for a LOINC code (memoized; catalog lookups aren't free). */
         fun forCode(code: String): LabCategory {
             lock.withLock { cache[code] }?.let { return it }

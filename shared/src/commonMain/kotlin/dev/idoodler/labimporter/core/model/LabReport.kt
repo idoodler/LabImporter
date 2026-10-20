@@ -38,11 +38,7 @@ data class LabReport(
 
     /** The category most values belong to (ties break by canonical order). */
     val dominantCategory: LabCategory?
-        get() {
-            if (entries.isEmpty()) return null
-            val counts = entries.groupingBy { LabCategory.forCode(it.code) }.eachCount()
-            return LabCategory.entries.filter { it in counts }.maxByOrNull { counts.getValue(it) }
-        }
+        get() = LabCategory.ranked(entries.map { LabCategory.forCode(it.code) }).firstOrNull()
 
     companion object {
         /** Builds a report from reviewed values, keeping only exportable rows (one per LOINC). */

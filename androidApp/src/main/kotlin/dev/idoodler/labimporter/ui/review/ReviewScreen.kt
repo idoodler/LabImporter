@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
@@ -20,12 +21,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.Rule
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Science
 import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.AssistChip
@@ -68,7 +69,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.idoodler.labimporter.R
-import dev.idoodler.labimporter.ai.ParseEngine
+import dev.idoodler.labimporter.ai.AiEngine
+import dev.idoodler.labimporter.ai.DevelopmentStandIn
 import dev.idoodler.labimporter.core.model.LabCategory
 import dev.idoodler.labimporter.core.model.LabMapping
 import dev.idoodler.labimporter.core.model.LabValue
@@ -151,7 +153,7 @@ fun ReviewScreen(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 ShapeBadge(
                                     MaterialShapes.Sunny, MaterialTheme.colorScheme.primary,
-                                    if (draft.engine == ParseEngine.RULES) Icons.AutoMirrored.Rounded.Rule else Icons.Rounded.AutoAwesome,
+                                    if (draft.engine == AiEngine.DEVELOPMENT_STAND_IN) Icons.Rounded.Science else Icons.Rounded.AutoAwesome,
                                     size = 60.dp,
                                     brush = Brush.linearGradient(
                                         if (wash.size > 1) wash.take(2) else listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.tertiary),
@@ -168,11 +170,7 @@ fun ReviewScreen(
                             }
                             Row(Modifier.padding(top = 14.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 StatusPill(canSave, duplicates.isNotEmpty())
-                                when (draft.engine) {
-                                    ParseEngine.GEMINI_NANO -> EngineChip(Icons.Rounded.AutoAwesome, stringResource(R.string.engine_gemini))
-                                    ParseEngine.RULES -> EngineChip(Icons.AutoMirrored.Rounded.Rule, stringResource(R.string.engine_rules))
-                                    null -> Unit
-                                }
+                                if (draft.engine == AiEngine.GEMINI_NANO) EngineChip(Icons.Rounded.AutoAwesome, stringResource(R.string.engine_gemini))
                             }
                             if (categories.isNotEmpty()) {
                                 FlowRow(
@@ -184,10 +182,14 @@ fun ReviewScreen(
                                     }
                                 }
                             }
-                            if (draft.engine == ParseEngine.RULES) {
+                            // Debug builds: results of the development stand-in are samples, and say so.
+                            val standIn = DevelopmentStandIn.texts
+                            if (draft.engine == AiEngine.DEVELOPMENT_STAND_IN && standIn != null) {
                                 Text(
-                                    stringResource(R.string.engine_rules_hint), style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 12.dp),
+                                    standIn.reviewBanner, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.onErrorContainer,
+                                    modifier = Modifier.padding(top = 12.dp).fillMaxWidth()
+                                        .background(MaterialTheme.colorScheme.errorContainer, MaterialTheme.shapes.large).padding(12.dp),
                                 )
                             }
                         }
@@ -416,7 +418,7 @@ private fun CodeChip(value: LabValue, mapped: Boolean, isDuplicate: Boolean, onC
 }
 
 private val previewDraft = ReviewDraft(
-    PreviewSamples.reviewValues, LocalDate(2026, 5, 6), "Max Mustermann", "Labor Dr. Muster", ParseEngine.GEMINI_NANO,
+    PreviewSamples.reviewValues, LocalDate(2026, 5, 6), "Max Mustermann", "Labor Dr. Muster", AiEngine.GEMINI_NANO,
 )
 
 @Preview(name = "Parsed", widthDp = 400, heightDp = 1100)
@@ -425,11 +427,11 @@ private fun ReviewPreview() {
     LabImporterTheme(dynamicColor = false) { ReviewScreen(previewDraft, {}, { _, _ -> }, { "" }, {}, {}, {}) }
 }
 
-@Preview(name = "Rules fallback – dark", widthDp = 400, heightDp = 1100, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "Development stand-in (debug) – dark", widthDp = 400, heightDp = 1100, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun ReviewRulesPreview() {
+private fun ReviewStandInPreview() {
     LabImporterTheme(darkTheme = true, dynamicColor = false) {
-        ReviewScreen(previewDraft.copy(engine = ParseEngine.RULES), {}, { _, _ -> }, { "" }, {}, {}, {})
+        ReviewScreen(previewDraft.copy(engine = AiEngine.DEVELOPMENT_STAND_IN), {}, { _, _ -> }, { "" }, {}, {}, {})
     }
 }
 

@@ -11,6 +11,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.content.IntentCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import dev.idoodler.labimporter.ai.AiAvailability
+import dev.idoodler.labimporter.ai.DevelopmentStandIn
 import dev.idoodler.labimporter.ui.AppViewModel
 import dev.idoodler.labimporter.ui.LabImporterRoot
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
@@ -19,9 +21,15 @@ class MainActivity : ComponentActivity() {
     private val viewModel: AppViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen().setKeepOnScreenCondition { !LabImporterApplication.catalogReady.value }
+        // Covers unpacking the catalog and the first on-device AI check, so the
+        // app never flashes the dashboard before "Device Not Supported".
+        installSplashScreen().setKeepOnScreenCondition {
+            !LabImporterApplication.catalogReady.value || viewModel.aiAvailability.value == AiAvailability.Checking
+        }
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        // Debug builds, for scripted emulator runs: `--ez $EXTRA_STAND_IN true` opts into the stand-in.
+        if (intent?.getBooleanExtra(EXTRA_STAND_IN, false) == true && DevelopmentStandIn.texts != null) viewModel.useDevelopmentStandIn(true)
         if (savedInstanceState == null) handleIncoming(intent)
         setContent {
             // Names and categories come from the LOINC catalog; compose nothing
@@ -48,5 +56,10 @@ class MainActivity : ComponentActivity() {
             else -> null
         }
         if (uri != null) viewModel.importDocuments(listOf(uri))
+    }
+
+    companion object {
+        /** Boolean launch extra (debug builds): use the development stand-in instead of Gemini Nano. */
+        const val EXTRA_STAND_IN = "dev.idoodler.labimporter.DEVELOPMENT_STAND_IN"
     }
 }

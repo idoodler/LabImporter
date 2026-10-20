@@ -96,6 +96,22 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
         LIMIT ?3 OFFSET ?4
         """,
     )
+    /** [searchStatement] across every catalog language (the import resolver's fallback). */
+    private val anyLanguageSearchStatement = prepare(
+        """
+        SELECT l.code,
+               (SELECT name FROM label WHERE code = l.code AND lang = ?2),
+               (SELECT descr FROM label WHERE code = l.code AND lang = ?2),
+               t.english, t.ucum, t.rank
+        FROM label_fts f
+        JOIN label l ON l.rowid = f.rowid
+        JOIN term t ON t.code = l.code
+        WHERE label_fts MATCH ?1
+        GROUP BY l.code
+        ORDER BY t.rank
+        LIMIT ?3 OFFSET ?4
+        """,
+    )
     private val topStatement = prepare(
         """
         SELECT t.code,
@@ -222,11 +238,32 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
         }
     }
 
+    /**
+     * The most commonly ordered term whose label matches [query] — its words,
+     * or word prefixes when [prefix] — in [language] plus English, or in every
+     * catalog language when [anyLanguage]. Null when nothing matches.
+     */
+    fun bestMatch(query: String, language: String, prefix: Boolean = true, anyLanguage: Boolean = false): LoincTerm? {
+        val match = ftsQuery(query, prefix) ?: return null
+        return lock.withLock {
+            val statement = (if (anyLanguage) anyLanguageSearchStatement else searchStatement) ?: return@withLock null
+            try {
+                statement.bindText(1, match)
+                statement.bindText(2, language)
+                statement.bindLong(3, 1)
+                statement.bindLong(4, 0)
+                collect(statement).firstOrNull()
+            } finally {
+                statement.reset(); statement.clearBindings()
+            }
+        }
+    }
+
     // endregion
 
     override fun close() {
         lock.withLock {
-            listOf(termStatement, searchStatement, topStatement, detailStatement, classificationStatement)
+            listOf(termStatement, searchStatement, anyLanguageSearchStatement, topStatement, detailStatement, classificationStatement)
                 .forEach { it?.close() }
             connection?.close()
         }
@@ -289,15 +326,61 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
 
     companion object {
         /**
-         * Turns free text into an FTS5 prefix query: `creat ser` →
-         * `"creat"* "ser"*`. Null when there are no usable tokens.
+         * Turns free text into an FTS5 query of all its words, as prefixes by
+         * default: `creat ser` → `"creat"* "ser"*`. Null when there are no
+         * usable tokens.
          */
-        fun ftsQuery(query: String): String? {
-            val tokens = query.lowercase()
-                .split(Regex("[^\\p{L}\\p{N}]+"))
-                .filter { it.isNotEmpty() }
+        fun ftsQuery(query: String, prefix: Boolean = true): String? {
+            val tokens = tokens(query)
             if (tokens.isEmpty()) return null
-            return tokens.joinToString(" ") { "\"$it\"*" }
+            return tokens.joinToString(" ") { if (prefix) "\"$it\"*" else "\"$it\"" }
         }
+
+        /**
+         * [name]'s words (lowercased) without the little words of the shipped
+         * languages ("Albumin im Urin" → "albumin urin"), which LOINC labels rarely share with a
+         * printed report. Single letters and element symbols stay (Vitamin A,
+         * Na, Al). Null
+         * when nothing was dropped or nothing would remain.
+         */
+        fun withoutStopWords(name: String): String? {
+            val all = tokens(name)
+            val kept = all.filterNot { it in STOP_WORDS }
+            return kept.takeIf { it.isNotEmpty() && it.size < all.size }?.joinToString(" ")
+        }
+
+        /**
+         * Queries for spelling variants across languages: [name] with its
+         * longest word cut back to ever shorter stems — "Cholesterin" →
+         * "cholester…" finds "Cholesterol", "Triglyzeride" → "trigly…" finds
+         * "Triglyceride". Words under 8 letters aren't cut, and a stem keeps
+         * at least 6 letters and half the word. Most specific first.
+         */
+        fun stemmedQueries(name: String): List<String> {
+            val words = tokens(name).filterNot { it in STOP_WORDS }
+            val longest = words.maxByOrNull { it.length }?.takeIf { it.length >= 8 } ?: return emptyList()
+            val shortest = maxOf(6, (longest.length + 1) / 2)
+            return (longest.length - 1 downTo shortest).map { length ->
+                words.joinToString(" ") { if (it === longest) longest.take(length) else it }
+            }
+        }
+
+        private fun tokens(text: String): List<String> =
+            text.lowercase().split(Regex("[^\\p{L}\\p{N}]+")).filter { it.isNotEmpty() }
+
+        private val STOP_WORDS = setOf(
+            // de, en
+            "der", "die", "das", "des", "dem", "den", "im", "in", "am", "an", "von", "vom", "mit", "und", "auf", "bei", "zum", "zur",
+            "of", "the", "and", "for", "at", "by", "with", "on",
+            // fr, es, ca, pt, it, ro
+            "de", "du", "la", "le", "les", "dans", "et", "en", "au", "aux", "del", "el", "los", "las", "da", "do", "dos",
+            "em", "di", "della", "nel", "nella", "dels", "din", "și", "si", "în",
+            // nl, da, sv, fi, hu, tr
+            "van", "het", "op", "og", "av", "på", "och", "af", "ja", "az", "és", "ve",
+            // pl, cs, sk (not "na": sodium)
+            "we", "ze",
+            // el, ru, uk, bg
+            "σε", "στο", "στη", "του", "της", "και", "во", "на", "из", "від", "със",
+        )
     }
 }

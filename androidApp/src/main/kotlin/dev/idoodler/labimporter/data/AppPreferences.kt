@@ -34,6 +34,9 @@ class AppPreferences(context: Context) {
     )
     val storageMode: StateFlow<StorageMode> = _storageMode.asStateFlow()
 
+    /** Debug builds: the developer chose the development stand-in over Gemini Nano. */
+    val useDevelopmentStandIn: Boolean get() = prefs.getBoolean(KEY_STAND_IN, false)
+
     fun updateDisplayPreferences(transform: (LabDisplayPreferences) -> LabDisplayPreferences) {
         val updated = transform(_displayPreferences.value)
         _displayPreferences.value = updated
@@ -55,9 +58,14 @@ class AppPreferences(context: Context) {
         prefs.edit { putString(KEY_STORAGE, value.name) }
     }
 
+    fun setUseDevelopmentStandIn(value: Boolean) {
+        prefs.edit { putBoolean(KEY_STAND_IN, value) }
+    }
+
     private companion object {
         const val KEY_WELCOME = "hasSeenWelcome"
         const val KEY_PATIENT = "patientName"
         const val KEY_STORAGE = "storageMode"
+        const val KEY_STAND_IN = "useDevelopmentStandIn"
     }
 }

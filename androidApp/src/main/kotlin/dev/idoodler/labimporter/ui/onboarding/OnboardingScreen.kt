@@ -115,8 +115,9 @@ fun OnboardingScreen(
     }
 }
 
+/** A centred, scrollable page with its actions pinned below — shared by onboarding and the unsupported-device screen. */
 @Composable
-private fun Page(content: @Composable () -> Unit, actions: @Composable () -> Unit) {
+internal fun OnboardingPage(content: @Composable () -> Unit, actions: @Composable () -> Unit) {
     Column(Modifier.fillMaxSize().padding(horizontal = 24.dp).padding(bottom = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Column(
             Modifier.weight(1f).widthIn(max = 560.dp).verticalScroll(rememberScrollState()),
@@ -129,7 +130,7 @@ private fun Page(content: @Composable () -> Unit, actions: @Composable () -> Uni
 
 @Composable
 private fun Welcome(onNext: () -> Unit) {
-    Page(
+    OnboardingPage(
         content = {
             MorphingShape(welcomePalette, 208.dp) {
                 Box(Modifier.size(132.dp).background(MaterialTheme.colorScheme.surface.copy(alpha = 0.92f), CircleShape), contentAlignment = Alignment.Center) {
@@ -178,7 +179,7 @@ private fun Feature(polygon: RoundedPolygon, color: Color, icon: ImageVector, te
 @Composable
 private fun Disclaimer(onAccept: () -> Unit) {
     var accepted by rememberSaveable { mutableStateOf(false) }
-    Page(
+    OnboardingPage(
         content = {
             ShapeBadge(MaterialShapes.SoftBurst, LabCategory.GLYCEMIC.color, Icons.Rounded.Info, size = 112.dp)
             Text(
@@ -213,7 +214,7 @@ private fun Disclaimer(onAccept: () -> Unit) {
 @Composable
 private fun HealthConnectStep(state: HealthConnectState, onConnect: () -> Unit, onFinish: () -> Unit) {
     val available = state.availability == HealthConnectAvailability.AVAILABLE
-    Page(
+    OnboardingPage(
         content = {
             ShapeBadge(
                 MaterialShapes.Heart, LabCategory.HEMATOLOGY.color,

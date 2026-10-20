@@ -68,7 +68,8 @@ import dev.idoodler.labimporter.core.model.LabMapping
 import dev.idoodler.labimporter.core.model.LabReport
 import dev.idoodler.labimporter.core.model.MetricPoint
 import dev.idoodler.labimporter.core.model.ReferenceRange
-import dev.idoodler.labimporter.core.model.metricSeries
+import dev.idoodler.labimporter.core.model.Dashboard
+import dev.idoodler.labimporter.core.model.TrendWindow
 import dev.idoodler.labimporter.ui.components.RangeBadge
 import dev.idoodler.labimporter.ui.components.formatDate
 import dev.idoodler.labimporter.ui.components.formatNumber
@@ -85,17 +86,18 @@ import dev.idoodler.labimporter.ui.design.accentFor
 import dev.idoodler.labimporter.ui.design.color
 import dev.idoodler.labimporter.ui.design.tabular
 import dev.idoodler.labimporter.ui.design.tintedSurface
-import dev.idoodler.labimporter.ui.design.trendOf
 import dev.idoodler.labimporter.ui.preview.PreviewSamples
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
-import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.minus
 import java.time.format.FormatStyle
 
-/** Time windows for the trend chart (same choices as iOS). */
-private enum class TrendWindow(val label: Int, val months: Int?) {
-    M3(R.string.window_3m, 3), M6(R.string.window_6m, 6), Y1(R.string.window_1y, 12), ALL(R.string.window_all, null),
-}
+/** The shared trend windows (same spans as iOS), labelled. */
+private val TrendWindow.label: Int
+    get() = when (this) {
+        TrendWindow.MONTHS_3 -> R.string.window_3m
+        TrendWindow.MONTHS_6 -> R.string.window_6m
+        TrendWindow.YEAR_1 -> R.string.window_1y
+        TrendWindow.ALL -> R.string.window_all
+    }
 
 /** One metric over time: a scrubbable chart, statistics and every reading. */
 @Composable
@@ -106,8 +108,9 @@ fun TrendScreen(
     onUpdatePreferences: ((LabDisplayPreferences) -> LabDisplayPreferences) -> Unit,
     onBack: () -> Unit,
 ) {
-    val series = remember(reports, preferences, code) {
-        reports.metricSeries(preferences, includeHidden = true).firstOrNull { it.code == code }
+    // Hidden metrics stay reachable here (shared rule, as on iOS).
+    val metric = remember(reports, preferences, code) {
+        Dashboard.trendMetrics(reports, preferences).firstOrNull { it.code == code }
     } ?: return
     val context = LocalContext.current
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -118,13 +121,9 @@ fun TrendScreen(
     var selected by remember { mutableStateOf<Int?>(null) }
     val pinned = code in preferences.pinnedSet
     val range = preferences.referenceRange(code)
-    val color = series.category.color
+    val color = metric.category.color
 
-    val points: List<MetricPoint> = remember(series, window) {
-        val months = window.months ?: return@remember series.points
-        val cutoff = series.latest.date.minus(DatePeriod(months = months))
-        series.points.filter { it.date >= cutoff }.ifEmpty { listOf(series.latest) }
-    }
+    val points: List<MetricPoint> = remember(metric, window) { window.visible(metric.points) }
     val shown = selected?.let { points.getOrNull(it) } ?: points.last()
     val values = points.map { it.value }
 
@@ -135,8 +134,8 @@ fun TrendScreen(
             containerColor = Color.Transparent,
             topBar = {
                 LargeFlexibleTopAppBar(
-                    title = { Text(series.name, maxLines = 2, fontWeight = FontWeight.Bold) },
-                    subtitle = { Text(stringResource(series.category.labelRes)) },
+                    title = { Text(metric.name, maxLines = 2, fontWeight = FontWeight.Bold) },
+                    subtitle = { Text(stringResource(metric.category.labelRes)) },
                     navigationIcon = {
                         IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.back)) }
                     },
@@ -194,7 +193,7 @@ fun TrendScreen(
                     ) {
                         Column(Modifier.padding(20.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                CategoryBadge(series.category, size = 40.dp)
+                                CategoryBadge(metric.category, size = 40.dp)
                                 Spacer(Modifier.width(12.dp))
                                 Text(
                                     formatDate(shown.date, FormatStyle.LONG), style = MaterialTheme.typography.titleSmall,
@@ -202,7 +201,7 @@ fun TrendScreen(
                                 )
                                 RangeBadge(range?.status(shown.value))
                                 if (selected == null) {
-                                    trendOf(series.previous?.value, series.latest.value)?.let { TrendBadge(it, color, Modifier.padding(start = 8.dp), 28.dp) }
+                                    metric.trend?.let { TrendBadge(it, color, Modifier.padding(start = 8.dp), 28.dp) }
                                 }
                             }
                             Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.padding(top = 12.dp)) {
@@ -223,7 +222,7 @@ fun TrendScreen(
                                     style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
-                            if (series.points.size > 1) {
+                            if (metric.points.size > 1) {
                                 WindowPicker(window) { window = it; selected = null }
                             }
                             AreaChart(
@@ -245,7 +244,7 @@ fun TrendScreen(
                     }
                 }
                 item(key = "readings-title") { SectionTitle(stringResource(R.string.readings)) }
-                val readings = series.points.reversed()
+                val readings = metric.points.reversed()
                 itemsIndexed(readings, key = { _, p -> p.reportId + p.date }) { index, point ->
                     GroupedListItem(
                         index, readings.size,

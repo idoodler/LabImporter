@@ -3,23 +3,30 @@ package dev.idoodler.labimporter.ui
 import android.app.Application
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import dev.idoodler.labimporter.AppContainerOwner
 import dev.idoodler.labimporter.LabImporterApplication
 import dev.idoodler.labimporter.R
-import dev.idoodler.labimporter.ai.ParseEngine
+import dev.idoodler.labimporter.ai.AiAvailability
+import dev.idoodler.labimporter.ai.AiEngine
+import dev.idoodler.labimporter.ai.AiException
+import dev.idoodler.labimporter.ai.messageRes
 import dev.idoodler.labimporter.core.export.CdaExport
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.core.model.LabReport
 import dev.idoodler.labimporter.core.model.LabValue
 import dev.idoodler.labimporter.core.parse.ParseProgress
 import dev.idoodler.labimporter.data.HealthConnectAvailability
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -33,7 +40,8 @@ data class ReviewDraft(
     val date: LocalDate,
     val patientName: String,
     val authorName: String,
-    val engine: ParseEngine?,
+    /** Which model read the values; null for manual entry and edits. */
+    val engine: AiEngine?,
     /** Set when editing an already-saved report. */
     val original: LabReport? = null,
 )
@@ -41,6 +49,8 @@ data class ReviewDraft(
 sealed interface ImportState {
     data object Idle : ImportState
     data object ReadingDocument : ImportState
+    /** The model is still being downloaded; the import continues once it's ready. */
+    data class PreparingModel(val preparing: AiAvailability.Preparing) : ImportState
     data class Parsing(val progress: ParseProgress) : ImportState
     data class Reviewing(val draft: ReviewDraft) : ImportState
     data class Failed(val message: String) : ImportState
@@ -59,9 +69,10 @@ data class HealthConnectState(
  * `LabImportEngine`.
  */
 class AppViewModel(application: Application) : AndroidViewModel(application) {
-    private val container = (application as LabImporterApplication).container
+    private val container = (application as AppContainerOwner).container
     private val repository = container.repository
     private val parser = container.parser
+    private val ai = container.ai
     private val preferences = container.preferences
     private val context: Context get() = getApplication()
 
@@ -70,7 +81,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     val displayPreferences: StateFlow<LabDisplayPreferences> = preferences.displayPreferences
     val hasSeenWelcome: StateFlow<Boolean> = preferences.hasSeenWelcome
     val patientName: StateFlow<String> = preferences.patientName
-    val aiStatus = parser.status
+    /** Whether Gemini Nano can read reports; [AiAvailability.Unsupported] blocks the app like iOS. */
+    val aiAvailability: StateFlow<AiAvailability> = ai.availability
+
+    /** Debug builds: the development stand-in replaces Gemini Nano. */
+    val usingStandIn: StateFlow<Boolean> = ai.isUsingStandIn
     val healthConnectPermissions: Set<String> = container.healthConnect.permissions
     val softwareIdentity: String = container.softwareIdentity
 
@@ -87,7 +102,6 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private var importJob: Job? = null
 
     init {
-        viewModelScope.launch { parser.refreshStatus() }
         refresh()
     }
 
@@ -97,6 +111,21 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             refreshHealthConnect()
             repository.reload()
         }
+        // The model can become available later (AI configuration arriving, a system update).
+        val availability = ai.availability.value
+        if (availability is AiAvailability.Unsupported || availability is AiAvailability.PreparationFailed) checkAiAgain()
+    }
+
+    /** "Check Again" / "Try Again": asks the system once more and restarts a failed model download. */
+    fun checkAiAgain() {
+        viewModelScope.launch { ai.refresh() }
+    }
+
+    /** Debug builds: opt into (or out of) the development stand-in. */
+    fun useDevelopmentStandIn(enabled: Boolean) {
+        preferences.setUseDevelopmentStandIn(enabled)
+        ai.useStandIn(enabled)
+        if (!enabled) checkAiAgain()
     }
 
     private suspend fun refreshHealthConnect() {
@@ -139,16 +168,12 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun downloadModel() {
-        viewModelScope.launch { parser.download() }
-    }
-
     // endregion
 
     // region Import flow
 
     fun prewarm() {
-        viewModelScope.launch { parser.prewarm() }
+        viewModelScope.launch { ai.prewarm() }
     }
 
     fun importDocuments(uris: List<Uri>) {
@@ -156,9 +181,13 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         importJob?.cancel()
         importJob = viewModelScope.launch {
             _importState.value = ImportState.ReadingDocument
-            val text = runCatching { container.textExtractor.extract(uris) }.getOrElse {
-                _importState.value = ImportState.Failed(it.message ?: context.getString(R.string.error_read_document))
-                return@launch
+            val text = try {
+                container.textExtractor.extract(uris)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w(TAG, "Couldn't read the document", e)
+                return@launch fail(context.getString(R.string.error_read_document))
             }
             parse(text)
         }
@@ -172,30 +201,46 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private suspend fun parse(text: String) {
         // A share/"open with" can arrive on a cold start before the catalog is unpacked.
         LabImporterApplication.catalogReady.first { it }
-        if (text.isBlank()) {
-            _importState.value = ImportState.Failed(context.getString(R.string.error_no_text))
-            return
-        }
+        if (text.isBlank()) return fail(context.getString(R.string.error_no_text))
+        if (!awaitModel()) return
         _importState.value = ImportState.Parsing(ParseProgress(0, null))
-        val outcome = runCatching {
+        val engine = ai.engine
+        val result = try {
             parser.parse(text) { progress -> _importState.value = ImportState.Parsing(progress) }
-        }.getOrElse {
-            _importState.value = ImportState.Failed(it.message ?: context.getString(R.string.error_parse))
-            return
+        } catch (e: AiException) {
+            return fail(context.getString(e.problem.messageRes))
         }
-        if (outcome.result.values.isEmpty()) {
-            _importState.value = ImportState.Failed(context.getString(R.string.error_no_values))
-            return
-        }
+        if (result.values.isEmpty()) return fail(context.getString(R.string.error_no_values))
         _importState.value = ImportState.Reviewing(
             ReviewDraft(
-                values = outcome.result.values,
-                date = outcome.result.reportDate ?: today(),
-                patientName = outcome.result.patientName ?: preferences.patientName.value,
-                authorName = outcome.result.authorName.orEmpty(),
-                engine = outcome.engine,
+                values = result.values,
+                date = result.reportDate ?: today(),
+                patientName = result.patientName ?: preferences.patientName.value,
+                authorName = result.authorName.orEmpty(),
+                engine = engine,
             ),
         )
+    }
+
+    /**
+     * Waits while the model is checked or downloaded (showing the download),
+     * so an import started early still completes. False — with the reason
+     * shown — when the model can't be used.
+     */
+    private suspend fun awaitModel(): Boolean {
+        if (ai.availability.value is AiAvailability.PreparationFailed) ai.refresh() // Retry the download first.
+        val settled = ai.availability
+            .onEach { if (it is AiAvailability.Preparing) _importState.value = ImportState.PreparingModel(it) }
+            .first { it !is AiAvailability.Checking && it !is AiAvailability.Preparing }
+        return when (settled) {
+            AiAvailability.Ready -> true
+            is AiAvailability.PreparationFailed -> false.also { fail(context.getString(settled.problem.messageRes)) }
+            else -> false.also { fail(context.getString(R.string.ai_problem_unavailable)) }
+        }
+    }
+
+    private fun fail(message: String) {
+        _importState.value = ImportState.Failed(message)
     }
 
     fun startManualEntry() {
@@ -274,6 +319,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         val dir = File(context.cacheDir, "exports").apply { mkdirs() }
         val file = File(dir, "LabResults-${report.date}.xml").apply { writeText(xml) }
         return FileProvider.getUriForFile(context, "${context.packageName}.files", file)
+    }
+
+    private companion object {
+        const val TAG = "AppViewModel"
     }
 
     private fun blankValue() = LabValue(code = "", name = "", displayValue = "", numericValue = null, unit = "")

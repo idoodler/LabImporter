@@ -83,14 +83,9 @@ private fun cycle(palette: List<Color>, position: Float): Color {
     return lerp(palette[lower], palette[(lower + 1) % count], wrapped - wrapped.toInt())
 }
 
-/** The colours of the categories that appear most often in [categories], strongest first. */
+/** The colours of the categories that appear most often in [categories] (shared ranking), strongest first. */
 fun dominantColors(categories: List<LabCategory>, limit: Int = 4): List<Color> =
-    categories.groupingBy { it }.eachCount().entries
-        .sortedByDescending { it.value }
-        .map { it.key }
-        .filter { it != LabCategory.OTHER }
-        .take(limit)
-        .map { it.color }
+    LabCategory.ranked(categories).filter { it != LabCategory.OTHER }.take(limit).map { it.color }
 
 /** The rainbow used before there's any data (onboarding, empty states). */
 val welcomePalette: List<Color> = listOf(

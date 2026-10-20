@@ -23,7 +23,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.MaterialShapes
+import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -45,7 +47,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.graphics.shapes.RoundedPolygon
 import dev.idoodler.labimporter.R
-import dev.idoodler.labimporter.ai.AiStatus
+import dev.idoodler.labimporter.ai.AiAvailability
+import dev.idoodler.labimporter.ai.AiProblem
+import dev.idoodler.labimporter.ai.DevelopmentStandIn
+import dev.idoodler.labimporter.ai.messageRes
 import dev.idoodler.labimporter.core.LabCore
 import dev.idoodler.labimporter.core.model.LabCategory
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
@@ -67,8 +72,7 @@ fun SettingsScreen(
     healthConnect: HealthConnectState,
     onConnectHealthConnect: () -> Unit,
     onUseHealthConnect: (Boolean) -> Unit,
-    aiStatus: AiStatus,
-    onDownloadModel: () -> Unit,
+    ai: AiSettings,
     preferences: LabDisplayPreferences,
     onUpdatePreferences: ((LabDisplayPreferences) -> LabDisplayPreferences) -> Unit,
     softwareIdentity: String,
@@ -122,7 +126,7 @@ fun SettingsScreen(
                 item { HealthConnectItem(healthConnect, onConnectHealthConnect, onUseHealthConnect) }
 
                 item { SectionTitle(stringResource(R.string.settings_ai)) }
-                item { AiItem(aiStatus, onDownloadModel) }
+                item { AiItem(ai) }
 
                 if (preferences.hiddenCodes.isNotEmpty()) {
                     item { SectionTitle(stringResource(R.string.settings_hidden)) }
@@ -230,15 +234,18 @@ private fun HealthConnectItem(state: HealthConnectState, onConnect: () -> Unit, 
     )
 }
 
+/** The on-device AI row: the model's state and what the user can do about it. */
+data class AiSettings(
+    val availability: AiAvailability,
+    /** Debug builds: the development stand-in replaces Gemini Nano. */
+    val usingStandIn: Boolean = false,
+    val onTryAgain: () -> Unit = {},
+    val onUseGemini: () -> Unit = {},
+)
+
 @Composable
-private fun AiItem(status: AiStatus, onDownload: () -> Unit) {
-    val text = when (status) {
-        AiStatus.Available -> stringResource(R.string.ai_available)
-        AiStatus.Checking -> stringResource(R.string.ai_checking)
-        AiStatus.Downloadable -> stringResource(R.string.ai_downloadable)
-        is AiStatus.Downloading -> stringResource(R.string.ai_downloading)
-        AiStatus.Unavailable -> stringResource(R.string.ai_unavailable)
-    }
+private fun AiItem(ai: AiSettings) {
+    val standIn = DevelopmentStandIn.texts?.takeIf { ai.usingStandIn }
     GroupedListItem(
         0, 1,
         leading = {
@@ -250,22 +257,38 @@ private fun AiItem(status: AiStatus, onDownload: () -> Unit) {
         headline = { Text(stringResource(R.string.ai_title), fontWeight = FontWeight.SemiBold) },
         supporting = {
             Column {
-                Text(text)
-                if (status == AiStatus.Downloadable) {
-                    Button(onClick = onDownload, modifier = Modifier.padding(top = 10.dp)) { Text(stringResource(R.string.ai_download)) }
+                val availability = ai.availability
+                if (standIn != null) {
+                    Text(standIn.active)
+                    OutlinedButton(onClick = ai.onUseGemini, modifier = Modifier.padding(top = 10.dp)) { Text(standIn.useGemini) }
+                } else when (availability) {
+                    AiAvailability.Ready -> Text(stringResource(R.string.ai_available))
+                    AiAvailability.Checking -> Text(stringResource(R.string.ai_checking))
+                    is AiAvailability.Preparing -> {
+                        Text(stringResource(R.string.processing_preparing))
+                        val fraction = availability.fraction
+                        val modifier = Modifier.fillMaxWidth().padding(top = 10.dp)
+                        if (fraction != null) LinearWavyProgressIndicator(progress = { fraction }, modifier) else LinearWavyProgressIndicator(modifier)
+                    }
+                    is AiAvailability.PreparationFailed -> {
+                        Text(stringResource(availability.problem.messageRes))
+                        Button(onClick = ai.onTryAgain, modifier = Modifier.padding(top = 10.dp)) { Text(stringResource(R.string.try_again)) }
+                    }
+                    is AiAvailability.Unsupported -> Text(stringResource(R.string.unsupported_title))
                 }
             }
         },
     )
 }
 
-@Preview(name = "Local storage, no Gemini", widthDp = 400, heightDp = 1100)
+@Preview(name = "Local storage, model downloading", widthDp = 400, heightDp = 1100)
 @Composable
 private fun SettingsPreview() {
     LabImporterTheme(dynamicColor = false) {
         SettingsScreen(
             "Max Mustermann", {}, HealthConnectState(HealthConnectAvailability.MEDICAL_RECORDS_UNSUPPORTED), {}, {},
-            AiStatus.Unavailable, {}, LabDisplayPreferences(hiddenCodes = listOf("2160-0")), {}, "LabImporter 1.0 (1) Android",
+            AiSettings(AiAvailability.Preparing(420_000_000, 1_000_000_000)), LabDisplayPreferences(hiddenCodes = listOf("2160-0")), {},
+            "LabImporter 1.0 (1) Android",
         )
     }
 }
@@ -276,7 +299,19 @@ private fun SettingsDarkPreview() {
     LabImporterTheme(darkTheme = true, dynamicColor = false) {
         SettingsScreen(
             "", {}, HealthConnectState(HealthConnectAvailability.AVAILABLE, granted = true, inUse = true), {}, {},
-            AiStatus.Available, {}, LabDisplayPreferences(), {}, "LabImporter 1.0 (1) Android",
+            AiSettings(AiAvailability.Ready), LabDisplayPreferences(), {}, "LabImporter 1.0 (1) Android",
+        )
+    }
+}
+
+@Preview(name = "Model download failed", widthDp = 400, heightDp = 1100)
+@Composable
+private fun SettingsDownloadFailedPreview() {
+    LabImporterTheme(dynamicColor = false) {
+        SettingsScreen(
+            "", {}, HealthConnectState(HealthConnectAvailability.NOT_INSTALLED), {}, {},
+            AiSettings(AiAvailability.PreparationFailed(AiProblem.NOT_ENOUGH_STORAGE)), LabDisplayPreferences(), {},
+            "LabImporter 1.0 (1) Android",
         )
     }
 }

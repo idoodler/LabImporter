@@ -1,6 +1,7 @@
 package dev.idoodler.labimporter.core.parse
 
 import dev.idoodler.labimporter.core.LabCore
+import dev.idoodler.labimporter.core.loinc.LoincDirectory
 import dev.idoodler.labimporter.core.model.LabMapping
 import dev.idoodler.labimporter.core.model.LabValue
 import dev.idoodler.labimporter.core.model.deduplicatedByLoinc
@@ -164,23 +165,30 @@ object LabParsePipeline {
     }
 
     /**
-     * Resolves a parsed entry to LOINC from the bundled catalog: a valid LOINC
-     * passes through; otherwise the model's test name (then the printed code)
-     * is matched in the report's own language (English as fallback) and the
-     * top hit is offered as a *suggestion* the user confirms. Unresolved
-     * entries keep the printed code so they can be mapped by hand in review.
+     * Resolves a parsed entry to LOINC from the bundled catalog. A valid LOINC
+     * passes through. Otherwise the model's test name is looked up — in the
+     * report's own language (plus English), then in every catalog language
+     * (everyday spellings often differ from the LOINC translation: "Kreatinin"
+     * vs. "Creatinin"), then without little words ("Albumin im Urin"), then
+     * by word stem ("Cholesterin" → "Cholesterol") — and finally the printed
+     * code, as a whole word only ("TSH"; "KREA" must not prefix-match
+     * "Kreatinkinase"). The most commonly ordered hit is offered
+     * as a *suggestion* the user confirms in review. Unresolved entries keep
+     * the printed code so they can be mapped by hand.
      */
     fun resolveLoinc(printed: String, name: String, language: String): Pair<String, Boolean> {
         val directory = LabCore.loinc ?: return printed to false
         val trimmedPrinted = printed.trim()
         if (directory.isKnownLoinc(trimmedPrinted)) return trimmedPrinted to false
         val lang = directory.resolvedLanguage(language)
-        for (query in listOf(name, printed)) {
-            val trimmed = query.trim()
-            if (trimmed.isEmpty()) continue
-            directory.search(trimmed, language = lang, limit = 1).firstOrNull()?.let { return it.code to true }
-        }
-        return printed to false
+        val trimmedName = name.trim()
+        val match = trimmedName.takeIf { it.isNotEmpty() }?.let { term ->
+            directory.bestMatch(term, lang)
+                ?: directory.bestMatch(term, lang, anyLanguage = true)
+                ?: LoincDirectory.withoutStopWords(term)?.let { directory.bestMatch(it, lang) }
+                ?: LoincDirectory.stemmedQueries(term).firstNotNullOfOrNull { directory.bestMatch(it, lang, anyLanguage = true) }
+        } ?: trimmedPrinted.takeIf { it.isNotEmpty() }?.let { directory.bestMatch(it, lang, prefix = false) }
+        return match?.let { it.code to true } ?: (printed to false)
     }
 
     /** The model's `yyyy-MM-dd` date; anything else is no date (the user sets it in review). */

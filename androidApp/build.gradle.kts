@@ -96,6 +96,13 @@ android {
     packaging {
         resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
     }
+
+    testOptions {
+        // Robolectric renders Compose UI tests on the JVM with the app's real resources.
+        unitTests.isIncludeAndroidResources = true
+        // Plain JVM tests (no Robolectric): android.jar stubs such as Log return defaults instead of throwing.
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 kotlin {
@@ -108,6 +115,22 @@ kotlin {
             "androidx.compose.material3.ExperimentalMaterial3ExpressiveApi",
         )
     }
+}
+
+// Unit tests run on the host JVM (Robolectric): use the bundled SQLite driver's
+// JVM build, which carries host natives, so tests open the real LOINC catalog.
+configurations.matching { it.name.endsWith("UnitTestRuntimeClasspath") }.configureEach {
+    resolutionStrategy.dependencySubstitution {
+        substitute(module("androidx.sqlite:sqlite-bundled-android"))
+            .using(module("androidx.sqlite:sqlite-bundled-jvm:${libs.versions.sqlite.get()}"))
+    }
+}
+
+tasks.withType<Test>().configureEach {
+    // Robolectric reaches into FileDescriptor internals when it sets up the application.
+    jvmArgs("--add-opens=java.base/java.io=ALL-UNNAMED", "--add-exports=java.base/jdk.internal.access=ALL-UNNAMED")
+    dependsOn(buildLoincDb)
+    systemProperty("loinc.db", layout.buildDirectory.file("generated/loincAssets/loinc.db").get().asFile.absolutePath)
 }
 
 androidComponents {
@@ -140,4 +163,15 @@ dependencies {
     implementation(libs.mlkit.genai.prompt)
     implementation(libs.mlkit.text.recognition)
     implementation(libs.mlkit.document.scanner)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.androidx.test.junit)
+    // Compose UI tests idle through Espresso; 3.5 (via ui-test) predates Android 16's InputManager.
+    testImplementation(libs.androidx.test.espresso)
+    testImplementation(platform(libs.compose.bom))
+    testImplementation(libs.compose.ui.test.junit4)
+    debugImplementation(libs.compose.ui.test.manifest)
 }

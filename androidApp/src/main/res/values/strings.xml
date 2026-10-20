@@ -106,10 +106,11 @@
     <string name="import_paste">Paste Text</string>
     <string name="import_manual">Enter Manually</string>
     <string name="paste_placeholder">Paste the text of your lab report here</string>
-    <string name="insert_sample">Insert sample report</string>
     <string name="analyze">Analyze</string>
     <string name="processing_reading">Reading document…</string>
     <string name="processing_parsing">Analyzing lab report…</string>
+    <string name="processing_preparing">Downloading Gemini Nano…</string>
+    <string name="processing_preparing_detail">Your report will be read as soon as the on-device AI is ready.</string>
     <plurals name="values_found">
         <item quantity="one">%d value found</item>
         <item quantity="other">%d values found</item>
@@ -119,6 +120,14 @@
     <string name="error_no_text">No text was found in this document.</string>
     <string name="error_no_values">No lab values were found. Try scanning the full report, or enter values manually.</string>
     <string name="error_parse">The on-device AI couldn\'t process this document. Make sure it\'s a lab report and try again.</string>
+    <!-- On-device AI problems (wording shared with iOS where iOS has the case) -->
+    <string name="ai_problem_too_long">This report is too long for the on-device AI to read at once. Try importing fewer pages, or one report at a time.</string>
+    <string name="ai_problem_busy">The on-device AI is busy right now. Wait a moment and try again.</string>
+    <string name="ai_problem_quota">LabImporter has reached Android\'s limit for on-device AI use for now. Try again later.</string>
+    <string name="ai_problem_background">Keep LabImporter open while it reads a report — Android only runs the on-device AI for the app on screen.</string>
+    <string name="ai_problem_storage">There isn\'t enough free storage to download the on-device AI. Free up some space and try again.</string>
+    <string name="ai_problem_download">The on-device AI couldn\'t be downloaded. Check your internet connection and try again.</string>
+    <string name="ai_problem_unavailable">The on-device AI isn\'t available right now. Make sure your device is up to date and try again.</string>
     <string name="error_scanner">Document scanning isn\'t available on this device.</string>
     <string name="error_save">Saving failed: %1$s</string>
 
@@ -137,8 +146,6 @@
     <string name="loinc_duplicate">Duplicate: %1$s</string>
     <string name="duplicates_warning">Another value uses the same LOINC code — keep only one</string>
     <string name="engine_gemini">Gemini Nano</string>
-    <string name="engine_rules">Basic reader</string>
-    <string name="engine_rules_hint">Gemini Nano isn\'t available on this device, so a simpler on-device reader was used. Check every value carefully.</string>
     <plurals name="exportable_count">
         <item quantity="one">%1$d of %2$d values ready to save</item>
         <item quantity="other">%1$d of %2$d values ready to save</item>
@@ -147,6 +154,16 @@
         <item quantity="one">Saved %d value</item>
         <item quantity="other">Saved %d values</item>
     </plurals>
+
+    <!-- Device not supported (like iOS: no on-device AI, no app) -->
+    <string name="unsupported_title">Device Not Supported</string>
+    <string name="unsupported_message">LabImporter needs Gemini Nano, Android\'s on-device AI, to read your lab reports privately on your device.</string>
+    <string name="unsupported_update_message">LabImporter needs a newer version of Android\'s on-device AI. Update your device, then check again.</string>
+    <string name="requirement_device_title">Device with Gemini Nano</string>
+    <string name="requirement_device_detail">Gemini Nano runs on selected recent phones, for example Google Pixel 9 and later.</string>
+    <string name="requirement_update_title">Latest OS</string>
+    <string name="requirement_update_detail">Keep Android, Google Play services and AICore up to date. On a newly set-up phone, Gemini Nano can take a while to become available.</string>
+    <string name="check_again">Check Again</string>
 
     <!-- Settings -->
     <string name="settings_patient">Patient</string>
@@ -170,10 +187,7 @@
     <string name="ai_title">Gemini Nano</string>
     <string name="ai_available">Ready. Reports are read by Gemini Nano, entirely on this device.</string>
     <string name="ai_checking">Checking…</string>
-    <string name="ai_downloadable">Supported. The model must be downloaded by Android once.</string>
-    <string name="ai_downloading">Downloading the on-device model…</string>
-    <string name="ai_unavailable">Not available on this device. A basic on-device reader is used instead — check values carefully.</string>
-    <string name="ai_download">Download Model</string>
+    <string name="try_again">Try Again</string>
     <string name="privacy_title">Private by Design</string>
     <string name="privacy_message">Everything runs on-device. LabImporter never transmits your lab data.</string>
     <string name="loinc_catalog">LOINC catalog</string>
