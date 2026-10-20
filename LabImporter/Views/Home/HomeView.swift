@@ -193,7 +193,7 @@ struct HomeView: View {
         .id(searchPresentation.navResetToken) // re-identified to pop to root on a deep link
         .sheet(isPresented: Binding(get: { selectedSection == .settings },
                                     set: { if !$0 { selectedSection = .dashboard } })) {
-            SettingsView(prefs: $prefs, allCodes: allCodeNames)
+            SettingsView(prefs: $prefs, allCodes: reports.codeNames)
         }
     }
 
@@ -234,7 +234,7 @@ struct HomeView: View {
             }
             .id(searchPresentation.navResetToken)
         case .settings:
-            SettingsView(prefs: $prefs, allCodes: allCodeNames, isModal: false)
+            SettingsView(prefs: $prefs, allCodes: reports.codeNames, isModal: false)
         }
     }
 
@@ -297,19 +297,6 @@ struct HomeView: View {
                 .fontWeight(.semibold)
         }
         .accessibilityLabel("Import Report")
-    }
-
-    /// Distinct lab codes across all reports, used to populate the Settings
-    /// sort/visibility editor in either layout.
-    private var allCodeNames: [CodeName] {
-        var seen = Set<String>()
-        var result: [CodeName] = []
-        for report in reports {
-            for entry in report.entries where seen.insert(entry.code).inserted {
-                result.append(CodeName(code: entry.code, name: entry.resolvedName))
-            }
-        }
-        return result
     }
 
     // MARK: - Incoming files ("Open With")

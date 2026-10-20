@@ -1,3 +1,4 @@
+import LabImporterCore
 import SwiftUI
 import Charts
 
@@ -15,22 +16,29 @@ struct MetricData: Identifiable {
     let history: [SparkPoint]
 }
 
+extension MetricData {
+    init(shared metric: LabImporterCore.Metric) {
+        self.init(
+            entry: LabReport.Entry(shared: metric.entry),
+            history: metric.history.map { SparkPoint(date: Date(shared: $0.date), value: $0.value) }
+        )
+    }
+}
+
 /// Direction of a metric's latest reading relative to the previous one, shared
 /// by the grid's `MetricCard` and the single-metric `HeroMetricCard`. `nil`
 /// when there's no prior value to compare against.
 enum MetricTrend {
     case rising, falling, steady
 
+    /// Shared rule (LabImporterCore `MetricTrend`): latest vs previous reading.
     init?(history: [SparkPoint]) {
-        guard history.count > 1 else { return nil }
-        let latest = history[history.count - 1].value
-        let previous = history[history.count - 2].value
-        if latest > previous {
-            self = .rising
-        } else if latest < previous {
-            self = .falling
-        } else {
-            self = .steady
+        let points = history.map { LabImporterCore.MetricPoint(date: $0.date.sharedDate, value: $0.value, unit: "", reportId: "") }
+        guard let trend = LabImporterCore.MetricTrend.companion.of(points: points) else { return nil }
+        switch trend {
+        case .rising: self = .rising
+        case .falling: self = .falling
+        default: self = .steady
         }
     }
 

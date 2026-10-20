@@ -1,4 +1,5 @@
 import Foundation
+import LabImporterCore
 
 /// A user-defined reference (normal) range for a single LOINC code, used to flag
 /// results as out of range across the app. LOINC deliberately ships **no**
@@ -25,9 +26,7 @@ struct ReferenceRange: Codable, Equatable {
     /// Classifies `value` against this range. Bounds are inclusive, so a value
     /// equal to a limit counts as in range.
     func status(for value: Double) -> RangeStatus {
-        if let high, value > high { return .high }
-        if let low, value < low { return .low }
-        return .normal
+        RangeStatus(shared: shared.status(value: value))
     }
 
     /// A localized, human-readable rendering of the range for subtitles and chart

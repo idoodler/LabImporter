@@ -1,3 +1,4 @@
+import LabImporterCore
 import SwiftUI
 import Charts
 
@@ -35,14 +36,16 @@ struct DashboardView: View {
     }
 
     var body: some View {
+        // Derived once per update and handed to every section below.
+        let content = Content(reports: reports, prefs: prefs)
         ScrollView {
             VStack(spacing: 20) {
                 greeting
-                if let onlyMetric = soleMetric {
+                if let onlyMetric = content.soleMetric {
                     heroCard(for: onlyMetric)
                 } else {
-                    metricSections
-                    if showsFewValuesHint {
+                    metricSections(content.metrics)
+                    if content.showsFewValuesHint {
                         fewValuesHint
                     }
                 }
@@ -52,7 +55,7 @@ struct DashboardView: View {
             .padding(.top, 8)
             .padding(.bottom, 24)
         }
-        .background { CategoryBackground(colors: backgroundColors) }
+        .background { CategoryBackground(colors: content.backgroundColors) }
         .navigationTitle("Lab Results")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
@@ -77,7 +80,7 @@ struct DashboardView: View {
             }
         }
         .sheet(isPresented: $showSettings) {
-            SettingsView(prefs: $prefs, allCodes: allCodeNames)
+            SettingsView(prefs: $prefs, allCodes: reports.codeNames)
         }
         .sheet(isPresented: $showHistorySheet) {
             NavigationStack { HistoryView(initialReports: reports) }
@@ -93,7 +96,7 @@ struct DashboardView: View {
             guard ScreenshotMode.isActive else { return }
             switch ScreenshotMode.initialScreen {
             case "trends":
-                guard trendSheet == nil, let firstCode = sortedMetrics.first?.entry.code else { return }
+                guard trendSheet == nil, let firstCode = content.metrics.first?.entry.code else { return }
                 trendSheet = TrendSheet(code: firstCode)
             case "history", "pdf":
                 showHistorySheet = true
@@ -143,19 +146,21 @@ struct DashboardView: View {
     /// underneath with no header. When nothing is pinned this collapses to a
     /// single unlabeled grid — identical to the pre-sectioning layout.
     @ViewBuilder
-    private var metricSections: some View {
-        let pinned = pinnedMetrics
+    private func metricSections(_ metrics: [MetricData]) -> some View {
+        let pinnedCodes = prefs.pinnedSet
+        let pinned = metrics.filter { pinnedCodes.contains($0.entry.code) }
+        let columns = gridColumns(count: metrics.count)
         if !pinned.isEmpty {
             VStack(alignment: .leading, spacing: 12) {
                 pinnedHeader
-                grid(pinned)
+                grid(pinned, columns: columns)
             }
         }
-        grid(unpinnedMetrics)
+        grid(metrics.filter { !pinnedCodes.contains($0.entry.code) }, columns: columns)
     }
 
-    private func grid(_ items: [MetricData]) -> some View {
-        LazyVGrid(columns: gridColumns, spacing: 14) {
+    private func grid(_ items: [MetricData], columns: [GridItem]) -> some View {
+        LazyVGrid(columns: columns, spacing: 14) {
             ForEach(items) { metric in
                 metricCard(for: metric)
             }
@@ -179,11 +184,11 @@ struct DashboardView: View {
     /// stretch into a sparse two-up grid. With only one or two metrics the
     /// two-up grid would strand a card in a half-empty row, so it collapses to a
     /// single full-width column that reads as an intentional, larger card.
-    private var gridColumns: [GridItem] {
+    private func gridColumns(count: Int) -> [GridItem] {
         if horizontalSizeClass == .regular {
             return [GridItem(.adaptive(minimum: 200, maximum: 280), spacing: 14)]
         }
-        if sortedMetrics.count <= 2 {
+        if count <= 2 {
             return [GridItem(.flexible())]
         }
         return [GridItem(.flexible()), GridItem(.flexible())]
@@ -209,13 +214,6 @@ struct DashboardView: View {
 
     // MARK: - Hero card
 
-    /// The dashboard's single metric, when that's all the user has. Rather than
-    /// stranding one small grid card above a generic "import more" filler, the
-    /// dashboard leads with a large featured card for that value instead.
-    private var soleMetric: MetricData? {
-        sortedMetrics.count == 1 ? sortedMetrics.first : nil
-    }
-
     private func heroCard(for metric: MetricData) -> some View {
         HeroMetricCard(
             metric: metric,
@@ -225,13 +223,6 @@ struct DashboardView: View {
     }
 
     // MARK: - Few-values hint
-
-    /// A single metric gets the dedicated `heroCard` treatment instead (see
-    /// `soleMetric`), so this hint only fires for exactly two metrics: still too
-    /// few for a balanced grid, but past the point of featuring just one.
-    private var showsFewValuesHint: Bool {
-        sortedMetrics.count == 2
-    }
 
     private var fewValuesHint: some View {
         VStack(spacing: 14) {
@@ -275,87 +266,36 @@ struct DashboardView: View {
 
     // MARK: - Metrics computation
 
-    /// Trailing window (in months) each overview sparkline charts, measured back
-    /// from that metric's *own* latest reading (not "today"). Keeps an old
-    /// outlier from stretching the axis; older readings stay visible in Trends.
-    private static let sparklineWindowMonths = 12
+    /// What the dashboard shows, by the shared rules (LabImporterCore
+    /// `Dashboard`, identical on Android): every visible metric in dashboard
+    /// order — pinned first, then the user's custom order, then by name; hidden
+    /// codes removed — each with a sparkline over the 12 months before its own
+    /// latest reading (never fewer than two points when two exist).
+    struct Content {
+        let metrics: [MetricData]
+        /// Up to three distinct category colors of the visible metrics, for
+        /// the subtle background wash.
+        let backgroundColors: [Color]
 
-    private var metrics: [MetricData] {
-        var latestEntry: [String: (entry: LabReport.Entry, date: Date)] = [:]
-        var allPoints: [String: [SparkPoint]] = [:]
-
-        for report in reports {
-            for entry in report.entries {
-                guard let value = entry.numericValue else { continue }
-                allPoints[entry.code, default: []].append(SparkPoint(date: report.date, value: value))
-                if let existing = latestEntry[entry.code] {
-                    if report.date > existing.date {
-                        latestEntry[entry.code] = (entry: entry, date: report.date)
-                    }
-                } else {
-                    latestEntry[entry.code] = (entry: entry, date: report.date)
-                }
-            }
+        init(reports: [LabReport], prefs: LabDisplayPreferences) {
+            SharedCore.start()
+            let dashboard = LabImporterCore.Dashboard.shared
+            let sorted = dashboard.sorted(metrics: dashboard.metrics(reports: reports.map(\.shared)), preferences: prefs.shared)
+            metrics = sorted.map(MetricData.init(shared:))
+            backgroundColors = dashboard.backgroundCategories(sorted: sorted, limit: 3)
+                .map { LabCategory(sharedName: $0.name).color }
         }
 
-        return latestEntry.values.map { item in
-            let cutoff = Calendar.current.date(byAdding: .month, value: -Self.sparklineWindowMonths, to: item.date) ?? .distantPast
-            let all = (allPoints[item.entry.code] ?? []).sorted { $0.date < $1.date }
-            var points = all.filter { $0.date >= cutoff }
-            // Never let the window collapse a real trend to a single point: with
-            // two+ readings keep the two most recent so a sparkline still draws.
-            if points.count < 2 && all.count >= 2 {
-                points = Array(all.suffix(2))
-            }
-            return MetricData(entry: item.entry, history: points)
-        }
-    }
+        /// The dashboard's single metric, when that's all the user has. Rather
+        /// than stranding one small grid card above a generic "import more"
+        /// filler, the dashboard leads with a large featured card instead.
+        var soleMetric: MetricData? { metrics.count == 1 ? metrics.first : nil }
 
-    private var sortedMetrics: [MetricData] {
-        let pinned = prefs.pinnedSet
-        let hidden = prefs.hiddenSet
-        var orderMap: [String: Int] = [:]
-        for (idx, code) in prefs.orderedCodes.enumerated() where orderMap[code] == nil {
-            orderMap[code] = idx
-        }
-        return metrics
-            .filter { !hidden.contains($0.entry.code) }
-            .sorted { lhs, rhs in
-                let aPin = pinned.contains(lhs.entry.code)
-                let bPin = pinned.contains(rhs.entry.code)
-                if aPin != bPin { return aPin }
-                let aOrd = orderMap[lhs.entry.code] ?? Int.max
-                let bOrd = orderMap[rhs.entry.code] ?? Int.max
-                if aOrd != bOrd { return aOrd < bOrd }
-                return lhs.entry.resolvedName < rhs.entry.resolvedName
-            }
+        /// A single metric gets the dedicated hero card instead (see
+        /// `soleMetric`), so this hint only fires for exactly two metrics: still
+        /// too few for a balanced grid, but past the point of featuring just one.
+        var showsFewValuesHint: Bool { metrics.count == 2 }
     }
-
-    private var pinnedMetrics: [MetricData] {
-        let pinned = prefs.pinnedSet
-        return sortedMetrics.filter { pinned.contains($0.entry.code) }
-    }
-
-    private var unpinnedMetrics: [MetricData] {
-        let pinned = prefs.pinnedSet
-        return sortedMetrics.filter { !pinned.contains($0.entry.code) }
-    }
-
-    // Up to three distinct category colors from the visible metrics, used for
-    // the subtle background wash.
-    private var backgroundColors: [Color] {
-        var seen = Set<LabCategory>()
-        var result: [Color] = []
-        for metric in sortedMetrics {
-            let category = LabCategory.forCode(metric.entry.code)
-            if seen.insert(category).inserted {
-                result.append(category.color)
-            }
-            if result.count == 3 { break }
-        }
-        return result
-    }
-
 }
 
 // MARK: - Greeting
@@ -387,20 +327,9 @@ private extension DashboardView {
     }
 }
 
-// MARK: - Code names & pin helpers
+// MARK: - Pin helper
 
 private extension DashboardView {
-    var allCodeNames: [CodeName] {
-        var seen = Set<String>()
-        var result: [CodeName] = []
-        for report in reports {
-            for entry in report.entries where seen.insert(entry.code).inserted {
-                result.append(CodeName(code: entry.code, name: entry.resolvedName))
-            }
-        }
-        return result
-    }
-
     func togglePin(_ code: String) {
         var updated = prefs
         if updated.pinnedCodes.contains(code) {

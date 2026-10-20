@@ -47,6 +47,7 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             api(libs.kotlinx.datetime)
             api(libs.androidx.sqlite)
+            implementation(libs.xmlutil.core)
         }
         // Android/JVM bundle SQLite so FTS5 is guaranteed on every OS version;
         // iOS uses the system SQLite (which ships FTS5) to avoid a second copy.
@@ -59,8 +60,20 @@ kotlin {
     }
 }
 
+// SKIE would otherwise try to upload anonymous build analytics; this project
+// makes no network calls it doesn't need.
+skie {
+    analytics {
+        disableUpload.set(true)
+        enabled.set(false)
+    }
+}
+
 tasks.withType<Test>().configureEach {
     // Tests that need the catalog read it from the build-generated loinc.db.
     systemProperty("loinc.db", rootProject.layout.buildDirectory.file("loinc/loinc.db").get().asFile.absolutePath)
+    systemProperty("golden.dir", layout.projectDirectory.dir("src/jvmTest/golden").asFile.absolutePath)
+    // ./gradlew :shared:jvmTest -Pgolden.record=true rewrites the golden files.
+    systemProperty("golden.record", providers.gradleProperty("golden.record").getOrElse("false"))
 }
 

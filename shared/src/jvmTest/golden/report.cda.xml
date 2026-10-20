@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ClinicalDocument xmlns="urn:hl7-org:v3"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+  <templateId root="2.16.840.1.113883.10.20.22.1.1"/>
+  <id root="UUID"/>
+  <code code="11502-2"
+        displayName="Laboratory report"
+        codeSystem="2.16.840.1.113883.6.1"
+        codeSystemName="LOINC"/>
+  <title>Lab Results</title>
+  <effectiveTime value="20260506"/>
+  <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
+  <languageCode code="de-DE"/>
+  <recordTarget>
+    <patientRole>
+      <id nullFlavor="UNK"/>
+      <patient>
+        <name>
+          <family>Max Mustermann</family>
+        </name>
+        <administrativeGenderCode nullFlavor="UNK"/>
+        <birthTime nullFlavor="UNK"/>
+      </patient>
+    </patientRole>
+  </recordTarget>
+  <author>
+    <time value="20260506"/>
+    <assignedAuthor>
+      <id nullFlavor="UNK"/>
+      <assignedAuthoringDevice>
+        <manufacturerModelName>IDENTITY</manufacturerModelName>
+        <softwareName>LabImporter CDA v1</softwareName>
+      </assignedAuthoringDevice>
+      <representedOrganization>
+        <name>Labor &amp; Co</name>
+      </representedOrganization>
+    </assignedAuthor>
+  </author>
+  <custodian>
+    <assignedCustodian>
+      <representedCustodianOrganization>
+        <id nullFlavor="UNK"/>
+        <name>LabImporter</name>
+      </representedCustodianOrganization>
+    </assignedCustodian>
+  </custodian>
+  <component>
+    <structuredBody>
+      <component>
+        <section>
+          <templateId root="2.16.840.1.113883.10.20.22.2.3.1"/>
+          <code code="30954-2"
+                displayName="Relevant diagnostic tests/laboratory data Narrative"
+                codeSystem="2.16.840.1.113883.6.1"
+                codeSystemName="LOINC"/>
+          <title>Laborwerte</title>
+          <text>
+            <table border="1" width="100%">
+              <thead><tr><th>Test</th><th>Ergebnis</th></tr></thead>
+              <tbody>
+              <tr><td>Creatinine [Mass/Vol]</td><td>0,8 mg/dl</td></tr>
+              <tr><td>Potassium [Moles/Vol]</td><td>4,1 mmol/l</td></tr>
+              <tr><td>HbA1c (Bld) [Mass fraction]</td><td>6,53 %</td></tr>
+              <tr><td>ALT [Catalytic activity/Vol]</td><td>12345,6 U/l</td></tr>
+              </tbody>
+            </table>
+          </text>
+          <entry typeCode="DRIV">
+            <organizer classCode="BATTERY" moodCode="EVN">
+              <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+              <id root="UUID"/>
+              <code code="26436-6"
+                    displayName="Laboratory studies (set)"
+                    codeSystem="2.16.840.1.113883.6.1"
+                    codeSystemName="LOINC"/>
+              <statusCode code="completed"/>
+              <effectiveTime value="20260506"/>
+              <component>
+                <observation classCode="OBS" moodCode="EVN">
+                  <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                  <id root="UUID"/>
+                  <code code="2160-0"
+                        displayName="Creatinine [Mass/Vol]"
+                        codeSystem="2.16.840.1.113883.6.1"
+                        codeSystemName="LOINC"/>
+                  <statusCode code="completed"/>
+                  <effectiveTime value="20260506"/>
+                  <value xsi:type="PQ" value="0.8" unit="mg/dL"/>
+                </observation>
+              </component>
+              <component>
+                <observation classCode="OBS" moodCode="EVN">
+                  <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                  <id root="UUID"/>
+                  <code code="2823-3"
+                        displayName="Potassium [Moles/Vol]"
+                        codeSystem="2.16.840.1.113883.6.1"
+                        codeSystemName="LOINC"/>
+                  <statusCode code="completed"/>
+                  <effectiveTime value="20260506"/>
+                  <value xsi:type="PQ" value="4.1" unit="mmol/L"/>
+                </observation>
+              </component>
+              <component>
+                <observation classCode="OBS" moodCode="EVN">
+                  <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                  <id root="UUID"/>
+                  <code code="4548-4"
+                        displayName="HbA1c (Bld) [Mass fraction]"
+                        codeSystem="2.16.840.1.113883.6.1"
+                        codeSystemName="LOINC"/>
+                  <statusCode code="completed"/>
+                  <effectiveTime value="20260506"/>
+                  <value xsi:type="PQ" value="6.53" unit="%"/>
+                </observation>
+              </component>
+              <component>
+                <observation classCode="OBS" moodCode="EVN">
+                  <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                  <id root="UUID"/>
+                  <code code="1742-6"
+                        displayName="ALT [Catalytic activity/Vol]"
+                        codeSystem="2.16.840.1.113883.6.1"
+                        codeSystemName="LOINC"/>
+                  <statusCode code="completed"/>
+                  <effectiveTime value="20260506"/>
+                  <value xsi:type="PQ" value="1.235e+04" unit="U/L"/>
+                </observation>
+              </component>
+            </organizer>
+          </entry>
+        </section>
+      </component>
+    </structuredBody>
+  </component>
+</ClinicalDocument>

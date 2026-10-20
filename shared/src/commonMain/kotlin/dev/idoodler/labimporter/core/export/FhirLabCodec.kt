@@ -22,16 +22,16 @@ data class FhirResource(val resourceType: String, val id: String, val json: Stri
 
 /**
  * Encodes reports as FHIR R4 laboratory `Observation`s — the format Android's
- * Health Connect *Medical Records* API stores — and decodes them back.
+ * Health Connect *Medical Records* API stores and the cross-platform transfer
+ * file carries — and decodes them back.
  *
  * Health Connect has no report container (`DiagnosticReport` isn't supported),
  * so every Observation carries the report's id as a `meta.tag`; decoding
- * regroups by that tag. A second tag stamps [SCHEMA_VERSION], mirroring the
- * CDA `softwareName` version: resources without a recognized version are
- * ignored on read-back, and [FhirMigrator] chains upgrades.
+ * regroups by that tag. A second tag stamps [ReportSchema.VERSION], like the
+ * CDA `softwareName`: resources without a supported version are ignored on
+ * read-back, and [ReportSchema] chains upgrades.
  */
 object FhirLabCodec {
-    const val SCHEMA_VERSION = 1
     const val FHIR_VERSION = "4.0.1"
     const val REPORT_TAG_SYSTEM = "https://github.com/idoodler/LabImporter/fhir/report"
     const val SCHEMA_TAG_SYSTEM = "https://github.com/idoodler/LabImporter/fhir/schema"
@@ -52,7 +52,7 @@ object FhirLabCodec {
                     put("source", softwareIdentity)
                     put("tag", buildJsonArray {
                         add(coding(REPORT_TAG_SYSTEM, report.id, null))
-                        add(coding(SCHEMA_TAG_SYSTEM, SCHEMA_VERSION.toString(), null))
+                        add(coding(SCHEMA_TAG_SYSTEM, ReportSchema.VERSION.toString(), null))
                     })
                 })
                 put("status", "final")
@@ -113,7 +113,7 @@ object FhirLabCodec {
                         id = obj.string("id") ?: reportId,
                         code = coding.string("code").orEmpty(),
                         name = obj["code"]?.jsonObject?.string("text") ?: coding.string("display").orEmpty(),
-                        displayValue = value?.let(NumberFormatting::display) ?: "-",
+                        displayValue = value?.let(NumberFormatting::cdaValue) ?: "-",
                         numericValue = value,
                         unit = quantity?.string("unit").orEmpty(),
                     ),
@@ -127,7 +127,7 @@ object FhirLabCodec {
                 id = reportId, date = first.date, patientName = first.patient, authorName = first.author,
                 entries = group.map { it.entry },
             )
-            FhirMigrator.upgrade(report, group.minOf { it.version })
+            ReportSchema.upgrade(report, group.minOf { it.version })
         }.sortedByDescending { it.date }
     }
 
@@ -138,30 +138,4 @@ object FhirLabCodec {
     }
 
     private fun JsonObject.string(key: String): String? = (this[key] as? JsonPrimitive)?.contentOrNull
-}
-
-/** One step of upgrading a decoded report from [fromVersion] to `fromVersion + 1`. */
-interface FhirMigration {
-    val fromVersion: Int
-    fun migrate(report: LabReport): LabReport
-}
-
-/**
- * Chains [FhirMigration]s from a resource's schema version up to the current
- * one. Resources below [MINIMUM_SUPPORTED_VERSION] or newer than this build
- * understands are ignored (no implicit data migration).
- */
-object FhirMigrator {
-    const val MINIMUM_SUPPORTED_VERSION = 1
-    val migrations: List<FhirMigration> = emptyList()
-
-    fun upgrade(report: LabReport, fromSchemaVersion: Int): LabReport? {
-        if (fromSchemaVersion < MINIMUM_SUPPORTED_VERSION || fromSchemaVersion > FhirLabCodec.SCHEMA_VERSION) return null
-        var current = report
-        for (version in fromSchemaVersion until FhirLabCodec.SCHEMA_VERSION) {
-            val step = migrations.firstOrNull { it.fromVersion == version } ?: return null
-            current = step.migrate(current)
-        }
-        return current
-    }
 }

@@ -1,70 +1,100 @@
 package dev.idoodler.labimporter.core
 
-import dev.idoodler.labimporter.core.export.CdaExport
-import dev.idoodler.labimporter.core.export.FhirLabCodec
+import dev.idoodler.labimporter.core.model.LabCategory
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
-import dev.idoodler.labimporter.core.model.LabReport
+import dev.idoodler.labimporter.core.model.LabMapping
 import dev.idoodler.labimporter.core.model.LabValue
-import dev.idoodler.labimporter.core.parse.HeuristicLabParser
+import dev.idoodler.labimporter.core.model.deduplicatedByLoinc
+import dev.idoodler.labimporter.core.model.duplicateLoincCodes
+import dev.idoodler.labimporter.core.parse.AiLabEntry
+import dev.idoodler.labimporter.core.parse.AiLabReport
 import dev.idoodler.labimporter.core.parse.LabParsePipeline
-import kotlinx.datetime.LocalDate
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
+
+/** Starts the shared core on the real, build-generated loinc.db. */
+fun startCatalog(language: String = "de-DE", preferences: LabDisplayPreferences = LabDisplayPreferences()) {
+    LabCore.start(System.getProperty("loinc.db"), language) { preferences }
+    assertTrue(LabCore.loinc!!.isAvailable, "loinc.db missing — run :androidApp:buildLoincDb first")
+}
 
 class CatalogTest {
 
     @BeforeTest
-    fun start() {
-        LabCore.start(System.getProperty("loinc.db"), "de-DE") { LabDisplayPreferences() }
-        assertTrue(LabCore.loinc!!.isAvailable, "loinc.db missing — run :androidApp:buildLoincDb first")
+    fun start() = startCatalog()
+
+    @Test
+    fun knownCodesResolveAndUnknownDoNot() {
+        assertTrue(LabCore.loinc!!.isKnownLoinc("2160-0"))
+        assertFalse(LabCore.loinc!!.isKnownLoinc("KREA"))
+        assertEquals("2160-0", LabMapping.loincCode(" 2160-0 ")!!.loinc)
+        assertNull(LabMapping.loincCode("KREA"))
+        assertEquals("https://loinc.org/2160-0/", LabMapping.loincUrl("2160-0"))
+        assertNull(LabMapping.loincUrl("KREA"))
     }
 
     @Test
-    fun resolvesGermanNamesToLoinc() {
-        val (code, suggested) = LabParsePipeline.resolveLoinc("KREA", "Kreatinin", "de")
-        assertTrue(suggested)
-        assertTrue(LabCore.loinc!!.isKnownLoinc(code), code)
+    fun displayNamePrefersNickname() {
+        startCatalog(preferences = LabDisplayPreferences(nicknames = mapOf("2160-0" to "Krea")))
+        assertEquals("Krea", LabMapping.displayName("2160-0"))
+        assertEquals("KREA", LabMapping.displayName("KREA"))
     }
 
     @Test
-    fun heuristicPipelineProducesExportableValues() {
-        val result = LabParsePipeline.postProcess(HeuristicLabParser.parse("Creatinin: 0,80 mg/dl\nKalium 4,1 mmol/l"))
-        assertEquals(2, result.values.size)
-        assertTrue(result.values.all { it.isExportable }, result.values.toString())
+    fun categoriesFromTheCatalog() {
+        assertEquals(LabCategory.RENAL, LabCategory.forCode("2160-0"))
+        assertEquals(LabCategory.GLYCEMIC, LabCategory.forCode("4548-4"))
+        assertEquals(LabCategory.OTHER, LabCategory.forCode("not-a-code"))
     }
 
     @Test
-    fun fallbackGuessesReportLanguage() {
-        LabCore.start(System.getProperty("loinc.db"), "en-US") { LabDisplayPreferences() }
-        val text = "Patient: Max Mustermann\nCholesterin: 198 mg/dl; Triglyceride: 133 mg/dl\nKalium: 4,1 mmol/l; Natrium: 139 mmol/l"
-        val report = HeuristicLabParser.parse(text)
-        assertEquals("Max Mustermann", report.patientName)
-        assertEquals("de", LabParsePipeline.guessLanguage(report.entries.map { it.name }))
+    fun searchFindsLocalizedNames() {
+        val hits = LabCore.loinc!!.search("Kalium", language = "de", limit = 5)
+        assertTrue(hits.any { it.code == "2823-3" }, hits.toString())
+        assertTrue(LabCore.loinc!!.search("", limit = 10).size == 10)
+    }
+
+    @Test
+    fun pipelineResolvesSuggestsAndKeepsUnmapped() {
+        val report = AiLabReport(
+            entries = listOf(
+                AiLabEntry("2160-0", "Creatinin", "0,80", "mg/dl"),
+                AiLabEntry("K", "Kalium", "4,1", " mmol/l "),
+                AiLabEntry("XYZQ", "Völlig unbekannter Test", "12", "U/l"),
+                AiLabEntry("CRP", "C-reaktives Protein", "< 5", "mg/l"),
+                AiLabEntry("HIV", "HIV", "-", ""),
+            ),
+            reportDate = "2026-05-06", patientName = " Max ", reportLanguage = "de",
+        )
         val result = LabParsePipeline.postProcess(report)
-        assertTrue(result.values.count { it.isExportable } >= 3, result.values.toString())
+        val byName = result.values.associateBy { it.displayValue }
+        assertEquals("2160-0", byName.getValue("0,80").code)
+        assertFalse(byName.getValue("0,80").isSuggestedCode)
+        assertEquals("2823-3", byName.getValue("4,1").code)
+        assertTrue(byName.getValue("4,1").isSuggestedCode)
+        assertEquals("mmol/l", byName.getValue("4,1").unit)
+        // "< 5" is a qualified result, not the number 5.
+        assertNull(byName.getValue("< 5").numericValue)
+        assertNull(byName.getValue("-").numericValue)
+        assertEquals("Max", result.patientName)
+        assertEquals(kotlinx.datetime.LocalDate(2026, 5, 6), result.reportDate)
     }
 
     @Test
-    fun fhirRoundTrip() {
-        val values = listOf(LabValue(code = "2160-0", name = "Kreatinin", displayValue = "0,8", numericValue = 0.8, unit = "mg/dl"))
-        val report = LabReport.fromValues(values, LocalDate(2026, 5, 6), "Max", "Labor")
-        val resources = FhirLabCodec.encode(report, "LabImporter test")
-        assertTrue(resources.single().json.contains("\"laboratory\""))
-        val decoded = FhirLabCodec.decode(resources.map { it.json }).single()
-        assertEquals(report.id, decoded.id)
-        assertEquals(report.date, decoded.date)
-        assertEquals("Labor", decoded.authorName)
-        assertEquals(0.8, decoded.entries.single().numericValue)
-    }
-
-    @Test
-    fun cdaContainsObservation() {
-        val values = listOf(LabValue(code = "2160-0", name = "Kreatinin", displayValue = "0,8", numericValue = 0.8, unit = "mg/dl"))
-        val xml = CdaExport.generate(values, LocalDate(2026, 5, 6), "LabImporter test")
-        assertTrue(xml.contains("code=\"2160-0\""))
-        assertTrue(xml.contains("value=\"0.8\" unit=\"mg/dL\""))
-        assertTrue(xml.contains("<effectiveTime value=\"20260506\"/>"))
+    fun duplicatesAreDetectedAndCollapsed() {
+        val a = LabValue(code = "2160-0", name = "Creatinin", displayValue = "0.8", numericValue = 0.8, unit = "mg/dl")
+        val b = a.copy(id = "b", displayValue = "0.9", numericValue = 0.9)
+        val unmapped = LabValue(code = "KREA", name = "KREA", displayValue = "1", numericValue = 1.0, unit = "")
+        assertEquals(setOf("2160-0"), listOf(a, b, unmapped).duplicateLoincCodes())
+        assertEquals(listOf(a, unmapped), listOf(a, b, unmapped).deduplicatedByLoinc())
+        // A deselected row isn't exported, so it isn't a conflict — and a row with data beats one without.
+        val deselected = b.copy(isSelected = false)
+        assertEquals(emptySet(), listOf(a, deselected).duplicateLoincCodes())
+        val empty = a.copy(id = "c", numericValue = null)
+        assertEquals(listOf(a), listOf(empty, a).deduplicatedByLoinc())
     }
 }

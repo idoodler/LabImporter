@@ -1,204 +1,47 @@
 import Foundation
 import LabImporterCore
 
+/// Writes reports as C-CDA R2.1 Lab Report documents — the format stored in
+/// Apple Health and shared with doctors. The document itself (structure, UCUM
+/// units, number notation, schema version `LabImporter CDA v<N>`) is generated
+/// by the shared module (`LabImporterCore.CdaExport`), so iOS and Android write
+/// byte-identical documents; see "Migrating the exported CDA" in CLAUDE.md
+/// before changing what an export means.
 struct CDAExportService {
-
-    /// Version of the document conventions this app writes. Bumped whenever the
-    /// exported CDA's semantics change (e.g. a LOINC code is remapped), so a
-    /// future reader can tell which conventions a stored document followed.
-    /// Stamped into the authoring device's `softwareName`.
-    static let schemaVersion = 1
 
     /// Human-readable provenance ("LabImporter 1.0 (33)") for the authoring
     /// device's `manufacturerModelName`.
-    private var softwareIdentity: String {
+    static var softwareIdentity: String {
         let info = Bundle.main.infoDictionary
         let version = info?["CFBundleShortVersionString"] as? String ?? "?"
         let build = info?["CFBundleVersion"] as? String ?? "?"
         return "LabImporter \(version) (\(build))"
     }
 
-    // Returns a C-CDA R2.1 Lab Report XML string.
-    // Values without a LOINC mapping, numeric result, or that are deselected are omitted.
-    // swiftlint:disable:next function_body_length
+    // Returns a C-CDA R2.1 Lab Report XML string. Values without a LOINC
+    // mapping or numeric result, and deselected ones, are omitted.
     func generateCDA(labValues: [LabValue], date: Date, patientName: String = "", authorName: String = "") -> String {
-        let dateStr = hl7Date(date)
-        let docId   = uuid()
-        let orgId   = uuid()
-        let patientFamily = esc(patientName.trimmingCharacters(in: .whitespaces).isEmpty ? "Unknown" : patientName)
-        let authorTrimmed = authorName.trimmingCharacters(in: .whitespaces)
-        // swiftlint:disable:next line_length
-        let authorOrgXML = authorTrimmed.isEmpty ? "" : "\n      <representedOrganization>\n        <name>\(esc(authorTrimmed))</name>\n      </representedOrganization>"
-
-        // Last-resort guarantee that a saved/shared report carries one entry per
-        // LOINC. The review screen surfaces duplicates and blocks saving until the
-        // user resolves them, so this guard normally has nothing to collapse — it
-        // just keeps the persisted CDA well-formed for any non-review export path.
-        let exportable = labValues.deduplicatedByLoinc().filter {
-            $0.isSelected && $0.numericValue != nil && LabMapping.loincCode(for: $0.code) != nil
-        }
-
-        let narrativeRows = exportable.map { labValue in
-            // Use the canonical catalog name (not `labValue.name`, which may carry a
-            // user's nickname) so a personal nickname never leaks into the
-            // saved/shared document — only into on-screen display.
-            let canonicalName = LoincDirectory.shared.term(for: labValue.code)?.name ?? labValue.name
-            return "<tr><td>\(esc(canonicalName))</td><td>\(esc(labValue.displayValue)) \(esc(labValue.unit))</td></tr>"
-        }.joined(separator: "\n              ")
-
-        let components = exportable.compactMap { observationXML($0, date: dateStr) }
-            .joined(separator: "\n              ")
-
-        return """
-<?xml version="1.0" encoding="UTF-8"?>
-<ClinicalDocument xmlns="urn:hl7-org:v3"
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
-  <templateId root="2.16.840.1.113883.10.20.22.1.1"/>
-  <id root="\(docId)"/>
-  <code code="11502-2"
-        displayName="Laboratory report"
-        codeSystem="2.16.840.1.113883.6.1"
-        codeSystemName="LOINC"/>
-  <title>Lab Results</title>
-  <effectiveTime value="\(dateStr)"/>
-  <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
-  <languageCode code="de-DE"/>
-  <recordTarget>
-    <patientRole>
-      <id nullFlavor="UNK"/>
-      <patient>
-        <name>
-          <family>\(patientFamily)</family>
-        </name>
-        <administrativeGenderCode nullFlavor="UNK"/>
-        <birthTime nullFlavor="UNK"/>
-      </patient>
-    </patientRole>
-  </recordTarget>
-  <author>
-    <time value="\(dateStr)"/>
-    <assignedAuthor>
-      <id nullFlavor="UNK"/>
-      <assignedAuthoringDevice>
-        <manufacturerModelName>\(esc(softwareIdentity))</manufacturerModelName>
-        <softwareName>LabImporter CDA v\(Self.schemaVersion)</softwareName>
-      </assignedAuthoringDevice>\(authorOrgXML)
-    </assignedAuthor>
-  </author>
-  <custodian>
-    <assignedCustodian>
-      <representedCustodianOrganization>
-        <id nullFlavor="UNK"/>
-        <name>LabImporter</name>
-      </representedCustodianOrganization>
-    </assignedCustodian>
-  </custodian>
-  <component>
-    <structuredBody>
-      <component>
-        <section>
-          <templateId root="2.16.840.1.113883.10.20.22.2.3.1"/>
-          <code code="30954-2"
-                displayName="Relevant diagnostic tests/laboratory data Narrative"
-                codeSystem="2.16.840.1.113883.6.1"
-                codeSystemName="LOINC"/>
-          <title>Laborwerte</title>
-          <text>
-            <table border="1" width="100%">
-              <thead><tr><th>Test</th><th>Ergebnis</th></tr></thead>
-              <tbody>
-              \(narrativeRows)
-              </tbody>
-            </table>
-          </text>
-          <entry typeCode="DRIV">
-            <organizer classCode="BATTERY" moodCode="EVN">
-              <templateId root="2.16.840.1.113883.10.20.22.4.1"/>
-              <id root="\(orgId)"/>
-              <code code="26436-6"
-                    displayName="Laboratory studies (set)"
-                    codeSystem="2.16.840.1.113883.6.1"
-                    codeSystemName="LOINC"/>
-              <statusCode code="completed"/>
-              <effectiveTime value="\(dateStr)"/>
-              \(components)
-            </organizer>
-          </entry>
-        </section>
-      </component>
-    </structuredBody>
-  </component>
-</ClinicalDocument>
-"""
+        SharedCore.start()
+        return CdaExport.shared.generate(
+            values: labValues.map(\.shared),
+            date: date.sharedDate,
+            softwareIdentity: Self.softwareIdentity,
+            patientName: patientName,
+            authorName: authorName
+        )
     }
 
     // Writes the CDA to a temp file and returns the URL for sharing.
     func exportToTempFile(labValues: [LabValue], date: Date, patientName: String = "", authorName: String = "") throws -> URL {
-        let exportable = labValues.filter {
-            $0.isSelected && $0.numericValue != nil && LabMapping.loincCode(for: $0.code) != nil
-        }
-        guard !exportable.isEmpty else {
+        SharedCore.start()
+        guard CdaExport.shared.hasExportableValues(values: labValues.map(\.shared)) else {
             throw CDAExportError.noExportableValues
         }
         let xml = generateCDA(labValues: labValues, date: date, patientName: patientName, authorName: authorName)
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        let name = "LabResults-\(formatter.string(from: date)).xml"
+        let name = "LabResults-\(date.sharedDate.description()).xml"
         let url = FileManager.default.temporaryDirectory.appendingPathComponent(name)
         try xml.write(to: url, atomically: true, encoding: .utf8)
         return url
-    }
-
-    // MARK: - Private helpers
-
-    private func observationXML(_ value: LabValue, date: String) -> String? {
-        guard let num = value.numericValue,
-              let (loincCode, loincDisplay) = LabMapping.loincCode(for: value.code) else { return nil }
-
-        let unit = ucum(value.unit)
-        // Format as integer when possible, otherwise 4 significant figures
-        let valueStr = num.truncatingRemainder(dividingBy: 1) == 0
-            ? String(format: "%.0f", num)
-            : String(format: "%.4g", num)
-
-        return """
-<component>
-                <observation classCode="OBS" moodCode="EVN">
-                  <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
-                  <id root="\(uuid())"/>
-                  <code code="\(esc(loincCode))"
-                        displayName="\(esc(loincDisplay))"
-                        codeSystem="2.16.840.1.113883.6.1"
-                        codeSystemName="LOINC"/>
-                  <statusCode code="completed"/>
-                  <effectiveTime value="\(date)"/>
-                  <value xsi:type="PQ" value="\(valueStr)" unit="\(esc(unit))"/>
-                </observation>
-              </component>
-"""
-    }
-
-    // Maps printed lab units to UCUM — shared with Android (LabImporterCore `Ucum`).
-    private func ucum(_ raw: String) -> String {
-        Ucum.shared.fromPrinted(raw: raw)
-    }
-
-    private func hl7Date(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMdd"
-        return formatter.string(from: date)
-    }
-
-    private func uuid() -> String {
-        UUID().uuidString.lowercased()
-    }
-
-    private func esc(_ string: String) -> String {
-        string.replacingOccurrences(of: "&", with: "&amp;")
-              .replacingOccurrences(of: "<", with: "&lt;")
-              .replacingOccurrences(of: ">", with: "&gt;")
-              .replacingOccurrences(of: "\"", with: "&quot;")
     }
 }
 

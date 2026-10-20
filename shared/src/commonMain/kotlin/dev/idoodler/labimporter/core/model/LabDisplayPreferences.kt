@@ -56,7 +56,10 @@ data class LabDisplayPreferences(
         /** The key the blob is stored under (matches iOS `@AppStorage`). */
         const val STORAGE_KEY = "labDisplayPrefs"
 
-        private val json = Json { ignoreUnknownKeys = true; explicitNulls = false }
+        // encodeDefaults: always write every key — older iOS builds (synced over
+        // iCloud) decode the lists as required fields. explicitNulls=false: a
+        // one-sided range omits the missing bound, as Swift's Codable does.
+        private val json = Json { ignoreUnknownKeys = true; explicitNulls = false; encodeDefaults = true }
 
         /** Decodes a stored blob; anything unreadable yields the defaults. */
         fun decode(raw: String?): LabDisplayPreferences {

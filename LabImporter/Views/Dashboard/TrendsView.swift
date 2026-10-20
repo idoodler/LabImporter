@@ -1,4 +1,5 @@
 import Accessibility
+import LabImporterCore
 import SwiftUI
 import Charts
 
@@ -39,28 +40,13 @@ struct TrendsView: View {
         let unit: String
     }
 
+    /// Every metric with a numeric reading — hidden ones included, so their
+    /// history stays reachable — in dashboard order (shared rule, identical on
+    /// Android).
     private var availableCodes: [(code: String, name: String)] {
-        var seen = Set<String>()
-        var result: [(code: String, name: String)] = []
-        for report in reports {
-            for entry in report.entries where entry.numericValue != nil && seen.insert(entry.code).inserted {
-                result.append((code: entry.code, name: entry.resolvedName))
-            }
-        }
-        let pinned = prefs.pinnedSet
-        var orderMap: [String: Int] = [:]
-        for (idx, code) in prefs.orderedCodes.enumerated() where orderMap[code] == nil {
-            orderMap[code] = idx
-        }
-        return result.sorted { lhs, rhs in
-            let aPin = pinned.contains(lhs.code)
-            let bPin = pinned.contains(rhs.code)
-            if aPin != bPin { return aPin }
-            let aOrd = orderMap[lhs.code] ?? Int.max
-            let bOrd = orderMap[rhs.code] ?? Int.max
-            if aOrd != bOrd { return aOrd < bOrd }
-            return lhs.name < rhs.name
-        }
+        SharedCore.start()
+        return LabImporterCore.Dashboard.shared.trendMetrics(reports: reports.map(\.shared), preferences: prefs.shared)
+            .map { (code: $0.code, name: $0.name) }
     }
 
     var dataPoints: [DataPoint] {
@@ -98,13 +84,19 @@ struct TrendsView: View {
         return valueColor
     }
 
-    var selectedName: String {
-        availableCodes.first(where: { $0.code == selectedCode })?.name ?? "Trends"
+    /// The selected metric's display name (also read by the audio graph).
+    var selectedName: String { name(of: selectedCode, in: availableCodes) }
+
+    private func name(of code: String, in codes: [(code: String, name: String)]) -> String {
+        codes.first(where: { $0.code == code })?.name ?? String(localized: "Trends")
     }
 
     var body: some View {
+        // Derived once per update.
+        let codes = availableCodes
+        let selectedName = name(of: selectedCode, in: codes)
         VStack(spacing: 0) {
-            if availableCodes.isEmpty {
+            if codes.isEmpty {
                 noDataView
             } else {
                 trendContent
@@ -134,11 +126,11 @@ struct TrendsView: View {
         .referenceRangeAlert(code: $rangingCode, low: $rangeLowDraft, high: $rangeHighDraft,
                              unit: currentUnit, prefs: $prefs)
         .onAppear {
-            let codes = availableCodes.map(\.code)
-            if let initial = initialCode, codes.contains(initial) {
+            let available = codes.map(\.code)
+            if let initial = initialCode, available.contains(initial) {
                 selectedCode = initial
-            } else if selectedCode.isEmpty || !codes.contains(selectedCode) {
-                selectedCode = codes.first ?? ""
+            } else if selectedCode.isEmpty || !available.contains(selectedCode) {
+                selectedCode = available.first ?? ""
             }
             selectedTerm = LoincDirectory.shared.term(for: selectedCode)
             valueColor = LabCategory.forCode(selectedCode).color

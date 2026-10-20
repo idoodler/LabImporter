@@ -15,12 +15,6 @@ import kotlin.uuid.Uuid
  */
 object CdaExport {
 
-    /**
-     * Version of the document conventions. Bump whenever the export's meaning
-     * changes (see "Migrating the exported CDA" in CLAUDE.md).
-     */
-    const val SCHEMA_VERSION = 1
-
     /** True when at least one value would be written. */
     fun hasExportableValues(values: List<LabValue>): Boolean = values.any { it.isExportable }
 
@@ -85,7 +79,7 @@ object CdaExport {
       <id nullFlavor="UNK"/>
       <assignedAuthoringDevice>
         <manufacturerModelName>${esc(softwareIdentity)}</manufacturerModelName>
-        <softwareName>LabImporter CDA v$SCHEMA_VERSION</softwareName>
+        <softwareName>LabImporter CDA v${ReportSchema.VERSION}</softwareName>
       </assignedAuthoringDevice>$authorOrgXml
     </assignedAuthor>
   </author>
@@ -132,15 +126,14 @@ object CdaExport {
       </component>
     </structuredBody>
   </component>
-</ClinicalDocument>
-""".trimStart('\n')
+</ClinicalDocument>""".trimStart('\n')
     }
 
     private fun observationXml(value: LabValue, date: String): String? {
         val num = value.numericValue ?: return null
         val (loinc, display) = LabMapping.loincCode(value.code) ?: return null
         val unit = Ucum.fromPrinted(value.unit)
-        val valueStr = NumberFormatting.significant(num)
+        val valueStr = NumberFormatting.cdaValue(num)
         return """
 <component>
                 <observation classCode="OBS" moodCode="EVN">

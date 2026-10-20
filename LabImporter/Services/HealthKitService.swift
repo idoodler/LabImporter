@@ -1,4 +1,5 @@
 import HealthKit
+import LabImporterCore
 import Foundation
 
 actor HealthKitService {
@@ -94,8 +95,9 @@ actor HealthKitService {
                 }
                 if let cdaSamples = samples as? [HKCDADocumentSample] {
                     let parsed = cdaSamples.compactMap { sample -> LabReport? in
-                        guard let xmlData = sample.document?.documentData else { return nil }
-                        return CDADocumentParser.parse(data: xmlData, id: sample.uuid)
+                        guard let xmlData = sample.document?.documentData,
+                              let xml = String(data: xmlData, encoding: .utf8) else { return nil }
+                        return Self.report(fromCDA: xml, id: sample.uuid)
                     }
                     results.append(contentsOf: parsed)
                 }
@@ -106,6 +108,14 @@ actor HealthKitService {
             }
             store.execute(query)
         }
+    }
+
+    /// Rebuilds a report from a stored CDA document with the shared parser,
+    /// which ignores unversioned/foreign documents and upgrades older schema
+    /// versions (LabImporterCore `ReportSchema`).
+    nonisolated static func report(fromCDA xml: String, id: UUID) -> LabReport? {
+        SharedCore.start()
+        return CdaParser.shared.parse(xml: xml, id: id.uuidString).map(LabReport.init(shared:))
     }
 
     // MARK: - Characteristics
@@ -205,200 +215,4 @@ actor HealthKitService {
 extension Notification.Name {
     /// Posted after a lab report is saved, replaced, or deleted in Apple Health.
     static let labReportsDidChange = Notification.Name("dev.idoodler.labimporter.labReportsDidChange")
-}
-
-// MARK: - CDA XML Parser
-
-private struct CDAObservation {
-    let loinc: String
-    let display: String
-    let value: Double
-    let unit: String
-}
-
-private final class CDADocumentParser: NSObject, XMLParserDelegate {
-
-    private var reportDate: Date?
-    private var patientFamily = ""
-    private var authorOrg = ""
-    private var observations: [CDAObservation] = []
-
-    private var elementStack: [String] = []
-    private var currentText = ""
-    private var documentDateSet = false
-
-    private var inObservation = false
-    private var obsLoinc: String?
-    private var obsDisplay: String?
-    private var obsValue: Double?
-    private var obsUnit: String?
-
-    /// CDA export-schema version parsed from the authoring device's softwareName
-    /// ("LabImporter CDA v<N>"). nil for legacy documents written before
-    /// versioning, which are ignored on read-back.
-    private var schemaVersion: Int?
-
-    static func parse(data: Data, id: UUID) -> LabReport? {
-        let delegate = CDADocumentParser()
-        let parser = XMLParser(data: data)
-        parser.delegate = delegate
-        parser.parse()
-
-        guard let date = delegate.reportDate else { return nil }
-
-        let entries = delegate.observations.map { obs -> LabReport.Entry in
-            // The stored code is the LOINC code itself; prefer our localized name,
-            // falling back to the display name carried in the CDA document.
-            let mappedName = LabMapping.displayName(for: obs.loinc)
-            let name = mappedName == obs.loinc ? obs.display : mappedName
-            let display = obs.value.truncatingRemainder(dividingBy: 1) == 0
-                ? String(format: "%.0f", obs.value)
-                : String(format: "%.4g", obs.value)
-            return LabReport.Entry(
-                id: UUID(),
-                code: obs.loinc,
-                name: name,
-                displayValue: display,
-                numericValue: obs.value,
-                unit: obs.unit
-            )
-        }
-
-        let report = LabReport(
-            id: id,
-            date: date,
-            patientName: delegate.patientFamily,
-            authorName: delegate.authorOrg,
-            entries: entries
-        )
-
-        // Ignore documents with no recognized version, and upgrade older ones to
-        // the current schema (no-op today). Returns nil → the sample is skipped.
-        return CDAMigrator.upgrade(report, fromSchemaVersion: delegate.schemaVersion)
-    }
-
-    // MARK: XMLParserDelegate
-
-    func parser(_ parser: XMLParser, didStartElement element: String,
-                namespaceURI: String?, qualifiedName: String?,
-                attributes attrs: [String: String] = [:]) {
-        elementStack.append(element)
-        currentText = ""
-
-        switch element {
-        case "effectiveTime" where !documentDateSet:
-            if let val = attrs["value"] {
-                reportDate = hl7Date(String(val.prefix(8)))
-                documentDateSet = true
-            }
-
-        case "observation" where attrs["classCode"] == "OBS":
-            inObservation = true
-            obsLoinc = nil; obsDisplay = nil
-            obsValue = nil; obsUnit = nil
-
-        case "code" where inObservation:
-            if attrs["codeSystem"] == "2.16.840.1.113883.6.1" {
-                obsLoinc = attrs["code"]
-                obsDisplay = attrs["displayName"]
-            }
-
-        case "value" where inObservation:
-            let xsiType = attrs["xsi:type"] ?? ""
-            if xsiType == "PQ" {
-                if let raw = attrs["value"], let num = Double(raw) { obsValue = num }
-                obsUnit = attrs["unit"] ?? ""
-            }
-
-        default:
-            break
-        }
-    }
-
-    func parser(_ parser: XMLParser, foundCharacters string: String) {
-        currentText += string
-    }
-
-    func parser(_ parser: XMLParser, didEndElement element: String,
-                namespaceURI: String?, qualifiedName: String?) {
-        defer {
-            if !elementStack.isEmpty { elementStack.removeLast() }
-            currentText = ""
-        }
-
-        switch element {
-        case "family" where elementStack.dropLast().contains("patientRole"):
-            let trimmed = currentText.trimmingCharacters(in: .whitespacesAndNewlines)
-            if !trimmed.isEmpty && trimmed != "Unknown" { patientFamily = trimmed }
-
-        case "name" where elementStack.dropLast().contains("representedOrganization"):
-            let trimmed = currentText.trimmingCharacters(in: .whitespacesAndNewlines)
-            if !trimmed.isEmpty && trimmed != "LabImporter" { authorOrg = trimmed }
-
-        case "softwareName":
-            schemaVersion = Self.parseSchemaVersion(currentText)
-
-        case "observation" where inObservation:
-            if let loinc = obsLoinc, let display = obsDisplay,
-               let value = obsValue, let unit = obsUnit {
-                observations.append(CDAObservation(loinc: loinc, display: display, value: value, unit: unit))
-            }
-            inObservation = false
-
-        default:
-            break
-        }
-    }
-
-    // Extracts <N> from a "LabImporter CDA v<N>" softwareName; nil otherwise.
-    private static func parseSchemaVersion(_ text: String) -> Int? {
-        guard let range = text.range(of: "CDA v") else { return nil }
-        let digits = text[range.upperBound...].prefix { $0.isNumber }
-        return Int(digits)
-    }
-
-    private func hl7Date(_ value: String) -> Date? {
-        let fmt = DateFormatter()
-        fmt.dateFormat = "yyyyMMdd"
-        fmt.locale = Locale(identifier: "en_US_POSIX")
-        return fmt.date(from: value)
-    }
-}
-
-// MARK: - CDA schema migration
-
-/// Upgrades a `LabReport` parsed from one exported-document schema version to the
-/// next. Add one conformer per version step (e.g. when a LOINC code is remapped);
-/// `CDAMigrator` chains them automatically.
-protocol CDAMigration {
-    /// This migration upgrades a document written by `fromVersion` to `fromVersion + 1`.
-    static var fromVersion: Int { get }
-    static func migrate(_ report: LabReport) -> LabReport
-}
-
-/// Decides whether a parsed document is supported and brings it up to the
-/// current `CDAExportService.schemaVersion`.
-enum CDAMigrator {
-    /// Oldest export-schema version still understood. Documents below this —
-    /// including legacy exports that carry no version stamp — are ignored.
-    static let minimumSupportedVersion = 1
-
-    /// Ordered version-step migrations. Empty today (the current schema is the
-    /// baseline); register `SomeMigration.self` here when conventions change.
-    nonisolated(unsafe) private static let migrations: [any CDAMigration.Type] = []
-
-    /// Returns `report` upgraded to the current schema, or `nil` when the source
-    /// document is unversioned, older than `minimumSupportedVersion`, or no
-    /// migration path exists for a step.
-    static func upgrade(_ report: LabReport, fromSchemaVersion version: Int?) -> LabReport? {
-        guard let version, version >= minimumSupportedVersion else { return nil }
-        var current = report
-        var step = version
-        while step < CDAExportService.schemaVersion {
-            guard let migration = migrations.first(where: { $0.fromVersion == step }) else { return nil }
-            current = migration.migrate(current)
-            step += 1
-        }
-        return current
-    }
 }

@@ -38,6 +38,16 @@ struct AILabEntry {
     var unit: String
 }
 
+extension AILabReport {
+    /// The same fields, as the shared module's type.
+    var shared: LabImporterCore.AiLabReport {
+        LabImporterCore.AiLabReport(
+            entries: entries.map { LabImporterCore.AiLabEntry(code: $0.code, name: $0.name, rawValue: $0.rawValue, unit: $0.unit) },
+            reportDate: reportDate, patientName: patientName, authorName: authorName, reportLanguage: reportLanguage
+        )
+    }
+}
+
 // MARK: - Result
 
 struct ParseResult {
@@ -136,58 +146,17 @@ actor LabParserService {
         onProgress: (@Sendable (ParseProgress) -> Void)? = nil
     ) async throws -> ParseResult {
         let report = try await parseWithFoundationModels(text: text, onProgress: onProgress)
-        let entries = report.entries
-        let reportDate = parseDate(report.reportDate)
-        let patientName = report.patientName.isEmpty ? nil : report.patientName
-        let authorName = report.authorName.isEmpty ? nil : report.authorName
-
-        let values = entries.map { entry in
-            let normalizedValue = entry.rawValue
-                .trimmingCharacters(in: .whitespaces)
-                .replacingOccurrences(of: ",", with: ".")
-
-            let numericValue: Double? = entry.rawValue == "-" ? nil : Double(normalizedValue)
-
-            // Resolve the printed code to LOINC, the app's canonical identity.
-            let (code, suggested) = resolveLoinc(printed: entry.code, name: entry.name, language: report.reportLanguage)
-
-            return LabValue(
-                code: code,
-                name: LabMapping.displayName(for: code),
-                displayValue: entry.rawValue,
-                numericValue: numericValue,
-                unit: entry.unit,
-                isSuggestedCode: suggested
-            )
-        }
-
-        // A printed report can list the same test twice (e.g. a value and its
-        // recalculation), and two terse names can resolve to the same LOINC —
-        // keep a single entry per LOINC, the app's canonical identity.
-        return ParseResult(values: values.deduplicatedByLoinc(), reportDate: reportDate, patientName: patientName, authorName: authorName)
-    }
-
-    // Resolves a parsed entry to a LOINC code entirely from the bundled catalog.
-    // An already-valid LOINC code (pasted in or printed verbatim) is canonical and
-    // returned as-is; otherwise the AI's test name is matched against the catalog
-    // in the report's own language (with English as a fallback) and the top hit is
-    // returned as a *suggestion* the user confirms. Unresolved entries keep the
-    // printed text so they can be mapped manually in the review sheet.
-    private func resolveLoinc(printed: String, name: String, language: String) -> (code: String, suggested: Bool) {
-        let directory = LoincDirectory.shared
-        let trimmedPrinted = printed.trimmingCharacters(in: .whitespaces)
-        if directory.isKnownLoinc(trimmedPrinted) {
-            return (trimmedPrinted, false)
-        }
-        let resolvedLanguage = directory.resolvedLanguage(for: language)
-        for query in [name, printed] {
-            let trimmed = query.trimmingCharacters(in: .whitespaces)
-            guard !trimmed.isEmpty else { continue }
-            if let match = directory.search(trimmed, language: resolvedLanguage, limit: 1).first {
-                return (match.code, true)
-            }
-        }
-        return (printed, false)
+        // Number parsing, LOINC resolution (in the report's own language), date
+        // validation and de-duplication are shared with Android so both apps turn
+        // the same model output into the same values (LabImporterCore.LabParsePipeline).
+        SharedCore.start()
+        let result = LabParsePipeline.shared.postProcess(report: report.shared)
+        return ParseResult(
+            values: result.values.map(LabValue.init(shared:)),
+            reportDate: result.reportDate.map(Date.init(shared:)),
+            patientName: result.patientName,
+            authorName: result.authorName
+        )
     }
 
     // MARK: - Foundation Models path
@@ -220,7 +189,7 @@ actor LabParserService {
         // language is fully supported. Wrapping the report in a few sentences of
         // plain English gives the detector a reliable anchor without changing
         // what we ask it to extract (names stay in the report's own language).
-        let prompt = LabParsePrompt.shared.prompt(reportText: text, includeContract: false)
+        let prompt = LabParsePrompt.shared.prompt(reportText: text)
 
         do {
             // Stream the structured response instead of awaiting it whole:
@@ -271,15 +240,5 @@ actor LabParserService {
             authorName: partial?.authorName ?? "",
             reportLanguage: partial?.reportLanguage ?? ""
         )
-    }
-
-    // MARK: - Date helpers
-
-    private func parseDate(_ string: String) -> Date? {
-        guard !string.isEmpty else { return nil }
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        return formatter.date(from: string)
     }
 }

@@ -98,36 +98,12 @@ enum LabCategory: String, CaseIterable, Sendable {
         }
     }
 
-    /// Best-effort category for a LOINC code, resolved via the bundled catalog.
-    ///
-    /// Codes repeat heavily across the UI (every dashboard card, history row and
-    /// search result re-derives a category from the same handful of codes), and
-    /// each miss costs a SQLite lookup in `LoincDirectory`, so the resolved
-    /// category is memoized. The cache is guarded by a lock because `forCode` is
-    /// called from both the main actor (view bodies) and background search tasks.
+    /// Best-effort category for a LOINC code, resolved via the bundled catalog
+    /// (memoized in the shared module, which both platforms use).
     static func forCode(_ code: String) -> LabCategory {
-        cacheLock.lock()
-        if let cached = cache[code] {
-            cacheLock.unlock()
-            return cached
-        }
-        cacheLock.unlock()
-
-        let resolved: LabCategory
-        if let info = LoincDirectory.shared.classification(for: code) {
-            resolved = category(loincClass: info.loincClass, component: info.component)
-        } else {
-            resolved = .other
-        }
-
-        cacheLock.lock()
-        cache[code] = resolved
-        cacheLock.unlock()
-        return resolved
+        SharedCore.start()
+        return LabCategory(sharedName: LabImporterCore.LabCategory.companion.forCode(code: code).name)
     }
-
-    private static let cacheLock = NSLock()
-    nonisolated(unsafe) private static var cache: [String: LabCategory] = [:]
 
     /// Classification rules live in the shared Kotlin module so iOS and Android
     /// colour every metric identically (LabImporterCore `LabCategory`).
@@ -137,7 +113,7 @@ enum LabCategory: String, CaseIterable, Sendable {
     }
 
     /// Maps the shared enum's constant name (e.g. `BLOOD_GAS`) to this case (`bloodGas`).
-    private init(sharedName: String) {
+    init(sharedName: String) {
         let parts = sharedName.lowercased().split(separator: "_")
         let camel = (parts.first.map(String.init) ?? "") + parts.dropFirst().map { $0.capitalized }.joined()
         self = LabCategory(rawValue: camel) ?? .other
