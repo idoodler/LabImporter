@@ -1,6 +1,14 @@
 package dev.idoodler.labimporter.ui.importflow
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.ui.graphics.Color
+import dev.idoodler.labimporter.ui.design.CategoryWash
+import dev.idoodler.labimporter.ui.design.groupContainerColor
+import dev.idoodler.labimporter.ui.design.welcomePalette
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -31,9 +39,13 @@ import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 @Composable
 fun PasteTextScreen(onCancel: () -> Unit, onSubmit: (String) -> Unit, initial: String = "") {
     var text by rememberSaveable { mutableStateOf(initial) }
+    Box(Modifier.fillMaxSize()) {
+    CategoryWash(welcomePalette, intensity = 0.8f)
     Scaffold(
+        containerColor = Color.Transparent,
         topBar = {
             TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
                 title = { Text(stringResource(R.string.import_paste)) },
                 navigationIcon = { IconButton(onClick = onCancel) { Icon(Icons.Default.Close, stringResource(R.string.cancel)) } },
                 actions = {
@@ -48,10 +60,17 @@ fun PasteTextScreen(onCancel: () -> Unit, onSubmit: (String) -> Unit, initial: S
             OutlinedTextField(
                 value = text, onValueChange = { text = it },
                 placeholder = { Text(stringResource(R.string.paste_placeholder)) },
+                shape = MaterialTheme.shapes.extraLarge,
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedContainerColor = groupContainerColor(), focusedContainerColor = groupContainerColor(),
+                ),
                 modifier = Modifier.fillMaxSize().weight(1f),
             )
-            TextButton(onClick = { text = PreviewSamples.SAMPLE_REPORT_TEXT }) { Text(stringResource(R.string.insert_sample)) }
+            TextButton(onClick = { text = PreviewSamples.SAMPLE_REPORT_TEXT }, modifier = Modifier.padding(top = 8.dp)) {
+                Text(stringResource(R.string.insert_sample))
+            }
         }
+    }
     }
 }
 

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.LabImporter" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <!-- Launch theme: the layered icon on the app's surface colour, held until the catalog is ready. -->
+    <style name="Theme.LabImporter.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#121318</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.LabImporter</item>
+    </style>
+</resources>

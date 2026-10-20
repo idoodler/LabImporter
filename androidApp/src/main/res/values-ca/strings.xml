@@ -80,4 +80,26 @@
     <string name="settings_about">Informació</string>
     <string name="privacy_message">Tot s\'executa al dispositiu. LabImporter no transmet mai les teves dades de laboratori.</string>
     <string name="loinc_catalog">Catàleg LOINC</string>
+    <string name="dashboard_title">Resultats de laboratori</string>
+    <string name="history_title">Informes</string>
+    <string name="filter_all">Tot</string>
+    <string name="stat_min">Mín</string>
+    <string name="stat_max">Màx</string>
+    <string name="stat_avg">Mitj.</string>
+    <string name="stat_reports">Informes</string>
+    <string name="stat_values">Valors de laboratori</string>
+    <string name="stat_categories">Categories</string>
+    <string name="window_3m">3 m</string>
+    <string name="window_6m">6 m</string>
+    <string name="window_1y">1 a</string>
+    <string name="window_all">Tot</string>
+    <string name="trend_up">Tendència a l\'alça</string>
+    <string name="trend_down">Tendència a la baixa</string>
+    <string name="trend_flat">Sense canvis</string>
+    <string name="lab_report">Informe de laboratori</string>
+    <string name="lab_values">Valors de laboratori</string>
+    <string name="ready_to_save">A punt per desar</string>
+    <string name="duplicates_short">Duplicat</string>
+    <string name="welcome_to">Et donem la benvinguda a</string>
+    <string name="version">Versió</string>
 </resources>

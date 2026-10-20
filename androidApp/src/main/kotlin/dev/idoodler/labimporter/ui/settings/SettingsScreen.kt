@@ -1,6 +1,6 @@
 package dev.idoodler.labimporter.ui.settings
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,18 +8,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AutoAwesome
-import androidx.compose.material.icons.outlined.Badge
-import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.outlined.MenuBook
-import androidx.compose.material.icons.outlined.VisibilityOff
+import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.Badge
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.MenuBook
+import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.rounded.Tag
+import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFlexibleTopAppBar
-import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -33,19 +36,30 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.graphics.shapes.RoundedPolygon
 import dev.idoodler.labimporter.R
 import dev.idoodler.labimporter.ai.AiStatus
 import dev.idoodler.labimporter.core.LabCore
+import dev.idoodler.labimporter.core.model.LabCategory
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.core.model.LabMapping
 import dev.idoodler.labimporter.data.HealthConnectAvailability
 import dev.idoodler.labimporter.ui.HealthConnectState
+import dev.idoodler.labimporter.ui.design.CategoryWash
+import dev.idoodler.labimporter.ui.design.GroupedListItem
+import dev.idoodler.labimporter.ui.design.SectionTitle
+import dev.idoodler.labimporter.ui.design.ShapeBadge
+import dev.idoodler.labimporter.ui.design.color
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 
+/** Settings as Material 3 Expressive grouped lists with coloured shape icons. */
 @Composable
 fun SettingsScreen(
     patientName: String,
@@ -59,84 +73,116 @@ fun SettingsScreen(
     onUpdatePreferences: ((LabDisplayPreferences) -> LabDisplayPreferences) -> Unit,
     softwareIdentity: String,
     modifier: Modifier = Modifier,
+    onBack: () -> Unit = {},
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     var showLicense by remember { mutableStateOf(false) }
     var showDisclaimer by remember { mutableStateOf(false) }
-    Scaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { LargeFlexibleTopAppBar(title = { Text(stringResource(R.string.tab_settings)) }, scrollBehavior = scrollBehavior) },
-    ) { padding ->
-        LazyColumn(contentPadding = PaddingValues(top = padding.calculateTopPadding(), bottom = 32.dp), modifier = Modifier.fillMaxSize()) {
-            item { Section(R.string.settings_patient) }
-            item {
-                var name by remember(patientName) { mutableStateOf(patientName) }
-                ListItem(
-                    leadingContent = { Icon(Icons.Outlined.Badge, null) },
-                    headlineContent = {
-                        OutlinedTextField(
-                            value = name, onValueChange = { name = it; onPatientName(it) }, singleLine = true,
-                            label = { Text(stringResource(R.string.patient)) }, modifier = Modifier.fillMaxWidth(),
-                        )
+    Box(modifier.fillMaxSize()) {
+        CategoryWash(listOf(LabCategory.ENDOCRINE.color, LabCategory.BLOOD_GAS.color, LabCategory.HEMATOLOGY.color), intensity = 0.7f)
+        Scaffold(
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            containerColor = Color.Transparent,
+            topBar = {
+                LargeFlexibleTopAppBar(
+                    title = { Text(stringResource(R.string.tab_settings), fontWeight = FontWeight.Bold) },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.back)) }
                     },
-                    supportingContent = { Text(stringResource(R.string.patient_hint)) },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                        scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.94f),
+                    ),
+                    scrollBehavior = scrollBehavior,
                 )
-            }
+            },
+        ) { padding ->
+            LazyColumn(
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = padding.calculateTopPadding(), bottom = 40.dp),
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                item { SectionTitle(stringResource(R.string.settings_patient)) }
+                item {
+                    var name by remember(patientName) { mutableStateOf(patientName) }
+                    GroupedListItem(
+                        0, 1,
+                        leading = { Badge(MaterialShapes.Cookie9Sided, LabCategory.BLOOD_GAS.color, Icons.Rounded.Badge) },
+                        headline = {
+                            OutlinedTextField(
+                                value = name, onValueChange = { name = it; onPatientName(it) }, singleLine = true,
+                                label = { Text(stringResource(R.string.patient)) }, shape = MaterialTheme.shapes.large,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        },
+                        supporting = { Text(stringResource(R.string.patient_hint), Modifier.padding(top = 4.dp)) },
+                    )
+                }
 
-            item { Section(R.string.settings_storage) }
-            item { HealthConnectItem(healthConnect, onConnectHealthConnect, onUseHealthConnect) }
+                item { SectionTitle(stringResource(R.string.settings_storage)) }
+                item { HealthConnectItem(healthConnect, onConnectHealthConnect, onUseHealthConnect) }
 
-            item { Section(R.string.settings_ai) }
-            item { AiItem(aiStatus, onDownloadModel) }
+                item { SectionTitle(stringResource(R.string.settings_ai)) }
+                item { AiItem(aiStatus, onDownloadModel) }
 
-            if (preferences.hiddenCodes.isNotEmpty()) {
-                item { Section(R.string.settings_hidden) }
-                preferences.hiddenCodes.forEach { code ->
-                    item(key = "hidden-$code") {
-                        ListItem(
-                            leadingContent = { Icon(Icons.Outlined.VisibilityOff, null) },
-                            headlineContent = { Text(LabMapping.displayName(code)) },
-                            supportingContent = { Text(code) },
-                            trailingContent = {
-                                TextButton(onClick = { onUpdatePreferences { it.toggleHidden(code) } }) { Text(stringResource(R.string.show)) }
-                            },
-                        )
+                if (preferences.hiddenCodes.isNotEmpty()) {
+                    item { SectionTitle(stringResource(R.string.settings_hidden)) }
+                    preferences.hiddenCodes.forEachIndexed { index, code ->
+                        item(key = "hidden-$code") {
+                            GroupedListItem(
+                                index, preferences.hiddenCodes.size,
+                                leading = { Badge(MaterialShapes.Pill, LabCategory.OTHER.color, Icons.Rounded.VisibilityOff) },
+                                headline = { Text(LabMapping.displayName(code)) },
+                                supporting = { Text(code) },
+                                trailing = {
+                                    TextButton(onClick = { onUpdatePreferences { it.toggleHidden(code) } }) { Text(stringResource(R.string.show)) }
+                                },
+                            )
+                        }
                     }
                 }
-            }
 
-            item { Section(R.string.settings_about) }
-            item {
-                ListItem(
-                    leadingContent = { Icon(Icons.Outlined.Lock, null) },
-                    headlineContent = { Text(stringResource(R.string.privacy_title)) },
-                    supportingContent = { Text(stringResource(R.string.privacy_message)) },
-                )
+                item { SectionTitle(stringResource(R.string.settings_about)) }
+                item {
+                    GroupedListItem(
+                        0, 4,
+                        leading = { Badge(MaterialShapes.Clover4Leaf, LabCategory.HEPATIC.color, Icons.Rounded.Lock) },
+                        headline = { Text(stringResource(R.string.privacy_title)) },
+                        supporting = { Text(stringResource(R.string.privacy_message)) },
+                    )
+                }
+                item {
+                    GroupedListItem(
+                        1, 4, onClick = { showDisclaimer = true },
+                        leading = { Badge(MaterialShapes.SoftBurst, LabCategory.GLYCEMIC.color, Icons.Rounded.Info) },
+                        headline = { Text(stringResource(R.string.disclaimer_title)) },
+                    )
+                }
+                item {
+                    val loinc = LabCore.loinc
+                    GroupedListItem(
+                        2, 4, onClick = { showLicense = true },
+                        leading = { Badge(MaterialShapes.Gem, LabCategory.COAGULATION.color, Icons.AutoMirrored.Rounded.MenuBook) },
+                        headline = { Text(stringResource(R.string.loinc_catalog)) },
+                        supporting = {
+                            Text(stringResource(R.string.loinc_catalog_detail, loinc?.version.orEmpty(), java.text.NumberFormat.getIntegerInstance().format(loinc?.count ?: 0)))
+                        },
+                    )
+                }
+                item {
+                    GroupedListItem(
+                        3, 4,
+                        leading = { Badge(MaterialShapes.Pentagon, LabCategory.OTHER.color, Icons.Rounded.Tag) },
+                        headline = { Text(stringResource(R.string.version)) },
+                        supporting = { Text(softwareIdentity) },
+                    )
+                }
             }
-            item {
-                ListItem(
-                    modifier = Modifier.clickable { showDisclaimer = true },
-                    leadingContent = { Icon(Icons.Outlined.Info, null) },
-                    headlineContent = { Text(stringResource(R.string.disclaimer_title)) },
-                )
-            }
-            item {
-                val loinc = LabCore.loinc
-                ListItem(
-                    modifier = Modifier.clickable { showLicense = true },
-                    leadingContent = { Icon(Icons.Outlined.MenuBook, null) },
-                    headlineContent = { Text(stringResource(R.string.loinc_catalog)) },
-                    supportingContent = {
-                        Text(stringResource(R.string.loinc_catalog_detail, loinc?.version.orEmpty(), java.text.NumberFormat.getIntegerInstance().format(loinc?.count ?: 0)))
-                    },
-                )
-            }
-            item { ListItem(headlineContent = { Text(softwareIdentity, style = MaterialTheme.typography.bodySmall) }) }
         }
     }
     if (showLicense) {
         AlertDialog(
             onDismissRequest = { showLicense = false },
+            icon = { Icon(Icons.AutoMirrored.Rounded.MenuBook, null) },
             title = { Text(stringResource(R.string.loinc_catalog)) },
             text = { Text(LabCore.loinc?.license.orEmpty().take(1500)) },
             confirmButton = { TextButton(onClick = { showLicense = false }) { Text(stringResource(R.string.ok)) } },
@@ -145,6 +191,7 @@ fun SettingsScreen(
     if (showDisclaimer) {
         AlertDialog(
             onDismissRequest = { showDisclaimer = false },
+            icon = { Icon(Icons.Rounded.Info, null) },
             title = { Text(stringResource(R.string.disclaimer_title)) },
             text = { Text(stringResource(R.string.disclaimer_body)) },
             confirmButton = { TextButton(onClick = { showDisclaimer = false }) { Text(stringResource(R.string.ok)) } },
@@ -153,11 +200,8 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun Section(title: Int) {
-    Text(
-        stringResource(title), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(start = 16.dp, top = 20.dp, bottom = 4.dp),
-    )
+private fun Badge(polygon: RoundedPolygon, color: Color, icon: androidx.compose.ui.graphics.vector.ImageVector, brush: Brush? = null) {
+    ShapeBadge(polygon, color, icon, size = 42.dp, brush = brush)
 }
 
 @Composable
@@ -170,20 +214,19 @@ private fun HealthConnectItem(state: HealthConnectState, onConnect: () -> Unit, 
         state.availability == HealthConnectAvailability.MEDICAL_RECORDS_UNSUPPORTED -> stringResource(R.string.hc_medical_unsupported)
         else -> stringResource(R.string.hc_not_installed)
     }
-    ListItem(
-        leadingContent = { Icon(Icons.Outlined.Favorite, null) },
-        headlineContent = { Text(stringResource(R.string.hc_title)) },
-        supportingContent = {
+    GroupedListItem(
+        0, 1,
+        leading = { Badge(MaterialShapes.Heart, LabCategory.HEMATOLOGY.color, Icons.Rounded.Favorite) },
+        headline = { Text(stringResource(R.string.hc_title), fontWeight = FontWeight.SemiBold) },
+        supporting = {
             Column {
                 Text(supporting)
                 if (state.availability == HealthConnectAvailability.AVAILABLE && !state.granted) {
-                    Button(onClick = onConnect, modifier = Modifier.padding(top = 8.dp)) { Text(stringResource(R.string.hc_connect)) }
+                    Button(onClick = onConnect, modifier = Modifier.padding(top = 10.dp)) { Text(stringResource(R.string.hc_connect)) }
                 }
             }
         },
-        trailingContent = {
-            if (state.granted) Switch(checked = state.inUse, onCheckedChange = onUse)
-        },
+        trailing = { if (state.granted) Switch(checked = state.inUse, onCheckedChange = onUse) },
     )
 }
 
@@ -196,21 +239,27 @@ private fun AiItem(status: AiStatus, onDownload: () -> Unit) {
         is AiStatus.Downloading -> stringResource(R.string.ai_downloading)
         AiStatus.Unavailable -> stringResource(R.string.ai_unavailable)
     }
-    ListItem(
-        leadingContent = { Icon(Icons.Outlined.AutoAwesome, null) },
-        headlineContent = { Text(stringResource(R.string.ai_title)) },
-        supportingContent = {
+    GroupedListItem(
+        0, 1,
+        leading = {
+            Badge(
+                MaterialShapes.Sunny, MaterialTheme.colorScheme.primary, Icons.Rounded.AutoAwesome,
+                brush = Brush.linearGradient(listOf(LabCategory.BLOOD_GAS.color, LabCategory.ENDOCRINE.color, LabCategory.HEMATOLOGY.color)),
+            )
+        },
+        headline = { Text(stringResource(R.string.ai_title), fontWeight = FontWeight.SemiBold) },
+        supporting = {
             Column {
                 Text(text)
                 if (status == AiStatus.Downloadable) {
-                    Button(onClick = onDownload, modifier = Modifier.padding(top = 8.dp)) { Text(stringResource(R.string.ai_download)) }
+                    Button(onClick = onDownload, modifier = Modifier.padding(top = 10.dp)) { Text(stringResource(R.string.ai_download)) }
                 }
             }
         },
     )
 }
 
-@Preview(name = "Local storage, no Gemini", widthDp = 400, heightDp = 1000)
+@Preview(name = "Local storage, no Gemini", widthDp = 400, heightDp = 1100)
 @Composable
 private fun SettingsPreview() {
     LabImporterTheme(dynamicColor = false) {
@@ -221,7 +270,7 @@ private fun SettingsPreview() {
     }
 }
 
-@Preview(name = "Health Connect + Gemini – dark", widthDp = 400, heightDp = 1000, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "Health Connect + Gemini – dark", widthDp = 400, heightDp = 1100, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun SettingsDarkPreview() {
     LabImporterTheme(darkTheme = true, dynamicColor = false) {

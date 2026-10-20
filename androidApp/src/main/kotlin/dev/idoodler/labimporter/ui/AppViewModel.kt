@@ -19,6 +19,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -169,6 +170,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private suspend fun parse(text: String) {
+        // A share/"open with" can arrive on a cold start before the catalog is unpacked.
+        LabImporterApplication.catalogReady.first { it }
         if (text.isBlank()) {
             _importState.value = ImportState.Failed(context.getString(R.string.error_no_text))
             return

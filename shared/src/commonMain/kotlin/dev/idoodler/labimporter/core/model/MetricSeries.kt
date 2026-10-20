@@ -15,6 +15,7 @@ data class MetricSeries(val code: String, val points: List<MetricPoint>) {
     val name: String get() = LabMapping.displayName(code)
     val category: LabCategory get() = LabCategory.forCode(code)
     val rangeStatus: RangeStatus? get() = LabMapping.rangeStatus(latest.value, code)
+    val range: ReferenceRange? get() = LabMapping.referenceRange(code)
 }
 
 /**

@@ -80,4 +80,26 @@
     <string name="settings_about">Om</string>
     <string name="privacy_message">Allt körs på enheten. LabImporter överför aldrig dina labbdata.</string>
     <string name="loinc_catalog">LOINC-katalog</string>
+    <string name="dashboard_title">Labbresultat</string>
+    <string name="history_title">Rapporter</string>
+    <string name="filter_all">Alla</string>
+    <string name="stat_min">Min</string>
+    <string name="stat_max">Max</string>
+    <string name="stat_avg">Snitt</string>
+    <string name="stat_reports">Rapporter</string>
+    <string name="stat_values">Labbvärden</string>
+    <string name="stat_categories">Kategorier</string>
+    <string name="window_3m">3 mån</string>
+    <string name="window_6m">6 mån</string>
+    <string name="window_1y">1 år</string>
+    <string name="window_all">Alla</string>
+    <string name="trend_up">Stigande</string>
+    <string name="trend_down">Sjunkande</string>
+    <string name="trend_flat">Oförändrat</string>
+    <string name="lab_report">Labbrapport</string>
+    <string name="lab_values">Labbvärden</string>
+    <string name="ready_to_save">Klar att spara</string>
+    <string name="duplicates_short">Dubblett</string>
+    <string name="welcome_to">Välkommen till</string>
+    <string name="version">Version</string>
 </resources>

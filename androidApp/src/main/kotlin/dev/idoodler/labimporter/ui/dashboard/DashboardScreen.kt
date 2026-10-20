@@ -1,6 +1,9 @@
 package dev.idoodler.labimporter.ui.dashboard
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -8,29 +11,38 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.TrendingDown
-import androidx.compose.material.icons.automirrored.filled.TrendingFlat
-import androidx.compose.material.icons.automirrored.filled.TrendingUp
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.PushPin
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.PushPin
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFlexibleTopAppBar
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,202 +53,348 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import dev.idoodler.labimporter.R
+import dev.idoodler.labimporter.core.model.LabCategory
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.core.model.LabReport
 import dev.idoodler.labimporter.core.model.MetricSeries
 import dev.idoodler.labimporter.core.model.metricSeries
-import dev.idoodler.labimporter.ui.components.CategoryDot
-import dev.idoodler.labimporter.ui.components.EmptyState
 import dev.idoodler.labimporter.ui.components.RangeBadge
-import dev.idoodler.labimporter.ui.components.TrendChart
 import dev.idoodler.labimporter.ui.components.formatDate
 import dev.idoodler.labimporter.ui.components.formatNumber
+import dev.idoodler.labimporter.ui.components.labelRes
+import dev.idoodler.labimporter.ui.design.AreaChart
+import dev.idoodler.labimporter.ui.design.CategoryBadge
+import dev.idoodler.labimporter.ui.design.CategoryWash
+import dev.idoodler.labimporter.ui.design.MorphingShape
+import dev.idoodler.labimporter.ui.design.StatTile
+import dev.idoodler.labimporter.ui.design.TrendBadge
+import dev.idoodler.labimporter.ui.design.color
+import dev.idoodler.labimporter.ui.design.dominantColors
+import dev.idoodler.labimporter.ui.design.tabular
+import dev.idoodler.labimporter.ui.design.tintedSurface
+import dev.idoodler.labimporter.ui.design.trendOf
+import dev.idoodler.labimporter.ui.design.welcomePalette
+import dev.idoodler.labimporter.ui.importflow.ImportActions
+import dev.idoodler.labimporter.ui.importflow.ImportOptionCards
 import dev.idoodler.labimporter.ui.preview.PreviewSamples
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
-import dev.idoodler.labimporter.ui.theme.harmonize
 import java.time.format.FormatStyle
 
-/** The latest value of every tracked metric, as adaptive cards with sparklines. */
+/** The latest value of every tracked metric over a wash of their category colours. */
 @Composable
 fun DashboardScreen(
     reports: List<LabReport>,
     preferences: LabDisplayPreferences,
     onOpenMetric: (String) -> Unit,
-    onImport: () -> Unit,
+    importActions: ImportActions,
     modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
+    onOpenReports: () -> Unit = {},
+    onOpenSettings: () -> Unit = {},
 ) {
+    val series = remember(reports, preferences) { reports.metricSeries(preferences) }
+    if (series.isEmpty() && isLoading) {
+        Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CategoryWash(welcomePalette, intensity = 0.6f)
+            LoadingIndicator(Modifier.size(64.dp))
+        }
+        return
+    }
+    if (series.isEmpty()) {
+        DashboardEmpty(importActions, onOpenReports.takeIf { reports.isNotEmpty() }, onOpenSettings, modifier)
+        return
+    }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     var query by rememberSaveable { mutableStateOf("") }
     var searching by rememberSaveable { mutableStateOf(false) }
-    val series = remember(reports, preferences) { reports.metricSeries(preferences) }
-    val filtered = remember(series, query) {
-        if (query.isBlank()) series else series.filter { it.name.contains(query, ignoreCase = true) || it.code.contains(query) }
+    var filter by rememberSaveable { mutableStateOf<LabCategory?>(null) }
+    val categories = remember(series) { series.groupingBy { it.category }.eachCount().entries.sortedByDescending { it.value } }
+    val filtered = remember(series, query, filter) {
+        series.filter { (filter == null || it.category == filter) && (query.isBlank() || it.name.contains(query, true) || it.code.contains(query)) }
     }
+    val wash = remember(series, filter) { filter?.let { listOf(it.color) } ?: dominantColors(series.map { it.category }) }
 
-    Scaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        floatingActionButton = { if (series.isNotEmpty()) ImportFab(onImport) },
-        topBar = {
-            LargeFlexibleTopAppBar(
-                title = { Text(stringResource(R.string.tab_dashboard)) },
-                subtitle = if (series.isNotEmpty()) {
-                    { Text(pluralStringResource(R.plurals.metric_count, series.size, series.size)) }
-                } else null,
-                actions = {
-                    if (series.isNotEmpty()) {
+    Box(modifier.fillMaxSize()) {
+        CategoryWash(wash)
+        Scaffold(
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            containerColor = Color.Transparent,
+            topBar = {
+                LargeFlexibleTopAppBar(
+                    title = { Text(stringResource(R.string.dashboard_title), fontWeight = FontWeight.Bold) },
+                    subtitle = { Text(pluralStringResource(R.plurals.metric_count, series.size, series.size)) },
+                    actions = {
                         IconButton(onClick = { searching = !searching; if (!searching) query = "" }) {
-                            Icon(Icons.Default.Search, stringResource(R.string.search))
+                            Icon(Icons.Rounded.Search, stringResource(R.string.search))
+                        }
+                        IconButton(onClick = onOpenReports) { Icon(Icons.Rounded.History, stringResource(R.string.history_title)) }
+                        IconButton(onClick = onOpenSettings) { Icon(Icons.Rounded.Settings, stringResource(R.string.tab_settings)) }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                        scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.94f),
+                    ),
+                    scrollBehavior = scrollBehavior,
+                )
+            },
+        ) { padding ->
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 164.dp),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = padding.calculateTopPadding(), bottom = 112.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                if (categories.size > 1) {
+                    item(span = { GridItemSpan(maxLineSpan) }, key = "filters") {
+                        CategoryFilterRow(categories.map { it.key to it.value }, filter) { filter = it }
+                    }
+                }
+                if (searching) {
+                    item(span = { GridItemSpan(maxLineSpan) }, key = "search") {
+                        OutlinedTextField(
+                            value = query, onValueChange = { query = it }, singleLine = true,
+                            placeholder = { Text(stringResource(R.string.search_metrics)) },
+                            leadingIcon = { Icon(Icons.Rounded.Search, null) },
+                            shape = CircleShape,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
+                }
+                filtered.forEach { metric ->
+                    val pinned = metric.code in preferences.pinnedSet
+                    if (pinned || filtered.size == 1) {
+                        item(key = metric.code, span = { GridItemSpan(maxLineSpan) }) {
+                            HeroMetricCard(metric, pinned, onClick = { onOpenMetric(metric.code) }, modifier = Modifier.animateItem())
+                        }
+                    } else {
+                        item(key = metric.code) {
+                            MetricCard(metric, onClick = { onOpenMetric(metric.code) }, modifier = Modifier.animateItem())
                         }
                     }
-                },
-                scrollBehavior = scrollBehavior,
-            )
-        },
-    ) { padding ->
-        if (series.isEmpty()) {
-            EmptyState(
-                title = stringResource(R.string.dashboard_empty_title),
-                message = stringResource(R.string.dashboard_empty_message),
-                modifier = Modifier.padding(padding),
-                action = {
-                    androidx.compose.material3.Button(onClick = onImport) { Text(stringResource(R.string.import_report)) }
-                },
-            )
-            return@Scaffold
-        }
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 168.dp),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = padding.calculateTopPadding(), bottom = 96.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            if (searching) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    OutlinedTextField(
-                        value = query, onValueChange = { query = it }, singleLine = true,
-                        placeholder = { Text(stringResource(R.string.search_metrics)) },
-                        leadingIcon = { Icon(Icons.Default.Search, null) },
-                        modifier = Modifier.fillMaxWidth(),
-                    )
                 }
-            }
-            items(filtered, key = { it.code }) { metric ->
-                MetricCard(metric, pinned = metric.code in preferences.pinnedSet, onClick = { onOpenMetric(metric.code) })
             }
         }
     }
 }
 
-/** The primary action on Dashboard and History. */
 @Composable
-fun ImportFab(onClick: () -> Unit) {
-    val label = stringResource(R.string.import_report)
-    androidx.compose.material3.ExtendedFloatingActionButton(
-        onClick = onClick,
-        // The extended FAB's label isn't exposed to accessibility services in
-        // material3 1.5 betas; describe it explicitly so TalkBack can read it.
-        modifier = Modifier.semantics { contentDescription = label },
-        icon = { Icon(Icons.Default.Add, null) },
-        text = { Text(stringResource(R.string.import_report)) },
-    )
+private fun CategoryFilterRow(categories: List<Pair<LabCategory, Int>>, selected: LabCategory?, onSelect: (LabCategory?) -> Unit) {
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(vertical = 2.dp)) {
+        item {
+            FilterChip(
+                selected = selected == null, onClick = { onSelect(null) },
+                label = { Text(stringResource(R.string.filter_all)) }, shape = CircleShape,
+            )
+        }
+        items(categories, key = { it.first.name }) { (category, count) ->
+            FilterChip(
+                selected = selected == category,
+                onClick = { onSelect(if (selected == category) null else category) },
+                label = { Text("${stringResource(category.labelRes)}  $count") },
+                leadingIcon = { Box(Modifier.size(10.dp).background(category.color, CircleShape)) },
+                shape = CircleShape,
+                colors = FilterChipDefaults.filterChipColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.7f),
+                    selectedContainerColor = tintedSurface(category.color, 0.35f),
+                ),
+            )
+        }
+    }
 }
 
+/** Grid card: badge + name, the latest value, its trend and a gradient sparkline. */
 @Composable
-fun MetricCard(metric: MetricSeries, pinned: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    val color = MaterialTheme.colorScheme.harmonize(Color(metric.category.argb))
+fun MetricCard(metric: MetricSeries, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val color = metric.category.color
     Card(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = tintedSurface(color, 0.12f).copy(alpha = 0.94f)),
+        shape = MaterialTheme.shapes.extraLarge,
     ) {
-        Column(Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                CategoryDot(color)
-                Spacer(Modifier.width(8.dp))
+        Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 12.dp)) {
+            Row(verticalAlignment = Alignment.Top) {
+                CategoryBadge(metric.category, size = 32.dp)
+                Spacer(Modifier.width(10.dp))
                 Text(
-                    metric.name, style = MaterialTheme.typography.titleSmall, maxLines = 2,
-                    overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f),
+                    metric.name, style = MaterialTheme.typography.titleSmall, maxLines = 2, minLines = 2,
+                    overflow = TextOverflow.Ellipsis, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.weight(1f),
                 )
-                if (pinned) Icon(Icons.Default.PushPin, stringResource(R.string.pinned), Modifier.padding(start = 4.dp).height(16.dp))
             }
             Spacer(Modifier.height(10.dp))
-            Row(verticalAlignment = Alignment.Bottom) {
-                Text(formatNumber(metric.latest.value), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
-                Spacer(Modifier.width(4.dp))
-                Text(
-                    metric.latest.unit, style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 4.dp),
-                )
-                Spacer(Modifier.weight(1f))
-                TrendIcon(metric)
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            ValueLine(metric, valueSize = 34)
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 2.dp)) {
                 Text(
                     formatDate(metric.latest.date, FormatStyle.MEDIUM), style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f),
                 )
                 RangeBadge(metric.rangeStatus)
+                trendOf(metric.previous?.value, metric.latest.value)?.let { TrendBadge(it, color, Modifier.padding(start = 6.dp)) }
             }
-            if (metric.points.size > 1) {
-                Spacer(Modifier.height(8.dp))
-                TrendChart(
-                    metric.points.map { it.value }, color, Modifier.fillMaxWidth().height(44.dp),
-                    strokeWidth = 2.dp, showPoints = false,
+            Spacer(Modifier.height(10.dp))
+            AreaChart(
+                metric.points.map { it.value }, color, Modifier.fillMaxWidth().height(64.dp),
+                range = metric.range, strokeWidth = 2.5.dp, showPoints = metric.points.size <= 8,
+            )
+        }
+    }
+}
+
+/** Full-width card for pinned metrics (or a lone one): bigger number, taller chart, min/max/avg. */
+@Composable
+fun HeroMetricCard(metric: MetricSeries, pinned: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val color = metric.category.color
+    val values = metric.points.map { it.value }
+    Card(
+        onClick = onClick,
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = tintedSurface(color, 0.18f).copy(alpha = 0.94f)),
+        shape = MaterialTheme.shapes.extraLarge,
+    ) {
+        Column(Modifier.padding(20.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                CategoryBadge(metric.category, size = 44.dp)
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(metric.name, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    Text(
+                        stringResource(metric.category.labelRes), style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                if (pinned) Icon(Icons.Rounded.PushPin, stringResource(R.string.pinned), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Spacer(Modifier.height(14.dp))
+            ValueLine(metric, valueSize = 52)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    formatDate(metric.latest.date, FormatStyle.LONG), style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f),
                 )
+                RangeBadge(metric.rangeStatus)
+                trendOf(metric.previous?.value, metric.latest.value)?.let { TrendBadge(it, color, Modifier.padding(start = 6.dp), size = 26.dp) }
+            }
+            AreaChart(
+                values, color, Modifier.fillMaxWidth().height(132.dp).padding(top = 12.dp),
+                range = metric.range, showPoints = values.size <= 12,
+            )
+            if (values.size > 1) {
+                Row(Modifier.fillMaxWidth().padding(top = 12.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+                    StatTile(formatNumber(values.min()), stringResource(R.string.stat_min))
+                    StatTile(formatNumber(values.average()), stringResource(R.string.stat_avg))
+                    StatTile(formatNumber(values.max()), stringResource(R.string.stat_max))
+                }
             }
         }
     }
 }
 
 @Composable
-private fun TrendIcon(metric: MetricSeries) {
-    val previous = metric.previous ?: return
-    val delta = metric.latest.value - previous.value
-    val icon = when {
-        delta > 1e-9 -> Icons.AutoMirrored.Filled.TrendingUp
-        delta < -1e-9 -> Icons.AutoMirrored.Filled.TrendingDown
-        else -> Icons.AutoMirrored.Filled.TrendingFlat
+private fun ValueLine(metric: MetricSeries, valueSize: Int) {
+    Row(verticalAlignment = Alignment.Bottom) {
+        Text(
+            formatNumber(metric.latest.value),
+            style = MaterialTheme.typography.displaySmallEmphasized.tabular().copy(fontSize = valueSize.sp, lineHeight = (valueSize + 4).sp),
+            fontWeight = FontWeight.Bold,
+            color = if (metric.rangeStatus?.isOutOfRange == true) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+        )
+        Spacer(Modifier.width(5.dp))
+        Text(
+            metric.latest.unit, style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = (valueSize / 7).dp),
+        )
     }
-    Icon(icon, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
 }
 
-@Preview(name = "Populated", widthDp = 400, heightDp = 800)
+/** First run: a living wash, morphing art and the four ways to import. */
+@Composable
+private fun DashboardEmpty(
+    importActions: ImportActions,
+    onOpenReports: (() -> Unit)?,
+    onOpenSettings: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier.fillMaxSize()) {
+        CategoryWash(welcomePalette, animated = true)
+        Row(Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(4.dp)) {
+            if (onOpenReports != null) {
+                IconButton(onClick = onOpenReports) { Icon(Icons.Rounded.History, stringResource(R.string.history_title)) }
+            }
+            IconButton(onClick = onOpenSettings) { Icon(Icons.Rounded.Settings, stringResource(R.string.tab_settings)) }
+        }
+        Column(
+            Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding().navigationBarsPadding()
+                .padding(horizontal = 20.dp, vertical = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Spacer(Modifier.height(40.dp))
+            MorphingShape(welcomePalette, 176.dp) {
+                Box(Modifier.size(112.dp).background(MaterialTheme.colorScheme.surface.copy(alpha = 0.92f), CircleShape), contentAlignment = Alignment.Center) {
+                    Image(painterResource(R.drawable.ic_launcher_foreground_art), null, Modifier.size(104.dp))
+                }
+            }
+            Spacer(Modifier.height(24.dp))
+            Text(
+                stringResource(R.string.import_title), style = MaterialTheme.typography.headlineLargeEmphasized,
+                fontWeight = FontWeight.Bold, textAlign = TextAlign.Center,
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                stringResource(R.string.import_subtitle), style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center,
+            )
+            Spacer(Modifier.height(28.dp))
+            ImportOptionCards(importActions, Modifier.widthIn(max = 520.dp))
+        }
+    }
+}
+
+private val previewActions = ImportActions({}, {}, {}, {}, {})
+
+@Preview(name = "Populated", widthDp = 400, heightDp = 900)
 @Composable
 private fun DashboardPopulatedPreview() {
     LabImporterTheme(dynamicColor = false) {
-        DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(pinnedCodes = listOf("4548-4")), {}, {})
+        DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(pinnedCodes = listOf("4548-4")), {}, previewActions)
     }
 }
 
-@Preview(name = "Dark", widthDp = 400, heightDp = 800, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "Dark", widthDp = 400, heightDp = 900, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun DashboardDarkPreview() {
     LabImporterTheme(darkTheme = true, dynamicColor = false) {
-        DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, {})
+        DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, previewActions)
     }
 }
 
-@Preview(name = "Empty", widthDp = 400, heightDp = 800)
+@Preview(name = "Empty", widthDp = 400, heightDp = 900)
 @Composable
 private fun DashboardEmptyPreview() {
-    LabImporterTheme(dynamicColor = false) { DashboardScreen(emptyList(), LabDisplayPreferences(), {}, {}) }
+    LabImporterTheme(dynamicColor = false) { DashboardScreen(emptyList(), LabDisplayPreferences(), {}, previewActions) }
+}
+
+@Preview(name = "Empty – dark", widthDp = 400, heightDp = 900, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun DashboardEmptyDarkPreview() {
+    LabImporterTheme(darkTheme = true, dynamicColor = false) { DashboardScreen(emptyList(), LabDisplayPreferences(), {}, previewActions) }
 }
 
 @Preview(name = "Tablet", widthDp = 900, heightDp = 640)
 @Composable
 private fun DashboardTabletPreview() {
     LabImporterTheme(dynamicColor = false) {
-        DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, {})
+        DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, previewActions)
     }
 }

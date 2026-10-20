@@ -64,6 +64,13 @@ class PureLogicTest {
     }
 
     @Test
+    fun heuristicParserSkipsDates() {
+        val report = HeuristicLabParser.parse("Befund vom 10.09.2026; Kalium: 4,6 mmol/l")
+        assertEquals(listOf("Kalium"), report.entries.map { it.code })
+        assertEquals("2026-09-10", report.reportDate)
+    }
+
+    @Test
     fun scansDates() {
         assertEquals(LocalDate(2026, 5, 6), DateScanner.firstDate("Abnahme 6.5.2026 08:00"))
     }

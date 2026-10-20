@@ -81,4 +81,26 @@
     <string name="settings_about">Про застосунок</string>
     <string name="privacy_message">Усе відбувається на пристрої. LabImporter ніколи не передає ваші лабораторні дані.</string>
     <string name="loinc_catalog">Каталог LOINC</string>
+    <string name="dashboard_title">Результати аналізів</string>
+    <string name="history_title">Звіти</string>
+    <string name="filter_all">Усе</string>
+    <string name="stat_min">Мін</string>
+    <string name="stat_max">Макс</string>
+    <string name="stat_avg">Сер</string>
+    <string name="stat_reports">Звіти</string>
+    <string name="stat_values">Лабораторні значення</string>
+    <string name="stat_categories">Категорії</string>
+    <string name="window_3m">3 міс</string>
+    <string name="window_6m">6 міс</string>
+    <string name="window_1y">1 рік</string>
+    <string name="window_all">Усе</string>
+    <string name="trend_up">Зростає</string>
+    <string name="trend_down">Спадає</string>
+    <string name="trend_flat">Без змін</string>
+    <string name="lab_report">Лабораторний звіт</string>
+    <string name="lab_values">Лабораторні значення</string>
+    <string name="ready_to_save">Готово до збереження</string>
+    <string name="duplicates_short">Дублікат</string>
+    <string name="welcome_to">Ласкаво просимо до</string>
+    <string name="version">Версія</string>
 </resources>

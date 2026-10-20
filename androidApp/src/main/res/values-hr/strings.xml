@@ -81,4 +81,26 @@
     <string name="settings_about">O aplikaciji</string>
     <string name="privacy_message">Sve se odvija na uređaju. LabImporter nikada ne prenosi vaše laboratorijske podatke.</string>
     <string name="loinc_catalog">LOINC katalog</string>
+    <string name="dashboard_title">Laboratorijski rezultati</string>
+    <string name="history_title">Izvješća</string>
+    <string name="filter_all">Sve</string>
+    <string name="stat_min">Min</string>
+    <string name="stat_max">Maks</string>
+    <string name="stat_avg">Pros</string>
+    <string name="stat_reports">Izvješća</string>
+    <string name="stat_values">Laboratorijske vrijednosti</string>
+    <string name="stat_categories">Kategorije</string>
+    <string name="window_3m">3mj</string>
+    <string name="window_6m">6mj</string>
+    <string name="window_1y">1g</string>
+    <string name="window_all">Sve</string>
+    <string name="trend_up">Trend rasta</string>
+    <string name="trend_down">Trend pada</string>
+    <string name="trend_flat">Bez promjene</string>
+    <string name="lab_report">Laboratorijski nalaz</string>
+    <string name="lab_values">Laboratorijske vrijednosti</string>
+    <string name="ready_to_save">Spremno za spremanje</string>
+    <string name="duplicates_short">Duplikat</string>
+    <string name="welcome_to">Dobro došli u</string>
+    <string name="version">Verzija</string>
 </resources>

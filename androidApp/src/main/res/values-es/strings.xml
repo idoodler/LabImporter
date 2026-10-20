@@ -79,4 +79,26 @@
     <string name="settings_about">Información</string>
     <string name="privacy_message">Todo se procesa en tu dispositivo. LabImporter nunca transmite tus datos de laboratorio.</string>
     <string name="loinc_catalog">Catálogo LOINC</string>
+    <string name="dashboard_title">Resultados de laboratorio</string>
+    <string name="history_title">Informes</string>
+    <string name="filter_all">Todo</string>
+    <string name="stat_min">Mín</string>
+    <string name="stat_max">Máx</string>
+    <string name="stat_avg">Prom</string>
+    <string name="stat_reports">Informes</string>
+    <string name="stat_values">Valores de laboratorio</string>
+    <string name="stat_categories">Categorías</string>
+    <string name="window_3m">3 M</string>
+    <string name="window_6m">6 M</string>
+    <string name="window_1y">1 A</string>
+    <string name="window_all">Todo</string>
+    <string name="trend_up">Tendencia al alza</string>
+    <string name="trend_down">Tendencia a la baja</string>
+    <string name="trend_flat">Sin cambios</string>
+    <string name="lab_report">Informe de laboratorio</string>
+    <string name="lab_values">Valores de laboratorio</string>
+    <string name="ready_to_save">Listo para guardar</string>
+    <string name="duplicates_short">Duplicado</string>
+    <string name="welcome_to">^[Bienvenido](inflect: true) a</string>
+    <string name="version">Versión</string>
 </resources>

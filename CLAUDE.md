@@ -251,8 +251,13 @@ shared/        # Kotlin Multiplatform (android, iosArm64, iosSimulatorArm64, jvm
 androidApp/    # Jetpack Compose, Material 3 Expressive, dynamic colour
   ai/LabParserService    # Gemini Nano (ML Kit GenAI Prompt API) → rule-based fallback
   data/                  # HealthConnectReportStore (FHIR Medical Records), LocalReportStore
-  ui/                    # dashboard, history, import, review, settings, onboarding
+  ui/design/             # design system: category colour/icon/shape (CategoryStyle), CategoryWash
+                         #   backgrounds, ShapeBadge/CategoryChip/TrendBadge, AreaChart, grouped lists,
+                         #   MorphingShape
+  ui/                    # dashboard (home), trends, reports, report detail, import, review,
+                         #   settings, onboarding
 tools/xcstrings_to_android.py  # copies iOS translations into values-<lang>/strings.xml
+tools/generate_android_icon.py # layered adaptive launcher icon (+ night + monochrome) from the iOS icon art
 ```
 
 - **Business logic belongs in `shared/`** whenever both platforms need it. The
@@ -277,6 +282,18 @@ tools/xcstrings_to_android.py  # copies iOS translations into values-<lang>/stri
   `python3 tools/xcstrings_to_android.py` — it regenerates every
   `values-<lang>/strings.xml` (don't edit those) and lists Android-only strings
   still needing translation into all shipped languages.
+- **Android look & navigation:** Material 3 Expressive with dynamic colour, but
+  every screen sits on a `CategoryWash` (the Android counterpart of the iOS
+  `CategoryBackground`) and each clinical category has one colour (shared
+  with iOS), one Material symbol and one `MaterialShapes` badge
+  (`ui/design/CategoryStyle.kt`) — reuse those instead of ad-hoc colours.
+  There is deliberately **no tab bar**: the dashboard is home, Reports and
+  Settings open from its top bar, details push on a back stack with predictive
+  back, and importing is a FAB menu (`ImportFabMenu`).
+- **Launcher icon:** generated — run `python3 tools/generate_android_icon.py`
+  (add `--preview DIR` for SVG previews). Background layer = gradient + card,
+  foreground layer = heart, plus night variants and the themed-icon monochrome
+  layer. Don't hand-edit the generated `ic_launcher_*` drawables.
 - **Previews:** the same rule as SwiftUI — every composable screen ships
   `@Preview`s for its variations (empty/populated, light/dark, sizes).
 - Build: `./gradlew :shared:jvmTest :androidApp:assembleRelease`

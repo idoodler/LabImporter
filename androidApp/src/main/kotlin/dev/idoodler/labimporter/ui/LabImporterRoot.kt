@@ -1,68 +1,96 @@
 package dev.idoodler.labimporter.ui
 
+import androidx.activity.BackEventCompat
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.PredictiveBackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Dashboard
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.Dashboard
-import androidx.compose.material.icons.outlined.History
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Icon
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.Surface
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import androidx.health.connect.client.PermissionController
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.idoodler.labimporter.R
+import dev.idoodler.labimporter.core.model.LabReport
 import dev.idoodler.labimporter.ui.dashboard.DashboardScreen
 import dev.idoodler.labimporter.ui.dashboard.TrendScreen
 import dev.idoodler.labimporter.ui.history.HistoryScreen
 import dev.idoodler.labimporter.ui.history.ReportDetailScreen
-import dev.idoodler.labimporter.ui.importflow.ImportSheet
+import dev.idoodler.labimporter.ui.importflow.ImportActions
+import dev.idoodler.labimporter.ui.importflow.ImportFabMenu
 import dev.idoodler.labimporter.ui.importflow.PasteTextScreen
 import dev.idoodler.labimporter.ui.importflow.ProcessingDialog
+import dev.idoodler.labimporter.ui.importflow.rememberImportActions
 import dev.idoodler.labimporter.ui.onboarding.OnboardingScreen
 import dev.idoodler.labimporter.ui.review.ReviewScreen
 import dev.idoodler.labimporter.ui.settings.SettingsScreen
-
-enum class Tab(val label: Int, val icon: ImageVector, val selectedIcon: ImageVector) {
-    DASHBOARD(R.string.tab_dashboard, Icons.Outlined.Dashboard, Icons.Filled.Dashboard),
-    HISTORY(R.string.tab_history, Icons.Outlined.History, Icons.Filled.History),
-    SETTINGS(R.string.tab_settings, Icons.Outlined.Settings, Icons.Filled.Settings),
-}
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.Flow
 
 /**
- * App shell. A `NavigationSuiteScaffold` adapts between bottom bar (phones),
- * rail (tablets/foldables) and drawer (desktop windows) — the Android
- * equivalent of the iOS tab bar ⇄ iPad sidebar.
+ * Where the user is. The dashboard is home — like the iOS app there's no tab
+ * bar: Reports and Settings open from the dashboard's top bar, and metric /
+ * report details push on top. Encoded as strings so the stack survives
+ * process death via `rememberSaveable`.
  */
+private sealed interface Destination {
+    data object Home : Destination
+    data object Reports : Destination
+    data object Settings : Destination
+    data class Trend(val code: String) : Destination
+    data class Report(val id: String) : Destination
+
+    fun encode(): String = when (this) {
+        Home -> "home"
+        Reports -> "reports"
+        Settings -> "settings"
+        is Trend -> "trend:$code"
+        is Report -> "report:$id"
+    }
+
+    companion object {
+        fun decode(raw: String): Destination = when {
+            raw == "reports" -> Reports
+            raw == "settings" -> Settings
+            raw.startsWith("trend:") -> Trend(raw.removePrefix("trend:"))
+            raw.startsWith("report:") -> Report(raw.removePrefix("report:"))
+            else -> Home
+        }
+    }
+}
+
+/** App shell: onboarding, the review flow, and a back stack rooted at the dashboard. */
 @Composable
 fun LabImporterRoot(viewModel: AppViewModel) {
     val hasSeenWelcome by viewModel.hasSeenWelcome.collectAsStateWithLifecycle()
@@ -104,7 +132,7 @@ fun LabImporterRoot(viewModel: AppViewModel) {
         return
     }
 
-    MainScaffold(viewModel, healthConnect, connectHealthConnect, onPaste = { pasting = true })
+    Navigator(viewModel, healthConnect, connectHealthConnect, onPaste = { pasting = true })
 
     when (val state = importState) {
         ImportState.ReadingDocument -> ProcessingDialog(null, viewModel::cancelImport)
@@ -120,91 +148,144 @@ fun LabImporterRoot(viewModel: AppViewModel) {
 }
 
 @Composable
-private fun MainScaffold(
+private fun Navigator(
     viewModel: AppViewModel,
     healthConnect: HealthConnectState,
     connectHealthConnect: () -> Unit,
     onPaste: () -> Unit,
 ) {
     val reports by viewModel.reports.collectAsStateWithLifecycle()
-    val preferences by viewModel.displayPreferences.collectAsStateWithLifecycle()
-    val patientName by viewModel.patientName.collectAsStateWithLifecycle()
-    val aiStatus by viewModel.aiStatus.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val message by viewModel.message.collectAsStateWithLifecycle()
 
-    var tab by rememberSaveable { mutableStateOf(Tab.DASHBOARD) }
-    var metric by rememberSaveable { mutableStateOf<String?>(null) }
-    var reportId by rememberSaveable { mutableStateOf<String?>(null) }
-    var showImport by rememberSaveable { mutableStateOf(false) }
-    val snackbar = remember { SnackbarHostState() }
+    var stack by rememberSaveable { mutableStateOf(listOf("home")) }
+    val current = Destination.decode(stack.last())
+    val push = { d: Destination -> stack = stack + d.encode() }
+    val pop = { if (stack.size > 1) stack = stack.dropLast(1) }
 
+    // A report that was deleted (or edited away) can't stay on screen.
+    LaunchedEffect(reports, current) {
+        if (current is Destination.Report && !isLoading && reports.none { it.id == current.id }) pop()
+    }
+
+    val snackbar = remember { SnackbarHostState() }
     LaunchedEffect(message) {
         message?.let { snackbar.showSnackbar(it); viewModel.consumeMessage() }
     }
 
-    NavigationSuiteScaffold(
-        navigationSuiteItems = {
-            Tab.entries.forEach { item ->
-                item(
-                    selected = tab == item,
-                    onClick = { tab = item; metric = null; reportId = null },
-                    icon = { Icon(if (tab == item) item.selectedIcon else item.icon, null) },
-                    label = { Text(stringResource(item.label)) },
-                )
-            }
-        },
-    ) {
-        Box(Modifier.fillMaxSize()) {
-            val selectedReport = reports.firstOrNull { it.id == reportId }
-            AnimatedContent(
-                targetState = Triple(tab, metric, selectedReport?.id),
-                transitionSpec = { fadeIn() togetherWith fadeOut() },
-                label = "content",
-            ) { (currentTab, currentMetric, currentReportId) ->
-                val currentReport = reports.firstOrNull { it.id == currentReportId }
-                when {
-                    currentTab == Tab.DASHBOARD && currentMetric != null -> {
-                        BackHandler { metric = null }
-                        TrendScreen(currentMetric, reports, preferences, viewModel::updateDisplayPreferences, onBack = { metric = null })
-                    }
-                    currentTab == Tab.HISTORY && currentReport != null -> {
-                        BackHandler { reportId = null }
-                        ReportDetailScreen(
-                            report = currentReport,
-                            onBack = { reportId = null },
-                            onEdit = { viewModel.editReport(currentReport) },
-                            onDelete = { reportId = null; viewModel.deleteReport(currentReport) },
-                            exportCda = { viewModel.exportCda(currentReport) },
-                        )
-                    }
-                    currentTab == Tab.DASHBOARD -> DashboardScreen(reports, preferences, { metric = it }, { showImport = true })
-                    currentTab == Tab.HISTORY -> HistoryScreen(reports, { reportId = it.id }, onImport = { showImport = true })
-                    else -> SettingsScreen(
-                        patientName = patientName,
-                        onPatientName = viewModel::setPatientName,
-                        healthConnect = healthConnect,
-                        onConnectHealthConnect = connectHealthConnect,
-                        onUseHealthConnect = viewModel::setUseHealthConnect,
-                        aiStatus = aiStatus,
-                        onDownloadModel = viewModel::downloadModel,
-                        preferences = preferences,
-                        onUpdatePreferences = viewModel::updateDisplayPreferences,
-                        softwareIdentity = viewModel.softwareIdentity,
-                    )
-                }
-            }
-            SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = 88.dp))
+    val importActions = rememberImportActions(
+        onDocuments = viewModel::importDocuments,
+        onPaste = onPaste,
+        onManual = viewModel::startManualEntry,
+        onPrewarm = viewModel::prewarm,
+        onError = { },
+    )
+
+    // Predictive back: the current screen shrinks toward the edge with the
+    // gesture, revealing the previous one underneath (Android 14+ style).
+    var backProgress by remember { mutableFloatStateOf(0f) }
+    var backFromLeft by remember { mutableStateOf(true) }
+    PredictiveBackHandler(enabled = stack.size > 1) { events: Flow<BackEventCompat> ->
+        try {
+            events.collect { backProgress = it.progress; backFromLeft = it.swipeEdge == BackEventCompat.EDGE_LEFT }
+            backProgress = 0f
+            pop()
+        } catch (e: CancellationException) {
+            backProgress = 0f
+            throw e
         }
     }
 
-    if (showImport) {
-        ImportSheet(
-            onDismiss = { showImport = false },
-            onDocuments = { showImport = false; viewModel.importDocuments(it) },
-            onPaste = { showImport = false; onPaste() },
-            onManual = { showImport = false; viewModel.startManualEntry() },
-            onPrewarm = viewModel::prewarm,
-            onError = { showImport = false },
+    Box(Modifier.fillMaxSize()) {
+        if (backProgress > 0f && stack.size > 1) {
+            Screen(Destination.decode(stack[stack.size - 2]), viewModel, reports, isLoading, healthConnect, connectHealthConnect, importActions, push, pop)
+        }
+        AnimatedContent(
+            targetState = stack,
+            transitionSpec = {
+                val forward = targetState.size >= initialState.size
+                val spec = tween<IntOffset>(380)
+                if (forward) {
+                    (slideInHorizontally(spec) { it / 4 } + fadeIn()) togetherWith (slideOutHorizontally(spec) { -it / 8 } + fadeOut())
+                } else {
+                    (slideInHorizontally(spec) { -it / 8 } + fadeIn()) togetherWith (slideOutHorizontally(spec) { it / 4 } + fadeOut())
+                }
+            },
+            contentKey = { it.last() },
+            label = "nav",
+            modifier = Modifier.graphicsLayer {
+                val p = backProgress
+                if (p > 0f) {
+                    val scale = 1f - 0.1f * p
+                    scaleX = scale
+                    scaleY = scale
+                    translationX = (if (backFromLeft) 1 else -1) * 24.dp.toPx() * p
+                    shape = RoundedCornerShape(32.dp * p)
+                    clip = true
+                }
+            },
+        ) { target ->
+            // Opaque so the screen underneath only shows through the predictive-back inset.
+            Surface(color = MaterialTheme.colorScheme.surface, modifier = Modifier.fillMaxSize()) {
+                Screen(Destination.decode(target.last()), viewModel, reports, isLoading, healthConnect, connectHealthConnect, importActions, push, pop)
+            }
+        }
+        val showFab = (current is Destination.Home || current is Destination.Reports) && reports.isNotEmpty()
+        if (showFab && backProgress == 0f) ImportFabMenu(importActions, Modifier.navigationBarsPadding().padding(end = 4.dp, bottom = 4.dp))
+        SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = 88.dp))
+    }
+}
+
+@Composable
+private fun Screen(
+    destination: Destination,
+    viewModel: AppViewModel,
+    reports: List<LabReport>,
+    isLoading: Boolean,
+    healthConnect: HealthConnectState,
+    connectHealthConnect: () -> Unit,
+    importActions: ImportActions,
+    push: (Destination) -> Unit,
+    pop: () -> Unit,
+) {
+    val preferences by viewModel.displayPreferences.collectAsStateWithLifecycle()
+    when (destination) {
+        Destination.Home -> DashboardScreen(
+            reports, preferences,
+            onOpenMetric = { push(Destination.Trend(it)) },
+            importActions = importActions,
+            isLoading = isLoading,
+            onOpenReports = { push(Destination.Reports) },
+            onOpenSettings = { push(Destination.Settings) },
         )
+        Destination.Reports -> HistoryScreen(reports, onOpenReport = { push(Destination.Report(it.id)) }, onBack = pop)
+        Destination.Settings -> {
+            val patientName by viewModel.patientName.collectAsStateWithLifecycle()
+            val aiStatus by viewModel.aiStatus.collectAsStateWithLifecycle()
+            SettingsScreen(
+                patientName = patientName,
+                onPatientName = viewModel::setPatientName,
+                healthConnect = healthConnect,
+                onConnectHealthConnect = connectHealthConnect,
+                onUseHealthConnect = viewModel::setUseHealthConnect,
+                aiStatus = aiStatus,
+                onDownloadModel = viewModel::downloadModel,
+                preferences = preferences,
+                onUpdatePreferences = viewModel::updateDisplayPreferences,
+                softwareIdentity = viewModel.softwareIdentity,
+                onBack = pop,
+            )
+        }
+        is Destination.Trend -> TrendScreen(destination.code, reports, preferences, viewModel::updateDisplayPreferences, onBack = pop)
+        is Destination.Report -> {
+            val report = reports.firstOrNull { it.id == destination.id } ?: return
+            ReportDetailScreen(
+                report = report,
+                onBack = pop,
+                onEdit = { viewModel.editReport(report) },
+                onDelete = { viewModel.deleteReport(report) },
+                exportCda = { viewModel.exportCda(report) },
+            )
+        }
     }
 }

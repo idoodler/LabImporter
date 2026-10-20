@@ -79,4 +79,26 @@
     <string name="settings_about">Over</string>
     <string name="privacy_message">Alles gebeurt op je apparaat. LabImporter verstuurt je labgegevens nooit.</string>
     <string name="loinc_catalog">LOINC-catalogus</string>
+    <string name="dashboard_title">Labresultaten</string>
+    <string name="history_title">Rapporten</string>
+    <string name="filter_all">Alles</string>
+    <string name="stat_min">Min</string>
+    <string name="stat_max">Max</string>
+    <string name="stat_avg">Gem</string>
+    <string name="stat_reports">Rapporten</string>
+    <string name="stat_values">Labwaarden</string>
+    <string name="stat_categories">Categorieën</string>
+    <string name="window_3m">3 mnd</string>
+    <string name="window_6m">6 mnd</string>
+    <string name="window_1y">1 jr</string>
+    <string name="window_all">Alles</string>
+    <string name="trend_up">Stijgend</string>
+    <string name="trend_down">Dalend</string>
+    <string name="trend_flat">Geen verandering</string>
+    <string name="lab_report">Labrapport</string>
+    <string name="lab_values">Labwaarden</string>
+    <string name="ready_to_save">Klaar om op te slaan</string>
+    <string name="duplicates_short">Dubbel</string>
+    <string name="welcome_to">Welkom bij</string>
+    <string name="version">Versie</string>
 </resources>

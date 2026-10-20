@@ -81,4 +81,26 @@
     <string name="settings_about">Despre</string>
     <string name="privacy_message">Totul se procesează pe dispozitiv. LabImporter nu transmite niciodată datele tale de laborator.</string>
     <string name="loinc_catalog">Catalog LOINC</string>
+    <string name="dashboard_title">Rezultate de laborator</string>
+    <string name="history_title">Rapoarte</string>
+    <string name="filter_all">Tot</string>
+    <string name="stat_min">Min</string>
+    <string name="stat_max">Max</string>
+    <string name="stat_avg">Med</string>
+    <string name="stat_reports">Rapoarte</string>
+    <string name="stat_values">Valori de laborator</string>
+    <string name="stat_categories">Categorii</string>
+    <string name="window_3m">3 l</string>
+    <string name="window_6m">6 l</string>
+    <string name="window_1y">1 a</string>
+    <string name="window_all">Tot</string>
+    <string name="trend_up">În creștere</string>
+    <string name="trend_down">În scădere</string>
+    <string name="trend_flat">Fără modificare</string>
+    <string name="lab_report">Raport de laborator</string>
+    <string name="lab_values">Valori de laborator</string>
+    <string name="ready_to_save">Gata de salvare</string>
+    <string name="duplicates_short">Duplicat</string>
+    <string name="welcome_to">Bun venit la</string>
+    <string name="version">Versiune</string>
 </resources>

@@ -3,6 +3,8 @@ package dev.idoodler.labimporter.ui.theme
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.darkColorScheme
@@ -64,8 +66,12 @@ fun LabImporterTheme(
     MaterialExpressiveTheme(
         colorScheme = colorScheme,
         motionScheme = MotionScheme.expressive(),
-        content = content,
-    )
+    ) {
+        // Screens draw their own category wash instead of sitting in a Surface,
+        // so make onSurface the default content colour (otherwise text falls
+        // back to black, which disappears in dark mode).
+        CompositionLocalProvider(LocalContentColor provides colorScheme.onSurface, content = content)
+    }
 }
 
 /**

@@ -80,4 +80,26 @@
     <string name="settings_about">Om</string>
     <string name="privacy_message">Alt kører på enheden. LabImporter sender aldrig dine laboratoriedata.</string>
     <string name="loinc_catalog">LOINC-katalog</string>
+    <string name="dashboard_title">Laboratorieresultater</string>
+    <string name="history_title">Rapporter</string>
+    <string name="filter_all">Alle</string>
+    <string name="stat_min">Min.</string>
+    <string name="stat_max">Maks.</string>
+    <string name="stat_avg">Gns.</string>
+    <string name="stat_reports">Rapporter</string>
+    <string name="stat_values">Laboratorieværdier</string>
+    <string name="stat_categories">Kategorier</string>
+    <string name="window_3m">3 mdr</string>
+    <string name="window_6m">6 mdr</string>
+    <string name="window_1y">1 år</string>
+    <string name="window_all">Alle</string>
+    <string name="trend_up">Stigende</string>
+    <string name="trend_down">Faldende</string>
+    <string name="trend_flat">Uændret</string>
+    <string name="lab_report">Laboratorierapport</string>
+    <string name="lab_values">Laboratorieværdier</string>
+    <string name="ready_to_save">Klar til at gemme</string>
+    <string name="duplicates_short">Dublet</string>
+    <string name="welcome_to">Velkommen til</string>
+    <string name="version">Version</string>
 </resources>

@@ -79,4 +79,26 @@
     <string name="settings_about">Hakkında</string>
     <string name="privacy_message">Her şey cihazda işlenir. LabImporter laboratuvar verilerinizi asla aktarmaz.</string>
     <string name="loinc_catalog">LOINC kataloğu</string>
+    <string name="dashboard_title">Laboratuvar Sonuçları</string>
+    <string name="history_title">Raporlar</string>
+    <string name="filter_all">Tümü</string>
+    <string name="stat_min">Min</string>
+    <string name="stat_max">Maks</string>
+    <string name="stat_avg">Ort</string>
+    <string name="stat_reports">Raporlar</string>
+    <string name="stat_values">Laboratuvar Değerleri</string>
+    <string name="stat_categories">Kategoriler</string>
+    <string name="window_3m">3 Ay</string>
+    <string name="window_6m">6 Ay</string>
+    <string name="window_1y">1 Yıl</string>
+    <string name="window_all">Tümü</string>
+    <string name="trend_up">Yükseliyor</string>
+    <string name="trend_down">Düşüyor</string>
+    <string name="trend_flat">Değişiklik yok</string>
+    <string name="lab_report">Laboratuvar Raporu</string>
+    <string name="lab_values">Laboratuvar Değerleri</string>
+    <string name="ready_to_save">Kaydetmeye hazır</string>
+    <string name="duplicates_short">Yinelenen</string>
+    <string name="welcome_to">Hoş Geldiniz</string>
+    <string name="version">Sürüm</string>
 </resources>

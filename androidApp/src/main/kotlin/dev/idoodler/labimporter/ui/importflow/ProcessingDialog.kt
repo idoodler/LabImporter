@@ -1,7 +1,11 @@
 package dev.idoodler.labimporter.ui.importflow
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -36,12 +40,13 @@ fun ProcessingDialog(progress: ParseProgress?, onCancel: () -> Unit) {
 @Composable
 private fun ProcessingCard(progress: ParseProgress?, onCancel: () -> Unit) {
     Surface(shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surfaceContainerHigh) {
+      Box(Modifier.background(Brush.verticalGradient(listOf(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f), Color.Transparent)))) {
         Column(
             Modifier.padding(28.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            ContainedLoadingIndicator(Modifier.size(72.dp))
+            ContainedLoadingIndicator(Modifier.size(88.dp))
             Text(
                 stringResource(if (progress == null) R.string.processing_reading else R.string.processing_parsing),
                 style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center,
@@ -57,6 +62,7 @@ private fun ProcessingCard(progress: ParseProgress?, onCancel: () -> Unit) {
             }
             TextButton(onClick = onCancel) { Text(stringResource(R.string.cancel)) }
         }
+      }
     }
 }
 

@@ -79,4 +79,26 @@
     <string name="settings_about">情報</string>
     <string name="privacy_message">すべてデバイス上で処理されます。LabImporterが検査データを送信することはありません。</string>
     <string name="loinc_catalog">LOINCカタログ</string>
+    <string name="dashboard_title">検査結果</string>
+    <string name="history_title">レポート</string>
+    <string name="filter_all">すべて</string>
+    <string name="stat_min">最小</string>
+    <string name="stat_max">最大</string>
+    <string name="stat_avg">平均</string>
+    <string name="stat_reports">レポート</string>
+    <string name="stat_values">検査値</string>
+    <string name="stat_categories">カテゴリ</string>
+    <string name="window_3m">3か月</string>
+    <string name="window_6m">6か月</string>
+    <string name="window_1y">1年</string>
+    <string name="window_all">すべて</string>
+    <string name="trend_up">上昇傾向</string>
+    <string name="trend_down">下降傾向</string>
+    <string name="trend_flat">変化なし</string>
+    <string name="lab_report">検査レポート</string>
+    <string name="lab_values">検査値</string>
+    <string name="ready_to_save">保存の準備完了</string>
+    <string name="duplicates_short">重複</string>
+    <string name="welcome_to">ようこそ</string>
+    <string name="version">バージョン</string>
 </resources>

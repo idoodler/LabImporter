@@ -2,70 +2,102 @@ package dev.idoodler.labimporter.ui.dashboard
 
 import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.OpenInNew
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.outlined.PushPin
-import androidx.compose.material.icons.filled.Straighten
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.PushPin
+import androidx.compose.material.icons.rounded.Straighten
+import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
+import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.ToggleButton
+import androidx.compose.material3.ToggleButtonDefaults
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import dev.idoodler.labimporter.R
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.core.model.LabMapping
 import dev.idoodler.labimporter.core.model.LabReport
+import dev.idoodler.labimporter.core.model.MetricPoint
 import dev.idoodler.labimporter.core.model.ReferenceRange
 import dev.idoodler.labimporter.core.model.metricSeries
 import dev.idoodler.labimporter.ui.components.RangeBadge
-import dev.idoodler.labimporter.ui.components.TrendChart
 import dev.idoodler.labimporter.ui.components.formatDate
 import dev.idoodler.labimporter.ui.components.formatNumber
 import dev.idoodler.labimporter.ui.components.labelRes
 import dev.idoodler.labimporter.ui.components.parseNumberInput
+import dev.idoodler.labimporter.ui.design.AreaChart
+import dev.idoodler.labimporter.ui.design.CategoryBadge
+import dev.idoodler.labimporter.ui.design.CategoryWash
+import dev.idoodler.labimporter.ui.design.GroupedListItem
+import dev.idoodler.labimporter.ui.design.SectionTitle
+import dev.idoodler.labimporter.ui.design.StatTile
+import dev.idoodler.labimporter.ui.design.TrendBadge
+import dev.idoodler.labimporter.ui.design.accentFor
+import dev.idoodler.labimporter.ui.design.color
+import dev.idoodler.labimporter.ui.design.tabular
+import dev.idoodler.labimporter.ui.design.tintedSurface
+import dev.idoodler.labimporter.ui.design.trendOf
 import dev.idoodler.labimporter.ui.preview.PreviewSamples
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
-import dev.idoodler.labimporter.ui.theme.harmonize
+import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.minus
+import java.time.format.FormatStyle
 
-/** One metric over time: chart, readings, and per-metric display settings. */
+/** Time windows for the trend chart (same choices as iOS). */
+private enum class TrendWindow(val label: Int, val months: Int?) {
+    M3(R.string.window_3m, 3), M6(R.string.window_6m, 6), Y1(R.string.window_1y, 12), ALL(R.string.window_all, null),
+}
+
+/** One metric over time: a scrubbable chart, statistics and every reading. */
 @Composable
 fun TrendScreen(
     code: String,
@@ -76,105 +108,157 @@ fun TrendScreen(
 ) {
     val series = remember(reports, preferences, code) {
         reports.metricSeries(preferences, includeHidden = true).firstOrNull { it.code == code }
-    }
+    } ?: return
     val context = LocalContext.current
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     var menu by remember { mutableStateOf(false) }
     var renaming by remember { mutableStateOf(false) }
     var editingRange by remember { mutableStateOf(false) }
+    var window by rememberSaveable { mutableStateOf(TrendWindow.ALL) }
+    var selected by remember { mutableStateOf<Int?>(null) }
     val pinned = code in preferences.pinnedSet
     val range = preferences.referenceRange(code)
+    val color = series.category.color
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(series?.name ?: code, maxLines = 1) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back)) }
-                },
-                actions = {
-                    IconButton(onClick = { onUpdatePreferences { it.togglePinned(code) } }) {
-                        Icon(
-                            if (pinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
-                            stringResource(if (pinned) R.string.unpin else R.string.pin),
-                        )
-                    }
-                    IconButton(onClick = { menu = true }) { Icon(Icons.Default.MoreVert, stringResource(R.string.more)) }
-                    DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.rename)) },
-                            leadingIcon = { Icon(Icons.Default.Edit, null) },
-                            onClick = { menu = false; renaming = true },
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.reference_range)) },
-                            leadingIcon = { Icon(Icons.Default.Straighten, null) },
-                            onClick = { menu = false; editingRange = true },
-                        )
-                        DropdownMenuItem(
-                            text = {
-                                Text(stringResource(if (code in preferences.hiddenSet) R.string.show_on_dashboard else R.string.hide_from_dashboard))
-                            },
-                            leadingIcon = { Icon(Icons.Default.VisibilityOff, null) },
-                            onClick = { menu = false; onUpdatePreferences { it.toggleHidden(code) } },
-                        )
-                        LabMapping.loincUrl(code)?.let { url ->
+    val points: List<MetricPoint> = remember(series, window) {
+        val months = window.months ?: return@remember series.points
+        val cutoff = series.latest.date.minus(DatePeriod(months = months))
+        series.points.filter { it.date >= cutoff }.ifEmpty { listOf(series.latest) }
+    }
+    val shown = selected?.let { points.getOrNull(it) } ?: points.last()
+    val values = points.map { it.value }
+
+    Box(Modifier.fillMaxSize()) {
+        CategoryWash(listOf(color, accentFor(color), color), intensity = 1.2f)
+        Scaffold(
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            containerColor = Color.Transparent,
+            topBar = {
+                LargeFlexibleTopAppBar(
+                    title = { Text(series.name, maxLines = 2, fontWeight = FontWeight.Bold) },
+                    subtitle = { Text(stringResource(series.category.labelRes)) },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.back)) }
+                    },
+                    actions = {
+                        IconButton(onClick = { onUpdatePreferences { it.togglePinned(code) } }) {
+                            Icon(
+                                if (pinned) Icons.Rounded.PushPin else Icons.Outlined.PushPin,
+                                stringResource(if (pinned) R.string.unpin else R.string.pin),
+                            )
+                        }
+                        IconButton(onClick = { menu = true }) { Icon(Icons.Rounded.MoreVert, stringResource(R.string.more)) }
+                        DropdownMenu(expanded = menu, onDismissRequest = { menu = false }, shape = MaterialTheme.shapes.large) {
                             DropdownMenuItem(
-                                text = { Text(stringResource(R.string.open_loinc)) },
-                                leadingIcon = { Icon(Icons.AutoMirrored.Filled.OpenInNew, null) },
-                                onClick = {
-                                    menu = false
-                                    context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
+                                text = { Text(stringResource(R.string.rename)) },
+                                leadingIcon = { Icon(Icons.Rounded.Edit, null) },
+                                onClick = { menu = false; renaming = true },
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.reference_range)) },
+                                leadingIcon = { Icon(Icons.Rounded.Straighten, null) },
+                                onClick = { menu = false; editingRange = true },
+                            )
+                            DropdownMenuItem(
+                                text = {
+                                    Text(stringResource(if (code in preferences.hiddenSet) R.string.show_on_dashboard else R.string.hide_from_dashboard))
                                 },
+                                leadingIcon = { Icon(Icons.Rounded.VisibilityOff, null) },
+                                onClick = { menu = false; onUpdatePreferences { it.toggleHidden(code) } },
                             )
+                            LabMapping.loincUrl(code)?.let { url ->
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.open_loinc)) },
+                                    leadingIcon = { Icon(Icons.AutoMirrored.Rounded.OpenInNew, null) },
+                                    onClick = { menu = false; context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri())) },
+                                )
+                            }
                         }
-                    }
-                },
-            )
-        },
-    ) { padding ->
-        if (series == null) return@Scaffold
-        val color = MaterialTheme.colorScheme.harmonize(Color(series.category.argb))
-        LazyColumn(
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = padding.calculateTopPadding(), bottom = 32.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            item {
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                    shape = MaterialTheme.shapes.extraLarge,
-                ) {
-                    Column(Modifier.padding(20.dp)) {
-                        Text(stringResource(series.category.labelRes), style = MaterialTheme.typography.labelLarge, color = color)
-                        Row {
-                            Text(
-                                "${formatNumber(series.latest.value)} ${series.latest.unit}",
-                                style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.SemiBold,
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                        scrolledContainerColor = tintedSurface(color, 0.12f).copy(alpha = 0.96f),
+                    ),
+                    scrollBehavior = scrollBehavior,
+                )
+            },
+        ) { padding ->
+            LazyColumn(
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = padding.calculateTopPadding(), bottom = 40.dp),
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                item(key = "hero") {
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = tintedSurface(color, 0.16f).copy(alpha = 0.94f)),
+                        shape = MaterialTheme.shapes.extraLarge,
+                    ) {
+                        Column(Modifier.padding(20.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                CategoryBadge(series.category, size = 40.dp)
+                                Spacer(Modifier.width(12.dp))
+                                Text(
+                                    formatDate(shown.date, FormatStyle.LONG), style = MaterialTheme.typography.titleSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f),
+                                )
+                                RangeBadge(range?.status(shown.value))
+                                if (selected == null) {
+                                    trendOf(series.previous?.value, series.latest.value)?.let { TrendBadge(it, color, Modifier.padding(start = 8.dp), 28.dp) }
+                                }
+                            }
+                            Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.padding(top = 12.dp)) {
+                                Text(
+                                    formatNumber(shown.value),
+                                    style = MaterialTheme.typography.displayLargeEmphasized.tabular().copy(fontSize = 60.sp, lineHeight = 64.sp),
+                                    fontWeight = FontWeight.Bold,
+                                )
+                                Spacer(Modifier.width(6.dp))
+                                Text(
+                                    shown.unit, style = MaterialTheme.typography.titleLarge,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 10.dp),
+                                )
+                            }
+                            range?.let {
+                                Text(
+                                    stringResource(R.string.reference_range_value, it.formatted(shown.unit, ::formatNumber)),
+                                    style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                            if (series.points.size > 1) {
+                                WindowPicker(window) { window = it; selected = null }
+                            }
+                            AreaChart(
+                                values, color, Modifier.fillMaxWidth().height(240.dp).padding(top = 16.dp),
+                                range = range, yLabels = true,
+                                xLabels = if (points.size > 1) formatDate(points.first().date, FormatStyle.MEDIUM) to formatDate(points.last().date, FormatStyle.MEDIUM) else null,
+                                selectedIndex = selected,
+                                onSelect = { selected = it },
+                                formatValue = ::formatNumber,
                             )
+                            if (values.size > 1) {
+                                Row(Modifier.fillMaxWidth().padding(top = 16.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+                                    StatTile(formatNumber(values.min()), stringResource(R.string.stat_min))
+                                    StatTile(formatNumber(values.average()), stringResource(R.string.stat_avg))
+                                    StatTile(formatNumber(values.max()), stringResource(R.string.stat_max))
+                                }
+                            }
                         }
-                        Text(
-                            formatDate(series.latest.date) + (range?.let { " · " + it.formatted(series.latest.unit, ::formatNumber) } ?: ""),
-                            style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        TrendChart(
-                            series.points.map { it.value }, color,
-                            Modifier.fillMaxWidth().height(200.dp).padding(top = 16.dp), range = range,
-                        )
                     }
                 }
-            }
-            item {
-                Text(
-                    stringResource(R.string.readings), style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(top = 8.dp, start = 4.dp),
-                )
-            }
-            items(series.points.reversed(), key = { it.reportId + it.date }) { point ->
-                ListItem(
-                    headlineContent = { Text("${formatNumber(point.value)} ${point.unit}") },
-                    supportingContent = { Text(formatDate(point.date)) },
-                    trailingContent = { RangeBadge(range?.status(point.value)) },
-                )
+                item(key = "readings-title") { SectionTitle(stringResource(R.string.readings)) }
+                val readings = series.points.reversed()
+                itemsIndexed(readings, key = { _, p -> p.reportId + p.date }) { index, point ->
+                    GroupedListItem(
+                        index, readings.size,
+                        headline = {
+                            Text(
+                                "${formatNumber(point.value)} ${point.unit}",
+                                style = MaterialTheme.typography.titleMedium.tabular(), fontWeight = FontWeight.SemiBold,
+                            )
+                        },
+                        supporting = { Text(formatDate(point.date, FormatStyle.LONG)) },
+                        trailing = { RangeBadge(range?.status(point.value)) },
+                    )
+                }
             }
         }
     }
@@ -183,6 +267,7 @@ fun TrendScreen(
         var text by remember { mutableStateOf(preferences.nickname(code).orEmpty()) }
         AlertDialog(
             onDismissRequest = { renaming = false },
+            icon = { Icon(Icons.Rounded.Edit, null) },
             title = { Text(stringResource(R.string.rename)) },
             text = {
                 OutlinedTextField(
@@ -209,6 +294,7 @@ fun TrendScreen(
         var high by remember { mutableStateOf(range?.high?.let(::formatNumber).orEmpty()) }
         AlertDialog(
             onDismissRequest = { editingRange = false },
+            icon = { Icon(Icons.Rounded.Straighten, null) },
             title = { Text(stringResource(R.string.reference_range)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -238,7 +324,33 @@ fun TrendScreen(
     }
 }
 
-@Preview(name = "Trend", widthDp = 400, heightDp = 800)
+/** Material 3 Expressive connected button group for the time window. */
+@Composable
+private fun WindowPicker(selected: TrendWindow, onSelect: (TrendWindow) -> Unit) {
+    val options = TrendWindow.entries
+    Row(
+        Modifier.fillMaxWidth().padding(top = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
+    ) {
+        options.forEachIndexed { index, option ->
+            ToggleButton(
+                checked = selected == option,
+                onCheckedChange = { onSelect(option) },
+                modifier = Modifier.weight(1f).semantics { role = Role.RadioButton },
+                shapes = when (index) {
+                    0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                    options.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                    else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                },
+                colors = ToggleButtonDefaults.colors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.7f),
+                ),
+            ) { Text(stringResource(option.label)) }
+        }
+    }
+}
+
+@Preview(name = "Trend", widthDp = 400, heightDp = 1000)
 @Composable
 private fun TrendPreview() {
     LabImporterTheme(dynamicColor = false) {
@@ -249,7 +361,7 @@ private fun TrendPreview() {
     }
 }
 
-@Preview(name = "Trend – dark", widthDp = 400, heightDp = 800, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "Trend – dark", widthDp = 400, heightDp = 1000, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun TrendDarkPreview() {
     LabImporterTheme(darkTheme = true, dynamicColor = false) {

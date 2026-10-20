@@ -80,4 +80,26 @@
     <string name="settings_about">Névjegy</string>
     <string name="privacy_message">Minden az eszközön fut. A LabImporter sosem továbbítja a laboradataidat.</string>
     <string name="loinc_catalog">LOINC-katalógus</string>
+    <string name="dashboard_title">Laboreredmények</string>
+    <string name="history_title">Jelentések</string>
+    <string name="filter_all">Összes</string>
+    <string name="stat_min">Min.</string>
+    <string name="stat_max">Max.</string>
+    <string name="stat_avg">Átl.</string>
+    <string name="stat_reports">Jelentések</string>
+    <string name="stat_values">Laborértékek</string>
+    <string name="stat_categories">Kategóriák</string>
+    <string name="window_3m">3 h</string>
+    <string name="window_6m">6 h</string>
+    <string name="window_1y">1 é</string>
+    <string name="window_all">Összes</string>
+    <string name="trend_up">Növekvő tendencia</string>
+    <string name="trend_down">Csökkenő tendencia</string>
+    <string name="trend_flat">Nincs változás</string>
+    <string name="lab_report">Laborlelet</string>
+    <string name="lab_values">Laborértékek</string>
+    <string name="ready_to_save">Menthető</string>
+    <string name="duplicates_short">Duplikátum</string>
+    <string name="welcome_to">Üdvözöl a</string>
+    <string name="version">Verzió</string>
 </resources>

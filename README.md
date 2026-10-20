@@ -124,7 +124,7 @@ After the first manual run succeeds, builds are triggered automatically on the *
 
 ## Android (preview)
 
-The Android app (`androidApp/`) is a native Jetpack Compose app with **Material 3 Expressive** and Material You dynamic colour. It shares its business logic with iOS through a **Kotlin Multiplatform** module (`shared/`): LOINC catalog and search (the same `loinc.db`), LOINC resolution, the AI prompt and post-processing, categories, UCUM units, C-CDA export and the FHIR codec. The iOS app stays SwiftUI and links the same module as the static `LabImporterCore` framework.
+The Android app (`androidApp/`) is a native Jetpack Compose app with **Material 3 Expressive** and Material You dynamic colour: category-coloured gradient backgrounds, expressive shape badges, a FAB menu for importing, predictive back and a layered adaptive icon (with dark and themed variants). It shares its business logic with iOS through a **Kotlin Multiplatform** module (`shared/`): LOINC catalog and search (the same `loinc.db`), LOINC resolution, the AI prompt and post-processing, categories, UCUM units, C-CDA export and the FHIR codec. The iOS app stays SwiftUI and links the same module as the static `LabImporterCore` framework.
 
 | Step | Android technology |
 |---|---|

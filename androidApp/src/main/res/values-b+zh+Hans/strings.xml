@@ -79,4 +79,26 @@
     <string name="settings_about">关于</string>
     <string name="privacy_message">一切在设备上完成。LabImporter 绝不会传输你的化验数据。</string>
     <string name="loinc_catalog">LOINC 目录</string>
+    <string name="dashboard_title">检验结果</string>
+    <string name="history_title">报告</string>
+    <string name="filter_all">全部</string>
+    <string name="stat_min">最小值</string>
+    <string name="stat_max">最大值</string>
+    <string name="stat_avg">平均值</string>
+    <string name="stat_reports">报告</string>
+    <string name="stat_values">检验值</string>
+    <string name="stat_categories">类别</string>
+    <string name="window_3m">3个月</string>
+    <string name="window_6m">6个月</string>
+    <string name="window_1y">1年</string>
+    <string name="window_all">全部</string>
+    <string name="trend_up">上升趋势</string>
+    <string name="trend_down">下降趋势</string>
+    <string name="trend_flat">无变化</string>
+    <string name="lab_report">检验报告</string>
+    <string name="lab_values">检验值</string>
+    <string name="ready_to_save">准备保存</string>
+    <string name="duplicates_short">重复</string>
+    <string name="welcome_to">欢迎使用</string>
+    <string name="version">版本</string>
 </resources>

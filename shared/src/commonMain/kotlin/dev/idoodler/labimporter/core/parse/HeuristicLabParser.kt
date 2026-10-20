@@ -13,7 +13,8 @@ object HeuristicLabParser {
 
     private val entryRegex = Regex(
         "^\\s*([\\p{L}][\\p{L}\\p{N} .,'/()+\\-]*?)\\s*[:=]?\\s+" +
-            "([<>≤≥]?\\s*-?\\d+(?:[.,]\\d+)?)\\s*" +
+            // The lookahead rejects numbers that are really part of a date (10.09.2026).
+            "([<>≤≥]?\\s*-?\\d+(?:[.,]\\d+)?)(?!\\d|[./]\\d)\\s*" +
             "([^\\s;]*[\\p{L}%µμ][^\\s;]*)?",
     )
     private val ignoredLabels = Regex(

@@ -80,4 +80,26 @@
     <string name="settings_about">Σχετικά</string>
     <string name="privacy_message">Όλα εκτελούνται στη συσκευή. Το LabImporter δεν μεταδίδει ποτέ τα εργαστηριακά σας δεδομένα.</string>
     <string name="loinc_catalog">Κατάλογος LOINC</string>
+    <string name="dashboard_title">Εργαστηριακά αποτελέσματα</string>
+    <string name="history_title">Αναφορές</string>
+    <string name="filter_all">Όλα</string>
+    <string name="stat_min">Ελάχ.</string>
+    <string name="stat_max">Μέγ.</string>
+    <string name="stat_avg">Μ.Ο.</string>
+    <string name="stat_reports">Αναφορές</string>
+    <string name="stat_values">Εργαστηριακές τιμές</string>
+    <string name="stat_categories">Κατηγορίες</string>
+    <string name="window_3m">3μ</string>
+    <string name="window_6m">6μ</string>
+    <string name="window_1y">1έ</string>
+    <string name="window_all">Όλα</string>
+    <string name="trend_up">Ανοδική τάση</string>
+    <string name="trend_down">Πτωτική τάση</string>
+    <string name="trend_flat">Καμία μεταβολή</string>
+    <string name="lab_report">Εργαστηριακή αναφορά</string>
+    <string name="lab_values">Εργαστηριακές τιμές</string>
+    <string name="ready_to_save">Έτοιμο για αποθήκευση</string>
+    <string name="duplicates_short">Διπλότυπο</string>
+    <string name="welcome_to">Καλώς ήρθατε στο</string>
+    <string name="version">Έκδοση</string>
 </resources>

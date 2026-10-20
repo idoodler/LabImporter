@@ -178,4 +178,31 @@
     <string name="privacy_message">Everything runs on-device. LabImporter never transmits your lab data.</string>
     <string name="loinc_catalog">LOINC catalog</string>
     <string name="loinc_catalog_detail">LOINC %1$s · %2$s</string>
+
+    <!-- Redesign (sources reuse iOS keys where possible) -->
+    <string name="dashboard_title">Lab Results</string>
+    <string name="history_title">Reports</string>
+    <string name="filter_all">All</string>
+    <string name="stat_min">Min</string>
+    <string name="stat_max">Max</string>
+    <string name="stat_avg">Avg</string>
+    <string name="stat_reports">Reports</string>
+    <string name="stat_values">Lab Values</string>
+    <string name="stat_categories">Categories</string>
+    <string name="last_updated">Last updated %1$s</string>
+    <string name="window_3m">3M</string>
+    <string name="window_6m">6M</string>
+    <string name="window_1y">1Y</string>
+    <string name="window_all">All</string>
+    <string name="reference_range_value">Reference range %1$s</string>
+    <string name="trend_up">Trending up</string>
+    <string name="trend_down">Trending down</string>
+    <string name="trend_flat">No change</string>
+    <string name="lab_report">Lab Report</string>
+    <string name="lab_values">Lab Values</string>
+    <string name="ready_to_save">Ready to save</string>
+    <string name="duplicates_short">Duplicate</string>
+    <string name="welcome_to">Welcome to</string>
+    <string name="step_of">Step %1$d of %2$d</string>
+    <string name="version">Version</string>
 </resources>

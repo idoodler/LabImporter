@@ -10,7 +10,9 @@ import dev.idoodler.labimporter.data.HealthConnectReportStore
 import dev.idoodler.labimporter.data.LocalReportStore
 import dev.idoodler.labimporter.data.ReportRepository
 import dev.idoodler.labimporter.ocr.TextExtractor
+import kotlinx.coroutines.flow.MutableStateFlow
 import java.io.File
+import kotlin.concurrent.thread
 import java.util.Locale
 
 /** Wires the shared core and the platform services once per process. */
@@ -22,12 +24,23 @@ class LabImporterApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         val preferences = AppPreferences(this)
-        LabCore.start(
-            databasePath = installLoincDatabase(this).absolutePath,
-            appLanguage = Locale.getDefault().toLanguageTag(),
-            preferences = { preferences.displayPreferences.value },
-        )
         container = AppContainer(this, preferences)
+        // Unpacking the 34 MB catalog after an install/update takes a moment;
+        // do it off the main thread. MainActivity keeps the system splash
+        // screen up until it's done.
+        thread(name = "loinc-install") {
+            LabCore.start(
+                databasePath = installLoincDatabase(this).absolutePath,
+                appLanguage = Locale.getDefault().toLanguageTag(),
+                preferences = { preferences.displayPreferences.value },
+            )
+            catalogReady.value = true
+        }
+    }
+
+    companion object {
+        /** True once the LOINC catalog is installed and `LabCore` is started. */
+        val catalogReady = MutableStateFlow(false)
     }
 
     /**

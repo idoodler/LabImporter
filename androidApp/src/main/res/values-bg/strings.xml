@@ -80,4 +80,26 @@
     <string name="settings_about">Информация</string>
     <string name="privacy_message">Всичко работи на устройството. LabImporter никога не предава лабораторните ви данни.</string>
     <string name="loinc_catalog">Каталог LOINC</string>
+    <string name="dashboard_title">Лабораторни резултати</string>
+    <string name="history_title">Отчети</string>
+    <string name="filter_all">Всички</string>
+    <string name="stat_min">Мин.</string>
+    <string name="stat_max">Макс.</string>
+    <string name="stat_avg">Ср.</string>
+    <string name="stat_reports">Отчети</string>
+    <string name="stat_values">Лабораторни стойности</string>
+    <string name="stat_categories">Категории</string>
+    <string name="window_3m">3м</string>
+    <string name="window_6m">6м</string>
+    <string name="window_1y">1г</string>
+    <string name="window_all">Всички</string>
+    <string name="trend_up">Тенденция към покачване</string>
+    <string name="trend_down">Тенденция към спад</string>
+    <string name="trend_flat">Без промяна</string>
+    <string name="lab_report">Лабораторен отчет</string>
+    <string name="lab_values">Лабораторни стойности</string>
+    <string name="ready_to_save">Готово за запазване</string>
+    <string name="duplicates_short">Дубликат</string>
+    <string name="welcome_to">Добре дошли в</string>
+    <string name="version">Версия</string>
 </resources>

@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.core.content.IntentCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dev.idoodler.labimporter.ui.AppViewModel
 import dev.idoodler.labimporter.ui.LabImporterRoot
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
@@ -16,6 +17,7 @@ class MainActivity : ComponentActivity() {
     private val viewModel: AppViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen().setKeepOnScreenCondition { !LabImporterApplication.catalogReady.value }
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) handleIncoming(intent)
@@ -29,8 +31,12 @@ class MainActivity : ComponentActivity() {
         handleIncoming(intent)
     }
 
-    /** "Open with" / "Share to" LabImporter for PDFs and images. */
+    /** "Open with" / "Share to" LabImporter for PDFs, images and plain text. */
     private fun handleIncoming(intent: Intent?) {
+        if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain") {
+            intent.getStringExtra(Intent.EXTRA_TEXT)?.takeIf { it.isNotBlank() }?.let(viewModel::importText)
+            return
+        }
         val uri: Uri? = when (intent?.action) {
             Intent.ACTION_VIEW -> intent.data
             Intent.ACTION_SEND -> IntentCompat.getParcelableExtra(intent, Intent.EXTRA_STREAM, Uri::class.java)

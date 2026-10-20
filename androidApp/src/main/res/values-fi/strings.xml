@@ -80,4 +80,26 @@
     <string name="settings_about">Tietoja</string>
     <string name="privacy_message">Kaikki toimii laitteella. LabImporter ei koskaan lähetä laboratoriotietojasi.</string>
     <string name="loinc_catalog">LOINC-luettelo</string>
+    <string name="dashboard_title">Laboratoriotulokset</string>
+    <string name="history_title">Raportit</string>
+    <string name="filter_all">Kaikki</string>
+    <string name="stat_min">Min.</string>
+    <string name="stat_max">Maks.</string>
+    <string name="stat_avg">Keskim.</string>
+    <string name="stat_reports">Raportit</string>
+    <string name="stat_values">Laboratorioarvot</string>
+    <string name="stat_categories">Kategoriat</string>
+    <string name="window_3m">3 kk</string>
+    <string name="window_6m">6 kk</string>
+    <string name="window_1y">1 v</string>
+    <string name="window_all">Kaikki</string>
+    <string name="trend_up">Nouseva</string>
+    <string name="trend_down">Laskeva</string>
+    <string name="trend_flat">Ei muutosta</string>
+    <string name="lab_report">Laboratorioraportti</string>
+    <string name="lab_values">Laboratorioarvot</string>
+    <string name="ready_to_save">Valmis tallennettavaksi</string>
+    <string name="duplicates_short">Kaksoiskappale</string>
+    <string name="welcome_to">Tervetuloa –</string>
+    <string name="version">Versio</string>
 </resources>

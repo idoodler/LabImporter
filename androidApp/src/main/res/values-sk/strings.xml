@@ -82,4 +82,26 @@
     <string name="settings_about">Informácie</string>
     <string name="privacy_message">Všetko prebieha v zariadení. LabImporter nikdy neprenáša vaše laboratórne údaje.</string>
     <string name="loinc_catalog">Katalóg LOINC</string>
+    <string name="dashboard_title">Laboratórne výsledky</string>
+    <string name="history_title">Správy</string>
+    <string name="filter_all">Všetko</string>
+    <string name="stat_min">Min</string>
+    <string name="stat_max">Max</string>
+    <string name="stat_avg">Priem.</string>
+    <string name="stat_reports">Správy</string>
+    <string name="stat_values">Laboratórne hodnoty</string>
+    <string name="stat_categories">Kategórie</string>
+    <string name="window_3m">3 m</string>
+    <string name="window_6m">6 m</string>
+    <string name="window_1y">1 r</string>
+    <string name="window_all">Všetko</string>
+    <string name="trend_up">Rastúci trend</string>
+    <string name="trend_down">Klesajúci trend</string>
+    <string name="trend_flat">Bez zmeny</string>
+    <string name="lab_report">Laboratórna správa</string>
+    <string name="lab_values">Laboratórne hodnoty</string>
+    <string name="ready_to_save">Pripravené na uloženie</string>
+    <string name="duplicates_short">Duplikát</string>
+    <string name="welcome_to">Vitajte v aplikácii</string>
+    <string name="version">Verzia</string>
 </resources>
