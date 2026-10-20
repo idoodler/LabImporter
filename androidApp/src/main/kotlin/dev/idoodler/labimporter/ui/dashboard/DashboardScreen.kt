@@ -328,12 +328,6 @@ private fun DashboardEmpty(
 ) {
     Box(modifier.fillMaxSize()) {
         CategoryWash(welcomePalette, animated = true)
-        Row(Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(4.dp)) {
-            if (onOpenReports != null) {
-                IconButton(onClick = onOpenReports) { Icon(Icons.Rounded.History, stringResource(R.string.history_title)) }
-            }
-            IconButton(onClick = onOpenSettings) { Icon(Icons.Rounded.Settings, stringResource(R.string.tab_settings)) }
-        }
         Column(
             Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding().navigationBarsPadding()
                 .padding(horizontal = 20.dp, vertical = 24.dp),
@@ -357,6 +351,13 @@ private fun DashboardEmpty(
             )
             Spacer(Modifier.height(28.dp))
             ImportOptionCards(importActions, Modifier.widthIn(max = 520.dp))
+        }
+        // Drawn after the full-screen scrolling column so it sits on top and receives taps.
+        Row(Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(4.dp)) {
+            if (onOpenReports != null) {
+                IconButton(onClick = onOpenReports) { Icon(Icons.Rounded.History, stringResource(R.string.history_title)) }
+            }
+            IconButton(onClick = onOpenSettings) { Icon(Icons.Rounded.Settings, stringResource(R.string.tab_settings)) }
         }
     }
 }

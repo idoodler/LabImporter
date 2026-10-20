@@ -7,6 +7,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.core.content.IntentCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dev.idoodler.labimporter.ui.AppViewModel
@@ -22,7 +24,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) handleIncoming(intent)
         setContent {
-            LabImporterTheme { LabImporterRoot(viewModel) }
+            // Names and categories come from the LOINC catalog; compose nothing
+            // until it's unpacked (the splash screen covers that moment).
+            val catalogReady by LabImporterApplication.catalogReady.collectAsState()
+            LabImporterTheme { if (catalogReady) LabImporterRoot(viewModel) }
         }
     }
 

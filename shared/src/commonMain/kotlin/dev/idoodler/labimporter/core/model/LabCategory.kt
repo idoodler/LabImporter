@@ -34,7 +34,10 @@ enum class LabCategory(val argb: Long) {
         /** Best-effort category for a LOINC code (memoized; catalog lookups aren't free). */
         fun forCode(code: String): LabCategory {
             lock.withLock { cache[code] }?.let { return it }
-            val resolved = LabCore.loinc?.classification(code)
+            // Without the catalog (not started yet) there's nothing to classify by:
+            // answer OTHER but don't cache it, or the code would stay grey forever.
+            val directory = LabCore.loinc ?: return OTHER
+            val resolved = directory.classification(code)
                 ?.let { (cls, component) -> category(cls, component) }
                 ?: OTHER
             lock.withLock { cache[code] = resolved }
