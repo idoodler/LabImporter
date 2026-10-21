@@ -100,8 +100,9 @@ fun DashboardScreen(
     importActions: ImportActions,
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
-    onOpenReports: () -> Unit = {},
-    onOpenSettings: () -> Unit = {},
+    // Null where a navigation rail already offers Reports and Settings (wide windows).
+    onOpenReports: (() -> Unit)? = {},
+    onOpenSettings: (() -> Unit)? = {},
     patientName: String = "",
 ) {
     // Shared rules (LabImporterCore `Dashboard`), identical on iOS.
@@ -114,7 +115,7 @@ fun DashboardScreen(
         return
     }
     if (metrics.isEmpty()) {
-        DashboardEmpty(importActions, onOpenReports.takeIf { reports.isNotEmpty() }, onOpenSettings, modifier)
+        DashboardEmpty(importActions, onOpenReports?.takeIf { reports.isNotEmpty() }, onOpenSettings, modifier)
         return
     }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -140,8 +141,8 @@ fun DashboardScreen(
                         IconButton(onClick = { searching = !searching; if (!searching) query = "" }) {
                             Icon(Icons.Rounded.Search, stringResource(R.string.search))
                         }
-                        IconButton(onClick = onOpenReports) { Icon(Icons.Rounded.History, stringResource(R.string.history_title)) }
-                        IconButton(onClick = onOpenSettings) { Icon(Icons.Rounded.Settings, stringResource(R.string.tab_settings)) }
+                        onOpenReports?.let { IconButton(onClick = it) { Icon(Icons.Rounded.History, stringResource(R.string.history_title)) } }
+                        onOpenSettings?.let { IconButton(onClick = it) { Icon(Icons.Rounded.Settings, stringResource(R.string.tab_settings)) } }
                     },
                     colors = washTopBarColors(),
                     scrollBehavior = scrollBehavior,
@@ -334,7 +335,7 @@ private fun ValueLine(metric: Metric, valueSize: Int) {
 private fun DashboardEmpty(
     importActions: ImportActions,
     onOpenReports: (() -> Unit)?,
-    onOpenSettings: () -> Unit,
+    onOpenSettings: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier.fillMaxSize()) {
@@ -368,7 +369,7 @@ private fun DashboardEmpty(
             if (onOpenReports != null) {
                 IconButton(onClick = onOpenReports) { Icon(Icons.Rounded.History, stringResource(R.string.history_title)) }
             }
-            IconButton(onClick = onOpenSettings) { Icon(Icons.Rounded.Settings, stringResource(R.string.tab_settings)) }
+            onOpenSettings?.let { IconButton(onClick = it) { Icon(Icons.Rounded.Settings, stringResource(R.string.tab_settings)) } }
         }
     }
 }

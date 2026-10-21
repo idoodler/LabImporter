@@ -67,6 +67,7 @@ import dev.idoodler.labimporter.ui.design.SectionTitle
 import dev.idoodler.labimporter.ui.design.color
 import dev.idoodler.labimporter.ui.design.dominantColors
 import dev.idoodler.labimporter.ui.design.washTopBarColors
+import dev.idoodler.labimporter.ui.design.readableListPadding
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 
 /**
@@ -121,7 +122,7 @@ fun SortEditorScreen(
         ) { padding ->
             LazyColumn(
                 state = listState,
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = padding.calculateTopPadding(), bottom = 40.dp),
+                contentPadding = readableListPadding(top = padding.calculateTopPadding(), bottom = 40.dp),
                 modifier = Modifier.fillMaxSize(),
             ) {
                 val sections = listOf(

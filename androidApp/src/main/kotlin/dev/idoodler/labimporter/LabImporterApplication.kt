@@ -2,6 +2,7 @@ package dev.idoodler.labimporter
 
 import android.app.Application
 import android.content.Context
+import android.os.StrictMode
 import dev.idoodler.labimporter.ai.DevelopmentStandIn
 import dev.idoodler.labimporter.ai.GeminiNanoAi
 import dev.idoodler.labimporter.ai.LabParserService
@@ -35,6 +36,10 @@ class LabImporterApplication : Application(), AppContainerOwner {
 
     override fun onCreate() {
         super.onCreate()
+        if (BuildConfig.DEBUG) {
+            // Debug builds log main-thread disk access and slow calls, so jank is caught early.
+            StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().detectDiskReads().detectDiskWrites().detectCustomSlowCalls().penaltyLog().build())
+        }
         val preferences = AppPreferences(this)
         container = AppContainer(this, preferences, defaultAi(preferences, appScope))
         // Like iOS's launch check: is the on-device model usable (or does it need downloading)?

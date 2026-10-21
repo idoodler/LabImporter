@@ -72,6 +72,7 @@ import dev.idoodler.labimporter.ui.design.accentFor
 import dev.idoodler.labimporter.ui.design.color
 import dev.idoodler.labimporter.ui.design.tintedSurface
 import dev.idoodler.labimporter.ui.design.washTopBarColors
+import dev.idoodler.labimporter.ui.design.readableListPadding
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 
 /**
@@ -130,7 +131,7 @@ fun LoincTermScreen(
             },
         ) { padding ->
             LazyColumn(
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = padding.calculateTopPadding(), bottom = 40.dp),
+                contentPadding = readableListPadding(top = padding.calculateTopPadding(), bottom = 40.dp),
                 modifier = Modifier.fillMaxSize(),
             ) {
                 item(key = "header") { Header(code, category, detail, preferences) }

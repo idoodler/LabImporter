@@ -98,6 +98,7 @@ import dev.idoodler.labimporter.ui.design.SectionTitle
 import dev.idoodler.labimporter.ui.design.ShapeBadge
 import dev.idoodler.labimporter.ui.design.color
 import dev.idoodler.labimporter.ui.design.washTopBarColors
+import dev.idoodler.labimporter.ui.design.readableListPadding
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 
 /** Settings as Material 3 Expressive grouped lists with coloured shape icons. */
@@ -111,7 +112,8 @@ fun SettingsScreen(
     softwareIdentity: String,
     modifier: Modifier = Modifier,
     transfer: TransferSettings = TransferSettings(),
-    onBack: () -> Unit = {},
+    /** Null at the root of a navigation-rail section (wide windows): no back arrow. */
+    onBack: (() -> Unit)? = null,
     onOpenSortEditor: () -> Unit = {},
     onOpenCatalog: () -> Unit = {},
     about: AboutSettings = AboutSettings(),
@@ -132,7 +134,7 @@ fun SettingsScreen(
                 LargeFlexibleTopAppBar(
                     title = { Text(stringResource(R.string.tab_settings), fontWeight = FontWeight.Bold) },
                     navigationIcon = {
-                        IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.back)) }
+                        onBack?.let { IconButton(onClick = it) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.back)) } }
                     },
                     colors = washTopBarColors(),
                     scrollBehavior = scrollBehavior,
@@ -140,7 +142,7 @@ fun SettingsScreen(
             },
         ) { padding ->
             LazyColumn(
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = padding.calculateTopPadding(), bottom = 40.dp),
+                contentPadding = readableListPadding(top = padding.calculateTopPadding(), bottom = 40.dp),
                 modifier = Modifier.fillMaxSize(),
             ) {
                 item { SectionTitle(stringResource(R.string.settings_patient)) }
@@ -563,7 +565,7 @@ private fun SettingsPreview() {
             PatientSettings("Max Mustermann", PatientDetails(LocalDate(1980, 4, 2), PatientSex.MALE)),
             HealthConnectState(HealthConnectAvailability.MEDICAL_RECORDS_UNSUPPORTED), {}, {},
             AiSettings(AiAvailability.Preparing(420_000_000, 1_000_000_000)),
-            "LabImporter 1.0 (1) Android",
+            "LabImporter 1.0 (1) Android", onBack = {},
         )
     }
 }
@@ -574,7 +576,7 @@ private fun SettingsDarkPreview() {
     LabImporterTheme(darkTheme = true, dynamicColor = false) {
         SettingsScreen(
             PatientSettings(), HealthConnectState(HealthConnectAvailability.AVAILABLE, granted = true, inUse = true), {}, {},
-            AiSettings(AiAvailability.Ready), "LabImporter 1.0 (1) Android",
+            AiSettings(AiAvailability.Ready), "LabImporter 1.0 (1) Android", onBack = {},
         )
     }
 }
@@ -586,7 +588,7 @@ private fun SettingsDownloadFailedPreview() {
         SettingsScreen(
             PatientSettings(), HealthConnectState(HealthConnectAvailability.NOT_INSTALLED), {}, {},
             AiSettings(AiAvailability.PreparationFailed(AiProblem.NOT_ENOUGH_STORAGE)),
-            "LabImporter 1.0 (1) Android",
+            "LabImporter 1.0 (1) Android", onBack = {},
         )
     }
 }

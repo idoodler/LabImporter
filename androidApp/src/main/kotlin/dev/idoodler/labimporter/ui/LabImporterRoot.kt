@@ -12,6 +12,8 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -24,6 +26,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -48,6 +51,8 @@ import dev.idoodler.labimporter.ai.DevelopmentStandIn
 import dev.idoodler.labimporter.ai.UnsupportedReason
 import dev.idoodler.labimporter.core.model.LabReport
 import dev.idoodler.labimporter.ui.dashboard.DashboardScreen
+import dev.idoodler.labimporter.ui.design.LocalScreenWidth
+import dev.idoodler.labimporter.ui.design.windowSize
 import dev.idoodler.labimporter.ui.dashboard.TrendScreen
 import dev.idoodler.labimporter.ui.export.PdfExportScreen
 import dev.idoodler.labimporter.ui.history.HistoryScreen
@@ -247,6 +252,14 @@ private fun Navigator(
         viewModel.consumeLaunchRequest()
     }
 
+    // Wide windows get a navigation rail with per-section stacks (like the iPad sidebar);
+    // switching layouts converts the stack so the user keeps their place.
+    val window = windowSize()
+    val rail = usesRail(window.width, window.height)
+    LaunchedEffect(rail) { stack = stackForLayout(stack, rail) }
+    // Back from Reports or Settings in the rail returns to the dashboard section.
+    BackHandler(enabled = rail && stack.size == 1 && stack[0] != Destination.Home.encode()) { stack = listOf(Destination.Home.encode()) }
+
     // Predictive back: the current screen shrinks toward the edge with the
     // gesture, revealing the previous one underneath (Android 14+ style).
     var backProgress by remember { mutableFloatStateOf(0f) }
@@ -262,46 +275,63 @@ private fun Navigator(
         }
     }
 
-    Box(Modifier.fillMaxSize()) {
-        if (backProgress > 0f && stack.size > 1) {
-            Screen(Destination.decode(stack[stack.size - 2]), viewModel, reports, isLoading, healthConnect, connectHealthConnect, importActions, push, pop) {}
-        }
-        AnimatedContent(
-            targetState = stack,
-            transitionSpec = {
-                val forward = targetState.size >= initialState.size
-                val spec = tween<IntOffset>(380)
-                if (forward) {
-                    (slideInHorizontally(spec) { it / 4 } + fadeIn()) togetherWith (slideOutHorizontally(spec) { -it / 8 } + fadeOut())
-                } else {
-                    (slideInHorizontally(spec) { -it / 8 } + fadeIn()) togetherWith (slideOutHorizontally(spec) { it / 4 } + fadeOut())
+    val screens = @Composable { modifier: Modifier ->
+        // Lists centre at a readable width on wide windows (see readableListPadding).
+        BoxWithConstraints(modifier.fillMaxSize()) {
+            CompositionLocalProvider(LocalScreenWidth provides maxWidth) {
+                if (backProgress > 0f && stack.size > 1) {
+                    Screen(
+                        Destination.decode(stack[stack.size - 2]), viewModel, reports, isLoading, healthConnect, connectHealthConnect, importActions, push, pop,
+                        railRoot = rail && stack.size == 2,
+                    ) {}
                 }
-            },
-            contentKey = { it.last() },
-            label = "nav",
-            modifier = Modifier.graphicsLayer {
-                val p = backProgress
-                if (p > 0f) {
-                    val scale = 1f - 0.1f * p
-                    scaleX = scale
-                    scaleY = scale
-                    translationX = (if (backFromLeft) 1 else -1) * 24.dp.toPx() * p
-                    shape = RoundedCornerShape(32.dp * p)
-                    clip = true
+                AnimatedContent(
+                    targetState = stack,
+                    transitionSpec = {
+                        val forward = targetState.size >= initialState.size
+                        val spec = tween<IntOffset>(380)
+                        if (forward) {
+                            (slideInHorizontally(spec) { it / 4 } + fadeIn()) togetherWith (slideOutHorizontally(spec) { -it / 8 } + fadeOut())
+                        } else {
+                            (slideInHorizontally(spec) { -it / 8 } + fadeIn()) togetherWith (slideOutHorizontally(spec) { it / 4 } + fadeOut())
+                        }
+                    },
+                    contentKey = { it.last() },
+                    label = "nav",
+                    modifier = Modifier.graphicsLayer {
+                        val p = backProgress
+                        if (p > 0f) {
+                            val scale = 1f - 0.1f * p
+                            scaleX = scale
+                            scaleY = scale
+                            translationX = (if (backFromLeft) 1 else -1) * 24.dp.toPx() * p
+                            shape = RoundedCornerShape(32.dp * p)
+                            clip = true
+                        }
+                    },
+                ) { target ->
+                    // Opaque so the screen underneath only shows through the predictive-back inset.
+                    Surface(color = MaterialTheme.colorScheme.surface, modifier = Modifier.fillMaxSize()) {
+                        Screen(
+                            Destination.decode(target.last()), viewModel, reports, isLoading, healthConnect, connectHealthConnect, importActions, push, pop,
+                            railRoot = rail && target.size == 1,
+                        ) { historySelecting = it }
+                    }
                 }
-            },
-        ) { target ->
-            // Opaque so the screen underneath only shows through the predictive-back inset.
-            Surface(color = MaterialTheme.colorScheme.surface, modifier = Modifier.fillMaxSize()) {
-                Screen(Destination.decode(target.last()), viewModel, reports, isLoading, healthConnect, connectHealthConnect, importActions, push, pop) {
-                    historySelecting = it
-                }
+                // The import button steps aside while reports are being selected for deletion.
+                val showFab = (current is Destination.Home || (current is Destination.Reports && !historySelecting)) && reports.isNotEmpty()
+                if (showFab && backProgress == 0f) ImportFabMenu(importActions, Modifier.navigationBarsPadding().padding(end = 4.dp, bottom = 4.dp))
+                SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = 88.dp))
             }
         }
-        // The import button steps aside while reports are being selected for deletion.
-        val showFab = (current is Destination.Home || (current is Destination.Reports && !historySelecting)) && reports.isNotEmpty()
-        if (showFab && backProgress == 0f) ImportFabMenu(importActions, Modifier.navigationBarsPadding().padding(end = 4.dp, bottom = 4.dp))
-        SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = 88.dp))
+    }
+    if (rail) {
+        Row(Modifier.fillMaxSize()) {
+            SectionRail(Section.of(stack), onSelect = { stack = listOf(it.root) })
+            screens(Modifier.weight(1f))
+        }
+    } else {
+        screens(Modifier)
     }
 }
 
@@ -316,6 +346,8 @@ private fun Screen(
     importActions: ImportActions,
     push: (Destination) -> Unit,
     pop: () -> Unit,
+    /** At the root of a navigation-rail section: no back arrow, and the rail replaces the dashboard's buttons. */
+    railRoot: Boolean = false,
     onSelectionModeChange: (Boolean) -> Unit,
 ) {
     val preferences by viewModel.displayPreferences.collectAsStateWithLifecycle()
@@ -325,12 +357,12 @@ private fun Screen(
             onOpenMetric = { push(Destination.Trend(it)) },
             importActions = importActions,
             isLoading = isLoading,
-            onOpenReports = { push(Destination.Reports) },
-            onOpenSettings = { push(Destination.Settings) },
+            onOpenReports = { push(Destination.Reports) }.takeUnless { railRoot },
+            onOpenSettings = { push(Destination.Settings) }.takeUnless { railRoot },
             patientName = viewModel.patientName.collectAsStateWithLifecycle().value,
         )
         Destination.Reports -> HistoryScreen(
-            reports, onOpenReport = { push(Destination.Report(it.id)) }, onBack = pop,
+            reports, onOpenReport = { push(Destination.Report(it.id)) }, onBack = pop.takeUnless { railRoot },
             onExportPdf = { push(Destination.PdfExport) },
             onDeleteReports = viewModel::deleteReports,
             onSelectionModeChange = onSelectionModeChange,
@@ -349,7 +381,7 @@ private fun Screen(
                 ai = AiSettings(aiAvailability, usingStandIn, onTryAgain = viewModel::checkAiAgain) { viewModel.useDevelopmentStandIn(false) },
                 transfer = TransferSettings(reports.isNotEmpty(), viewModel::exportAllReports, viewModel::importReports),
                 softwareIdentity = viewModel.softwareIdentity,
-                onBack = pop,
+                onBack = pop.takeUnless { railRoot },
                 onOpenSortEditor = { push(Destination.SortEditor) },
                 onOpenCatalog = { push(Destination.Catalog) },
                 search = SearchSettings(viewModel.showLatestValueInSearch.collectAsStateWithLifecycle().value, viewModel::setShowLatestValueInSearch),

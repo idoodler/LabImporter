@@ -91,6 +91,7 @@ import dev.idoodler.labimporter.ui.design.groupContainerColor
 import dev.idoodler.labimporter.ui.design.tintedSurface
 import dev.idoodler.labimporter.ui.preview.PreviewSamples
 import dev.idoodler.labimporter.ui.design.washTopBarColors
+import dev.idoodler.labimporter.ui.design.readableListPadding
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -146,7 +147,7 @@ fun ReviewScreen(
             },
         ) { padding ->
             LazyColumn(
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = padding.calculateTopPadding() + 4.dp, bottom = 48.dp),
+                contentPadding = readableListPadding(top = padding.calculateTopPadding() + 4.dp, bottom = 48.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxSize().imePadding(),
             ) {

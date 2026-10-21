@@ -138,4 +138,18 @@ class LabImporterRootTest {
         waitFor { compose.onAllNodesWithText(string(R.string.readings)).fetchSemanticsNodes().isNotEmpty() }
         compose.runOnIdle { assertEquals(null, viewModel.launchRequest.value) }
     }
+
+    @Test
+    @Config(qualifiers = "w1280dp-h800dp")
+    fun tabletsNavigateWithARail() {
+        launch()
+        // The rail replaces the dashboard's Reports/Settings buttons, like the iPad sidebar.
+        compose.onNodeWithContentDescription(string(R.string.tab_settings)).assertDoesNotExist()
+        compose.onNodeWithText(string(R.string.tab_settings)).performClick()
+        waitFor { compose.onAllNodesWithText(string(R.string.date_of_birth)).fetchSemanticsNodes().isNotEmpty() }
+        // A section's root has no back arrow; Back returns to the dashboard section.
+        compose.onNodeWithContentDescription(string(R.string.back)).assertDoesNotExist()
+        androidx.test.espresso.Espresso.pressBack()
+        waitFor { compose.onAllNodesWithText(string(R.string.date_of_birth)).fetchSemanticsNodes().isEmpty() }
+    }
 }

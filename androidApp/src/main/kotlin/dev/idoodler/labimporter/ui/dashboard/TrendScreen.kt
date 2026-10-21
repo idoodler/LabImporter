@@ -82,6 +82,7 @@ import dev.idoodler.labimporter.ui.design.tabular
 import dev.idoodler.labimporter.ui.design.tintedSurface
 import dev.idoodler.labimporter.ui.preview.PreviewSamples
 import dev.idoodler.labimporter.ui.design.washTopBarColors
+import dev.idoodler.labimporter.ui.design.readableListPadding
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 import java.time.format.FormatStyle
 
@@ -177,7 +178,7 @@ fun TrendScreen(
             },
         ) { padding ->
             LazyColumn(
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = padding.calculateTopPadding(), bottom = 40.dp),
+                contentPadding = readableListPadding(top = padding.calculateTopPadding(), bottom = 40.dp),
                 modifier = Modifier.fillMaxSize(),
             ) {
                 item(key = "hero") {

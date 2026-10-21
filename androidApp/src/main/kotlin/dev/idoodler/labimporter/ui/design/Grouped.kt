@@ -16,6 +16,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.toSize
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /*
@@ -86,4 +93,22 @@ fun SectionTitle(title: String, modifier: Modifier = Modifier) {
         color = MaterialTheme.colorScheme.primary,
         modifier = modifier.padding(start = 8.dp, top = 20.dp, bottom = 8.dp),
     )
+}
+
+/** The app window's size (multi-window and foldables included). */
+@Composable
+fun windowSize(): DpSize = with(LocalDensity.current) { LocalWindowInfo.current.containerSize.toSize().toDpSize() }
+
+/** The width the current screen gets — the window minus a navigation rail (set by the navigator). */
+val LocalScreenWidth = compositionLocalOf<Dp?> { null }
+
+/** Lists stop growing here: wider rows are hard to read (iOS grouped lists on iPad do the same). */
+private val MaxReadableWidth = 760.dp
+
+/** List padding that centres rows at a readable width on wide windows; 16 dp margins on phones. */
+@Composable
+fun readableListPadding(top: Dp, bottom: Dp): PaddingValues {
+    val width = LocalScreenWidth.current ?: windowSize().width
+    val side = maxOf(16.dp, (width - MaxReadableWidth) / 2)
+    return PaddingValues(start = side, end = side, top = top, bottom = bottom)
 }

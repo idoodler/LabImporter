@@ -3,6 +3,8 @@ package dev.idoodler.labimporter.data
 import android.content.Context
 import androidx.core.net.toUri
 import androidx.health.connect.client.HealthConnectClient
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Dispatchers
 import androidx.health.connect.client.HealthConnectFeatures
 import androidx.health.connect.client.feature.ExperimentalPersonalHealthRecordApi
 import androidx.health.connect.client.permission.HealthPermission
@@ -96,14 +98,15 @@ class HealthConnectReportStore(
             resources += response.medicalResources.map { it.fhirResource.data }
             pageToken = response.nextPageToken
         } while (pageToken != null)
-        return FhirLabCodec.decode(resources)
+        // Health Connect resumes on the caller's thread (often main); parsing every report isn't for it.
+        return withContext(Dispatchers.Default) { FhirLabCodec.decode(resources) }
     }
 
     override suspend fun save(report: LabReport) {
         val c = requireClient()
         val source = existingSource(c) ?: createSource(c)
-        val requests = FhirLabCodec.encode(report, softwareIdentity).map {
-            UpsertMedicalResourceRequest(source.id, source.fhirVersion, it.json)
+        val requests = withContext(Dispatchers.Default) {
+            FhirLabCodec.encode(report, softwareIdentity).map { UpsertMedicalResourceRequest(source.id, source.fhirVersion, it.json) }
         }
         if (requests.isNotEmpty()) c.upsertMedicalResources(requests)
     }

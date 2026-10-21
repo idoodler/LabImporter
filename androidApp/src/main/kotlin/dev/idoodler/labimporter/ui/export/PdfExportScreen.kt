@@ -68,6 +68,7 @@ import dev.idoodler.labimporter.ui.design.groupContainerColor
 import dev.idoodler.labimporter.ui.design.groupShape
 import dev.idoodler.labimporter.ui.preview.PreviewSamples
 import dev.idoodler.labimporter.ui.design.washTopBarColors
+import dev.idoodler.labimporter.ui.design.readableListPadding
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -149,7 +150,7 @@ fun PdfExportScreen(
             },
         ) { padding ->
             LazyColumn(
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = padding.calculateTopPadding(), bottom = 40.dp),
+                contentPadding = readableListPadding(top = padding.calculateTopPadding(), bottom = 40.dp),
                 modifier = Modifier.fillMaxSize(),
             ) {
                 item(key = "appearance") {

@@ -348,7 +348,12 @@ tools/generate_android_icon.py # layered adaptive launcher icon (+ night + monoc
   (`ui/design/CategoryStyle.kt`) — reuse those instead of ad-hoc colours.
   There is deliberately **no tab bar**: the dashboard is home, Reports and
   Settings open from its top bar, details push on a back stack with predictive
-  back, and importing is a FAB menu (`ImportFabMenu`).
+  back, and importing is a FAB menu (`ImportFabMenu`). **Wide windows** (≥ 840 ×
+  480 dp — tablets, unfolded phones; like iOS's regular × regular) get a
+  navigation rail with per-section stacks instead (`ui/NavigationLayout.kt`, the
+  counterpart of the iPad sidebar); `stackForLayout` converts the stack when the
+  window changes. List screens use `readableListPadding` so rows stay readable
+  on wide windows.
 - **PDF export:** what goes on which page (cover, latest results grouped by
   category, trend charts; per paper size) is `PdfReport` in `shared/`, so iOS's
   SwiftUI pages and Android's `PdfReportRenderer` produce the same document.
@@ -374,6 +379,10 @@ tools/generate_android_icon.py # layered adaptive launcher icon (+ night + monoc
   the catalog would silently be empty. Use `waitFor` (`ComposeWait.kt`) rather
   than `waitUntil` for work on IO dispatchers; a text field inside a dialog never
   idles under Robolectric, so test such dialogs' logic in `shared/` instead.
+- **Performance:** debug builds run StrictMode (logged). The emulator must use
+  the host GPU (`-gpu host`): with software rendering every full-screen layer
+  costs ~45 ms and frames/ANRs say nothing about the app. Measure with
+  `adb shell dumpsys gfxinfo dev.idoodler.labimporter framestats`.
 - **Kotlin names seen from Swift:** a function starting with `new`, `copy`,
   `alloc` or `init` is renamed by Kotlin/Native (e.g. `doNewX`) — avoid those prefixes in `shared/`.
 

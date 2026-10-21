@@ -75,6 +75,7 @@ import dev.idoodler.labimporter.ui.design.dominantColors
 import dev.idoodler.labimporter.ui.design.welcomePalette
 import dev.idoodler.labimporter.ui.preview.PreviewSamples
 import dev.idoodler.labimporter.ui.design.washTopBarColors
+import dev.idoodler.labimporter.ui.design.readableListPadding
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 import java.time.format.FormatStyle
 
@@ -84,7 +85,8 @@ fun HistoryScreen(
     reports: List<LabReport>,
     onOpenReport: (LabReport) -> Unit,
     modifier: Modifier = Modifier,
-    onBack: () -> Unit = {},
+    /** Null at the root of a navigation-rail section (wide windows): no back arrow. */
+    onBack: (() -> Unit)? = null,
     onExportPdf: () -> Unit = {},
     onDeleteReports: (Set<String>) -> Unit = {},
     onSelectionModeChange: (Boolean) -> Unit = {},
@@ -124,7 +126,7 @@ fun HistoryScreen(
                         if (selecting) {
                             IconButton(onClick = { setSelecting(false) }) { Icon(Icons.Rounded.Close, stringResource(R.string.done)) }
                         } else {
-                            IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.back)) }
+                            onBack?.let { IconButton(onClick = it) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.back)) } }
                         }
                     },
                     actions = {
@@ -181,7 +183,7 @@ fun HistoryScreen(
                 return@Scaffold
             }
             LazyColumn(
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = padding.calculateTopPadding(), bottom = 112.dp),
+                contentPadding = readableListPadding(top = padding.calculateTopPadding(), bottom = 112.dp),
                 modifier = Modifier.fillMaxSize(),
             ) {
                 item(key = "summary") { SummaryCard(reports, allCategories.distinct().size) }
@@ -309,23 +311,29 @@ fun DotStack(colors: List<Color>) {
 @Preview(name = "Populated", widthDp = 400, heightDp = 800)
 @Composable
 private fun HistoryPreview() {
-    LabImporterTheme(dynamicColor = false) { HistoryScreen(PreviewSamples.reports, {}) }
+    LabImporterTheme(dynamicColor = false) { HistoryScreen(PreviewSamples.reports, {}, onBack = {}) }
 }
 
 @Preview(name = "Dark", widthDp = 400, heightDp = 800, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun HistoryDarkPreview() {
-    LabImporterTheme(darkTheme = true, dynamicColor = false) { HistoryScreen(PreviewSamples.reports, {}) }
+    LabImporterTheme(darkTheme = true, dynamicColor = false) { HistoryScreen(PreviewSamples.reports, {}, onBack = {}) }
 }
 
 @Preview(name = "Single", widthDp = 400, heightDp = 800)
 @Composable
 private fun HistorySinglePreview() {
-    LabImporterTheme(dynamicColor = false) { HistoryScreen(PreviewSamples.reports.take(1), {}) }
+    LabImporterTheme(dynamicColor = false) { HistoryScreen(PreviewSamples.reports.take(1), {}, onBack = {}) }
 }
 
 @Preview(name = "Empty", widthDp = 400, heightDp = 800)
 @Composable
 private fun HistoryEmptyPreview() {
-    LabImporterTheme(dynamicColor = false) { HistoryScreen(emptyList(), {}) }
+    LabImporterTheme(dynamicColor = false) { HistoryScreen(emptyList(), {}, onBack = {}) }
+}
+
+@Preview(name = "Rail section root (tablet)", widthDp = 840, heightDp = 800)
+@Composable
+private fun HistoryRailRootPreview() {
+    LabImporterTheme(dynamicColor = false) { HistoryScreen(PreviewSamples.reports, {}) }
 }
