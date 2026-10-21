@@ -78,7 +78,7 @@ enum AppInfo {
     /// the "Report an Issue" row is hidden.
     static var newIssueURL: URL? {
         guard repositoryHasIssues != false, let repository = repositoryURL else { return nil }
-        return URL(string: LabImporterCore.About.shared.newIssueUrl(
+        return URL(string: LabImporterCore.About.shared.issueReportUrl(
             repositoryUrl: repository.absoluteString, version: version, build: build, branch: branch, commit: commit
         ))
     }

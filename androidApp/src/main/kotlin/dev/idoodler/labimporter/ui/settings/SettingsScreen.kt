@@ -239,7 +239,7 @@ fun SettingsScreen(
                                 )
                             }
                         }
-                        about.newIssueUrl?.let { url ->
+                        about.issueReportUrl?.let { url ->
                             add { i, n ->
                                 GroupedListItem(
                                     i, n, onClick = { open(url) },
@@ -319,7 +319,7 @@ data class SearchSettings(val showLatestValue: Boolean = false, val onShowLatest
 /** Project links and the license from the build (the iOS `AppInfo`); missing ones hide their rows. */
 data class AboutSettings(
     val repositoryUrl: String? = null,
-    val newIssueUrl: String? = null,
+    val issueReportUrl: String? = null,
     val fundingLinks: List<FundingLink> = emptyList(),
     val licenseText: String? = null,
 )

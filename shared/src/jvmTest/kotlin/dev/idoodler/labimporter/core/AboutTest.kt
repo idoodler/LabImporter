@@ -41,7 +41,7 @@ class AboutTest {
 
     @Test
     fun issueLinksCarryTheBuild() {
-        val url = About.newIssueUrl("https://github.com/o/r", "1.0", "7", "main", "abc123")
+        val url = About.issueReportUrl("https://github.com/o/r", "1.0", "7", "main", "abc123")
         assertTrue(url.startsWith("https://github.com/o/r/issues/new?body="))
         assertTrue("Version%3A%201.0%20%287%29" in url)
         assertTrue("%0A---%0A" in url)

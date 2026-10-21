@@ -353,7 +353,7 @@ private fun Screen(
                 onOpenSortEditor = { push(Destination.SortEditor) },
                 onOpenCatalog = { push(Destination.Catalog) },
                 search = SearchSettings(viewModel.showLatestValueInSearch.collectAsStateWithLifecycle().value, viewModel::setShowLatestValueInSearch),
-                about = viewModel.appInfo.let { AboutSettings(it.repositoryUrl, it.newIssueUrl, it.fundingLinks, it.licenseText) },
+                about = viewModel.appInfo.let { AboutSettings(it.repositoryUrl, it.issueReportUrl, it.fundingLinks, it.licenseText) },
             )
         }
         Destination.SortEditor -> SortEditorScreen(

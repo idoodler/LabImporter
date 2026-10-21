@@ -86,7 +86,7 @@ object About {
     }
 
     /** The repository's "new issue" page, pre-filled with the build to help triage. */
-    fun newIssueUrl(repositoryUrl: String, version: String, build: String, branch: String, commit: String): String {
+    fun issueReportUrl(repositoryUrl: String, version: String, build: String, branch: String, commit: String): String {
         val body = "\n\n---\nVersion: $version ($build)\nBranch: $branch\nCommit: $commit"
         return "$repositoryUrl/issues/new?body=${percentEncode(body)}"
     }

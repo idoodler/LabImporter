@@ -64,7 +64,7 @@ struct LabSortEditor: View {
         if !pinnedItems.isEmpty {
             Section("Pinned") {
                 ForEach(pinnedItems) { item in row(for: item) }
-                    .onMove { from, dest in move(inPinned: true, from: from, to: dest) }
+                    .onMove { from, dest in move(inPinned: true, from: from, destination: dest) }
             }
         }
     }
@@ -73,7 +73,7 @@ struct LabSortEditor: View {
     private var visibleSection: some View {
         Section("Visible") {
             ForEach(unpinnedItems) { item in row(for: item) }
-                .onMove { from, dest in move(inPinned: false, from: from, to: dest) }
+                .onMove { from, dest in move(inPinned: false, from: from, destination: dest) }
         }
     }
 
@@ -153,9 +153,9 @@ struct LabSortEditor: View {
     private func restoreCode(_ code: String) { state = state.restore(code: code) }
 
     /// A drag within a section (List moves one row at a time).
-    private func move(inPinned: Bool, from: IndexSet, to: Int) {
+    private func move(inPinned: Bool, from: IndexSet, destination: Int) {
         guard let source = from.first else { return }
-        state = state.move(inPinned: inPinned, from: Int32(source), to: Int32(to))
+        state = state.move(inPinned: inPinned, from: Int32(source), to: Int32(destination))
     }
 
     private func save() {

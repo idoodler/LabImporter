@@ -99,7 +99,7 @@ class AppInfo(private val context: Context) {
     /** The repository this build came from (null outside a git checkout); hides the GitHub rows. */
     val repositoryUrl: String? = About.repositoryWebUrl(BuildConfig.GIT_REMOTE)
 
-    val newIssueUrl: String? = repositoryUrl?.let { About.newIssueUrl(it, version, build, BuildConfig.GIT_BRANCH, BuildConfig.GIT_COMMIT) }
+    val issueReportUrl: String? = repositoryUrl?.let { About.issueReportUrl(it, version, build, BuildConfig.GIT_BRANCH, BuildConfig.GIT_COMMIT) }
 
     /** From the repo's `.github/FUNDING.yml`; empty hides the Support section. */
     val fundingLinks: List<FundingLink> by lazy { asset("funding.yml")?.let { About.fundingLinks(About.parseFundingYaml(it)) }.orEmpty() }

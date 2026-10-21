@@ -272,17 +272,24 @@ shared/        # Kotlin Multiplatform (android, iosArm64, iosSimulatorArm64, jvm
     parse/               # LabParseSchema/LabParsePrompt (shared AI instructions, guide texts,
                          #   JSON contract), LabParsePipeline (numbers, LOINC resolution, dedup)
     transfer/            # ReportTransfer: iPhone ⇄ Android file (FHIR Bundle; also reads CDA)
+    export/PdfReport.kt  # PDF content + pagination (PdfReport, PdfLayout) — both apps' PDFs
+    model/               # … also ChartAxis (rounded chart ticks), SortEditorState (Sort & Visibility rules)
+    about/               # About: FUNDING.yml links, repository URL, "Report an Issue" link
     platform/            # NumberFormatting (printf-exact on both platforms), SQLite, locks
   src/jvmTest/           # the shared tests (+ golden/report.cda.xml, also used by the Swift tests)
 androidApp/    # Jetpack Compose, Material 3 Expressive, dynamic colour
   ai/                    # OnDeviceAi (availability/problems), GeminiNanoAi (ML Kit GenAI Prompt API),
                          #   SelectableAi, LabParserService (shared prompt + pipeline)
   src/debug/…/ai/        # DevelopmentStandIn — debug builds only (emulators); src/release has a null stub
-  data/                  # HealthConnectReportStore (FHIR Medical Records), LocalReportStore, ReportRepository
+  data/                  # HealthConnectReportStore (FHIR Medical Records), LocalReportStore, ReportRepository,
+                         #   AppPreferences (incl. patient date of birth/sex for the PDF cover)
+  export/                # PdfReportRenderer: draws the shared PdfReport pages with PdfDocument
+  shortcuts/             # LauncherShortcuts: static Scan + one dynamic shortcut per value
   ui/design/             # design system: category colour/icon/shape (CategoryStyle), CategoryWash
                          #   backgrounds, ShapeBadge/CategoryChip/TrendBadge, AreaChart, grouped lists
   ui/                    # dashboard (home), trends, reports, report detail, import, review,
-                         #   settings, onboarding + UnsupportedDeviceScreen
+                         #   settings (+ Sort & Visibility), PDF export, LOINC catalog/term,
+                         #   onboarding + UnsupportedDeviceScreen
   translations/Android.xcstrings  # translations of Android-only wording (String Catalog format)
   src/test, src/testDebug         # JVM + Robolectric/Compose UI tests
 tools/xcstrings_to_android.py  # generates values-<lang>/strings.xml from both catalogs (--check in CI)
@@ -329,7 +336,11 @@ tools/generate_android_icon.py # layered adaptive launcher icon (+ night + monoc
   reused); otherwise add the translations to `androidApp/translations/Android.xcstrings`.
   Then run `python3 tools/xcstrings_to_android.py --check` — it regenerates every
   `values-<lang>/strings.xml` (don't edit those) and fails on any gap. Lint treats
-  a missing translation as fatal.
+  a missing translation as fatal. `Android.xcstrings` may also override single
+  languages of shared wording — needed where the iOS text uses Apple's automatic
+  inflection (`^[Bienvenido](inflect: true)`), which Android can't render: use
+  gender-neutral wording there (`--check` fails on leftover markup). Counts that
+  change the wording are `<plurals>` with every quantity the language uses.
 - **Android look & navigation:** Material 3 Expressive with dynamic colour, but
   every screen sits on a `CategoryWash` (the Android counterpart of the iOS
   `CategoryBackground`) and each clinical category has one colour (shared
@@ -338,6 +349,18 @@ tools/generate_android_icon.py # layered adaptive launcher icon (+ night + monoc
   There is deliberately **no tab bar**: the dashboard is home, Reports and
   Settings open from its top bar, details push on a back stack with predictive
   back, and importing is a FAB menu (`ImportFabMenu`).
+- **PDF export:** what goes on which page (cover, latest results grouped by
+  category, trend charts; per paper size) is `PdfReport` in `shared/`, so iOS's
+  SwiftUI pages and Android's `PdfReportRenderer` produce the same document.
+  `PdfReportRenderer.drawPage` works on any `Canvas`, which is how the JVM tests
+  check every page stays above its footer (Robolectric has no `PdfDocument`).
+- **Launcher shortcuts** are Android's counterpart of the iOS App Shortcut and
+  Spotlight index: names only; a value's latest reading appears solely with
+  Settings › Show Latest Value in Search (off by default). Shortcut intents carry
+  a LOINC code, never a reading. Requests from shortcuts go through
+  `AppViewModel.launchRequest` and wait for the main screen (like `SiriActionBridge`).
+- **Top bars over a wash** use `washTopBarColors()`: clear when expanded, solid
+  when content scrolls under (no backdrop blur on Android, so never translucent).
 - **Launcher icon:** generated — run `python3 tools/generate_android_icon.py`
   (add `--preview DIR` for SVG previews). Background layer = gradient + card,
   foreground layer = heart, plus night variants and the themed-icon monochrome
@@ -346,6 +369,13 @@ tools/generate_android_icon.py # layered adaptive launcher icon (+ night + monoc
   `@Preview`s for its variations (empty/populated, light/dark, sizes).
 - Build & test: `./gradlew :shared:jvmTest :androidApp:testDebugUnitTest :androidApp:assembleRelease`
   (`androidApp/build/outputs/apk/release/`). CI: `build_android.yml`.
+- **Robolectric tests** all run in one sandbox (`robolectric.graphicsMode=NATIVE`
+  in `build.gradle.kts`): a second sandbox can't load the bundled SQLite again and
+  the catalog would silently be empty. Use `waitFor` (`ComposeWait.kt`) rather
+  than `waitUntil` for work on IO dispatchers; a text field inside a dialog never
+  idles under Robolectric, so test such dialogs' logic in `shared/` instead.
+- **Kotlin names seen from Swift:** a function starting with `new`, `copy`,
+  `alloc` or `init` is renamed by Kotlin/Native (e.g. `doNewX`) — avoid those prefixes in `shared/`.
 
 ## iOS share extension
 
