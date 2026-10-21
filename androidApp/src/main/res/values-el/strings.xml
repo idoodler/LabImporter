@@ -270,7 +270,10 @@
     <string name="loinc_units">Μονάδες</string>
     <string name="loinc_link_footer">Ανοίγει την πλήρη περιγραφή και τις παραπομπές στο loinc.org.</string>
     <string name="done">Τέλος</string>
-    <string name="selected_count">%1$d επιλεγμένες</string>
+    <plurals name="selected_count">
+        <item quantity="one">%d επιλεγμένη</item>
+        <item quantity="other">%d επιλεγμένες</item>
+    </plurals>
     <string name="delete_all">Διαγραφή όλων</string>
     <string name="delete_reports_title">Διαγραφή αναφορών;</string>
     <plurals name="delete_reports_message">

@@ -282,7 +282,12 @@
     <string name="loinc_units">Единицы</string>
     <string name="loinc_link_footer">Открывает полное описание и источники на loinc.org.</string>
     <string name="done">Готово</string>
-    <string name="selected_count">Выбрано: %1$d</string>
+    <plurals name="selected_count">
+        <item quantity="one">Выбрано: %d</item>
+        <item quantity="few">Выбрано: %d</item>
+        <item quantity="many">Выбрано: %d</item>
+        <item quantity="other">Выбрано: %d</item>
+    </plurals>
     <string name="delete_all">Удалить все</string>
     <string name="delete_reports_title">Удалить отчёты?</string>
     <plurals name="delete_reports_message">

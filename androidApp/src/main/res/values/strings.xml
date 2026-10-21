@@ -5,7 +5,7 @@
   existing translations into values-<lang>/strings.xml (generated — don't
   edit those by hand). Android-only strings still need translating.
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name" translatable="false">LabImporter</string>
 
     <!-- Navigation -->
@@ -240,7 +240,8 @@
     <string name="pdf_included_values">Included Values</string>
     <string name="select_all">Select All</string>
     <string name="deselect_all">Deselect All</string>
-    <string name="pdf_selected_count">%1$d of %2$d selected</string>
+    <!-- A ratio ("3 of 5 selected"), worded to read right for any count in every language. -->
+    <string name="pdf_selected_count" tools:ignore="PluralsCandidate">%1$d of %2$d selected</string>
     <string name="pdf_generate">Generate</string>
     <string name="pdf_export_error">Export Error</string>
     <string name="pdf_failed">The PDF could not be generated. Please try again.</string>
@@ -316,7 +317,10 @@
 
     <!-- Selecting and deleting several reports -->
     <string name="done">Done</string>
-    <string name="selected_count">%1$d Selected</string>
+    <plurals name="selected_count">
+        <item quantity="one">%d Selected</item>
+        <item quantity="other">%d Selected</item>
+    </plurals>
     <string name="delete_all">Delete All</string>
     <string name="delete_reports_title">Delete Reports?</string>
     <plurals name="delete_reports_message">

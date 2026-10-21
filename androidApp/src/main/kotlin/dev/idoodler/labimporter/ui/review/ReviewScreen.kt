@@ -59,6 +59,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -89,6 +90,7 @@ import dev.idoodler.labimporter.ui.design.dominantColors
 import dev.idoodler.labimporter.ui.design.groupContainerColor
 import dev.idoodler.labimporter.ui.design.tintedSurface
 import dev.idoodler.labimporter.ui.preview.PreviewSamples
+import dev.idoodler.labimporter.ui.design.washTopBarColors
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -122,9 +124,12 @@ fun ReviewScreen(
     }
     val wash = remember(categories) { dominantColors(categories) }
 
+    // The bar turns solid once the list scrolls under it.
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Box(Modifier.fillMaxSize()) {
         CategoryWash(wash)
         Scaffold(
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             containerColor = Color.Transparent,
             topBar = {
                 TopAppBar(
@@ -135,7 +140,8 @@ fun ReviewScreen(
                             Text(stringResource(R.string.save))
                         }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+                    colors = washTopBarColors(),
+                    scrollBehavior = scrollBehavior,
                 )
             },
         ) { padding ->

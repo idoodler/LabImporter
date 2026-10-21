@@ -67,6 +67,7 @@ import dev.idoodler.labimporter.ui.design.dominantColors
 import dev.idoodler.labimporter.ui.design.groupContainerColor
 import dev.idoodler.labimporter.ui.design.groupShape
 import dev.idoodler.labimporter.ui.preview.PreviewSamples
+import dev.idoodler.labimporter.ui.design.washTopBarColors
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -142,10 +143,7 @@ fun PdfExportScreen(
                             }
                         }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Transparent,
-                        scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.94f),
-                    ),
+                    colors = washTopBarColors(),
                     scrollBehavior = scrollBehavior,
                 )
             },

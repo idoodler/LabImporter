@@ -40,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
@@ -69,6 +70,7 @@ import dev.idoodler.labimporter.ui.design.dominantColors
 import dev.idoodler.labimporter.ui.design.tabular
 import dev.idoodler.labimporter.ui.design.tintedSurface
 import dev.idoodler.labimporter.ui.preview.PreviewSamples
+import dev.idoodler.labimporter.ui.design.washTopBarColors
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 import java.time.format.FormatStyle
 
@@ -92,9 +94,12 @@ fun ReportDetailScreen(
     val colors = remember(report) { dominantColors(report.entries.map { LabCategory.forCode(it.code) }) }
     val dominant = report.dominantCategory ?: LabCategory.OTHER
 
+    // The bar turns solid once the list scrolls under it.
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Box(Modifier.fillMaxSize()) {
         CategoryWash(colors)
         Scaffold(
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             containerColor = Color.Transparent,
             topBar = {
                 TopAppBar(
@@ -114,7 +119,8 @@ fun ReportDetailScreen(
                         }) { Icon(Icons.Rounded.Share, shareTitle) }
                         IconButton(onClick = { confirmDelete = true }) { Icon(Icons.Rounded.Delete, stringResource(R.string.delete)) }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+                    colors = washTopBarColors(),
+                    scrollBehavior = scrollBehavior,
                 )
             },
         ) { padding ->

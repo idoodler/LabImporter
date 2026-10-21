@@ -276,7 +276,11 @@
     <string name="loinc_units">Unitats</string>
     <string name="loinc_link_footer">Obre la descripció completa i les referències a loinc.org.</string>
     <string name="done">Fet</string>
-    <string name="selected_count">%1$d seleccionats</string>
+    <plurals name="selected_count">
+        <item quantity="one">%d seleccionat</item>
+        <item quantity="many">%d de seleccionats</item>
+        <item quantity="other">%d seleccionats</item>
+    </plurals>
     <string name="delete_all">Elimina-ho tot</string>
     <string name="delete_reports_title">Vols eliminar els informes?</string>
     <plurals name="delete_reports_message">

@@ -276,7 +276,11 @@
     <string name="loinc_units">Unidades</string>
     <string name="loinc_link_footer">Abre a descrição completa e as referências em loinc.org.</string>
     <string name="done">Concluído</string>
-    <string name="selected_count">%1$d selecionados</string>
+    <plurals name="selected_count">
+        <item quantity="one">%d selecionado</item>
+        <item quantity="many">%d de selecionados</item>
+        <item quantity="other">%d selecionados</item>
+    </plurals>
     <string name="delete_all">Excluir tudo</string>
     <string name="delete_reports_title">Excluir relatórios?</string>
     <plurals name="delete_reports_message">

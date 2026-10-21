@@ -71,6 +71,7 @@ import dev.idoodler.labimporter.ui.design.SectionTitle
 import dev.idoodler.labimporter.ui.design.accentFor
 import dev.idoodler.labimporter.ui.design.color
 import dev.idoodler.labimporter.ui.design.tintedSurface
+import dev.idoodler.labimporter.ui.design.washTopBarColors
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 
 /**
@@ -123,10 +124,7 @@ fun LoincTermScreen(
                             )
                         }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Transparent,
-                        scrolledContainerColor = tintedSurface(category.color, 0.12f).copy(alpha = 0.96f),
-                    ),
+                    colors = washTopBarColors(tintedSurface(category.color, 0.12f)),
                     scrollBehavior = scrollBehavior,
                 )
             },

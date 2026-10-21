@@ -270,7 +270,10 @@
     <string name="loinc_units">Mértékegységek</string>
     <string name="loinc_link_footer">Megnyitja a teljes leírást és hivatkozásokat a loinc.org oldalon.</string>
     <string name="done">Kész</string>
-    <string name="selected_count">%1$d kijelölve</string>
+    <plurals name="selected_count">
+        <item quantity="one">%d kijelölve</item>
+        <item quantity="other">%d kijelölve</item>
+    </plurals>
     <string name="delete_all">Összes törlése</string>
     <string name="delete_reports_title">Törlöd a jelentéseket?</string>
     <plurals name="delete_reports_message">

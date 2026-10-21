@@ -282,7 +282,12 @@
     <string name="loinc_units">Jednotky</string>
     <string name="loinc_link_footer">Otvorí úplný popis a referencie na loinc.org.</string>
     <string name="done">Hotovo</string>
-    <string name="selected_count">Vybraných: %1$d</string>
+    <plurals name="selected_count">
+        <item quantity="one">Počet vybraných: %d</item>
+        <item quantity="few">Počet vybraných: %d</item>
+        <item quantity="many">Počet vybraných: %d</item>
+        <item quantity="other">Počet vybraných: %d</item>
+    </plurals>
     <string name="delete_all">Odstrániť všetko</string>
     <string name="delete_reports_title">Odstrániť správy?</string>
     <plurals name="delete_reports_message">

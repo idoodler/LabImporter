@@ -1,5 +1,7 @@
 package dev.idoodler.labimporter.ui.loinc
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -81,6 +84,11 @@ fun LoincCatalogScreen(
     var loading by remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
     val focus = remember { FocusRequester() }
+    val listState = rememberLazyListState()
+    // The search header turns solid once results scroll under it.
+    val headerColor by animateColorAsState(
+        if (listState.canScrollBackward) MaterialTheme.colorScheme.surfaceContainer else Color.Transparent, label = "header",
+    )
 
     LaunchedEffect(query) {
         loading = true
@@ -112,7 +120,7 @@ fun LoincCatalogScreen(
         Scaffold(
             containerColor = Color.Transparent,
             topBar = {
-                Column {
+                Column(Modifier.background(headerColor)) {
                     TopAppBar(
                         title = { Text(stringResource(R.string.loinc_catalog), fontWeight = FontWeight.Bold) },
                         navigationIcon = {
@@ -148,6 +156,7 @@ fun LoincCatalogScreen(
                 return@Scaffold
             }
             LazyColumn(
+                state = listState,
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = padding.calculateTopPadding() + 8.dp, bottom = 40.dp),
                 modifier = Modifier.fillMaxSize(),
             ) {

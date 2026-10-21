@@ -19,7 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.rounded.DragHandle
-import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.PushPin
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Icon
@@ -42,10 +41,12 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -65,6 +66,7 @@ import dev.idoodler.labimporter.ui.design.GroupedListItem
 import dev.idoodler.labimporter.ui.design.SectionTitle
 import dev.idoodler.labimporter.ui.design.color
 import dev.idoodler.labimporter.ui.design.dominantColors
+import dev.idoodler.labimporter.ui.design.washTopBarColors
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 
 /**
@@ -74,7 +76,7 @@ import dev.idoodler.labimporter.ui.theme.LabImporterTheme
  * live in the shared [SortEditorState]; every edit saves right away.
  *
  * @param codes every code with a reading (`Dashboard.codeNames`).
- * @param onOpenDetails opens the LOINC term screen; null hides the info buttons.
+ * @param onOpenDetails opens the LOINC term screen from a row; null leaves rows inert.
  */
 @Composable
 fun SortEditorScreen(
@@ -86,14 +88,18 @@ fun SortEditorScreen(
     onOpenDetails: ((String) -> Unit)? = null,
 ) {
     var state by remember(codes) { mutableStateOf(SortEditorState.from(preferences, codes.map { it.code })) }
-    val edit = { updated: SortEditorState ->
-        if (updated != state) {
-            state = updated
-            onUpdatePreferences { updated.applyTo(it) }
-        }
-    }
     val names = remember(codes) { codes.associate { it.code to it.name } }
     val listState = rememberLazyListState()
+    val edit = { updated: SortEditorState ->
+        if (updated != state) {
+            // A first pin adds a section above everything: stay at the top instead of
+            // keeping the old first row in place (which would slide the new rows under the bar).
+            val atTop = listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
+            state = updated
+            onUpdatePreferences { updated.applyTo(it) }
+            if (atTop) listState.requestScrollToItem(0)
+        }
+    }
     val drag = remember { DragState() }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
@@ -108,10 +114,7 @@ fun SortEditorScreen(
                     navigationIcon = {
                         IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.back)) }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Transparent,
-                        scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.94f),
-                    ),
+                    colors = washTopBarColors(),
                     scrollBehavior = scrollBehavior,
                 )
             },
@@ -141,7 +144,8 @@ fun SortEditorScreen(
                             onHide = { edit(state.hide(code)) },
                             onMove = { delta -> edit(state.moveBy(code, delta)) },
                             onOpenDetails = onOpenDetails?.takeIf { LabCore.loinc?.term(code) != null }?.let { open -> { open(code) } },
-                            handle = Modifier.pointerInput(code, codes) {
+                            dragKeys = arrayOf(code, codes),
+                            onHandleDrag = {
                                 detectDragGestures(
                                     onDragStart = { drag.start(code) },
                                     onDragEnd = drag::stop,
@@ -226,14 +230,19 @@ private fun VisibleRow(
     onHide: () -> Unit,
     onMove: (Int) -> Unit,
     onOpenDetails: (() -> Unit)?,
-    handle: Modifier,
+    dragKeys: Array<Any>,
+    onHandleDrag: suspend PointerInputScope.() -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val moveUp = stringResource(R.string.move_up)
     val moveDown = stringResource(R.string.move_down)
+    val detailsLabel = stringResource(R.string.details)
     GroupedListItem(
         index, count,
+        // Tapping a row opens its LOINC details (rename, reference range), keeping the row's width for the name.
+        onClick = onOpenDetails,
         modifier = modifier.semantics {
+            if (onOpenDetails != null) onClick(label = detailsLabel) { onOpenDetails(); true }
             // Dragging needs a pointer; TalkBack and switch users move rows with actions.
             customActions = buildList {
                 if (index > 0) add(CustomAccessibilityAction(moveUp) { onMove(-1); true })
@@ -242,7 +251,10 @@ private fun VisibleRow(
         },
         leading = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Rounded.DragHandle, null, handle, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                Icon(
+                    Icons.Rounded.DragHandle, null, Modifier.pointerInput(*dragKeys, block = onHandleDrag),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
                 Spacer(Modifier.width(12.dp))
                 Dot(LabCategory.forCode(code))
             }
@@ -266,9 +278,6 @@ private fun VisibleRow(
                     } else {
                         Icon(Icons.Outlined.PushPin, stringResource(R.string.pin))
                     }
-                }
-                if (onOpenDetails != null) {
-                    IconButton(onClick = onOpenDetails) { Icon(Icons.Rounded.Info, stringResource(R.string.details)) }
                 }
                 IconButton(onClick = onHide) { Icon(Icons.Rounded.VisibilityOff, stringResource(R.string.hide)) }
             }

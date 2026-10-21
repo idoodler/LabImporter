@@ -270,7 +270,10 @@
     <string name="loinc_units">Мерни единици</string>
     <string name="loinc_link_footer">Отваря пълното описание и източниците в loinc.org.</string>
     <string name="done">Готово</string>
-    <string name="selected_count">%1$d избрани</string>
+    <plurals name="selected_count">
+        <item quantity="one">%d избран</item>
+        <item quantity="other">%d избрани</item>
+    </plurals>
     <string name="delete_all">Изтрий всички</string>
     <string name="delete_reports_title">Да се изтрият ли отчетите?</string>
     <plurals name="delete_reports_message">

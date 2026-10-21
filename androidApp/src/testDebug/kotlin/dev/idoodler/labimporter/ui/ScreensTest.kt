@@ -253,7 +253,7 @@ class ScreensTest {
         // Nothing selected yet: Delete is off.
         compose.onNodeWithText(string(R.string.delete)).assertIsNotEnabled()
         compose.onNodeWithText(formatDate(PreviewSamples.reports[1].date, FormatStyle.LONG)).performClick()
-        compose.onNodeWithText(app.getString(R.string.selected_count, 1)).assertIsDisplayed()
+        compose.onNodeWithText(app.resources.getQuantityString(R.plurals.selected_count, 1, 1)).assertIsDisplayed()
         compose.onNodeWithText(string(R.string.delete)).performClick()
         compose.onNodeWithText(string(R.string.delete_report_title)).assertIsDisplayed()
         compose.onAllNodesWithText(string(R.string.delete)).onLast().performClick()

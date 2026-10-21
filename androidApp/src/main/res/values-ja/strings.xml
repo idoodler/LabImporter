@@ -264,7 +264,9 @@
     <string name="loinc_units">単位</string>
     <string name="loinc_link_footer">loinc.orgで完全な説明と参考資料を開きます。</string>
     <string name="done">完了</string>
-    <string name="selected_count">%1$d件選択中</string>
+    <plurals name="selected_count">
+        <item quantity="other">%d件選択中</item>
+    </plurals>
     <string name="delete_all">すべて削除</string>
     <string name="delete_reports_title">レポートを削除しますか？</string>
     <plurals name="delete_reports_message">

@@ -97,6 +97,7 @@ import dev.idoodler.labimporter.ui.design.GroupedListItem
 import dev.idoodler.labimporter.ui.design.SectionTitle
 import dev.idoodler.labimporter.ui.design.ShapeBadge
 import dev.idoodler.labimporter.ui.design.color
+import dev.idoodler.labimporter.ui.design.washTopBarColors
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 
 /** Settings as Material 3 Expressive grouped lists with coloured shape icons. */
@@ -133,10 +134,7 @@ fun SettingsScreen(
                     navigationIcon = {
                         IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.back)) }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Transparent,
-                        scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.94f),
-                    ),
+                    colors = washTopBarColors(),
                     scrollBehavior = scrollBehavior,
                 )
             },

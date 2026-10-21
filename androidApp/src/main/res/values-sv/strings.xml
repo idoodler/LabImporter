@@ -270,7 +270,10 @@
     <string name="loinc_units">Enheter</string>
     <string name="loinc_link_footer">Öppnar den fullständiga beskrivningen och referenserna på loinc.org.</string>
     <string name="done">Klar</string>
-    <string name="selected_count">%1$d valda</string>
+    <plurals name="selected_count">
+        <item quantity="one">%d vald</item>
+        <item quantity="other">%d valda</item>
+    </plurals>
     <string name="delete_all">Radera alla</string>
     <string name="delete_reports_title">Radera rapporter?</string>
     <plurals name="delete_reports_message">

@@ -81,6 +81,7 @@ import dev.idoodler.labimporter.ui.design.color
 import dev.idoodler.labimporter.ui.design.tabular
 import dev.idoodler.labimporter.ui.design.tintedSurface
 import dev.idoodler.labimporter.ui.preview.PreviewSamples
+import dev.idoodler.labimporter.ui.design.washTopBarColors
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 import java.time.format.FormatStyle
 
@@ -170,10 +171,7 @@ fun TrendScreen(
                             }
                         }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Transparent,
-                        scrolledContainerColor = tintedSurface(color, 0.12f).copy(alpha = 0.96f),
-                    ),
+                    colors = washTopBarColors(tintedSurface(color, 0.12f)),
                     scrollBehavior = scrollBehavior,
                 )
             },

@@ -270,7 +270,10 @@
     <string name="loinc_units">Eenheden</string>
     <string name="loinc_link_footer">Opent de volledige beschrijving en referenties op loinc.org.</string>
     <string name="done">Gereed</string>
-    <string name="selected_count">%1$d geselecteerd</string>
+    <plurals name="selected_count">
+        <item quantity="one">%d geselecteerd</item>
+        <item quantity="other">%d geselecteerd</item>
+    </plurals>
     <string name="delete_all">Verwijder alles</string>
     <string name="delete_reports_title">Rapporten verwijderen?</string>
     <plurals name="delete_reports_message">

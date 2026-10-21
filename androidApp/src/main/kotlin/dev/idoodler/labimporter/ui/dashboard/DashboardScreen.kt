@@ -87,6 +87,7 @@ import dev.idoodler.labimporter.ui.design.welcomePalette
 import dev.idoodler.labimporter.ui.importflow.ImportActions
 import dev.idoodler.labimporter.ui.importflow.ImportOptionCards
 import dev.idoodler.labimporter.ui.preview.PreviewSamples
+import dev.idoodler.labimporter.ui.design.washTopBarColors
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 import java.time.format.FormatStyle
 
@@ -142,10 +143,7 @@ fun DashboardScreen(
                         IconButton(onClick = onOpenReports) { Icon(Icons.Rounded.History, stringResource(R.string.history_title)) }
                         IconButton(onClick = onOpenSettings) { Icon(Icons.Rounded.Settings, stringResource(R.string.tab_settings)) }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Transparent,
-                        scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.94f),
-                    ),
+                    colors = washTopBarColors(),
                     scrollBehavior = scrollBehavior,
                 )
             },

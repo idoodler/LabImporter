@@ -276,7 +276,11 @@
     <string name="loinc_units">Jedinice</string>
     <string name="loinc_link_footer">Otvara potpuni opis i izvore na loinc.org.</string>
     <string name="done">Gotovo</string>
-    <string name="selected_count">Odabrano: %1$d</string>
+    <plurals name="selected_count">
+        <item quantity="one">Odabrano: %d</item>
+        <item quantity="few">Odabrano: %d</item>
+        <item quantity="other">Odabrano: %d</item>
+    </plurals>
     <string name="delete_all">Izbriši sve</string>
     <string name="delete_reports_title">Izbrisati izvješća?</string>
     <plurals name="delete_reports_message">

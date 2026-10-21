@@ -270,7 +270,10 @@
     <string name="loinc_units">Birimler</string>
     <string name="loinc_link_footer">loinc.org\'da tam açıklamayı ve kaynakları açar.</string>
     <string name="done">Bitti</string>
-    <string name="selected_count">%1$d seçildi</string>
+    <plurals name="selected_count">
+        <item quantity="one">%d seçildi</item>
+        <item quantity="other">%d seçildi</item>
+    </plurals>
     <string name="delete_all">Tümünü sil</string>
     <string name="delete_reports_title">Raporlar silinsin mi?</string>
     <plurals name="delete_reports_message">

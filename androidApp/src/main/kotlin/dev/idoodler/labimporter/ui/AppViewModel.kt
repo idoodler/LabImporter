@@ -35,7 +35,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -135,9 +137,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             combine(reports, displayPreferences, showLatestValueInSearch) { reports, prefs, showValue ->
                 Dashboard.sorted(Dashboard.metrics(reports), prefs) to showValue
-            }.distinctUntilChanged().collect { (metrics, showValue) ->
-                withContext(Dispatchers.Default) { LauncherShortcuts.update(context, metrics, showValue) }
-            }
+            }.distinctUntilChanged()
+                .onEach { (metrics, showValue) -> LauncherShortcuts.update(context, metrics, showValue) }
+                .flowOn(Dispatchers.Default) // Names come from the catalog; none of this belongs on the main thread.
+                .collect()
         }
     }
 

@@ -74,6 +74,7 @@ import dev.idoodler.labimporter.ui.design.color
 import dev.idoodler.labimporter.ui.design.dominantColors
 import dev.idoodler.labimporter.ui.design.welcomePalette
 import dev.idoodler.labimporter.ui.preview.PreviewSamples
+import dev.idoodler.labimporter.ui.design.washTopBarColors
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 import java.time.format.FormatStyle
 
@@ -115,7 +116,7 @@ fun HistoryScreen(
                 LargeFlexibleTopAppBar(
                     title = {
                         Text(
-                            if (selecting && selected.isNotEmpty()) stringResource(R.string.selected_count, selected.size) else stringResource(R.string.history_title),
+                            if (selecting && selected.isNotEmpty()) pluralStringResource(R.plurals.selected_count, selected.size, selected.size) else stringResource(R.string.history_title),
                             fontWeight = FontWeight.Bold,
                         )
                     },
@@ -137,10 +138,7 @@ fun HistoryScreen(
                             IconButton(onClick = { setSelecting(true) }) { Icon(Icons.Rounded.Checklist, stringResource(R.string.edit)) }
                         }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Transparent,
-                        scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.94f),
-                    ),
+                    colors = washTopBarColors(),
                     scrollBehavior = scrollBehavior,
                 )
             },
