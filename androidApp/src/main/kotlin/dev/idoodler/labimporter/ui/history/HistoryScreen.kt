@@ -23,6 +23,7 @@ import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.PictureAsPdf
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -64,7 +65,13 @@ import java.time.format.FormatStyle
 
 /** Saved reports, newest first, grouped by year under a summary card. */
 @Composable
-fun HistoryScreen(reports: List<LabReport>, onOpenReport: (LabReport) -> Unit, modifier: Modifier = Modifier, onBack: () -> Unit = {}) {
+fun HistoryScreen(
+    reports: List<LabReport>,
+    onOpenReport: (LabReport) -> Unit,
+    modifier: Modifier = Modifier,
+    onBack: () -> Unit = {},
+    onExportPdf: () -> Unit = {},
+) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val byYear = remember(reports) { reports.groupBy { it.date.year } }
     val allCategories = remember(reports) { reports.flatMap { r -> r.entries.map { LabCategory.forCode(it.code) } } }
@@ -78,6 +85,11 @@ fun HistoryScreen(reports: List<LabReport>, onOpenReport: (LabReport) -> Unit, m
                     title = { Text(stringResource(R.string.history_title), fontWeight = FontWeight.Bold) },
                     navigationIcon = {
                         IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.back)) }
+                    },
+                    actions = {
+                        if (reports.isNotEmpty()) {
+                            IconButton(onClick = onExportPdf) { Icon(Icons.Rounded.PictureAsPdf, stringResource(R.string.pdf_export)) }
+                        }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = Color.Transparent,

@@ -1,3 +1,4 @@
+import LabImporterCore
 import SwiftUI
 
 /// Configuration sheet for a PDF export: pick the colour treatment, which
@@ -28,7 +29,8 @@ struct PDFExportView: View {
 
     init(reports: [LabReport]) {
         self.reports = reports
-        let codes = Self.availableCodes(in: reports)
+        // Everything with numeric data is selected to start with.
+        let codes = Self.selectable(in: reports, prefs: LabDisplayPreferences.current()).map(\.code)
         _options = State(initialValue: PDFExportOptions(selectedCodes: Set(codes)))
     }
 
@@ -155,47 +157,21 @@ struct PDFExportView: View {
 
     // MARK: - Derived data
 
+    /// Every value with a numeric reading, in dashboard order (pinned, the
+    /// user's order, then name) — the shared rule, so the list matches what
+    /// they see on the dashboard and on Android.
     private var available: [Available] {
-        var seen = Set<String>()
-        var result: [Available] = []
-        for report in reports {
-            for entry in report.entries where entry.numericValue != nil && seen.insert(entry.code).inserted {
-                result.append(Available(code: entry.code, name: entry.resolvedName,
-                                        category: LabCategory.forCode(entry.code)))
-            }
-        }
-        // Mirror the dashboard order: pinned first, then the user's explicit
-        // order, then alphabetical — so the export list matches what they see.
-        let pinned = prefs.pinnedSet
-        var orderMap: [String: Int] = [:]
-        for (index, code) in prefs.orderedCodes.enumerated() where orderMap[code] == nil {
-            orderMap[code] = index
-        }
-        return result.sorted { lhs, rhs in
-            let lPin = pinned.contains(lhs.code)
-            let rPin = pinned.contains(rhs.code)
-            if lPin != rPin { return lPin }
-            let lOrd = orderMap[lhs.code] ?? Int.max
-            let rOrd = orderMap[rhs.code] ?? Int.max
-            if lOrd != rOrd { return lOrd < rOrd }
-            return lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
-        }
+        Self.selectable(in: reports, prefs: prefs)
+    }
+
+    private static func selectable(in reports: [LabReport], prefs: LabDisplayPreferences) -> [Available] {
+        SharedCore.start()
+        return LabImporterCore.Dashboard.shared.trendMetrics(reports: reports.map(\.shared), preferences: prefs.shared)
+            .map { Available(code: $0.code, name: $0.name, category: LabCategory(sharedName: $0.category.name)) }
     }
 
     private var allSelected: Bool {
         !available.isEmpty && options.selectedCodes.count == available.count
-    }
-
-    /// Distinct LOINC codes with numeric data — the default selection.
-    private static func availableCodes(in reports: [LabReport]) -> [String] {
-        var seen = Set<String>()
-        var codes: [String] = []
-        for report in reports {
-            for entry in report.entries where entry.numericValue != nil && seen.insert(entry.code).inserted {
-                codes.append(entry.code)
-            }
-        }
-        return codes
     }
 
     // MARK: - Actions

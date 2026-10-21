@@ -1,3 +1,4 @@
+import LabImporterCore
 import SwiftUI
 
 // Infrastructure shared by the PDF page views: the page composer that paginates
@@ -18,15 +19,35 @@ struct PDFPageComposer {
 
     private var size: CGSize { options.pageFormat.size }
 
+    /// Pages are planned (sections, pagination per paper size) by the shared
+    /// core — `PdfReport.pages`, identical on Android — and rendered here.
     func pages() -> [AnyView] {
-        var blocks: [Block] = []
-        if options.includeSummary { blocks.append(.cover) }
-        if options.includeLatestResults { blocks += latestBlocks() }
-        if options.includeTrends { blocks += trendBlocks() }
-
-        let total = blocks.count
+        let planned = PdfReport.shared.pages(
+            data: data.shared, format: options.pageFormat.shared,
+            includeSummary: options.includeSummary,
+            includeLatestResults: options.includeLatestResults,
+            includeTrends: options.includeTrends
+        )
+        let blocks: [Block] = planned.compactMap { page in
+            switch onEnum(of: page) {
+            case .cover:
+                return .cover
+            case .latest(let latest):
+                let rows: [LatestRow] = latest.rows.compactMap { row in
+                    switch onEnum(of: row) {
+                    case .heading(let heading):
+                        return .category(LabCategory(sharedName: heading.category.name), count: Int(heading.count))
+                    case .value(let value):
+                        return data.metric(value.metric).map(LatestRow.metric)
+                    }
+                }
+                return .latest(rows: rows, showTitle: latest.showTitle)
+            case .trends(let trends):
+                return .trends(metrics: trends.metrics.compactMap(data.metric), showTitle: trends.showTitle)
+            }
+        }
         return blocks.enumerated().map { index, block in
-            view(for: block, pageNumber: index + 1, total: total)
+            view(for: block, pageNumber: index + 1, total: blocks.count)
         }
     }
 
@@ -34,44 +55,6 @@ struct PDFPageComposer {
         case cover
         case latest(rows: [LatestRow], showTitle: Bool)
         case trends(metrics: [PDFMetric], showTitle: Bool)
-    }
-
-    private func latestBlocks() -> [Block] {
-        var rows: [LatestRow] = []
-        let grouped = Dictionary(grouping: data.metrics, by: \.category)
-        for category in data.categories {
-            guard let metrics = grouped[category] else { continue }
-            rows.append(.category(category, count: metrics.count))
-            rows.append(contentsOf: metrics.map { LatestRow.metric($0) })
-        }
-        guard !rows.isEmpty else { return [] }
-        let capacity = PDFLayout.tableRows(for: size)
-        return paginate(rows, first: capacity.first, rest: capacity.rest)
-            .map { Block.latest(rows: $0.items, showTitle: $0.isFirst) }
-    }
-
-    private func trendBlocks() -> [Block] {
-        let trendMetrics = data.metrics.filter(\.hasTrend)
-        guard !trendMetrics.isEmpty else { return [] }
-        let capacity = PDFLayout.charts(for: size)
-        return paginate(trendMetrics, first: capacity.first, rest: capacity.rest)
-            .map { Block.trends(metrics: $0.items, showTitle: $0.isFirst) }
-    }
-
-    /// Splits items across pages: the first page holds `first` items (it carries
-    /// the section title), later pages hold `rest`.
-    private func paginate<T>(_ items: [T], first: Int, rest: Int) -> [(items: [T], isFirst: Bool)] {
-        var result: [(items: [T], isFirst: Bool)] = []
-        var index = 0
-        var isFirst = true
-        while index < items.count {
-            let size = isFirst ? first : rest
-            let end = Swift.min(index + size, items.count)
-            result.append((Array(items[index..<end]), isFirst))
-            index = end
-            isFirst = false
-        }
-        return result
     }
 
     private func view(for block: Block, pageNumber: Int, total: Int) -> AnyView {

@@ -25,7 +25,6 @@ import androidx.compose.material.icons.rounded.PushPin
 import androidx.compose.material.icons.rounded.Straighten
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -38,8 +37,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.ToggleButton
-import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -53,9 +50,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -78,6 +72,7 @@ import dev.idoodler.labimporter.ui.components.parseNumberInput
 import dev.idoodler.labimporter.ui.design.AreaChart
 import dev.idoodler.labimporter.ui.design.CategoryBadge
 import dev.idoodler.labimporter.ui.design.CategoryWash
+import dev.idoodler.labimporter.ui.design.ConnectedChoices
 import dev.idoodler.labimporter.ui.design.GroupedListItem
 import dev.idoodler.labimporter.ui.design.SectionTitle
 import dev.idoodler.labimporter.ui.design.StatTile
@@ -323,30 +318,10 @@ fun TrendScreen(
     }
 }
 
-/** Material 3 Expressive connected button group for the time window. */
+/** The time window as a connected button group. */
 @Composable
 private fun WindowPicker(selected: TrendWindow, onSelect: (TrendWindow) -> Unit) {
-    val options = TrendWindow.entries
-    Row(
-        Modifier.fillMaxWidth().padding(top = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
-    ) {
-        options.forEachIndexed { index, option ->
-            ToggleButton(
-                checked = selected == option,
-                onCheckedChange = { onSelect(option) },
-                modifier = Modifier.weight(1f).semantics { role = Role.RadioButton },
-                shapes = when (index) {
-                    0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                    options.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
-                    else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-                },
-                colors = ToggleButtonDefaults.colors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.7f),
-                ),
-            ) { Text(stringResource(option.label)) }
-        }
-    }
+    ConnectedChoices(TrendWindow.entries, selected, onSelect, { stringResource(it.label) }, Modifier.padding(top = 16.dp))
 }
 
 @Preview(name = "Trend", widthDp = 400, heightDp = 1000)

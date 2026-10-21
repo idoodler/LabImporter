@@ -48,6 +48,7 @@ import dev.idoodler.labimporter.ai.UnsupportedReason
 import dev.idoodler.labimporter.core.model.LabReport
 import dev.idoodler.labimporter.ui.dashboard.DashboardScreen
 import dev.idoodler.labimporter.ui.dashboard.TrendScreen
+import dev.idoodler.labimporter.ui.export.PdfExportScreen
 import dev.idoodler.labimporter.ui.history.HistoryScreen
 import dev.idoodler.labimporter.ui.history.ReportDetailScreen
 import dev.idoodler.labimporter.ui.importflow.ImportActions
@@ -75,6 +76,7 @@ private sealed interface Destination {
     data object Home : Destination
     data object Reports : Destination
     data object Settings : Destination
+    data object PdfExport : Destination
     data class Trend(val code: String) : Destination
     data class Report(val id: String) : Destination
 
@@ -82,6 +84,7 @@ private sealed interface Destination {
         Home -> "home"
         Reports -> "reports"
         Settings -> "settings"
+        PdfExport -> "pdf"
         is Trend -> "trend:$code"
         is Report -> "report:$id"
     }
@@ -90,6 +93,7 @@ private sealed interface Destination {
         fun decode(raw: String): Destination = when {
             raw == "reports" -> Reports
             raw == "settings" -> Settings
+            raw == "pdf" -> PdfExport
             raw.startsWith("trend:") -> Trend(raw.removePrefix("trend:"))
             raw.startsWith("report:") -> Report(raw.removePrefix("report:"))
             else -> Home
@@ -286,7 +290,11 @@ private fun Screen(
             onOpenReports = { push(Destination.Reports) },
             onOpenSettings = { push(Destination.Settings) },
         )
-        Destination.Reports -> HistoryScreen(reports, onOpenReport = { push(Destination.Report(it.id)) }, onBack = pop)
+        Destination.Reports -> HistoryScreen(
+            reports, onOpenReport = { push(Destination.Report(it.id)) }, onBack = pop,
+            onExportPdf = { push(Destination.PdfExport) },
+        )
+        Destination.PdfExport -> PdfExportScreen(reports, preferences, onGenerate = viewModel::exportPdf, onBack = pop)
         Destination.Settings -> {
             val patientName by viewModel.patientName.collectAsStateWithLifecycle()
             val aiAvailability by viewModel.aiAvailability.collectAsStateWithLifecycle()

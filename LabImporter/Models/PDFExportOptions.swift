@@ -1,3 +1,4 @@
+import LabImporterCore
 import SwiftUI
 
 // User-tunable settings for a PDF export, configured in `PDFExportView` and
@@ -32,16 +33,19 @@ enum PDFTimeRange: String, CaseIterable, Identifiable {
 
     var id: Self { self }
 
-    /// Visible span in days, or `nil` for "include everything".
-    var days: Int? {
+    /// The shared core's equivalent (LabImporterCore `PdfTimeRange`).
+    var shared: LabImporterCore.PdfTimeRange {
         switch self {
-        case .month3: return 92
-        case .month6: return 183
-        case .year1: return 366
-        case .year2: return 731
-        case .all: return nil
+        case .month3: return .months3
+        case .month6: return .months6
+        case .year1: return .year1
+        case .year2: return .year2
+        case .all: return .all
         }
     }
+
+    /// Visible span in days, or `nil` for "include everything" (shared with Android).
+    var days: Int? { shared.days.map { Int(truncating: $0) } }
 
     var label: LocalizedStringKey {
         switch self {
@@ -85,14 +89,17 @@ enum PDFPageFormat: String, CaseIterable, Identifiable {
 
     var id: Self { self }
 
-    /// Page dimensions in points (72 dpi, 1 pt == 1/72").
-    var size: CGSize {
+    /// The shared core's equivalent (LabImporterCore `PdfPageFormat`).
+    var shared: LabImporterCore.PdfPageFormat {
         switch self {
-        case .isoA4:    return CGSize(width: 595.28, height: 841.89)  // 210 × 297 mm
-        case .usLetter: return CGSize(width: 612, height: 792)        // 8.5 × 11 in
-        case .legal:    return CGSize(width: 612, height: 1008)       // 8.5 × 14 in
+        case .isoA4: return .a4
+        case .usLetter: return .usLetter
+        case .legal: return .legal
         }
     }
+
+    /// Page dimensions in points (72 dpi, 1 pt == 1/72"), from the shared core.
+    var size: CGSize { CGSize(width: shared.width, height: shared.height) }
 
     /// Shown verbatim — A4 / US Letter / Legal are standard international paper
     /// names, not translated.
@@ -109,13 +116,11 @@ enum PDFPageFormat: String, CaseIterable, Identifiable {
     /// Language & Region): the handful of regions that use US Letter paper get
     /// Letter, everywhere else gets A4. The user can still override in the sheet.
     static var deviceDefault: PDFPageFormat {
-        // Regions where US Letter (or its near-identical local equivalent) is the
-        // standard office paper size rather than ISO A4.
-        let letterRegions: Set<String> = [
-            "US", "CA", "MX", "PH", "CL", "CO", "CR", "GT", "NI", "PA", "DO", "SV", "VE", "PR"
-        ]
-        let region = Locale.current.region?.identifier ?? ""
-        return letterRegions.contains(region) ? .usLetter : .isoA4
+        // The region list is shared with Android (LabImporterCore `PdfPageFormat`).
+        switch LabImporterCore.PdfPageFormat.companion.defaultFor(regionCode: Locale.current.region?.identifier) {
+        case .usLetter: return .usLetter
+        default: return .isoA4
+        }
     }
 }
 
@@ -199,35 +204,10 @@ struct PDFTheme {
 /// A4 is the most internationally portable choice given the app ships across
 /// many European locales.
 enum PDFLayout {
-    static let margin: CGFloat = 42
+    /// Page margin and pagination capacities are shared with Android
+    /// (LabImporterCore `PdfLayout`), so both apps paginate identically.
+    static let margin = CGFloat(LabImporterCore.PdfLayout.shared.MARGIN)
 
     /// Usable text width inside the page margins for a given paper size.
     static func contentWidth(for size: CGSize) -> CGFloat { size.width - margin * 2 }
-
-    // Pagination capacities are derived from the page height so each paper format
-    // uses its available space (Legal fits more rows than A4, US Letter slightly
-    // fewer). Everything is sized for the worst case — a two-line wrapped value
-    // name, or a full-height chart card — so content never clips. The first page
-    // of a section holds fewer items because it also carries the section title.
-    private static let footer: CGFloat = 28
-    private static let runningHeader: CGFloat = 30
-    private static let sectionTitle: CGFloat = 56
-    private static let rowUnit: CGFloat = 50
-    private static let chartUnit: CGFloat = 212
-
-    private static func usableHeight(_ size: CGSize) -> CGFloat {
-        size.height - margin * 2 - footer - runningHeader
-    }
-
-    /// Latest-results rows per page: `(first page, continuation pages)`.
-    static func tableRows(for size: CGSize) -> (first: Int, rest: Int) {
-        let height = usableHeight(size)
-        return (max(1, Int((height - sectionTitle) / rowUnit)), max(1, Int(height / rowUnit)))
-    }
-
-    /// Trend charts per page: `(first page, continuation pages)`.
-    static func charts(for size: CGSize) -> (first: Int, rest: Int) {
-        let height = usableHeight(size)
-        return (max(1, Int((height - sectionTitle) / chartUnit)), max(1, Int(height / chartUnit)))
-    }
 }

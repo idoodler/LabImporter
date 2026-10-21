@@ -15,6 +15,10 @@ import dev.idoodler.labimporter.ai.AiEngine
 import dev.idoodler.labimporter.ai.AiException
 import dev.idoodler.labimporter.ai.messageRes
 import dev.idoodler.labimporter.core.export.CdaExport
+import dev.idoodler.labimporter.core.export.PdfReport
+import dev.idoodler.labimporter.data.PatientDetails
+import dev.idoodler.labimporter.export.PdfOptions
+import dev.idoodler.labimporter.export.PdfReportRenderer
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.core.model.LabReport
 import dev.idoodler.labimporter.core.model.LabValue
@@ -84,6 +88,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     val displayPreferences: StateFlow<LabDisplayPreferences> = preferences.displayPreferences
     val hasSeenWelcome: StateFlow<Boolean> = preferences.hasSeenWelcome
     val patientName: StateFlow<String> = preferences.patientName
+    val patientDetails: StateFlow<PatientDetails> = preferences.patientDetails
     /** Whether Gemini Nano can read reports; [AiAvailability.Unsupported] blocks the app like iOS. */
     val aiAvailability: StateFlow<AiAvailability> = ai.availability
 
@@ -145,6 +150,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun finishOnboarding() = preferences.setHasSeenWelcome(true)
 
     fun setPatientName(name: String) = preferences.setPatientName(name)
+
+    fun setPatientDetails(details: PatientDetails) = preferences.setPatientDetails(details)
 
     fun updateDisplayPreferences(transform: (LabDisplayPreferences) -> LabDisplayPreferences) =
         preferences.updateDisplayPreferences(transform)
@@ -356,6 +363,32 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
+    // region PDF export
+
+    /**
+     * Renders the PDF — pages from the shared `PdfReport`, drawn by
+     * [PdfReportRenderer] — and returns it for sharing, or null if it couldn't
+     * be written.
+     */
+    suspend fun exportPdf(options: PdfOptions): Uri? = withContext(Dispatchers.Default) {
+        val today = today()
+        val data = PdfReport.build(reports.value, options.selectedCodes, options.timeRange, patientName.value, today)
+        // Named after the newest report, like iOS.
+        val file = File(exportsDirectory(), "LabReport-${data.latestDate ?: today}.pdf")
+        try {
+            file.outputStream().use { PdfReportRenderer(context).render(data, options, patientDetails.value, java.time.LocalDateTime.now(), it) }
+            FileProvider.getUriForFile(context, "${context.packageName}.files", file)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Log.w(TAG, "PDF export failed", e)
+            file.delete()
+            null
+        }
+    }
+
+    // endregion
 
     private fun exportsDirectory() = File(context.cacheDir, "exports").apply { mkdirs() }
 

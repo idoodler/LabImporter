@@ -6,9 +6,18 @@ import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.datetime.LocalDate
 
 /** Where saved reports are written. */
 enum class StorageMode { LOCAL, HEALTH_CONNECT }
+
+enum class PatientSex { FEMALE, MALE, OTHER }
+
+/**
+ * Date of birth and sex for the PDF cover. iOS reads them from Apple Health;
+ * Health Connect has no such data, so the user enters them in Settings.
+ */
+data class PatientDetails(val dateOfBirth: LocalDate? = null, val sex: PatientSex? = null)
 
 /**
  * UI preferences and patient metadata — the Android counterpart of the iOS
@@ -28,6 +37,14 @@ class AppPreferences(context: Context) {
 
     private val _patientName = MutableStateFlow(prefs.getString(KEY_PATIENT, "").orEmpty())
     val patientName: StateFlow<String> = _patientName.asStateFlow()
+
+    private val _patientDetails = MutableStateFlow(
+        PatientDetails(
+            dateOfBirth = prefs.getString(KEY_DATE_OF_BIRTH, null)?.let { runCatching { LocalDate.parse(it) }.getOrNull() },
+            sex = prefs.getString(KEY_SEX, null)?.let { raw -> PatientSex.entries.firstOrNull { it.name == raw } },
+        ),
+    )
+    val patientDetails: StateFlow<PatientDetails> = _patientDetails.asStateFlow()
 
     private val _storageMode = MutableStateFlow(
         runCatching { StorageMode.valueOf(prefs.getString(KEY_STORAGE, null).orEmpty()) }.getOrDefault(StorageMode.LOCAL),
@@ -53,6 +70,14 @@ class AppPreferences(context: Context) {
         prefs.edit { putString(KEY_PATIENT, value) }
     }
 
+    fun setPatientDetails(value: PatientDetails) {
+        _patientDetails.value = value
+        prefs.edit {
+            putString(KEY_DATE_OF_BIRTH, value.dateOfBirth?.toString())
+            putString(KEY_SEX, value.sex?.name)
+        }
+    }
+
     fun setStorageMode(value: StorageMode) {
         _storageMode.value = value
         prefs.edit { putString(KEY_STORAGE, value.name) }
@@ -65,6 +90,8 @@ class AppPreferences(context: Context) {
     private companion object {
         const val KEY_WELCOME = "hasSeenWelcome"
         const val KEY_PATIENT = "patientName"
+        const val KEY_DATE_OF_BIRTH = "patientDateOfBirth"
+        const val KEY_SEX = "patientSex"
         const val KEY_STORAGE = "storageMode"
         const val KEY_STAND_IN = "useDevelopmentStandIn"
     }
