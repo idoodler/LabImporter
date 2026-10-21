@@ -50,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.idoodler.labimporter.R
+import dev.idoodler.labimporter.core.LabCore
 import dev.idoodler.labimporter.core.model.LabCategory
 import dev.idoodler.labimporter.core.model.LabMapping
 import dev.idoodler.labimporter.core.model.LabReport
@@ -80,6 +81,7 @@ fun ReportDetailScreen(
     onEdit: () -> Unit,
     onDelete: () -> Unit,
     exportCda: () -> Uri,
+    onOpenTerm: (String) -> Unit = {},
 ) {
     val context = LocalContext.current
     var confirmDelete by remember { mutableStateOf(false) }
@@ -170,8 +172,11 @@ fun ReportDetailScreen(
                     }
                     entries.forEachIndexed { index, entry ->
                         item(key = entry.id) {
+                            // A value the catalog knows opens its LOINC details, as on iOS.
+                            val known = remember(entry.code) { LabCore.loinc?.term(entry.code) != null }
                             GroupedListItem(
                                 index, entries.size,
+                                onClick = if (known) ({ onOpenTerm(entry.code) }) else null,
                                 headline = { Text(entry.resolvedName, style = MaterialTheme.typography.titleSmall) },
                                 supporting = { Text("LOINC ${entry.code}") },
                                 trailing = {

@@ -42,6 +42,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.idoodler.labimporter.R
+import dev.idoodler.labimporter.core.model.Dashboard
 import dev.idoodler.labimporter.ai.AiAvailability
 import dev.idoodler.labimporter.ai.DevelopmentStandIn
 import dev.idoodler.labimporter.ai.UnsupportedReason
@@ -54,6 +55,8 @@ import dev.idoodler.labimporter.ui.history.ReportDetailScreen
 import dev.idoodler.labimporter.ui.importflow.ImportActions
 import dev.idoodler.labimporter.ui.importflow.ImportFabMenu
 import dev.idoodler.labimporter.ui.importflow.PasteTextScreen
+import dev.idoodler.labimporter.ui.loinc.LoincCatalogScreen
+import dev.idoodler.labimporter.ui.loinc.LoincTermScreen
 import dev.idoodler.labimporter.ui.importflow.ProcessingDialog
 import dev.idoodler.labimporter.ui.importflow.ProcessingStage
 import dev.idoodler.labimporter.ui.importflow.rememberImportActions
@@ -63,6 +66,7 @@ import dev.idoodler.labimporter.ui.review.ReviewScreen
 import dev.idoodler.labimporter.ui.settings.AiSettings
 import dev.idoodler.labimporter.ui.settings.PatientSettings
 import dev.idoodler.labimporter.ui.settings.SettingsScreen
+import dev.idoodler.labimporter.ui.settings.SortEditorScreen
 import dev.idoodler.labimporter.ui.settings.TransferSettings
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
@@ -78,6 +82,9 @@ private sealed interface Destination {
     data object Reports : Destination
     data object Settings : Destination
     data object PdfExport : Destination
+    data object SortEditor : Destination
+    data object Catalog : Destination
+    data class Term(val code: String) : Destination
     data class Trend(val code: String) : Destination
     data class Report(val id: String) : Destination
 
@@ -86,6 +93,9 @@ private sealed interface Destination {
         Reports -> "reports"
         Settings -> "settings"
         PdfExport -> "pdf"
+        SortEditor -> "sort"
+        Catalog -> "catalog"
+        is Term -> "term:$code"
         is Trend -> "trend:$code"
         is Report -> "report:$id"
     }
@@ -95,6 +105,9 @@ private sealed interface Destination {
             raw == "reports" -> Reports
             raw == "settings" -> Settings
             raw == "pdf" -> PdfExport
+            raw == "sort" -> SortEditor
+            raw == "catalog" -> Catalog
+            raw.startsWith("term:") -> Term(raw.removePrefix("term:"))
             raw.startsWith("trend:") -> Trend(raw.removePrefix("trend:"))
             raw.startsWith("report:") -> Report(raw.removePrefix("report:"))
             else -> Home
@@ -308,13 +321,22 @@ private fun Screen(
                 onUseHealthConnect = viewModel::setUseHealthConnect,
                 ai = AiSettings(aiAvailability, usingStandIn, onTryAgain = viewModel::checkAiAgain) { viewModel.useDevelopmentStandIn(false) },
                 transfer = TransferSettings(reports.isNotEmpty(), viewModel::exportAllReports, viewModel::importReports),
-                preferences = preferences,
-                onUpdatePreferences = viewModel::updateDisplayPreferences,
                 softwareIdentity = viewModel.softwareIdentity,
                 onBack = pop,
+                onOpenSortEditor = { push(Destination.SortEditor) },
+                onOpenCatalog = { push(Destination.Catalog) },
             )
         }
-        is Destination.Trend -> TrendScreen(destination.code, reports, preferences, viewModel::updateDisplayPreferences, onBack = pop)
+        Destination.SortEditor -> SortEditorScreen(
+            remember(reports) { Dashboard.codeNames(reports) }, preferences, viewModel::updateDisplayPreferences, onBack = pop,
+            onOpenDetails = { push(Destination.Term(it)) },
+        )
+        Destination.Catalog -> LoincCatalogScreen(onOpenTerm = { push(Destination.Term(it)) }, onBack = pop)
+        is Destination.Term -> LoincTermScreen(destination.code, preferences, viewModel::updateDisplayPreferences, onBack = pop)
+        is Destination.Trend -> TrendScreen(
+            destination.code, reports, preferences, viewModel::updateDisplayPreferences, onBack = pop,
+            onOpenTerm = { push(Destination.Term(it)) },
+        )
         is Destination.Report -> {
             val report = reports.firstOrNull { it.id == destination.id } ?: return
             ReportDetailScreen(
@@ -323,6 +345,7 @@ private fun Screen(
                 onEdit = { viewModel.editReport(report) },
                 onDelete = { viewModel.deleteReport(report) },
                 exportCda = { viewModel.exportCda(report) },
+                onOpenTerm = { push(Destination.Term(it)) },
             )
         }
     }

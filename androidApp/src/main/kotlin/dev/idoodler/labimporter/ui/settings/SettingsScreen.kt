@@ -24,7 +24,9 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.MenuBook
 import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.rounded.Tag
-import androidx.compose.material.icons.rounded.VisibilityOff
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.SwapVert
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
@@ -73,8 +75,6 @@ import dev.idoodler.labimporter.ai.DevelopmentStandIn
 import dev.idoodler.labimporter.ai.messageRes
 import dev.idoodler.labimporter.core.LabCore
 import dev.idoodler.labimporter.core.model.LabCategory
-import dev.idoodler.labimporter.core.model.LabDisplayPreferences
-import dev.idoodler.labimporter.core.model.LabMapping
 import dev.idoodler.labimporter.data.HealthConnectAvailability
 import dev.idoodler.labimporter.data.PatientDetails
 import dev.idoodler.labimporter.data.PatientSex
@@ -97,12 +97,12 @@ fun SettingsScreen(
     onConnectHealthConnect: () -> Unit,
     onUseHealthConnect: (Boolean) -> Unit,
     ai: AiSettings,
-    preferences: LabDisplayPreferences,
-    onUpdatePreferences: ((LabDisplayPreferences) -> LabDisplayPreferences) -> Unit,
     softwareIdentity: String,
     modifier: Modifier = Modifier,
     transfer: TransferSettings = TransferSettings(),
     onBack: () -> Unit = {},
+    onOpenSortEditor: () -> Unit = {},
+    onOpenCatalog: () -> Unit = {},
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     var showLicense by remember { mutableStateOf(false) }
@@ -133,6 +133,16 @@ fun SettingsScreen(
                 item { SectionTitle(stringResource(R.string.settings_patient)) }
                 item { PatientItems(patient) }
 
+                item { SectionTitle(stringResource(R.string.settings_dashboard)) }
+                item {
+                    GroupedListItem(
+                        0, 1, onClick = onOpenSortEditor,
+                        leading = { Badge(MaterialShapes.Ghostish, LabCategory.LIPIDS.color, Icons.Rounded.SwapVert) },
+                        headline = { Text(stringResource(R.string.sort_visibility)) },
+                        trailing = { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null) },
+                    )
+                }
+
                 item { SectionTitle(stringResource(R.string.settings_storage)) }
                 item { HealthConnectItem(healthConnect, onConnectHealthConnect, onUseHealthConnect) }
 
@@ -142,27 +152,31 @@ fun SettingsScreen(
                 item { SectionTitle(stringResource(R.string.transfer_title)) }
                 item { TransferItems(transfer) }
 
-                if (preferences.hiddenCodes.isNotEmpty()) {
-                    item { SectionTitle(stringResource(R.string.settings_hidden)) }
-                    preferences.hiddenCodes.forEachIndexed { index, code ->
-                        item(key = "hidden-$code") {
-                            GroupedListItem(
-                                index, preferences.hiddenCodes.size,
-                                leading = { Badge(MaterialShapes.Pill, LabCategory.OTHER.color, Icons.Rounded.VisibilityOff) },
-                                headline = { Text(LabMapping.displayName(code)) },
-                                supporting = { Text(code) },
-                                trailing = {
-                                    TextButton(onClick = { onUpdatePreferences { it.toggleHidden(code) } }) { Text(stringResource(R.string.show)) }
-                                },
-                            )
-                        }
-                    }
+                item { SectionTitle(stringResource(R.string.settings_loinc)) }
+                item {
+                    val loinc = LabCore.loinc
+                    GroupedListItem(
+                        0, 2, onClick = onOpenCatalog,
+                        leading = { Badge(MaterialShapes.Gem, LabCategory.COAGULATION.color, Icons.Rounded.Search) },
+                        headline = { Text(stringResource(R.string.browse_catalog)) },
+                        supporting = {
+                            Text(stringResource(R.string.loinc_catalog_detail, loinc?.version.orEmpty(), java.text.NumberFormat.getIntegerInstance().format(loinc?.count ?: 0)))
+                        },
+                        trailing = { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null) },
+                    )
+                }
+                item {
+                    GroupedListItem(
+                        1, 2, onClick = { showLicense = true },
+                        leading = { Badge(MaterialShapes.Cookie6Sided, LabCategory.ELECTROLYTES.color, Icons.AutoMirrored.Rounded.MenuBook) },
+                        headline = { Text(stringResource(R.string.loinc_license)) },
+                    )
                 }
 
                 item { SectionTitle(stringResource(R.string.settings_about)) }
                 item {
                     GroupedListItem(
-                        0, 4,
+                        0, 3,
                         leading = { Badge(MaterialShapes.Clover4Leaf, LabCategory.HEPATIC.color, Icons.Rounded.Lock) },
                         headline = { Text(stringResource(R.string.privacy_title)) },
                         supporting = { Text(stringResource(R.string.privacy_message)) },
@@ -170,25 +184,14 @@ fun SettingsScreen(
                 }
                 item {
                     GroupedListItem(
-                        1, 4, onClick = { showDisclaimer = true },
+                        1, 3, onClick = { showDisclaimer = true },
                         leading = { Badge(MaterialShapes.SoftBurst, LabCategory.GLYCEMIC.color, Icons.Rounded.Info) },
                         headline = { Text(stringResource(R.string.disclaimer_title)) },
                     )
                 }
                 item {
-                    val loinc = LabCore.loinc
                     GroupedListItem(
-                        2, 4, onClick = { showLicense = true },
-                        leading = { Badge(MaterialShapes.Gem, LabCategory.COAGULATION.color, Icons.AutoMirrored.Rounded.MenuBook) },
-                        headline = { Text(stringResource(R.string.loinc_catalog)) },
-                        supporting = {
-                            Text(stringResource(R.string.loinc_catalog_detail, loinc?.version.orEmpty(), java.text.NumberFormat.getIntegerInstance().format(loinc?.count ?: 0)))
-                        },
-                    )
-                }
-                item {
-                    GroupedListItem(
-                        3, 4,
+                        2, 3,
                         leading = { Badge(MaterialShapes.Pentagon, LabCategory.OTHER.color, Icons.Rounded.Tag) },
                         headline = { Text(stringResource(R.string.version)) },
                         supporting = { Text(softwareIdentity) },
@@ -201,7 +204,7 @@ fun SettingsScreen(
         AlertDialog(
             onDismissRequest = { showLicense = false },
             icon = { Icon(Icons.AutoMirrored.Rounded.MenuBook, null) },
-            title = { Text(stringResource(R.string.loinc_catalog)) },
+            title = { Text(stringResource(R.string.loinc_license)) },
             text = { Text(LabCore.loinc?.license.orEmpty().take(1500)) },
             confirmButton = { TextButton(onClick = { showLicense = false }) { Text(stringResource(R.string.ok)) } },
         )
@@ -455,7 +458,7 @@ private fun SettingsPreview() {
         SettingsScreen(
             PatientSettings("Max Mustermann", PatientDetails(LocalDate(1980, 4, 2), PatientSex.MALE)),
             HealthConnectState(HealthConnectAvailability.MEDICAL_RECORDS_UNSUPPORTED), {}, {},
-            AiSettings(AiAvailability.Preparing(420_000_000, 1_000_000_000)), LabDisplayPreferences(hiddenCodes = listOf("2160-0")), {},
+            AiSettings(AiAvailability.Preparing(420_000_000, 1_000_000_000)),
             "LabImporter 1.0 (1) Android",
         )
     }
@@ -467,7 +470,7 @@ private fun SettingsDarkPreview() {
     LabImporterTheme(darkTheme = true, dynamicColor = false) {
         SettingsScreen(
             PatientSettings(), HealthConnectState(HealthConnectAvailability.AVAILABLE, granted = true, inUse = true), {}, {},
-            AiSettings(AiAvailability.Ready), LabDisplayPreferences(), {}, "LabImporter 1.0 (1) Android",
+            AiSettings(AiAvailability.Ready), "LabImporter 1.0 (1) Android",
         )
     }
 }
@@ -478,7 +481,7 @@ private fun SettingsDownloadFailedPreview() {
     LabImporterTheme(dynamicColor = false) {
         SettingsScreen(
             PatientSettings(), HealthConnectState(HealthConnectAvailability.NOT_INSTALLED), {}, {},
-            AiSettings(AiAvailability.PreparationFailed(AiProblem.NOT_ENOUGH_STORAGE)), LabDisplayPreferences(), {},
+            AiSettings(AiAvailability.PreparationFailed(AiProblem.NOT_ENOUGH_STORAGE)),
             "LabImporter 1.0 (1) Android",
         )
     }

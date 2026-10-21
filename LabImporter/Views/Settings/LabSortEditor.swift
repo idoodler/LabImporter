@@ -1,3 +1,4 @@
+import LabImporterCore
 import SwiftUI
 
 // MARK: - LabSortEditor
@@ -10,9 +11,9 @@ struct LabSortEditor: View {
     @Binding var prefs: LabDisplayPreferences
     let allCodes: [CodeName]
 
-    @State private var visibleOrdered: [CodeName]
-    @State private var hiddenSet: Set<String>
-    @State private var pinnedSet: Set<String>
+    /// Pinned / visible / hidden and the edits on them — the shared rules
+    /// (LabImporterCore `SortEditorState`), identical on Android.
+    @State private var state: LabImporterCore.SortEditorState
     /// The LOINC code pushed onto the detail screen, where the user renames the
     /// metric and sets its reference range. `nil` until they tap a row's info
     /// button.
@@ -21,24 +22,10 @@ struct LabSortEditor: View {
     init(prefs: Binding<LabDisplayPreferences>, allCodes: [CodeName]) {
         _prefs = prefs
         self.allCodes = allCodes
-
-        let currentPrefs = prefs.wrappedValue
-        let hidden = currentPrefs.hiddenSet
-
-        var seen = Set<String>()
-        var initial: [CodeName] = []
-        for code in currentPrefs.orderedCodes where !hidden.contains(code) {
-            guard let item = allCodes.first(where: { $0.code == code }),
-                  seen.insert(code).inserted else { continue }
-            initial.append(item)
-        }
-        for item in allCodes where !hidden.contains(item.code) && seen.insert(item.code).inserted {
-            initial.append(item)
-        }
-
-        _visibleOrdered = State(initialValue: initial)
-        _hiddenSet = State(initialValue: hidden)
-        _pinnedSet = State(initialValue: currentPrefs.pinnedSet)
+        SharedCore.start()
+        _state = State(initialValue: LabImporterCore.SortEditorState.companion.from(
+            preferences: prefs.wrappedValue.shared, all: allCodes.map(\.code)
+        ))
     }
 
     var body: some View {
@@ -50,9 +37,7 @@ struct LabSortEditor: View {
         .environment(\.editMode, .constant(.active))
         .navigationTitle("Sort & Visibility")
         .navigationBarTitleDisplayMode(.inline)
-        .onChange(of: visibleOrdered.map(\.code)) { save() }
-        .onChange(of: hiddenSet) { save() }
-        .onChange(of: pinnedSet) { save() }
+        .onChange(of: state) { save() }
         .navigationDestination(item: $detailCode) { code in
             if let term = LoincDirectory.shared.term(for: code) {
                 LoincTermDetailView(term: term)
@@ -67,22 +52,19 @@ struct LabSortEditor: View {
         detailCode = code
     }
 
-    /// Visible codes split by pin state. Both partitions preserve their relative
-    /// order within `visibleOrdered`, which is normalized pinned-first so the
-    /// editor order matches how the dashboard groups the cards.
-    private var pinnedItems: [CodeName] { visibleOrdered.filter { pinnedSet.contains($0.code) } }
-    private var unpinnedItems: [CodeName] { visibleOrdered.filter { !pinnedSet.contains($0.code) } }
+    private func items(_ codes: [String]) -> [CodeName] {
+        codes.compactMap { code in allCodes.first { $0.code == code } }
+    }
+
+    private var pinnedItems: [CodeName] { items(state.pinnedCodes) }
+    private var unpinnedItems: [CodeName] { items(state.unpinnedCodes) }
 
     @ViewBuilder
     private var pinnedSection: some View {
         if !pinnedItems.isEmpty {
             Section("Pinned") {
                 ForEach(pinnedItems) { item in row(for: item) }
-                    .onMove { from, dest in
-                        var pinned = pinnedItems
-                        pinned.move(fromOffsets: from, toOffset: dest)
-                        visibleOrdered = pinned + unpinnedItems
-                    }
+                    .onMove { from, dest in move(inPinned: true, from: from, to: dest) }
             }
         }
     }
@@ -91,19 +73,15 @@ struct LabSortEditor: View {
     private var visibleSection: some View {
         Section("Visible") {
             ForEach(unpinnedItems) { item in row(for: item) }
-                .onMove { from, dest in
-                    var unpinned = unpinnedItems
-                    unpinned.move(fromOffsets: from, toOffset: dest)
-                    visibleOrdered = pinnedItems + unpinned
-                }
+                .onMove { from, dest in move(inPinned: false, from: from, to: dest) }
         }
     }
 
     private func row(for item: CodeName) -> some View {
         HStack(spacing: 12) {
             Button { togglePin(item.code) } label: {
-                Image(systemName: pinnedSet.contains(item.code) ? "pin.fill" : "pin")
-                    .foregroundStyle(pinnedSet.contains(item.code) ? Color.yellow : Color.secondary)
+                Image(systemName: state.pinned.contains(item.code) ? "pin.fill" : "pin")
+                    .foregroundStyle(state.pinned.contains(item.code) ? Color.yellow : Color.secondary)
                     .frame(width: 20)
             }
             .buttonStyle(.plain)
@@ -146,7 +124,7 @@ struct LabSortEditor: View {
 
     @ViewBuilder
     private var hiddenSection: some View {
-        let hiddenItems = allCodes.filter { hiddenSet.contains($0.code) }
+        let hiddenItems = items(state.hiddenCodes)
         if !hiddenItems.isEmpty {
             Section("Hidden") {
                 ForEach(hiddenItems) { item in
@@ -168,36 +146,20 @@ struct LabSortEditor: View {
         }
     }
 
-    private func togglePin(_ code: String) {
-        if pinnedSet.contains(code) {
-            pinnedSet.remove(code)
-        } else {
-            pinnedSet.insert(code)
-        }
-        // Keep the backing order pinned-first so a toggled row moves between the
-        // two sections in place, matching the dashboard's grouping.
-        visibleOrdered = pinnedItems + unpinnedItems
-    }
+    private func togglePin(_ code: String) { state = state.togglePin(code: code) }
 
-    private func hideCode(_ code: String) {
-        hiddenSet.insert(code)
-        visibleOrdered.removeAll { $0.code == code }
-    }
+    private func hideCode(_ code: String) { state = state.hide(code: code) }
 
-    private func restoreCode(_ code: String) {
-        hiddenSet.remove(code)
-        if let item = allCodes.first(where: { $0.code == code }) {
-            visibleOrdered.append(item)
-        }
+    private func restoreCode(_ code: String) { state = state.restore(code: code) }
+
+    /// A drag within a section (List moves one row at a time).
+    private func move(inPinned: Bool, from: IndexSet, to: Int) {
+        guard let source = from.first else { return }
+        state = state.move(inPinned: inPinned, from: Int32(source), to: Int32(to))
     }
 
     private func save() {
-        let hiddenOrdered = allCodes.filter { hiddenSet.contains($0.code) }
-        var updated = prefs
-        updated.orderedCodes = visibleOrdered.map(\.code) + hiddenOrdered.map(\.code)
-        updated.pinnedCodes = Array(pinnedSet)
-        updated.hiddenCodes = Array(hiddenSet)
-        prefs = updated
+        prefs = LabDisplayPreferences(shared: state.applyTo(preferences: prefs.shared))
     }
 }
 

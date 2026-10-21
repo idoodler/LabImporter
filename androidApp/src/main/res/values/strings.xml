@@ -21,7 +21,6 @@
     <string name="not_now">Not Now</string>
     <string name="reset">Reset to Default</string>
     <string name="search">Search</string>
-    <string name="show">Show</string>
     <string name="remove">Remove</string>
     <string name="confirm">Confirm</string>
 
@@ -166,7 +165,7 @@
     <string name="patient_hint">Used for new reports when the report doesn\'t show a name.</string>
     <string name="settings_storage">Storage</string>
     <string name="settings_ai">On-Device AI</string>
-    <string name="settings_hidden">Hidden</string>
+    <string name="hidden">Hidden</string>
     <string name="settings_about">About</string>
     <string name="hc_title" translatable="false">Health Connect</string>
     <string name="hc_connect">Connect to Health Connect</string>
@@ -281,4 +280,37 @@
     <string name="not_set">Not Set</string>
     <string name="clear">Clear</string>
     <string name="patient_details_hint">Shown on the cover of PDF exports.</string>
+
+    <!-- Sort & Visibility (iOS wording) -->
+    <string name="settings_dashboard">Dashboard</string>
+    <string name="sort_visibility">Sort &amp; Visibility</string>
+    <string name="visible">Visible</string>
+    <string name="restore">Restore</string>
+    <string name="details">Details</string>
+    <string name="hide">Hide</string>
+    <string name="move_up">Move Up</string>
+    <string name="move_down">Move Down</string>
+
+    <!-- LOINC catalog and term details (iOS wording) -->
+    <string name="settings_loinc">LOINC</string>
+    <string name="browse_catalog">Browse Catalog</string>
+    <string name="loinc_license">LOINC License</string>
+    <string name="search_lab_tests">Search lab tests</string>
+    <string name="no_results">No Results</string>
+    <string name="about_this_value">About this value</string>
+    <string name="nickname">Nickname</string>
+    <string name="set_reference_range">Set Reference Range</string>
+    <string name="loinc_code">LOINC Code</string>
+    <string name="loinc_component">Component</string>
+    <string name="loinc_property">Property</string>
+    <string name="loinc_timing">Timing</string>
+    <string name="loinc_system">System</string>
+    <string name="loinc_scale">Scale</string>
+    <string name="loinc_method">Method</string>
+    <string name="loinc_class">Class</string>
+    <string name="loinc_status">Status</string>
+    <string name="loinc_long_name">Long name</string>
+    <string name="loinc_short_name">Short name</string>
+    <string name="loinc_units">Units</string>
+    <string name="loinc_link_footer">Opens the full description and references on loinc.org.</string>
 </resources>

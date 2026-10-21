@@ -14,9 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.rounded.Edit
@@ -24,7 +24,6 @@ import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.PushPin
 import androidx.compose.material.icons.rounded.Straighten
 import androidx.compose.material.icons.rounded.VisibilityOff
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -33,10 +32,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -51,12 +48,12 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import dev.idoodler.labimporter.R
+import dev.idoodler.labimporter.core.LabCore
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.core.model.LabMapping
 import dev.idoodler.labimporter.core.model.LabReport
@@ -65,10 +62,11 @@ import dev.idoodler.labimporter.core.model.ReferenceRange
 import dev.idoodler.labimporter.core.model.Dashboard
 import dev.idoodler.labimporter.core.model.TrendWindow
 import dev.idoodler.labimporter.ui.components.RangeBadge
+import dev.idoodler.labimporter.ui.components.ReferenceRangeDialog
+import dev.idoodler.labimporter.ui.components.RenameValueDialog
 import dev.idoodler.labimporter.ui.components.formatDate
 import dev.idoodler.labimporter.ui.components.formatNumber
 import dev.idoodler.labimporter.ui.components.labelRes
-import dev.idoodler.labimporter.ui.components.parseNumberInput
 import dev.idoodler.labimporter.ui.design.AreaChart
 import dev.idoodler.labimporter.ui.design.CategoryBadge
 import dev.idoodler.labimporter.ui.design.CategoryWash
@@ -102,6 +100,7 @@ fun TrendScreen(
     preferences: LabDisplayPreferences,
     onUpdatePreferences: ((LabDisplayPreferences) -> LabDisplayPreferences) -> Unit,
     onBack: () -> Unit,
+    onOpenTerm: (String) -> Unit = {},
 ) {
     // Hidden metrics stay reachable here (shared rule, as on iOS).
     val metric = remember(reports, preferences, code) {
@@ -117,6 +116,7 @@ fun TrendScreen(
     val pinned = code in preferences.pinnedSet
     val range = preferences.referenceRange(code)
     val color = metric.category.color
+    val term = remember(code) { LabCore.loinc?.term(code) }
 
     val points: List<MetricPoint> = remember(metric, window) { window.visible(metric.points) }
     val shown = selected?.let { points.getOrNull(it) } ?: points.last()
@@ -238,6 +238,28 @@ fun TrendScreen(
                         }
                     }
                 }
+                term?.let { term ->
+                    item(key = "about") {
+                        // The value's LOINC description, opening the full details (iOS ValueDescriptionCard).
+                        val description = term.description?.takeIf { it.isNotBlank() } ?: term.englishName.takeIf { it != term.name }
+                        Spacer(Modifier.height(12.dp))
+                        GroupedListItem(
+                            0, 1,
+                            onClick = { onOpenTerm(code) },
+                            headline = { Text(stringResource(R.string.about_this_value), fontWeight = FontWeight.SemiBold) },
+                            supporting = {
+                                Column {
+                                    description?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
+                                    Text(
+                                        "LOINC $code", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline,
+                                        modifier = Modifier.padding(top = 4.dp),
+                                    )
+                                }
+                            },
+                            trailing = { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null) },
+                        )
+                    }
+                }
                 item(key = "readings-title") { SectionTitle(stringResource(R.string.readings)) }
                 val readings = metric.points.reversed()
                 itemsIndexed(readings, key = { _, p -> p.reportId + p.date }) { index, point ->
@@ -257,65 +279,8 @@ fun TrendScreen(
         }
     }
 
-    if (renaming) {
-        var text by remember { mutableStateOf(preferences.nickname(code).orEmpty()) }
-        AlertDialog(
-            onDismissRequest = { renaming = false },
-            icon = { Icon(Icons.Rounded.Edit, null) },
-            title = { Text(stringResource(R.string.rename)) },
-            text = {
-                OutlinedTextField(
-                    value = text, onValueChange = { text = it }, singleLine = true,
-                    placeholder = { Text(LabMapping.catalogName(code)) },
-                    supportingText = { Text(stringResource(R.string.rename_hint)) },
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = { onUpdatePreferences { it.withNickname(text, code) }; renaming = false }) {
-                    Text(stringResource(R.string.save))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { onUpdatePreferences { it.withNickname(null, code) }; renaming = false }) {
-                    Text(stringResource(R.string.reset))
-                }
-            },
-        )
-    }
-
-    if (editingRange) {
-        var low by remember { mutableStateOf(range?.low?.let(::formatNumber).orEmpty()) }
-        var high by remember { mutableStateOf(range?.high?.let(::formatNumber).orEmpty()) }
-        AlertDialog(
-            onDismissRequest = { editingRange = false },
-            icon = { Icon(Icons.Rounded.Straighten, null) },
-            title = { Text(stringResource(R.string.reference_range)) },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(stringResource(R.string.reference_range_hint), style = MaterialTheme.typography.bodyMedium)
-                    OutlinedTextField(
-                        low, { low = it }, label = { Text(stringResource(R.string.range_lower)) }, singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    )
-                    OutlinedTextField(
-                        high, { high = it }, label = { Text(stringResource(R.string.range_upper)) }, singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    onUpdatePreferences { it.withReferenceRange(ReferenceRange(parseNumberInput(low), parseNumberInput(high)), code) }
-                    editingRange = false
-                }) { Text(stringResource(R.string.save)) }
-            },
-            dismissButton = {
-                TextButton(onClick = { onUpdatePreferences { it.withReferenceRange(null, code) }; editingRange = false }) {
-                    Text(stringResource(R.string.reset))
-                }
-            },
-        )
-    }
+    if (renaming) RenameValueDialog(code, preferences, onUpdatePreferences) { renaming = false }
+    if (editingRange) ReferenceRangeDialog(code, preferences, onUpdatePreferences) { editingRange = false }
 }
 
 /** The time window as a connected button group. */

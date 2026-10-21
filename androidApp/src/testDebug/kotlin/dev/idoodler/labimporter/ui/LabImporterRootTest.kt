@@ -44,15 +44,7 @@ class LabImporterRootTest {
     private fun string(id: Int) = app.getString(id)
 
     /** Waits for [condition], letting main-thread and background work (the shared pipeline) run. */
-    private fun waitFor(condition: () -> Boolean) {
-        val deadline = System.currentTimeMillis() + 10_000
-        while (!condition()) {
-            check(System.currentTimeMillis() < deadline) { "Timed out waiting" }
-            compose.waitForIdle()
-            Thread.sleep(20)
-        }
-        compose.waitForIdle()
-    }
+    private fun waitFor(condition: () -> Boolean) = compose.waitFor(condition)
 
     private fun launch(onboarded: Boolean = true): AppViewModel {
         app.getSharedPreferences("labimporter", Context.MODE_PRIVATE).edit().putBoolean("hasSeenWelcome", onboarded).commit()

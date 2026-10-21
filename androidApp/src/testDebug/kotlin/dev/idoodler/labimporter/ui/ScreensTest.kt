@@ -1,17 +1,26 @@
 package dev.idoodler.labimporter.ui
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasScrollAction
+import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.test.performTextClearance
+import androidx.compose.ui.test.performTextInput
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dev.idoodler.labimporter.R
@@ -20,17 +29,21 @@ import dev.idoodler.labimporter.ai.AiAvailability
 import dev.idoodler.labimporter.ai.AiEngine
 import dev.idoodler.labimporter.ai.AiProblem
 import dev.idoodler.labimporter.ai.DevelopmentStandIn
+import dev.idoodler.labimporter.core.model.CodeName
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.core.model.LabValue
 import dev.idoodler.labimporter.data.PatientDetails
 import dev.idoodler.labimporter.data.PatientSex
 import dev.idoodler.labimporter.export.PdfOptions
 import dev.idoodler.labimporter.ui.export.PdfExportScreen
+import dev.idoodler.labimporter.ui.loinc.LoincCatalogScreen
+import dev.idoodler.labimporter.ui.loinc.LoincTermScreen
 import dev.idoodler.labimporter.ui.preview.PreviewSamples
 import dev.idoodler.labimporter.ui.review.ReviewScreen
 import dev.idoodler.labimporter.ui.settings.AiSettings
 import dev.idoodler.labimporter.ui.settings.PatientSettings
 import dev.idoodler.labimporter.ui.settings.SettingsScreen
+import dev.idoodler.labimporter.ui.settings.SortEditorScreen
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 import kotlinx.datetime.LocalDate
 import org.junit.Assert.assertEquals
@@ -90,7 +103,7 @@ class ScreensTest {
     private fun settings(ai: AiSettings) {
         compose.setContent {
             LabImporterTheme {
-                SettingsScreen(PatientSettings(), HealthConnectState(), {}, {}, ai, LabDisplayPreferences(), {}, "LabImporter test")
+                SettingsScreen(PatientSettings(), HealthConnectState(), {}, {}, ai, "LabImporter test")
             }
         }
         compose.onNode(hasScrollAction()).performScrollToNode(hasText(string(R.string.ai_title)))
@@ -128,7 +141,7 @@ class ScreensTest {
             LabImporterTheme {
                 SettingsScreen(
                     PatientSettings(details = PatientDetails(LocalDate(1980, 4, 2)), onDetails = { details = it }),
-                    HealthConnectState(), {}, {}, AiSettings(AiAvailability.Ready), LabDisplayPreferences(), {}, "LabImporter test",
+                    HealthConnectState(), {}, {}, AiSettings(AiAvailability.Ready), "LabImporter test",
                 )
             }
         }
@@ -162,5 +175,59 @@ class ScreensTest {
         assertEquals(setOf("4548-4", "2160-0", "2093-3", "3016-3"), generated.single().selectedCodes)
         // A failed render says so instead of sharing nothing.
         compose.onNodeWithText(string(R.string.pdf_failed)).assertIsDisplayed()
+    }
+
+    @Test
+    fun sortEditorPinsHidesRestoresAndMovesWithAccessibilityActions() {
+        val codes = listOf(CodeName("4548-4", "HbA1c"), CodeName("2160-0", "Creatinine"), CodeName("2093-3", "Cholesterol"))
+        var prefs by mutableStateOf(LabDisplayPreferences())
+        compose.setContent { LabImporterTheme { SortEditorScreen(codes, prefs, { prefs = it(prefs) }, {}) } }
+
+        compose.onAllNodesWithContentDescription(string(R.string.hide))[1].performClick()
+        assertEquals(listOf("2160-0"), prefs.hiddenCodes)
+        compose.onNodeWithText(string(R.string.restore)).performClick()
+        assertEquals(emptyList<String>(), prefs.hiddenCodes)
+        assertEquals(listOf("4548-4", "2093-3", "2160-0"), prefs.orderedCodes)
+
+        compose.onAllNodesWithContentDescription(string(R.string.pin))[2].performClick()
+        assertEquals(listOf("2160-0"), prefs.pinnedCodes)
+        compose.onNodeWithText(string(R.string.pinned)).assertIsDisplayed()
+
+        // Rows move without dragging, for TalkBack and switch access.
+        val moveDown = string(R.string.move_down)
+        val first = compose.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsActions.CustomActions)).fetchSemanticsNodes()
+            .first { node -> node.config[SemanticsActions.CustomActions].any { it.label == moveDown } && node.config[SemanticsActions.CustomActions].size == 1 }
+        compose.runOnIdle { first.config[SemanticsActions.CustomActions].single().action() }
+        assertEquals(listOf("2160-0", "2093-3", "4548-4"), prefs.orderedCodes)
+    }
+
+    @Test
+    fun catalogSearchesTheBundledLoincAndOpensATerm() {
+        val opened = mutableListOf<String>()
+        compose.setContent { LabImporterTheme { LoincCatalogScreen(onOpenTerm = { opened += it }, onBack = {}) } }
+        val field = compose.onNode(hasSetTextAction())
+        field.performTextInput("creatinine serum")
+        compose.waitFor { compose.onAllNodesWithText("2160-0").fetchSemanticsNodes().isNotEmpty() }
+        compose.onAllNodesWithText("2160-0").onFirst().performClick()
+        assertEquals(listOf("2160-0"), opened)
+
+        field.performTextClearance()
+        field.performTextInput("zzqqxxnotatest")
+        compose.waitFor { compose.onAllNodesWithText(string(R.string.no_results)).fetchSemanticsNodes().isNotEmpty() }
+    }
+
+    @Test
+    fun termScreenShowsTheCatalogAttributesAndOffersEdits() {
+        compose.setContent {
+            LabImporterTheme { LoincTermScreen("2160-0", LabDisplayPreferences(nicknames = mapOf("2160-0" to "Krea")), {}, {}) }
+        }
+        compose.onNodeWithText("Krea").assertIsDisplayed()
+        compose.onNode(hasScrollAction()).performScrollToNode(hasText(string(R.string.loinc_component)))
+        compose.onNodeWithText(string(R.string.loinc_component)).assertIsDisplayed()
+        // Both edits are offered (the dialogs' own logic is the shared, tested preferences code;
+        // Robolectric never idles with a text field inside a dialog window).
+        compose.onNodeWithContentDescription(string(R.string.more)).performClick()
+        compose.onNodeWithText(string(R.string.rename)).assertIsDisplayed()
+        compose.onNodeWithText(string(R.string.set_reference_range)).assertIsDisplayed()
     }
 }
