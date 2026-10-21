@@ -269,4 +269,17 @@
     <string name="loinc_short_name">Lyhyt nimi</string>
     <string name="loinc_units">Yksiköt</string>
     <string name="loinc_link_footer">Avaa täydellisen kuvauksen ja lähteet osoitteessa loinc.org.</string>
+    <string name="done">Valmis</string>
+    <string name="selected_count">%1$d valittu</string>
+    <string name="delete_all">Poista kaikki</string>
+    <string name="delete_reports_title">Poistetaanko raportit?</string>
+    <plurals name="delete_reports_message">
+        <item quantity="one">%d raportti poistetaan pysyvästi.</item>
+        <item quantity="other">%d raporttia poistetaan pysyvästi.</item>
+    </plurals>
+    <plurals name="reports_deleted">
+        <item quantity="one">%d raportti poistettu</item>
+        <item quantity="other">%d raporttia poistettu</item>
+    </plurals>
+    <string name="delete_some_failed">Joitakin raportteja ei voitu poistaa.</string>
 </resources>

@@ -275,4 +275,19 @@
     <string name="loinc_short_name">Nome breve</string>
     <string name="loinc_units">Unità</string>
     <string name="loinc_link_footer">Apre la descrizione completa e i riferimenti su loinc.org.</string>
+    <string name="done">Fatto</string>
+    <string name="selected_count">%1$d selezionati</string>
+    <string name="delete_all">Elimina tutto</string>
+    <string name="delete_reports_title">Eliminare i referti?</string>
+    <plurals name="delete_reports_message">
+        <item quantity="one">%d referto verrà rimosso definitivamente.</item>
+        <item quantity="many">%d di referti verranno rimossi definitivamente.</item>
+        <item quantity="other">%d referti verranno rimossi definitivamente.</item>
+    </plurals>
+    <plurals name="reports_deleted">
+        <item quantity="one">%d referto eliminato</item>
+        <item quantity="many">%d di referti eliminati</item>
+        <item quantity="other">%d referti eliminati</item>
+    </plurals>
+    <string name="delete_some_failed">Non è stato possibile rimuovere alcuni referti.</string>
 </resources>

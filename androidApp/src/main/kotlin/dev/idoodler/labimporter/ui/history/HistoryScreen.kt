@@ -1,5 +1,19 @@
 package dev.idoodler.labimporter.ui.history
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.material.icons.rounded.Checklist
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -71,8 +85,25 @@ fun HistoryScreen(
     modifier: Modifier = Modifier,
     onBack: () -> Unit = {},
     onExportPdf: () -> Unit = {},
+    onDeleteReports: (Set<String>) -> Unit = {},
+    onSelectionModeChange: (Boolean) -> Unit = {},
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    // Selecting several reports to delete (iOS edit mode); Delete All is one tap away.
+    var selecting by rememberSaveable { mutableStateOf(false) }
+    var selected by rememberSaveable { mutableStateOf(emptyList<String>()) }
+    var pendingDelete by rememberSaveable { mutableStateOf(emptyList<String>()) }
+    val setSelecting = { value: Boolean ->
+        selecting = value
+        if (!value) selected = emptyList()
+        onSelectionModeChange(value)
+    }
+    // Drop selections that no longer exist, and leave selection once nothing is left.
+    LaunchedEffect(reports) {
+        selected = selected.filter { id -> reports.any { it.id == id } }
+        if (reports.isEmpty() && selecting) setSelecting(false)
+    }
+    BackHandler(enabled = selecting) { setSelecting(false) }
     val byYear = remember(reports) { reports.groupBy { it.date.year } }
     val allCategories = remember(reports) { reports.flatMap { r -> r.entries.map { LabCategory.forCode(it.code) } } }
     Box(modifier.fillMaxSize()) {
@@ -82,13 +113,28 @@ fun HistoryScreen(
             containerColor = Color.Transparent,
             topBar = {
                 LargeFlexibleTopAppBar(
-                    title = { Text(stringResource(R.string.history_title), fontWeight = FontWeight.Bold) },
+                    title = {
+                        Text(
+                            if (selecting && selected.isNotEmpty()) stringResource(R.string.selected_count, selected.size) else stringResource(R.string.history_title),
+                            fontWeight = FontWeight.Bold,
+                        )
+                    },
                     navigationIcon = {
-                        IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.back)) }
+                        if (selecting) {
+                            IconButton(onClick = { setSelecting(false) }) { Icon(Icons.Rounded.Close, stringResource(R.string.done)) }
+                        } else {
+                            IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.back)) }
+                        }
                     },
                     actions = {
-                        if (reports.isNotEmpty()) {
+                        if (selecting) {
+                            TextButton(
+                                onClick = { pendingDelete = reports.map { it.id } },
+                                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                            ) { Text(stringResource(R.string.delete_all)) }
+                        } else if (reports.isNotEmpty()) {
                             IconButton(onClick = onExportPdf) { Icon(Icons.Rounded.PictureAsPdf, stringResource(R.string.pdf_export)) }
+                            IconButton(onClick = { setSelecting(true) }) { Icon(Icons.Rounded.Checklist, stringResource(R.string.edit)) }
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
@@ -97,6 +143,26 @@ fun HistoryScreen(
                     ),
                     scrollBehavior = scrollBehavior,
                 )
+            },
+            bottomBar = {
+                if (selecting) {
+                    val allSelected = selected.size == reports.size
+                    BottomAppBar(containerColor = MaterialTheme.colorScheme.surfaceContainer) {
+                        TextButton(onClick = { selected = if (allSelected) emptyList() else reports.map { it.id } }) {
+                            Text(stringResource(if (allSelected) R.string.deselect_all else R.string.select_all))
+                        }
+                        Spacer(Modifier.weight(1f))
+                        TextButton(
+                            onClick = { pendingDelete = selected },
+                            enabled = selected.isNotEmpty(),
+                            colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                        ) {
+                            Icon(Icons.Rounded.Delete, null, Modifier.size(18.dp))
+                            Spacer(Modifier.width(6.dp))
+                            Text(stringResource(R.string.delete))
+                        }
+                    }
+                }
             },
         ) { padding ->
             if (reports.isEmpty()) {
@@ -124,11 +190,42 @@ fun HistoryScreen(
                 byYear.forEach { (year, items) ->
                     item(key = "y$year") { SectionTitle(year.toString()) }
                     itemsIndexed(items, key = { _, r -> r.id }) { index, report ->
-                        ReportRow(report, index, items.size, onClick = { onOpenReport(report) })
+                        val checked = report.id in selected
+                        ReportRow(
+                            report, index, items.size,
+                            selection = if (selecting) checked else null,
+                            onClick = {
+                                if (selecting) {
+                                    selected = if (checked) selected - report.id else selected + report.id
+                                } else {
+                                    onOpenReport(report)
+                                }
+                            },
+                        )
                     }
                 }
             }
         }
+    }
+    if (pendingDelete.isNotEmpty()) {
+        val count = pendingDelete.size
+        AlertDialog(
+            onDismissRequest = { pendingDelete = emptyList() },
+            icon = { Icon(Icons.Rounded.Delete, null) },
+            title = { Text(stringResource(if (count == 1) R.string.delete_report_title else R.string.delete_reports_title)) },
+            text = { Text(pluralStringResource(R.plurals.delete_reports_message, count, count)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onDeleteReports(pendingDelete.toSet())
+                        pendingDelete = emptyList()
+                        setSelecting(false)
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                ) { Text(stringResource(R.string.delete)) }
+            },
+            dismissButton = { TextButton(onClick = { pendingDelete = emptyList() }) { Text(stringResource(R.string.cancel)) } },
+        )
     }
 }
 
@@ -166,7 +263,7 @@ private fun SummaryCard(reports: List<LabReport>, categories: Int) {
 }
 
 @Composable
-private fun ReportRow(report: LabReport, index: Int, count: Int, onClick: () -> Unit) {
+private fun ReportRow(report: LabReport, index: Int, count: Int, onClick: () -> Unit, selection: Boolean? = null) {
     val categories = remember(report) { report.entries.map { LabCategory.forCode(it.code) } }
     val dominant = report.dominantCategory ?: LabCategory.OTHER
     GroupedListItem(
@@ -190,7 +287,10 @@ private fun ReportRow(report: LabReport, index: Int, count: Int, onClick: () -> 
                 }
             }
         },
-        trailing = { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null) },
+        trailing = {
+            // In selection mode the row toggles; its checkbox reads out the state.
+            if (selection != null) Checkbox(checked = selection, onCheckedChange = null) else Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null)
+        },
     )
 }
 

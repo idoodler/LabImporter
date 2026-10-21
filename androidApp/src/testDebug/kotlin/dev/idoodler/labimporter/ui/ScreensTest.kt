@@ -14,6 +14,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -29,6 +30,7 @@ import dev.idoodler.labimporter.ai.AiAvailability
 import dev.idoodler.labimporter.ai.AiEngine
 import dev.idoodler.labimporter.ai.AiProblem
 import dev.idoodler.labimporter.ai.DevelopmentStandIn
+import dev.idoodler.labimporter.core.loinc.LoincTerm
 import dev.idoodler.labimporter.core.model.CodeName
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.core.model.LabValue
@@ -36,6 +38,8 @@ import dev.idoodler.labimporter.data.PatientDetails
 import dev.idoodler.labimporter.data.PatientSex
 import dev.idoodler.labimporter.export.PdfOptions
 import dev.idoodler.labimporter.ui.export.PdfExportScreen
+import dev.idoodler.labimporter.ui.components.formatDate
+import dev.idoodler.labimporter.ui.history.HistoryScreen
 import dev.idoodler.labimporter.ui.loinc.LoincCatalogScreen
 import dev.idoodler.labimporter.ui.loinc.LoincTermScreen
 import dev.idoodler.labimporter.ui.preview.PreviewSamples
@@ -46,6 +50,7 @@ import dev.idoodler.labimporter.ui.settings.SettingsScreen
 import dev.idoodler.labimporter.ui.settings.SortEditorScreen
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 import kotlinx.datetime.LocalDate
+import java.time.format.FormatStyle
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -202,13 +207,22 @@ class ScreensTest {
     }
 
     @Test
-    fun catalogSearchesTheBundledLoincAndOpensATerm() {
+    fun catalogSearchesAndOpensATerm() {
         val opened = mutableListOf<String>()
-        compose.setContent { LabImporterTheme { LoincCatalogScreen(onOpenTerm = { opened += it }, onBack = {}) } }
+        val terms = listOf(
+            LoincTerm("2160-0", "Creatinine [Mass/volume] in Serum or Plasma", "Creatinine", null, "mg/dL", 1),
+            LoincTerm("4548-4", "Hemoglobin A1c/Hemoglobin.total in Blood", "HbA1c", null, "%", 2),
+        )
+        // The catalog query itself is the shared, tested LoincDirectory; here it's a fixed list.
+        val search = { query: String, offset: Int ->
+            if (offset > 0) emptyList() else terms.filter { query.isBlank() || it.name.contains(query, ignoreCase = true) }
+        }
+        compose.setContent { LabImporterTheme { LoincCatalogScreen(onOpenTerm = { opened += it }, onBack = {}, search = search) } }
+        compose.waitFor { compose.onAllNodesWithText("4548-4").fetchSemanticsNodes().isNotEmpty() }
         val field = compose.onNode(hasSetTextAction())
-        field.performTextInput("creatinine serum")
-        compose.waitFor { compose.onAllNodesWithText("2160-0").fetchSemanticsNodes().isNotEmpty() }
-        compose.onAllNodesWithText("2160-0").onFirst().performClick()
+        field.performTextInput("creatinine")
+        compose.waitFor { compose.onAllNodesWithText("4548-4").fetchSemanticsNodes().isEmpty() }
+        compose.onNodeWithText("2160-0").performClick()
         assertEquals(listOf("2160-0"), opened)
 
         field.performTextClearance()
@@ -229,5 +243,27 @@ class ScreensTest {
         compose.onNodeWithContentDescription(string(R.string.more)).performClick()
         compose.onNodeWithText(string(R.string.rename)).assertIsDisplayed()
         compose.onNodeWithText(string(R.string.set_reference_range)).assertIsDisplayed()
+    }
+
+    @Test
+    fun reportsCanBeSelectedAndDeletedTogether() {
+        val deleted = mutableListOf<Set<String>>()
+        compose.setContent { LabImporterTheme { HistoryScreen(PreviewSamples.reports, {}, onDeleteReports = { deleted += it }) } }
+        compose.onNodeWithContentDescription(string(R.string.edit)).performClick()
+        // Nothing selected yet: Delete is off.
+        compose.onNodeWithText(string(R.string.delete)).assertIsNotEnabled()
+        compose.onNodeWithText(formatDate(PreviewSamples.reports[1].date, FormatStyle.LONG)).performClick()
+        compose.onNodeWithText(app.getString(R.string.selected_count, 1)).assertIsDisplayed()
+        compose.onNodeWithText(string(R.string.delete)).performClick()
+        compose.onNodeWithText(string(R.string.delete_report_title)).assertIsDisplayed()
+        compose.onAllNodesWithText(string(R.string.delete)).onLast().performClick()
+        assertEquals(listOf(setOf("r2")), deleted)
+
+        // Delete All asks about every report.
+        compose.onNodeWithContentDescription(string(R.string.edit)).performClick()
+        compose.onNodeWithText(string(R.string.delete_all)).performClick()
+        compose.onNodeWithText(app.resources.getQuantityString(R.plurals.delete_reports_message, 3, 3)).assertIsDisplayed()
+        compose.onAllNodesWithText(string(R.string.delete)).onLast().performClick()
+        assertEquals(setOf("r1", "r2", "r3"), deleted.last())
     }
 }

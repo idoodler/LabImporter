@@ -269,4 +269,17 @@
     <string name="loinc_short_name">Korte naam</string>
     <string name="loinc_units">Eenheden</string>
     <string name="loinc_link_footer">Opent de volledige beschrijving en referenties op loinc.org.</string>
+    <string name="done">Gereed</string>
+    <string name="selected_count">%1$d geselecteerd</string>
+    <string name="delete_all">Verwijder alles</string>
+    <string name="delete_reports_title">Rapporten verwijderen?</string>
+    <plurals name="delete_reports_message">
+        <item quantity="one">%d rapport wordt definitief verwijderd.</item>
+        <item quantity="other">%d rapporten worden definitief verwijderd.</item>
+    </plurals>
+    <plurals name="reports_deleted">
+        <item quantity="one">%d rapport verwijderd</item>
+        <item quantity="other">%d rapporten verwijderd</item>
+    </plurals>
+    <string name="delete_some_failed">Sommige rapporten konden niet worden verwijderd.</string>
 </resources>

@@ -269,4 +269,17 @@
     <string name="loinc_short_name">Rövid név</string>
     <string name="loinc_units">Mértékegységek</string>
     <string name="loinc_link_footer">Megnyitja a teljes leírást és hivatkozásokat a loinc.org oldalon.</string>
+    <string name="done">Kész</string>
+    <string name="selected_count">%1$d kijelölve</string>
+    <string name="delete_all">Összes törlése</string>
+    <string name="delete_reports_title">Törlöd a jelentéseket?</string>
+    <plurals name="delete_reports_message">
+        <item quantity="one">%d jelentés véglegesen törlődik.</item>
+        <item quantity="other">%d jelentés véglegesen törlődik.</item>
+    </plurals>
+    <plurals name="reports_deleted">
+        <item quantity="one">%d jelentés törölve</item>
+        <item quantity="other">%d jelentés törölve</item>
+    </plurals>
+    <string name="delete_some_failed">Néhány jelentést nem sikerült törölni.</string>
 </resources>

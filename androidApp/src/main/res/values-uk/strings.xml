@@ -281,4 +281,21 @@
     <string name="loinc_short_name">Коротка назва</string>
     <string name="loinc_units">Одиниці</string>
     <string name="loinc_link_footer">Відкриває повний опис і джерела на loinc.org.</string>
+    <string name="done">Готово</string>
+    <string name="selected_count">Вибрано: %1$d</string>
+    <string name="delete_all">Видалити все</string>
+    <string name="delete_reports_title">Видалити звіти?</string>
+    <plurals name="delete_reports_message">
+        <item quantity="one">%d звіт буде остаточно видалено.</item>
+        <item quantity="few">%d звіти буде остаточно видалено.</item>
+        <item quantity="many">%d звітів буде остаточно видалено.</item>
+        <item quantity="other">%d звіту буде остаточно видалено.</item>
+    </plurals>
+    <plurals name="reports_deleted">
+        <item quantity="one">Видалено %d звіт</item>
+        <item quantity="few">Видалено %d звіти</item>
+        <item quantity="many">Видалено %d звітів</item>
+        <item quantity="other">Видалено %d звіту</item>
+    </plurals>
+    <string name="delete_some_failed">Деякі звіти не вдалося видалити.</string>
 </resources>

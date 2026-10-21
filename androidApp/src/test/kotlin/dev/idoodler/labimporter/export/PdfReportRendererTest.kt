@@ -19,14 +19,15 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
-import org.robolectric.annotation.GraphicsMode
 import java.io.ByteArrayOutputStream
 import java.time.LocalDateTime
 
-/** The PDF renderer draws every page the shared core lays out, in every format and colour mode. */
+/**
+ * The PDF renderer draws every page the shared core lays out, in every format
+ * and colour mode (native graphics for all tests — see `build.gradle.kts`).
+ */
 @RunWith(AndroidJUnit4::class)
 @Config(application = TestApplication::class)
-@GraphicsMode(GraphicsMode.Mode.NATIVE)
 class PdfReportRendererTest {
     private val renderer = PdfReportRenderer(ApplicationProvider.getApplicationContext())
     private val today = LocalDate(2026, 10, 1)

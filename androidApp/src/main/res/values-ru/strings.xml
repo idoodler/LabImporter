@@ -281,4 +281,21 @@
     <string name="loinc_short_name">Краткое название</string>
     <string name="loinc_units">Единицы</string>
     <string name="loinc_link_footer">Открывает полное описание и источники на loinc.org.</string>
+    <string name="done">Готово</string>
+    <string name="selected_count">Выбрано: %1$d</string>
+    <string name="delete_all">Удалить все</string>
+    <string name="delete_reports_title">Удалить отчёты?</string>
+    <plurals name="delete_reports_message">
+        <item quantity="one">%d отчёт будет удалён без возможности восстановления.</item>
+        <item quantity="few">%d отчёта будут удалены без возможности восстановления.</item>
+        <item quantity="many">%d отчётов будут удалены без возможности восстановления.</item>
+        <item quantity="other">%d отчёта будут удалены без возможности восстановления.</item>
+    </plurals>
+    <plurals name="reports_deleted">
+        <item quantity="one">Удалён %d отчёт</item>
+        <item quantity="few">Удалено %d отчёта</item>
+        <item quantity="many">Удалено %d отчётов</item>
+        <item quantity="other">Удалено %d отчёта</item>
+    </plurals>
+    <string name="delete_some_failed">Некоторые отчёты не удалось удалить.</string>
 </resources>

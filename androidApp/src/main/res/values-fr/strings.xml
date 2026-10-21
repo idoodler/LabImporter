@@ -275,4 +275,19 @@
     <string name="loinc_short_name">Nom court</string>
     <string name="loinc_units">Unités</string>
     <string name="loinc_link_footer">Ouvre la description complète et les références sur loinc.org.</string>
+    <string name="done">Terminé</string>
+    <string name="selected_count">%1$d sélectionnés</string>
+    <string name="delete_all">Tout supprimer</string>
+    <string name="delete_reports_title">Supprimer les rapports ?</string>
+    <plurals name="delete_reports_message">
+        <item quantity="one">%d rapport sera définitivement supprimé.</item>
+        <item quantity="many">%d de rapports seront définitivement supprimés.</item>
+        <item quantity="other">%d rapports seront définitivement supprimés.</item>
+    </plurals>
+    <plurals name="reports_deleted">
+        <item quantity="one">%d rapport supprimé</item>
+        <item quantity="many">%d de rapports supprimés</item>
+        <item quantity="other">%d rapports supprimés</item>
+    </plurals>
+    <string name="delete_some_failed">Certains rapports n’ont pas pu être supprimés.</string>
 </resources>

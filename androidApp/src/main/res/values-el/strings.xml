@@ -269,4 +269,17 @@
     <string name="loinc_short_name">Σύντομο όνομα</string>
     <string name="loinc_units">Μονάδες</string>
     <string name="loinc_link_footer">Ανοίγει την πλήρη περιγραφή και τις παραπομπές στο loinc.org.</string>
+    <string name="done">Τέλος</string>
+    <string name="selected_count">%1$d επιλεγμένες</string>
+    <string name="delete_all">Διαγραφή όλων</string>
+    <string name="delete_reports_title">Διαγραφή αναφορών;</string>
+    <plurals name="delete_reports_message">
+        <item quantity="one">%d αναφορά θα αφαιρεθεί οριστικά.</item>
+        <item quantity="other">%d αναφορές θα αφαιρεθούν οριστικά.</item>
+    </plurals>
+    <plurals name="reports_deleted">
+        <item quantity="one">Διαγράφηκε %d αναφορά</item>
+        <item quantity="other">Διαγράφηκαν %d αναφορές</item>
+    </plurals>
+    <string name="delete_some_failed">Ορισμένες αναφορές δεν ήταν δυνατό να αφαιρεθούν.</string>
 </resources>

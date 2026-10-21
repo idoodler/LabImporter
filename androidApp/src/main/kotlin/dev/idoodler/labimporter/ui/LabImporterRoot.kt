@@ -208,6 +208,9 @@ private fun Navigator(
     val current = Destination.decode(stack.last())
     val push = { d: Destination -> stack = stack + d.encode() }
     val pop = { if (stack.size > 1) stack = stack.dropLast(1) }
+    // Reports in selection mode (to delete several) — the import button hides meanwhile.
+    var historySelecting by remember { mutableStateOf(false) }
+    LaunchedEffect(current) { if (current !is Destination.Reports) historySelecting = false }
 
     // A report that was deleted (or edited away) can't stay on screen.
     LaunchedEffect(reports, current) {
@@ -244,7 +247,7 @@ private fun Navigator(
 
     Box(Modifier.fillMaxSize()) {
         if (backProgress > 0f && stack.size > 1) {
-            Screen(Destination.decode(stack[stack.size - 2]), viewModel, reports, isLoading, healthConnect, connectHealthConnect, importActions, push, pop)
+            Screen(Destination.decode(stack[stack.size - 2]), viewModel, reports, isLoading, healthConnect, connectHealthConnect, importActions, push, pop) {}
         }
         AnimatedContent(
             targetState = stack,
@@ -273,10 +276,13 @@ private fun Navigator(
         ) { target ->
             // Opaque so the screen underneath only shows through the predictive-back inset.
             Surface(color = MaterialTheme.colorScheme.surface, modifier = Modifier.fillMaxSize()) {
-                Screen(Destination.decode(target.last()), viewModel, reports, isLoading, healthConnect, connectHealthConnect, importActions, push, pop)
+                Screen(Destination.decode(target.last()), viewModel, reports, isLoading, healthConnect, connectHealthConnect, importActions, push, pop) {
+                    historySelecting = it
+                }
             }
         }
-        val showFab = (current is Destination.Home || current is Destination.Reports) && reports.isNotEmpty()
+        // The import button steps aside while reports are being selected for deletion.
+        val showFab = (current is Destination.Home || (current is Destination.Reports && !historySelecting)) && reports.isNotEmpty()
         if (showFab && backProgress == 0f) ImportFabMenu(importActions, Modifier.navigationBarsPadding().padding(end = 4.dp, bottom = 4.dp))
         SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = 88.dp))
     }
@@ -293,6 +299,7 @@ private fun Screen(
     importActions: ImportActions,
     push: (Destination) -> Unit,
     pop: () -> Unit,
+    onSelectionModeChange: (Boolean) -> Unit,
 ) {
     val preferences by viewModel.displayPreferences.collectAsStateWithLifecycle()
     when (destination) {
@@ -307,6 +314,8 @@ private fun Screen(
         Destination.Reports -> HistoryScreen(
             reports, onOpenReport = { push(Destination.Report(it.id)) }, onBack = pop,
             onExportPdf = { push(Destination.PdfExport) },
+            onDeleteReports = viewModel::deleteReports,
+            onSelectionModeChange = onSelectionModeChange,
         )
         Destination.PdfExport -> PdfExportScreen(reports, preferences, onGenerate = viewModel::exportPdf, onBack = pop)
         Destination.Settings -> {

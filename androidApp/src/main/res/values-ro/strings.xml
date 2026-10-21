@@ -275,4 +275,19 @@
     <string name="loinc_short_name">Nume scurt</string>
     <string name="loinc_units">Unități</string>
     <string name="loinc_link_footer">Deschide descrierea completă și referințele pe loinc.org.</string>
+    <string name="done">Gata</string>
+    <string name="selected_count">%1$d selectate</string>
+    <string name="delete_all">Șterge tot</string>
+    <string name="delete_reports_title">Ștergi rapoartele?</string>
+    <plurals name="delete_reports_message">
+        <item quantity="one">%d raport va fi eliminat definitiv.</item>
+        <item quantity="few">%d rapoarte vor fi eliminate definitiv.</item>
+        <item quantity="other">%d de rapoarte vor fi eliminate definitiv.</item>
+    </plurals>
+    <plurals name="reports_deleted">
+        <item quantity="one">%d raport șters</item>
+        <item quantity="few">%d rapoarte șterse</item>
+        <item quantity="other">%d de rapoarte șterse</item>
+    </plurals>
+    <string name="delete_some_failed">Unele rapoarte nu au putut fi eliminate.</string>
 </resources>

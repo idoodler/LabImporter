@@ -313,4 +313,19 @@
     <string name="loinc_short_name">Short name</string>
     <string name="loinc_units">Units</string>
     <string name="loinc_link_footer">Opens the full description and references on loinc.org.</string>
+
+    <!-- Selecting and deleting several reports -->
+    <string name="done">Done</string>
+    <string name="selected_count">%1$d Selected</string>
+    <string name="delete_all">Delete All</string>
+    <string name="delete_reports_title">Delete Reports?</string>
+    <plurals name="delete_reports_message">
+        <item quantity="one">%d report will be permanently removed.</item>
+        <item quantity="other">%d reports will be permanently removed.</item>
+    </plurals>
+    <plurals name="reports_deleted">
+        <item quantity="one">%d report deleted</item>
+        <item quantity="other">%d reports deleted</item>
+    </plurals>
+    <string name="delete_some_failed">Some reports couldn\'t be removed.</string>
 </resources>

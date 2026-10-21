@@ -275,4 +275,19 @@
     <string name="loinc_short_name">Kratki naziv</string>
     <string name="loinc_units">Jedinice</string>
     <string name="loinc_link_footer">Otvara potpuni opis i izvore na loinc.org.</string>
+    <string name="done">Gotovo</string>
+    <string name="selected_count">Odabrano: %1$d</string>
+    <string name="delete_all">Izbriši sve</string>
+    <string name="delete_reports_title">Izbrisati izvješća?</string>
+    <plurals name="delete_reports_message">
+        <item quantity="one">%d izvješće bit će trajno uklonjeno.</item>
+        <item quantity="few">%d izvješća bit će trajno uklonjena.</item>
+        <item quantity="other">%d izvješća bit će trajno uklonjeno.</item>
+    </plurals>
+    <plurals name="reports_deleted">
+        <item quantity="one">%d izvješće izbrisano</item>
+        <item quantity="few">%d izvješća izbrisana</item>
+        <item quantity="other">%d izvješća izbrisano</item>
+    </plurals>
+    <string name="delete_some_failed">Neka izvješća nije bilo moguće ukloniti.</string>
 </resources>

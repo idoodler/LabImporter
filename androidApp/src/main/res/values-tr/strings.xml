@@ -269,4 +269,17 @@
     <string name="loinc_short_name">Kısa ad</string>
     <string name="loinc_units">Birimler</string>
     <string name="loinc_link_footer">loinc.org\'da tam açıklamayı ve kaynakları açar.</string>
+    <string name="done">Bitti</string>
+    <string name="selected_count">%1$d seçildi</string>
+    <string name="delete_all">Tümünü sil</string>
+    <string name="delete_reports_title">Raporlar silinsin mi?</string>
+    <plurals name="delete_reports_message">
+        <item quantity="one">%d rapor kalıcı olarak kaldırılacak.</item>
+        <item quantity="other">%d rapor kalıcı olarak kaldırılacak.</item>
+    </plurals>
+    <plurals name="reports_deleted">
+        <item quantity="one">%d rapor silindi</item>
+        <item quantity="other">%d rapor silindi</item>
+    </plurals>
+    <string name="delete_some_failed">Bazı raporlar kaldırılamadı.</string>
 </resources>

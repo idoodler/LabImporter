@@ -269,4 +269,17 @@
     <string name="loinc_short_name">Kort navn</string>
     <string name="loinc_units">Enheder</string>
     <string name="loinc_link_footer">Åbner den fulde beskrivelse og kilder på loinc.org.</string>
+    <string name="done">Færdig</string>
+    <string name="selected_count">%1$d valgt</string>
+    <string name="delete_all">Slet alle</string>
+    <string name="delete_reports_title">Slet rapporter?</string>
+    <plurals name="delete_reports_message">
+        <item quantity="one">%d rapport fjernes permanent.</item>
+        <item quantity="other">%d rapporter fjernes permanent.</item>
+    </plurals>
+    <plurals name="reports_deleted">
+        <item quantity="one">%d rapport slettet</item>
+        <item quantity="other">%d rapporter slettet</item>
+    </plurals>
+    <string name="delete_some_failed">Nogle rapporter kunne ikke fjernes.</string>
 </resources>

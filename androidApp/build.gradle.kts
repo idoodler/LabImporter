@@ -131,6 +131,10 @@ tasks.withType<Test>().configureEach {
     jvmArgs("--add-opens=java.base/java.io=ALL-UNNAMED", "--add-exports=java.base/jdk.internal.access=ALL-UNNAMED")
     dependsOn(buildLoincDb)
     systemProperty("loinc.db", layout.buildDirectory.file("generated/loincAssets/loinc.db").get().asFile.absolutePath)
+    // One Robolectric sandbox for every test: a second sandbox (e.g. another graphics
+    // mode) can't load the bundled SQLite native library again, so the catalog would
+    // silently fail to open there. Native graphics also let the PDF pages draw.
+    systemProperty("robolectric.graphicsMode", "NATIVE")
 }
 
 androidComponents {

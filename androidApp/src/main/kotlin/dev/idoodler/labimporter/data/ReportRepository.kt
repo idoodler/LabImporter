@@ -72,6 +72,14 @@ class ReportRepository(
         reload()
     }
 
+    /** Deletes [reports] one by one, reloads once, and returns how many couldn't be removed. */
+    suspend fun deleteAll(reports: List<LabReport>): Int {
+        val target = store()
+        val failed = reports.count { report -> runCatching { target.delete(report) }.isFailure }
+        reload()
+        return failed
+    }
+
     /**
      * Turns Health Connect on and moves any on-device reports into it, so the
      * user never ends up with data split across two stores.

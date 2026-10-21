@@ -323,6 +323,21 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /** Deletes the reports with [ids] (multi-select / Delete All) and says how it went. */
+    fun deleteReports(ids: Set<String>) {
+        val doomed = reports.value.filter { it.id in ids }
+        if (doomed.isEmpty()) return
+        viewModelScope.launch {
+            val failed = repository.deleteAll(doomed)
+            val deleted = doomed.size - failed
+            _message.value = if (failed > 0) {
+                context.getString(R.string.delete_some_failed)
+            } else {
+                context.resources.getQuantityString(R.plurals.reports_deleted, deleted, deleted)
+            }
+        }
+    }
+
     // region Transfer (iPhone ⇄ Android)
 
     /** Every report as the transfer file (shared `ReportTransfer`: a FHIR Bundle), ready to share. */

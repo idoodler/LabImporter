@@ -269,4 +269,17 @@
     <string name="loinc_short_name">Кратко име</string>
     <string name="loinc_units">Мерни единици</string>
     <string name="loinc_link_footer">Отваря пълното описание и източниците в loinc.org.</string>
+    <string name="done">Готово</string>
+    <string name="selected_count">%1$d избрани</string>
+    <string name="delete_all">Изтрий всички</string>
+    <string name="delete_reports_title">Да се изтрият ли отчетите?</string>
+    <plurals name="delete_reports_message">
+        <item quantity="one">%d отчет ще бъде премахнат завинаги.</item>
+        <item quantity="other">%d отчета ще бъдат премахнати завинаги.</item>
+    </plurals>
+    <plurals name="reports_deleted">
+        <item quantity="one">%d отчет е изтрит</item>
+        <item quantity="other">%d отчета са изтрити</item>
+    </plurals>
+    <string name="delete_some_failed">Някои отчети не можаха да бъдат премахнати.</string>
 </resources>

@@ -263,4 +263,15 @@
     <string name="loinc_short_name">简称</string>
     <string name="loinc_units">单位</string>
     <string name="loinc_link_footer">在 loinc.org 上打开完整说明和参考资料。</string>
+    <string name="done">完成</string>
+    <string name="selected_count">已选择 %1$d 项</string>
+    <string name="delete_all">全部删除</string>
+    <string name="delete_reports_title">删除报告？</string>
+    <plurals name="delete_reports_message">
+        <item quantity="other">%d 份报告将被永久移除。</item>
+    </plurals>
+    <plurals name="reports_deleted">
+        <item quantity="other">已删除 %d 份报告</item>
+    </plurals>
+    <string name="delete_some_failed">部分报告无法移除。</string>
 </resources>

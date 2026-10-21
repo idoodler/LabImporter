@@ -281,4 +281,21 @@
     <string name="loinc_short_name">Krátky názov</string>
     <string name="loinc_units">Jednotky</string>
     <string name="loinc_link_footer">Otvorí úplný popis a referencie na loinc.org.</string>
+    <string name="done">Hotovo</string>
+    <string name="selected_count">Vybraných: %1$d</string>
+    <string name="delete_all">Odstrániť všetko</string>
+    <string name="delete_reports_title">Odstrániť správy?</string>
+    <plurals name="delete_reports_message">
+        <item quantity="one">%d správa bude natrvalo odstránená.</item>
+        <item quantity="few">%d správy budú natrvalo odstránené.</item>
+        <item quantity="many">%d správy bude natrvalo odstránenej.</item>
+        <item quantity="other">%d správ bude natrvalo odstránených.</item>
+    </plurals>
+    <plurals name="reports_deleted">
+        <item quantity="one">%d správa odstránená</item>
+        <item quantity="few">%d správy odstránené</item>
+        <item quantity="many">%d správy odstránenej</item>
+        <item quantity="other">%d správ odstránených</item>
+    </plurals>
+    <string name="delete_some_failed">Niektoré správy sa nepodarilo odstrániť.</string>
 </resources>

@@ -263,4 +263,15 @@
     <string name="loinc_short_name">短縮名</string>
     <string name="loinc_units">単位</string>
     <string name="loinc_link_footer">loinc.orgで完全な説明と参考資料を開きます。</string>
+    <string name="done">完了</string>
+    <string name="selected_count">%1$d件選択中</string>
+    <string name="delete_all">すべて削除</string>
+    <string name="delete_reports_title">レポートを削除しますか？</string>
+    <plurals name="delete_reports_message">
+        <item quantity="other">%d件のレポートが完全に削除されます。</item>
+    </plurals>
+    <plurals name="reports_deleted">
+        <item quantity="other">%d件のレポートを削除しました</item>
+    </plurals>
+    <string name="delete_some_failed">一部のレポートを削除できませんでした。</string>
 </resources>

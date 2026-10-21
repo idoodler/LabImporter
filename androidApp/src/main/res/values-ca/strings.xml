@@ -275,4 +275,19 @@
     <string name="loinc_short_name">Nom curt</string>
     <string name="loinc_units">Unitats</string>
     <string name="loinc_link_footer">Obre la descripció completa i les referències a loinc.org.</string>
+    <string name="done">Fet</string>
+    <string name="selected_count">%1$d seleccionats</string>
+    <string name="delete_all">Elimina-ho tot</string>
+    <string name="delete_reports_title">Vols eliminar els informes?</string>
+    <plurals name="delete_reports_message">
+        <item quantity="one">S\'eliminarà definitivament %d informe.</item>
+        <item quantity="many">S\'eliminaran definitivament %d d\'informes.</item>
+        <item quantity="other">S\'eliminaran definitivament %d informes.</item>
+    </plurals>
+    <plurals name="reports_deleted">
+        <item quantity="one">S\'ha eliminat %d informe</item>
+        <item quantity="many">S\'han eliminat %d d\'informes</item>
+        <item quantity="other">S\'han eliminat %d informes</item>
+    </plurals>
+    <string name="delete_some_failed">No s\'han pogut eliminar alguns informes.</string>
 </resources>

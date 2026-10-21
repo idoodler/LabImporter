@@ -281,4 +281,21 @@
     <string name="loinc_short_name">Krátký název</string>
     <string name="loinc_units">Jednotky</string>
     <string name="loinc_link_footer">Otevře úplný popis a odkazy na loinc.org.</string>
+    <string name="done">Hotovo</string>
+    <string name="selected_count">Vybráno: %1$d</string>
+    <string name="delete_all">Smazat vše</string>
+    <string name="delete_reports_title">Smazat protokoly?</string>
+    <plurals name="delete_reports_message">
+        <item quantity="one">%d protokol bude trvale odstraněn.</item>
+        <item quantity="few">%d protokoly budou trvale odstraněny.</item>
+        <item quantity="many">%d protokolu bude trvale odstraněno.</item>
+        <item quantity="other">%d protokolů bude trvale odstraněno.</item>
+    </plurals>
+    <plurals name="reports_deleted">
+        <item quantity="one">%d protokol smazán</item>
+        <item quantity="few">%d protokoly smazány</item>
+        <item quantity="many">%d protokolu smazáno</item>
+        <item quantity="other">%d protokolů smazáno</item>
+    </plurals>
+    <string name="delete_some_failed">Některé protokoly se nepodařilo odstranit.</string>
 </resources>
