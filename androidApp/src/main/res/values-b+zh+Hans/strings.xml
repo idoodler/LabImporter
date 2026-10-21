@@ -233,5 +233,6 @@
     <string name="sex_male">男性</string>
     <string name="sex_other">其他</string>
     <string name="not_set">未设置</string>
+    <string name="clear">清除</string>
     <string name="patient_details_hint">显示在导出的 PDF 封面上。</string>
 </resources>

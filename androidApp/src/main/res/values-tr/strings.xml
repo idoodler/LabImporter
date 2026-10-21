@@ -239,5 +239,6 @@
     <string name="sex_male">Erkek</string>
     <string name="sex_other">Diğer</string>
     <string name="not_set">Ayarlanmadı</string>
+    <string name="clear">Temizle</string>
     <string name="patient_details_hint">Dışa aktarılan PDF\'lerin kapak sayfasında gösterilir.</string>
 </resources>

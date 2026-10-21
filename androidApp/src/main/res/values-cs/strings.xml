@@ -251,5 +251,6 @@
     <string name="sex_male">Muž</string>
     <string name="sex_other">Ostatní</string>
     <string name="not_set">Nenastaveno</string>
+    <string name="clear">Vymazat</string>
     <string name="patient_details_hint">Zobrazuje se na titulní straně exportovaných PDF.</string>
 </resources>

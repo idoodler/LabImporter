@@ -245,5 +245,6 @@
     <string name="sex_male">Masculin</string>
     <string name="sex_other">Altele</string>
     <string name="not_set">Nesetat</string>
+    <string name="clear">Șterge</string>
     <string name="patient_details_hint">Apare pe coperta fișierelor PDF exportate.</string>
 </resources>

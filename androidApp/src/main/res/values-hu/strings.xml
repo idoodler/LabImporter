@@ -239,5 +239,6 @@
     <string name="sex_male">Férfi</string>
     <string name="sex_other">Egyéb</string>
     <string name="not_set">Nincs megadva</string>
+    <string name="clear">Törlés</string>
     <string name="patient_details_hint">Az exportált PDF-ek borítóoldalán jelenik meg.</string>
 </resources>

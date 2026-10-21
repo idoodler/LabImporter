@@ -239,5 +239,6 @@
     <string name="sex_male">Mannelijk</string>
     <string name="sex_other">Overig</string>
     <string name="not_set">Niet ingesteld</string>
+    <string name="clear">Wis</string>
     <string name="patient_details_hint">Wordt getoond op het voorblad van geëxporteerde pdf\'s.</string>
 </resources>

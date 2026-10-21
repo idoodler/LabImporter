@@ -245,5 +245,6 @@
     <string name="sex_male">Muško</string>
     <string name="sex_other">Ostalo</string>
     <string name="not_set">Nije postavljeno</string>
+    <string name="clear">Očisti</string>
     <string name="patient_details_hint">Prikazuje se na naslovnici izvezenih PDF-ova.</string>
 </resources>

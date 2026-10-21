@@ -239,5 +239,6 @@
     <string name="sex_male">Männlich</string>
     <string name="sex_other">Divers</string>
     <string name="not_set">Nicht festgelegt</string>
+    <string name="clear">Löschen</string>
     <string name="patient_details_hint">Erscheint auf dem Deckblatt exportierter PDFs.</string>
 </resources>

@@ -143,7 +143,9 @@ object PdfReport {
     /** A row of the latest-results table: a category heading or a metric. */
     sealed interface LatestRow {
         data class Heading(val category: LabCategory, val count: Int) : LatestRow
-        data class Value(val metric: PdfMetric) : LatestRow
+
+        /** [striped]: every second value within its category gets the zebra background. */
+        data class Value(val metric: PdfMetric, val striped: Boolean) : LatestRow
     }
 
     /**
@@ -164,9 +166,10 @@ object PdfReport {
             val byCategory = data.metrics.groupBy { it.category }
             val rows = data.categories.flatMap { category ->
                 val metrics = byCategory.getValue(category)
-                listOf(LatestRow.Heading(category, metrics.size)) + metrics.map { LatestRow.Value(it) }
+                listOf(LatestRow.Heading(category, metrics.size)) + metrics.mapIndexed { i, metric -> LatestRow.Value(metric, i % 2 == 1) }
             }
-            pages += paginate(rows, PdfLayout.tableRows(format)).map { (items, first) -> Page.Latest(items, first) }
+            // A heading never ends a page: it moves on with its first value.
+            pages += paginate(rows, PdfLayout.tableRows(format)) { it is LatestRow.Heading }.map { (items, first) -> Page.Latest(items, first) }
         }
         if (includeTrends) {
             pages += paginate(data.metrics.filter { it.hasTrend }, PdfLayout.charts(format))
@@ -175,13 +178,19 @@ object PdfReport {
         return pages
     }
 
-    private fun <T> paginate(items: List<T>, capacity: PdfLayout.Capacity): List<Pair<List<T>, Boolean>> {
+    /** Splits [items] into pages; an item for which [keepWithNext] holds never ends a page. */
+    private fun <T> paginate(
+        items: List<T>,
+        capacity: PdfLayout.Capacity,
+        keepWithNext: (T) -> Boolean = { false },
+    ): List<Pair<List<T>, Boolean>> {
         val result = mutableListOf<Pair<List<T>, Boolean>>()
         var index = 0
         while (index < items.size) {
             val first = result.isEmpty()
             val size = (if (first) capacity.first else capacity.rest).coerceAtLeast(1)
-            val end = minOf(index + size, items.size)
+            var end = minOf(index + size, items.size)
+            while (end < items.size && end - index > 1 && keepWithNext(items[end - 1])) end--
             result += items.subList(index, end) to first
             index = end
         }

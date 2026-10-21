@@ -239,5 +239,6 @@
     <string name="sex_male">Άρρεν</string>
     <string name="sex_other">Άλλο</string>
     <string name="not_set">Δεν έχει οριστεί</string>
+    <string name="clear">Διαγραφή</string>
     <string name="patient_details_hint">Εμφανίζεται στο εξώφυλλο των PDF που εξάγονται.</string>
 </resources>

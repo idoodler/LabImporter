@@ -251,5 +251,6 @@
     <string name="sex_male">Mężczyzna</string>
     <string name="sex_other">Inna</string>
     <string name="not_set">Nie ustawiono</string>
+    <string name="clear">Wyczyść</string>
     <string name="patient_details_hint">Wyświetlane na stronie tytułowej eksportowanych plików PDF.</string>
 </resources>

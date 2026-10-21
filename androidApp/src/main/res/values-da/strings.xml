@@ -239,5 +239,6 @@
     <string name="sex_male">Mand</string>
     <string name="sex_other">Andet</string>
     <string name="not_set">Ikke angivet</string>
+    <string name="clear">Ryd</string>
     <string name="patient_details_hint">Vises på forsiden af eksporterede PDF\'er.</string>
 </resources>

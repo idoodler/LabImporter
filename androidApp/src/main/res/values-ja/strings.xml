@@ -233,5 +233,6 @@
     <string name="sex_male">男性</string>
     <string name="sex_other">その他</string>
     <string name="not_set">未設定</string>
+    <string name="clear">消去</string>
     <string name="patient_details_hint">書き出したPDFの表紙に表示されます。</string>
 </resources>

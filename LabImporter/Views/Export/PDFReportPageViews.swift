@@ -220,8 +220,8 @@ struct PDFLatestResultsPage: View {
                 }
                 tableHeader
                 VStack(spacing: 0) {
-                    ForEach(Array(rows.enumerated()), id: \.element.id) { index, row in
-                        rowView(row, zebra: index.isMultiple(of: 2))
+                    ForEach(rows) { row in
+                        rowView(row)
                     }
                 }
             }
@@ -244,12 +244,12 @@ struct PDFLatestResultsPage: View {
     }
 
     @ViewBuilder
-    private func rowView(_ row: LatestRow, zebra: Bool) -> some View {
+    private func rowView(_ row: LatestRow) -> some View {
         switch row {
         case let .category(category, count):
             categoryRow(category, count: count)
-        case let .metric(metric):
-            metricRow(metric, zebra: zebra)
+        case let .metric(metric, striped):
+            metricRow(metric, zebra: striped)
         }
     }
 

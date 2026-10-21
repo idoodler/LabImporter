@@ -239,5 +239,6 @@
     <string name="sex_male">Mies</string>
     <string name="sex_other">Muu</string>
     <string name="not_set">Ei asetettu</string>
+    <string name="clear">Tyhjennä</string>
     <string name="patient_details_hint">Näkyy vietyjen PDF-tiedostojen kansilehdellä.</string>
 </resources>

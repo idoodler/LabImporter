@@ -279,5 +279,6 @@
     <string name="sex_male">Male</string>
     <string name="sex_other">Other</string>
     <string name="not_set">Not Set</string>
+    <string name="clear">Clear</string>
     <string name="patient_details_hint">Shown on the cover of PDF exports.</string>
 </resources>

@@ -38,7 +38,7 @@ struct PDFPageComposer {
                     case .heading(let heading):
                         return .category(LabCategory(sharedName: heading.category.name), count: Int(heading.count))
                     case .value(let value):
-                        return data.metric(value.metric).map(LatestRow.metric)
+                        return data.metric(value.metric).map { LatestRow.metric($0, striped: value.striped) }
                     }
                 }
                 return .latest(rows: rows, showTitle: latest.showTitle)
@@ -77,12 +77,13 @@ struct PDFPageComposer {
 /// A row in the latest-results table: either a category heading or a metric.
 enum LatestRow: Identifiable {
     case category(LabCategory, count: Int)
-    case metric(PDFMetric)
+    /// `striped`: every second value within its category (shared with Android).
+    case metric(PDFMetric, striped: Bool)
 
     var id: String {
         switch self {
         case let .category(category, _): return "cat-\(category.rawValue)"
-        case let .metric(metric): return "val-\(metric.code)"
+        case let .metric(metric, _): return "val-\(metric.code)"
         }
     }
 }

@@ -61,6 +61,7 @@ import dev.idoodler.labimporter.ui.onboarding.OnboardingScreen
 import dev.idoodler.labimporter.ui.onboarding.UnsupportedDeviceScreen
 import dev.idoodler.labimporter.ui.review.ReviewScreen
 import dev.idoodler.labimporter.ui.settings.AiSettings
+import dev.idoodler.labimporter.ui.settings.PatientSettings
 import dev.idoodler.labimporter.ui.settings.SettingsScreen
 import dev.idoodler.labimporter.ui.settings.TransferSettings
 import kotlinx.coroutines.CancellationException
@@ -297,11 +298,11 @@ private fun Screen(
         Destination.PdfExport -> PdfExportScreen(reports, preferences, onGenerate = viewModel::exportPdf, onBack = pop)
         Destination.Settings -> {
             val patientName by viewModel.patientName.collectAsStateWithLifecycle()
+            val patientDetails by viewModel.patientDetails.collectAsStateWithLifecycle()
             val aiAvailability by viewModel.aiAvailability.collectAsStateWithLifecycle()
             val usingStandIn by viewModel.usingStandIn.collectAsStateWithLifecycle()
             SettingsScreen(
-                patientName = patientName,
-                onPatientName = viewModel::setPatientName,
+                patient = PatientSettings(patientName, patientDetails, viewModel::setPatientName, viewModel::setPatientDetails),
                 healthConnect = healthConnect,
                 onConnectHealthConnect = connectHealthConnect,
                 onUseHealthConnect = viewModel::setUseHealthConnect,

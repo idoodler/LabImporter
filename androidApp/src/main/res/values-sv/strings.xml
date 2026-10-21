@@ -239,5 +239,6 @@
     <string name="sex_male">Man</string>
     <string name="sex_other">Övrigt</string>
     <string name="not_set">Inte angivet</string>
+    <string name="clear">Rensa</string>
     <string name="patient_details_hint">Visas på försättsbladet i exporterade PDF-filer.</string>
 </resources>

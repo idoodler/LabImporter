@@ -8,6 +8,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
@@ -21,8 +22,14 @@ import dev.idoodler.labimporter.ai.AiProblem
 import dev.idoodler.labimporter.ai.DevelopmentStandIn
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.core.model.LabValue
+import dev.idoodler.labimporter.data.PatientDetails
+import dev.idoodler.labimporter.data.PatientSex
+import dev.idoodler.labimporter.export.PdfOptions
+import dev.idoodler.labimporter.ui.export.PdfExportScreen
+import dev.idoodler.labimporter.ui.preview.PreviewSamples
 import dev.idoodler.labimporter.ui.review.ReviewScreen
 import dev.idoodler.labimporter.ui.settings.AiSettings
+import dev.idoodler.labimporter.ui.settings.PatientSettings
 import dev.idoodler.labimporter.ui.settings.SettingsScreen
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 import kotlinx.datetime.LocalDate
@@ -83,7 +90,7 @@ class ScreensTest {
     private fun settings(ai: AiSettings) {
         compose.setContent {
             LabImporterTheme {
-                SettingsScreen("", {}, HealthConnectState(), {}, {}, ai, LabDisplayPreferences(), {}, "LabImporter test")
+                SettingsScreen(PatientSettings(), HealthConnectState(), {}, {}, ai, LabDisplayPreferences(), {}, "LabImporter test")
             }
         }
         compose.onNode(hasScrollAction()).performScrollToNode(hasText(string(R.string.ai_title)))
@@ -112,5 +119,48 @@ class ScreensTest {
         compose.onNodeWithText(texts.active).assertIsDisplayed()
         compose.onNodeWithText(texts.useGemini).performClick()
         assertEquals(1, switched)
+    }
+
+    @Test
+    fun settingsEditThePatientDetailsForThePdf() {
+        var details = PatientDetails()
+        compose.setContent {
+            LabImporterTheme {
+                SettingsScreen(
+                    PatientSettings(details = PatientDetails(LocalDate(1980, 4, 2)), onDetails = { details = it }),
+                    HealthConnectState(), {}, {}, AiSettings(AiAvailability.Ready), LabDisplayPreferences(), {}, "LabImporter test",
+                )
+            }
+        }
+        compose.onNodeWithText(string(R.string.date_of_birth)).assertIsDisplayed()
+        // The sex starts unset and is chosen from a menu.
+        compose.onNodeWithText(string(R.string.not_set)).performClick()
+        compose.onNodeWithText(string(R.string.sex_female)).performClick()
+        assertEquals(PatientDetails(LocalDate(1980, 4, 2), PatientSex.FEMALE), details)
+        // A set date of birth can be cleared.
+        compose.onNodeWithContentDescription(string(R.string.clear)).performClick()
+        assertEquals(PatientDetails(null, null), details.copy(sex = null))
+    }
+
+    @Test
+    fun pdfExportNeedsAValueAndRendersOnGenerate() {
+        val generated = mutableListOf<PdfOptions>()
+        compose.setContent {
+            LabImporterTheme {
+                PdfExportScreen(PreviewSamples.reports, LabDisplayPreferences(), onGenerate = { generated += it; null }, onBack = {})
+            }
+        }
+        val generate = compose.onNodeWithText(string(R.string.pdf_generate))
+        // Everything with a numeric reading starts selected (4 values in the samples).
+        compose.onNode(hasScrollAction()).performScrollToNode(hasText(app.getString(R.string.pdf_selected_count, 4, 4)))
+        compose.onNodeWithText(string(R.string.deselect_all)).performClick()
+        compose.onNode(hasScrollAction()).performScrollToNode(hasText(string(R.string.pdf_select_one)))
+        generate.assertIsNotEnabled()
+        compose.onNodeWithText(string(R.string.select_all)).performClick()
+        generate.assertIsEnabled().performClick()
+        compose.waitForIdle()
+        assertEquals(setOf("4548-4", "2160-0", "2093-3", "3016-3"), generated.single().selectedCodes)
+        // A failed render says so instead of sharing nothing.
+        compose.onNodeWithText(string(R.string.pdf_failed)).assertIsDisplayed()
     }
 }

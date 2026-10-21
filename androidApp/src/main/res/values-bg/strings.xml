@@ -239,5 +239,6 @@
     <string name="sex_male">Мъж</string>
     <string name="sex_other">Други</string>
     <string name="not_set">Не е зададено</string>
+    <string name="clear">Изчисти</string>
     <string name="patient_details_hint">Показва се на корицата на експортираните PDF файлове.</string>
 </resources>

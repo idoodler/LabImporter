@@ -10,6 +10,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Badge
+import androidx.compose.material.icons.rounded.ArrowDropDown
+import androidx.compose.material.icons.rounded.Cake
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.material.icons.rounded.Favorite
@@ -22,6 +27,13 @@ import androidx.compose.material.icons.rounded.Tag
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DisplayMode
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.SelectableDates
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.MaterialShapes
@@ -64,6 +76,11 @@ import dev.idoodler.labimporter.core.model.LabCategory
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.core.model.LabMapping
 import dev.idoodler.labimporter.data.HealthConnectAvailability
+import dev.idoodler.labimporter.data.PatientDetails
+import dev.idoodler.labimporter.data.PatientSex
+import dev.idoodler.labimporter.ui.components.formatDate
+import kotlinx.datetime.LocalDate
+import java.time.format.FormatStyle
 import dev.idoodler.labimporter.ui.HealthConnectState
 import dev.idoodler.labimporter.ui.design.CategoryWash
 import dev.idoodler.labimporter.ui.design.GroupedListItem
@@ -75,8 +92,7 @@ import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 /** Settings as Material 3 Expressive grouped lists with coloured shape icons. */
 @Composable
 fun SettingsScreen(
-    patientName: String,
-    onPatientName: (String) -> Unit,
+    patient: PatientSettings,
     healthConnect: HealthConnectState,
     onConnectHealthConnect: () -> Unit,
     onUseHealthConnect: (Boolean) -> Unit,
@@ -115,21 +131,7 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxSize(),
             ) {
                 item { SectionTitle(stringResource(R.string.settings_patient)) }
-                item {
-                    var name by remember(patientName) { mutableStateOf(patientName) }
-                    GroupedListItem(
-                        0, 1,
-                        leading = { Badge(MaterialShapes.Cookie9Sided, LabCategory.BLOOD_GAS.color, Icons.Rounded.Badge) },
-                        headline = {
-                            OutlinedTextField(
-                                value = name, onValueChange = { name = it; onPatientName(it) }, singleLine = true,
-                                label = { Text(stringResource(R.string.patient)) }, shape = MaterialTheme.shapes.large,
-                                modifier = Modifier.fillMaxWidth(),
-                            )
-                        },
-                        supporting = { Text(stringResource(R.string.patient_hint), Modifier.padding(top = 4.dp)) },
-                    )
-                }
+                item { PatientItems(patient) }
 
                 item { SectionTitle(stringResource(R.string.settings_storage)) }
                 item { HealthConnectItem(healthConnect, onConnectHealthConnect, onUseHealthConnect) }
@@ -215,6 +217,103 @@ fun SettingsScreen(
     }
 }
 
+/** The patient's name (for new reports) and the details shown on the PDF cover. */
+data class PatientSettings(
+    val name: String = "",
+    val details: PatientDetails = PatientDetails(),
+    val onName: (String) -> Unit = {},
+    val onDetails: (PatientDetails) -> Unit = {},
+)
+
+@Composable
+private fun PatientItems(patient: PatientSettings) {
+    var name by remember(patient.name) { mutableStateOf(patient.name) }
+    var pickingDate by remember { mutableStateOf(false) }
+    val details = patient.details
+    Column {
+        GroupedListItem(
+            0, 3,
+            leading = { Badge(MaterialShapes.Cookie9Sided, LabCategory.BLOOD_GAS.color, Icons.Rounded.Badge) },
+            headline = {
+                OutlinedTextField(
+                    value = name, onValueChange = { name = it; patient.onName(it) }, singleLine = true,
+                    label = { Text(stringResource(R.string.patient)) }, shape = MaterialTheme.shapes.large,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            },
+            supporting = { Text(stringResource(R.string.patient_hint), Modifier.padding(top = 4.dp)) },
+        )
+        GroupedListItem(
+            1, 3,
+            onClick = { pickingDate = true },
+            leading = { Badge(MaterialShapes.Square, LabCategory.ENDOCRINE.color, Icons.Rounded.Cake) },
+            headline = { Text(stringResource(R.string.date_of_birth)) },
+            supporting = { Text(details.dateOfBirth?.let { formatDate(it, FormatStyle.LONG) } ?: stringResource(R.string.not_set)) },
+            trailing = {
+                if (details.dateOfBirth != null) {
+                    IconButton(onClick = { patient.onDetails(details.copy(dateOfBirth = null)) }) {
+                        Icon(Icons.Rounded.Close, stringResource(R.string.clear))
+                    }
+                }
+            },
+        )
+        var choosingSex by remember { mutableStateOf(false) }
+        GroupedListItem(
+            2, 3,
+            onClick = { choosingSex = true },
+            leading = { Badge(MaterialShapes.Pill, LabCategory.CARDIAC.color, Icons.Rounded.Person) },
+            headline = { Text(stringResource(R.string.sex)) },
+            supporting = { Text(stringResource(details.sex?.labelRes ?: R.string.not_set)) },
+            trailing = {
+                Box {
+                    Icon(Icons.Rounded.ArrowDropDown, null)
+                    DropdownMenu(expanded = choosingSex, onDismissRequest = { choosingSex = false }) {
+                        (listOf(null) + PatientSex.entries).forEach { sex ->
+                            DropdownMenuItem(
+                                text = { Text(stringResource(sex?.labelRes ?: R.string.not_set)) },
+                                onClick = { patient.onDetails(details.copy(sex = sex)); choosingSex = false },
+                                trailingIcon = { if (sex == details.sex) Icon(Icons.Rounded.Check, null) },
+                            )
+                        }
+                    }
+                }
+            },
+        )
+        Text(
+            stringResource(R.string.patient_details_hint), style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        )
+    }
+    if (pickingDate) {
+        val state = rememberDatePickerState(
+            initialSelectedDateMillis = details.dateOfBirth?.let { it.toEpochDays() * MILLIS_PER_DAY },
+            // A birthday is quicker typed than paged to, decades back.
+            initialDisplayMode = if (details.dateOfBirth == null) DisplayMode.Input else DisplayMode.Picker,
+            selectableDates = PastDates,
+        )
+        DatePickerDialog(
+            onDismissRequest = { pickingDate = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    state.selectedDateMillis?.let { millis ->
+                        patient.onDetails(details.copy(dateOfBirth = LocalDate.fromEpochDays(millis / MILLIS_PER_DAY)))
+                    }
+                    pickingDate = false
+                }) { Text(stringResource(R.string.ok)) }
+            },
+            dismissButton = { TextButton(onClick = { pickingDate = false }) { Text(stringResource(R.string.cancel)) } },
+        ) { DatePicker(state) }
+    }
+}
+
+private const val MILLIS_PER_DAY = 86_400_000L
+
+/** A date of birth is never in the future. */
+private object PastDates : SelectableDates {
+    override fun isSelectableDate(utcTimeMillis: Long): Boolean = utcTimeMillis <= System.currentTimeMillis()
+    override fun isSelectableYear(year: Int): Boolean = year <= java.time.Year.now().value
+}
+
 /** Moving reports between devices (iPhone ⇄ Android) as a file — see `ReportTransfer`. */
 data class TransferSettings(
     val hasReports: Boolean = false,
@@ -263,6 +362,13 @@ private fun TransferItems(transfer: TransferSettings) {
 private val TRANSFER_TYPES = arrayOf(
     "application/json", "application/fhir+json", "application/xml", "text/xml", "text/plain", "application/octet-stream",
 )
+
+private val PatientSex.labelRes: Int
+    get() = when (this) {
+        PatientSex.FEMALE -> R.string.sex_female
+        PatientSex.MALE -> R.string.sex_male
+        PatientSex.OTHER -> R.string.sex_other
+    }
 
 @Composable
 private fun Badge(polygon: RoundedPolygon, color: Color, icon: androidx.compose.ui.graphics.vector.ImageVector, brush: Brush? = null) {
@@ -347,7 +453,8 @@ private fun AiItem(ai: AiSettings) {
 private fun SettingsPreview() {
     LabImporterTheme(dynamicColor = false) {
         SettingsScreen(
-            "Max Mustermann", {}, HealthConnectState(HealthConnectAvailability.MEDICAL_RECORDS_UNSUPPORTED), {}, {},
+            PatientSettings("Max Mustermann", PatientDetails(LocalDate(1980, 4, 2), PatientSex.MALE)),
+            HealthConnectState(HealthConnectAvailability.MEDICAL_RECORDS_UNSUPPORTED), {}, {},
             AiSettings(AiAvailability.Preparing(420_000_000, 1_000_000_000)), LabDisplayPreferences(hiddenCodes = listOf("2160-0")), {},
             "LabImporter 1.0 (1) Android",
         )
@@ -359,7 +466,7 @@ private fun SettingsPreview() {
 private fun SettingsDarkPreview() {
     LabImporterTheme(darkTheme = true, dynamicColor = false) {
         SettingsScreen(
-            "", {}, HealthConnectState(HealthConnectAvailability.AVAILABLE, granted = true, inUse = true), {}, {},
+            PatientSettings(), HealthConnectState(HealthConnectAvailability.AVAILABLE, granted = true, inUse = true), {}, {},
             AiSettings(AiAvailability.Ready), LabDisplayPreferences(), {}, "LabImporter 1.0 (1) Android",
         )
     }
@@ -370,7 +477,7 @@ private fun SettingsDarkPreview() {
 private fun SettingsDownloadFailedPreview() {
     LabImporterTheme(dynamicColor = false) {
         SettingsScreen(
-            "", {}, HealthConnectState(HealthConnectAvailability.NOT_INSTALLED), {}, {},
+            PatientSettings(), HealthConnectState(HealthConnectAvailability.NOT_INSTALLED), {}, {},
             AiSettings(AiAvailability.PreparationFailed(AiProblem.NOT_ENOUGH_STORAGE)), LabDisplayPreferences(), {},
             "LabImporter 1.0 (1) Android",
         )

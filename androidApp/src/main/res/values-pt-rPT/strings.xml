@@ -245,5 +245,6 @@
     <string name="sex_male">Masculino</string>
     <string name="sex_other">Outro</string>
     <string name="not_set">Não definido</string>
+    <string name="clear">Limpar</string>
     <string name="patient_details_hint">Aparece na capa dos PDF exportados.</string>
 </resources>

@@ -88,6 +88,28 @@ class PdfReportTest {
     }
 
     @Test
+    fun headingsStayWithTheirValuesAndStripesRestartPerCategory() {
+        val codes = listOf(
+            "4548-4", "2345-7", "2160-0", "2093-3", "2085-9", "13457-7", "2571-8", "1742-6", "2324-2", "3016-3",
+            "2951-2", "2823-3", "718-7", "6690-2", "777-3", "2276-4",
+        )
+        val many = listOf(report("m", today, "", *codes.map { it to 1.0 }.toTypedArray()))
+        val data = PdfReport.build(many, codes.toSet(), PdfTimeRange.ALL, "", today)
+        val latest = PdfReport.pages(data, PdfPageFormat.US_LETTER, false, true, false).filterIsInstance<PdfReport.Page.Latest>()
+        assertTrue(latest.size > 1)
+        // The 11th row would be the "Liver" heading: it moves to the next page with its values.
+        assertEquals(10, latest.first().rows.size)
+        latest.dropLast(1).forEach { assertIs<PdfReport.LatestRow.Value>(it.rows.last()) }
+        val rows = latest.flatMap { it.rows }
+        assertEquals(data.categories.size + data.metrics.size, rows.size)
+        var position = 0
+        for (row in rows) {
+            if (row is PdfReport.LatestRow.Heading) position = 0
+            if (row is PdfReport.LatestRow.Value) assertEquals(position++ % 2 == 1, row.striped)
+        }
+    }
+
+    @Test
     fun capacitiesMatchTheIosLayout() {
         // usable = height − 2·42 − 28 − 30; rows: (usable − 56)/50, charts: (usable − 56)/212.
         assertEquals(PdfLayout.Capacity(12, 13), PdfLayout.tableRows(PdfPageFormat.A4))

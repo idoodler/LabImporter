@@ -251,5 +251,6 @@
     <string name="sex_male">Мужской</string>
     <string name="sex_other">Другой</string>
     <string name="not_set">Не задано</string>
+    <string name="clear">Очистить</string>
     <string name="patient_details_hint">Отображается на титульной странице экспортированных PDF.</string>
 </resources>

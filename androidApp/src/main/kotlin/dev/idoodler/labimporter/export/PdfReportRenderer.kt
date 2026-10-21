@@ -11,6 +11,7 @@ import android.graphics.Shader
 import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import android.text.Layout
+import android.text.format.DateFormat
 import android.text.StaticLayout
 import android.text.TextPaint
 import android.text.TextUtils
@@ -24,6 +25,7 @@ import dev.idoodler.labimporter.core.export.PdfPageFormat
 import dev.idoodler.labimporter.core.export.PdfReport
 import dev.idoodler.labimporter.core.export.PdfReportData
 import dev.idoodler.labimporter.core.export.PdfTimeRange
+import dev.idoodler.labimporter.core.model.ChartAxis
 import dev.idoodler.labimporter.core.model.LabCategory
 import dev.idoodler.labimporter.core.model.RangeStatus
 import dev.idoodler.labimporter.core.platform.NumberFormatting
@@ -334,10 +336,10 @@ class PdfReportRenderer(private val context: Context) {
             runningHeader(patientName)
             if (page.showTitle) sectionHeader(string(R.string.pdf_latest_results), string(R.string.pdf_latest_subtitle))
             tableHeader()
-            page.rows.forEachIndexed { index, row ->
+            for (row in page.rows) {
                 when (row) {
                     is PdfReport.LatestRow.Heading -> categoryRow(row.category, row.count)
-                    is PdfReport.LatestRow.Value -> metricRow(row.metric, zebra = index % 2 == 0)
+                    is PdfReport.LatestRow.Value -> metricRow(row.metric, zebra = row.striped)
                 }
             }
         }
@@ -455,28 +457,27 @@ class PdfReportRenderer(private val context: Context) {
             val points = metric.windowPoints
             val range = metric.referenceRange
             val values = points.map { it.value } + listOfNotNull(range?.low, range?.high)
-            var min = values.min()
-            var max = values.max()
-            if (max - min < 1e-9) { min -= 1.0; max += 1.0 }
-            val pad = (max - min) * 0.1
-            min -= pad; max += pad
+            // Rounded ticks like Swift Charts' automatic axis (shared, so both apps agree).
+            val ticks = ChartAxis.ticks(values.min(), values.max())
+            val min = ticks.first()
+            val max = ticks.last()
             val labelPaint = text(7f, theme.textSecondary, tabular = true)
-            val axisWidth = 28f
+            val axisWidth = ticks.maxOf { labelPaint.measureText(value(it)) } + 6f
             val plot = RectF(area.left + axisWidth, area.top + 4f, area.right, area.bottom - 12f)
             val firstDay = points.first().date.toEpochDays().toDouble()
             val lastDay = points.last().date.toEpochDays().toDouble().let { if (it - firstDay < 1) firstDay + 1 else it }
             fun x(d: LocalDate) = plot.left + ((d.toEpochDays() - firstDay) / (lastDay - firstDay)).toFloat() * plot.width()
             fun yOf(v: Double) = plot.bottom - ((v - min) / (max - min)).toFloat() * plot.height()
 
-            // Grid and labels: four rows, four dates.
+            // Grid and labels: a row per tick, four dates.
             val grid = stroke(theme.chartGrid)
-            for (i in 0..3) {
-                val v = min + (max - min) * i / 3
-                val gy = yOf(v)
+            for (tick in ticks) {
+                val gy = yOf(tick)
                 canvas.drawLine(plot.left, gy, plot.right, gy, grid)
-                lineRight(value(v), labelPaint, plot.left - 4f, gy + 2.5f)
+                lineRight(value(tick), labelPaint, plot.left - 4f, gy + 2.5f)
             }
-            val month = DateTimeFormatter.ofPattern("MMM yy")
+            val locale = context.resources.configuration.locales[0]
+            val month = DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(locale, "MMMyy"), locale)
             for (i in 0..3) {
                 val day = firstDay + (lastDay - firstDay) * i / 3
                 val d = LocalDate.fromEpochDays(day.toLong())
