@@ -50,6 +50,10 @@ class AppPreferences(context: Context) {
     )
     val patientDetails: StateFlow<PatientDetails> = _patientDetails.asStateFlow()
 
+    private val _showLatestValueInSearch = MutableStateFlow(prefs.getBoolean(KEY_SHOW_LATEST_VALUE, false))
+    /** Off by default: launcher shortcuts and search show a value's name only (iOS `showLatestValueInSearch`). */
+    val showLatestValueInSearch: StateFlow<Boolean> = _showLatestValueInSearch.asStateFlow()
+
     private val _storageMode = MutableStateFlow(
         runCatching { StorageMode.valueOf(prefs.getString(KEY_STORAGE, null).orEmpty()) }.getOrDefault(StorageMode.LOCAL),
     )
@@ -87,6 +91,11 @@ class AppPreferences(context: Context) {
         }
     }
 
+    fun setShowLatestValueInSearch(value: Boolean) {
+        _showLatestValueInSearch.value = value
+        prefs.edit { putBoolean(KEY_SHOW_LATEST_VALUE, value) }
+    }
+
     fun setStorageMode(value: StorageMode) {
         _storageMode.value = value
         prefs.edit { putString(KEY_STORAGE, value.name) }
@@ -103,6 +112,7 @@ class AppPreferences(context: Context) {
         const val KEY_DATE_OF_BIRTH = "patientDateOfBirth"
         const val KEY_SEX = "patientSex"
         const val KEY_STORAGE = "storageMode"
+        const val KEY_SHOW_LATEST_VALUE = "showLatestValueInSearch"
         const val KEY_STAND_IN = "useDevelopmentStandIn"
     }
 }

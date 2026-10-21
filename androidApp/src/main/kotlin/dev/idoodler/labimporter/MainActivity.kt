@@ -10,10 +10,13 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.content.IntentCompat
+import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dev.idoodler.labimporter.ai.AiAvailability
 import dev.idoodler.labimporter.ai.DevelopmentStandIn
+import dev.idoodler.labimporter.shortcuts.LauncherShortcuts
 import dev.idoodler.labimporter.ui.AppViewModel
+import dev.idoodler.labimporter.ui.LaunchRequest
 import dev.idoodler.labimporter.ui.LabImporterRoot
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 
@@ -44,8 +47,18 @@ class MainActivity : ComponentActivity() {
         handleIncoming(intent)
     }
 
-    /** "Open with" / "Share to" LabImporter for PDFs, images and plain text. */
+    /** Launcher shortcuts, and "Open with" / "Share to" LabImporter for PDFs, images and plain text. */
     private fun handleIncoming(intent: Intent?) {
+        when (intent?.action) {
+            LauncherShortcuts.ACTION_SCAN -> return viewModel.request(LaunchRequest.Scan)
+            LauncherShortcuts.ACTION_OPEN_METRIC -> {
+                intent.getStringExtra(LauncherShortcuts.EXTRA_CODE)?.let { code ->
+                    ShortcutManagerCompat.reportShortcutUsed(this, LauncherShortcuts.id(code))
+                    viewModel.request(LaunchRequest.OpenMetric(code))
+                }
+                return
+            }
+        }
         if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain") {
             intent.getStringExtra(Intent.EXTRA_TEXT)?.takeIf { it.isNotBlank() }?.let(viewModel::importText)
             return

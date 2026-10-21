@@ -66,6 +66,7 @@ import dev.idoodler.labimporter.ui.review.ReviewScreen
 import dev.idoodler.labimporter.ui.settings.AboutSettings
 import dev.idoodler.labimporter.ui.settings.AiSettings
 import dev.idoodler.labimporter.ui.settings.PatientSettings
+import dev.idoodler.labimporter.ui.settings.SearchSettings
 import dev.idoodler.labimporter.ui.settings.SettingsScreen
 import dev.idoodler.labimporter.ui.settings.SortEditorScreen
 import dev.idoodler.labimporter.ui.settings.TransferSettings
@@ -213,9 +214,14 @@ private fun Navigator(
     var historySelecting by remember { mutableStateOf(false) }
     LaunchedEffect(current) { if (current !is Destination.Reports) historySelecting = false }
 
-    // A report that was deleted (or edited away) can't stay on screen.
-    LaunchedEffect(reports, current) {
-        if (current is Destination.Report && !isLoading && reports.none { it.id == current.id }) pop()
+    // A report that was deleted (or edited away) can't stay on screen; nor can a value without readings
+    // (e.g. a launcher shortcut to a value whose reports were deleted).
+    LaunchedEffect(reports, current, isLoading) {
+        if (isLoading) return@LaunchedEffect
+        if (current is Destination.Report && reports.none { it.id == current.id }) pop()
+        if (current is Destination.Trend && reports.none { r -> r.entries.any { it.code == current.code && it.numericValue != null } }) {
+            stack = stack.dropLast(1).ifEmpty { listOf(Destination.Home.encode()) }
+        }
     }
 
     val snackbar = remember { SnackbarHostState() }
@@ -230,6 +236,16 @@ private fun Navigator(
         onPrewarm = viewModel::prewarm,
         onError = { },
     )
+
+    // Launcher shortcuts land here once the main screen shows.
+    val launchRequest by viewModel.launchRequest.collectAsStateWithLifecycle()
+    LaunchedEffect(launchRequest) {
+        when (val request = launchRequest ?: return@LaunchedEffect) {
+            LaunchRequest.Scan -> importActions.scan()
+            is LaunchRequest.OpenMetric -> stack = listOf(Destination.Home.encode(), Destination.Trend(request.code).encode())
+        }
+        viewModel.consumeLaunchRequest()
+    }
 
     // Predictive back: the current screen shrinks toward the edge with the
     // gesture, revealing the previous one underneath (Android 14+ style).
@@ -336,6 +352,7 @@ private fun Screen(
                 onBack = pop,
                 onOpenSortEditor = { push(Destination.SortEditor) },
                 onOpenCatalog = { push(Destination.Catalog) },
+                search = SearchSettings(viewModel.showLatestValueInSearch.collectAsStateWithLifecycle().value, viewModel::setShowLatestValueInSearch),
                 about = viewModel.appInfo.let { AboutSettings(it.repositoryUrl, it.newIssueUrl, it.fundingLinks, it.licenseText) },
             )
         }

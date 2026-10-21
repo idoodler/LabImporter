@@ -290,4 +290,12 @@
     <string name="report_issue">Probléma jelentése</string>
     <string name="support">Támogatás</string>
     <string name="support_footer">A LabImporter ingyenes és nyílt forráskódú. Ha hasznosnak találod, támogathatod a fejlesztését.</string>
+    <string name="scan_shortcut">Laborlelet szkennelése</string>
+    <string name="show_latest_in_search">Legutóbbi érték megjelenítése a keresésben</string>
+    <string name="show_latest_in_search_footer">Engedélyezze, hogy minden érték legutóbbi mérése megjelenjen a kezdőképernyő parancsikonjaiban és a keresésben. Kikapcsolva csak az érték neve jelenik meg — mérés soha.</string>
+    <string name="chart_summary">%1$s diagram: %2$s, %3$s – %4$s. Legalacsonyabb %5$s, legmagasabb %6$s, legutóbbi %7$s.</string>
+    <plurals name="chart_readings">
+        <item quantity="one">%d mérés</item>
+        <item quantity="other">%d mérés</item>
+    </plurals>
 </resources>

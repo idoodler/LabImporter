@@ -306,4 +306,14 @@
     <string name="report_issue">Сообщить о проблеме</string>
     <string name="support">Поддержать</string>
     <string name="support_footer">LabImporter — бесплатное приложение с открытым исходным кодом. Если оно вам полезно, вы можете поддержать его разработку.</string>
+    <string name="scan_shortcut">Отсканировать анализ</string>
+    <string name="show_latest_in_search">Показывать последний показатель в поиске</string>
+    <string name="show_latest_in_search_footer">Разрешите показывать последний результат каждого показателя в ярлыках главного экрана и в поиске. Когда выключено, отображается только название показателя — без значения.</string>
+    <string name="chart_summary">График «%1$s»: %2$s с %3$s по %4$s. Минимум %5$s, максимум %6$s, последнее %7$s.</string>
+    <plurals name="chart_readings">
+        <item quantity="one">%d измерение</item>
+        <item quantity="few">%d измерения</item>
+        <item quantity="many">%d измерений</item>
+        <item quantity="other">%d измерения</item>
+    </plurals>
 </resources>

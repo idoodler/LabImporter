@@ -282,4 +282,11 @@
     <string name="report_issue">問題を報告</string>
     <string name="support">支援する</string>
     <string name="support_footer">LabImporterは無料でオープンソースです。役に立つと感じたら、開発を支援できます。</string>
+    <string name="scan_shortcut">検査報告書をスキャン</string>
+    <string name="show_latest_in_search">検索に最新の値を表示</string>
+    <string name="show_latest_in_search_footer">各値の最新の測定値をランチャーのショートカットと検索に表示します。オフのときは値の名称のみが表示され、測定値は表示されません。</string>
+    <string name="chart_summary">%1$sのグラフ：%3$s〜%4$sの%2$s。最低 %5$s、最高 %6$s、最新 %7$s。</string>
+    <plurals name="chart_readings">
+        <item quantity="other">%d件の測定値</item>
+    </plurals>
 </resources>

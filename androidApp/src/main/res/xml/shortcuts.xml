@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Static launcher shortcut (the iOS "Scan a Lab Report" App Shortcut). Value shortcuts are dynamic, see LauncherShortcuts. -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="scan"
+        android:enabled="true"
+        android:icon="@mipmap/ic_shortcut_scan"
+        android:shortcutShortLabel="@string/import_scan"
+        android:shortcutLongLabel="@string/scan_shortcut">
+        <intent
+            android:action="dev.idoodler.labimporter.action.SCAN"
+            android:targetPackage="dev.idoodler.labimporter"
+            android:targetClass="dev.idoodler.labimporter.MainActivity" />
+    </shortcut>
+</shortcuts>

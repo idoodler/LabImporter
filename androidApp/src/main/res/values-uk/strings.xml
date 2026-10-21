@@ -306,4 +306,14 @@
     <string name="report_issue">Повідомити про проблему</string>
     <string name="support">Підтримати</string>
     <string name="support_footer">LabImporter — безкоштовний застосунок з відкритим кодом. Якщо він корисний для вас, ви можете підтримати його розробку.</string>
+    <string name="scan_shortcut">Відсканувати аналіз</string>
+    <string name="show_latest_in_search">Показувати останній показник у пошуку</string>
+    <string name="show_latest_in_search_footer">Дозвольте показувати останній показник кожного значення в ярликах головного екрана та в пошуку. Коли вимкнено, відображається лише назва значення — без показника.</string>
+    <string name="chart_summary">Графік «%1$s»: %2$s з %3$s по %4$s. Мінімум %5$s, максимум %6$s, останнє %7$s.</string>
+    <plurals name="chart_readings">
+        <item quantity="one">%d вимірювання</item>
+        <item quantity="few">%d вимірювання</item>
+        <item quantity="many">%d вимірювань</item>
+        <item quantity="other">%d вимірювання</item>
+    </plurals>
 </resources>

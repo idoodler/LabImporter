@@ -282,4 +282,11 @@
     <string name="report_issue">报告问题</string>
     <string name="support">支持</string>
     <string name="support_footer">LabImporter 是免费的开源应用。如果你觉得有用，可以支持它的开发。</string>
+    <string name="scan_shortcut">扫描化验报告</string>
+    <string name="show_latest_in_search">在搜索中显示最新值</string>
+    <string name="show_latest_in_search_footer">让每项数值的最新读数显示在启动器快捷方式和搜索中。关闭时仅显示数值名称，绝不显示读数。</string>
+    <string name="chart_summary">%1$s图表：%3$s至%4$s共%2$s。最低 %5$s，最高 %6$s，最新 %7$s。</string>
+    <plurals name="chart_readings">
+        <item quantity="other">%d 次读数</item>
+    </plurals>
 </resources>

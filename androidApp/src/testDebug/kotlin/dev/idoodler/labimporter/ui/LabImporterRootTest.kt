@@ -4,7 +4,11 @@ import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -95,6 +99,7 @@ class LabImporterRootTest {
         // Regression: on Android 16 the button sat under the scrolling content and didn't react.
         launch()
         compose.onNodeWithContentDescription(string(R.string.tab_settings)).performClick()
+        compose.onNode(hasScrollAction()).performScrollToNode(hasText(string(R.string.ai_available)))
         compose.onNodeWithText(string(R.string.ai_title)).assertIsDisplayed()
         compose.onNodeWithText(string(R.string.ai_available)).assertIsDisplayed()
     }
@@ -119,5 +124,18 @@ class LabImporterRootTest {
         assertEquals(ImportState.Reviewing::class, viewModel.importState.value::class)
         compose.onNodeWithText(string(R.string.review_title)).assertIsDisplayed()
         compose.onNodeWithText(string(R.string.engine_gemini)).assertIsDisplayed()
+    }
+
+    @Test
+    fun aLauncherShortcutOpensTheValuesTrend() {
+        ai.reply = { FakeAi.replyJson(listOf("2160-0", "Kreatinin", "0,8", "mg/dl")) }
+        val viewModel = launch()
+        compose.runOnIdle { viewModel.importText("Kreatinin 0,8 mg/dl") }
+        waitFor { viewModel.importState.value is ImportState.Reviewing }
+        compose.runOnIdle { viewModel.saveDraft() }
+        waitFor { viewModel.reports.value.isNotEmpty() && viewModel.importState.value == ImportState.Idle }
+        compose.runOnIdle { viewModel.request(LaunchRequest.OpenMetric("2160-0")) }
+        waitFor { compose.onAllNodesWithText(string(R.string.readings)).fetchSemanticsNodes().isNotEmpty() }
+        compose.runOnIdle { assertEquals(null, viewModel.launchRequest.value) }
     }
 }

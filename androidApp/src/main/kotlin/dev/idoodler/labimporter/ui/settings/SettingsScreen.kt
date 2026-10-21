@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.ui.semantics.Role
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -112,6 +114,7 @@ fun SettingsScreen(
     onOpenSortEditor: () -> Unit = {},
     onOpenCatalog: () -> Unit = {},
     about: AboutSettings = AboutSettings(),
+    search: SearchSettings = SearchSettings(),
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     var showLicense by remember { mutableStateOf(false) }
@@ -152,6 +155,21 @@ fun SettingsScreen(
                         leading = { Badge(MaterialShapes.Ghostish, LabCategory.LIPIDS.color, Icons.Rounded.SwapVert) },
                         headline = { Text(stringResource(R.string.sort_visibility)) },
                         trailing = { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null) },
+                    )
+                }
+
+                item { SectionTitle(stringResource(R.string.search)) }
+                item {
+                    GroupedListItem(
+                        0, 1,
+                        leading = { Badge(MaterialShapes.Cookie7Sided, LabCategory.GLYCEMIC.color, Icons.Rounded.Search) },
+                        headline = { Text(stringResource(R.string.show_latest_in_search)) },
+                        trailing = { Switch(checked = search.showLatestValue, onCheckedChange = null) },
+                        modifier = Modifier.toggleable(search.showLatestValue, role = Role.Switch, onValueChange = search.onShowLatestValue),
+                    )
+                    Text(
+                        stringResource(R.string.show_latest_in_search_footer), style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     )
                 }
 
@@ -296,6 +314,9 @@ fun SettingsScreen(
         )
     }
 }
+
+/** Whether launcher shortcuts and search show each value's latest reading (names only when off). */
+data class SearchSettings(val showLatestValue: Boolean = false, val onShowLatestValue: (Boolean) -> Unit = {})
 
 /** Project links and the license from the build (the iOS `AppInfo`); missing ones hide their rows. */
 data class AboutSettings(

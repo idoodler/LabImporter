@@ -9,6 +9,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -55,6 +57,8 @@ fun AreaChart(
     selectedIndex: Int? = null,
     onSelect: ((Int?) -> Unit)? = null,
     formatValue: (Double) -> String = { it.toString() },
+    /** What TalkBack reads for the chart (a drawing has no text of its own); scrubbing is touch-only. */
+    description: String? = null,
 ) {
     val accent = accentFor(color)
     val band = accent.copy(alpha = if (isDarkScheme) 0.16f else 0.12f)
@@ -64,7 +68,7 @@ fun AreaChart(
     val measurer = rememberTextMeasurer()
     val labelStyle = TextStyle(fontSize = 11.sp, color = labelColor, fontFeatureSettings = "tnum")
 
-    var gestures = modifier
+    var gestures = if (description != null) modifier.semantics { contentDescription = description } else modifier
     if (onSelect != null && values.size > 1) {
         gestures = gestures
             .pointerInput(values) {

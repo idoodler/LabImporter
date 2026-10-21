@@ -290,4 +290,12 @@
     <string name="report_issue">Докладвай проблем</string>
     <string name="support">Подкрепа</string>
     <string name="support_footer">LabImporter е безплатен и с отворен код. Ако ви е полезен, можете да подкрепите развитието му.</string>
+    <string name="scan_shortcut">Сканиране на лабораторен резултат</string>
+    <string name="show_latest_in_search">Показване на последната стойност при търсене</string>
+    <string name="show_latest_in_search_footer">Позволете най-новата стойност за всеки показател да се показва в преките пътища на стартовия екран и в търсенето. Когато е изключено, се показва само името на показателя — никога стойност.</string>
+    <string name="chart_summary">Графика за %1$s: %2$s от %3$s до %4$s. Най-ниска %5$s, най-висока %6$s, последна %7$s.</string>
+    <plurals name="chart_readings">
+        <item quantity="one">%d измерване</item>
+        <item quantity="other">%d измервания</item>
+    </plurals>
 </resources>

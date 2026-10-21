@@ -298,4 +298,13 @@
     <string name="report_issue">Signaler un problème</string>
     <string name="support">Soutenir</string>
     <string name="support_footer">LabImporter est gratuit et open source. Si vous le trouvez utile, vous pouvez soutenir son développement.</string>
+    <string name="scan_shortcut">Numériser un rapport de laboratoire</string>
+    <string name="show_latest_in_search">Afficher la dernière valeur dans la recherche</string>
+    <string name="show_latest_in_search_footer">Laissez la dernière mesure de chaque valeur apparaître dans les raccourcis de l’écran d’accueil et dans la recherche. Lorsque désactivé, seul le nom de la valeur est affiché, jamais une mesure.</string>
+    <string name="chart_summary">Graphique %1$s : %2$s du %3$s au %4$s. Minimum %5$s, maximum %6$s, dernière valeur %7$s.</string>
+    <plurals name="chart_readings">
+        <item quantity="one">%d mesure</item>
+        <item quantity="many">%d de mesures</item>
+        <item quantity="other">%d mesures</item>
+    </plurals>
 </resources>

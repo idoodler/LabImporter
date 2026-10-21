@@ -16,6 +16,8 @@ import dev.idoodler.labimporter.ai.AiException
 import dev.idoodler.labimporter.ai.messageRes
 import dev.idoodler.labimporter.core.export.CdaExport
 import dev.idoodler.labimporter.core.export.PdfReport
+import dev.idoodler.labimporter.core.model.Dashboard
+import dev.idoodler.labimporter.shortcuts.LauncherShortcuts
 import dev.idoodler.labimporter.data.PatientDetails
 import dev.idoodler.labimporter.export.PdfOptions
 import dev.idoodler.labimporter.export.PdfReportRenderer
@@ -32,6 +34,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -55,6 +59,12 @@ data class ReviewDraft(
     /** Set when editing an already-saved report. */
     val original: LabReport? = null,
 )
+
+/** Something asked for from outside the app (a launcher shortcut), done once the main screen shows — like iOS's `SiriActionBridge`. */
+sealed interface LaunchRequest {
+    data object Scan : LaunchRequest
+    data class OpenMetric(val code: String) : LaunchRequest
+}
 
 sealed interface ImportState {
     data object Idle : ImportState
@@ -113,9 +123,29 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     private var importJob: Job? = null
 
+    val showLatestValueInSearch: StateFlow<Boolean> = preferences.showLatestValueInSearch
+
+    private val _launchRequest = MutableStateFlow<LaunchRequest?>(null)
+    /** A shortcut's request waiting for the main screen (it waits out onboarding or a review). */
+    val launchRequest: StateFlow<LaunchRequest?> = _launchRequest.asStateFlow()
+
     init {
         refresh()
+        // Launcher shortcuts follow the dashboard: one per visible value, names only unless opted in.
+        viewModelScope.launch {
+            combine(reports, displayPreferences, showLatestValueInSearch) { reports, prefs, showValue ->
+                Dashboard.sorted(Dashboard.metrics(reports), prefs) to showValue
+            }.distinctUntilChanged().collect { (metrics, showValue) ->
+                withContext(Dispatchers.Default) { LauncherShortcuts.update(context, metrics, showValue) }
+            }
+        }
     }
+
+    fun request(launch: LaunchRequest) { _launchRequest.value = launch }
+
+    fun consumeLaunchRequest() { _launchRequest.value = null }
+
+    fun setShowLatestValueInSearch(value: Boolean) = preferences.setShowLatestValueInSearch(value)
 
     /** Reload reports + statuses (launch, resume, after permission changes). */
     fun refresh() {

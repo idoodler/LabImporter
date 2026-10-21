@@ -46,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -227,6 +228,7 @@ fun TrendScreen(
                                 selectedIndex = selected,
                                 onSelect = { selected = it },
                                 formatValue = ::formatNumber,
+                                description = chartDescription(metric.name, points),
                             )
                             if (values.size > 1) {
                                 Row(Modifier.fillMaxWidth().padding(top = 16.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -281,6 +283,23 @@ fun TrendScreen(
 
     if (renaming) RenameValueDialog(code, preferences, onUpdatePreferences) { renaming = false }
     if (editingRange) ReferenceRangeDialog(code, preferences, onUpdatePreferences) { editingRange = false }
+}
+
+/** TalkBack's summary of the chart: how many readings over which dates, the extremes and the latest. */
+@Composable
+private fun chartDescription(name: String, points: List<MetricPoint>): String? {
+    if (points.size < 2) return null
+    val withUnit = { value: Double -> listOf(formatNumber(value), points.last().unit).filter { it.isNotBlank() }.joinToString(" ") }
+    return stringResource(
+        R.string.chart_summary,
+        name,
+        pluralStringResource(R.plurals.chart_readings, points.size, points.size),
+        formatDate(points.first().date, FormatStyle.MEDIUM),
+        formatDate(points.last().date, FormatStyle.MEDIUM),
+        withUnit(points.minOf { it.value }),
+        withUnit(points.maxOf { it.value }),
+        withUnit(points.last().value),
+    )
 }
 
 /** The time window as a connected button group. */

@@ -340,4 +340,16 @@
     <string name="report_issue">Report an Issue</string>
     <string name="support">Support</string>
     <string name="support_footer">LabImporter is free and open source. If you find it useful, you can support its development.</string>
+
+    <!-- Launcher shortcuts and search (iOS wording where shared) -->
+    <string name="scan_shortcut">Scan a Lab Report</string>
+    <string name="show_latest_in_search">Show Latest Value in Search</string>
+    <string name="show_latest_in_search_footer">Let each value\'s most recent reading appear in launcher shortcuts and search. When off, only the value\'s name is shown — never a reading.</string>
+
+    <!-- Chart accessibility (TalkBack) -->
+    <string name="chart_summary">%1$s chart: %2$s from %3$s to %4$s. Lowest %5$s, highest %6$s, latest %7$s.</string>
+    <plurals name="chart_readings">
+        <item quantity="one">%d reading</item>
+        <item quantity="other">%d readings</item>
+    </plurals>
 </resources>

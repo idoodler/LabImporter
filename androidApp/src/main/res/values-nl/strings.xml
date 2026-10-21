@@ -290,4 +290,12 @@
     <string name="report_issue">Probleem melden</string>
     <string name="support">Steunen</string>
     <string name="support_footer">LabImporter is gratis en opensource. Als je het nuttig vindt, kun je de ontwikkeling steunen.</string>
+    <string name="scan_shortcut">Laboratoriumrapport scannen</string>
+    <string name="show_latest_in_search">Laatste waarde tonen in zoeken</string>
+    <string name="show_latest_in_search_footer">Laat de meest recente meting van elke waarde verschijnen in snelkoppelingen op het startscherm en in zoeken. Wanneer uit, wordt alleen de naam van de waarde getoond — nooit een meting.</string>
+    <string name="chart_summary">Grafiek %1$s: %2$s van %3$s tot %4$s. Laagste %5$s, hoogste %6$s, laatste %7$s.</string>
+    <plurals name="chart_readings">
+        <item quantity="one">%d meting</item>
+        <item quantity="other">%d metingen</item>
+    </plurals>
 </resources>

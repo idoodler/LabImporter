@@ -306,4 +306,14 @@
     <string name="report_issue">Zgłoś problem</string>
     <string name="support">Wesprzyj</string>
     <string name="support_footer">LabImporter jest darmowy i open source. Jeśli uznasz go za przydatny, możesz wesprzeć jego rozwój.</string>
+    <string name="scan_shortcut">Zeskanuj wynik badania</string>
+    <string name="show_latest_in_search">Pokaż ostatni wynik w wyszukiwaniu</string>
+    <string name="show_latest_in_search_footer">Pozwól, aby najnowszy wynik każdego parametru pojawiał się w skrótach na ekranie głównym i w wyszukiwaniu. Po wyłączeniu pokazywana jest tylko nazwa parametru — nigdy wynik.</string>
+    <string name="chart_summary">Wykres %1$s: %2$s od %3$s do %4$s. Najniższy %5$s, najwyższy %6$s, ostatni %7$s.</string>
+    <plurals name="chart_readings">
+        <item quantity="one">%d pomiar</item>
+        <item quantity="few">%d pomiary</item>
+        <item quantity="many">%d pomiarów</item>
+        <item quantity="other">%d pomiaru</item>
+    </plurals>
 </resources>

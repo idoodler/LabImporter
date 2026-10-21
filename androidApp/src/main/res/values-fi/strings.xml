@@ -290,4 +290,12 @@
     <string name="report_issue">Ilmoita ongelmasta</string>
     <string name="support">Tue</string>
     <string name="support_footer">LabImporter on ilmainen ja avoimen lähdekoodin sovellus. Jos koet sen hyödylliseksi, voit tukea sen kehitystä.</string>
+    <string name="scan_shortcut">Skannaa laboratorioraportti</string>
+    <string name="show_latest_in_search">Näytä viimeisin arvo haussa</string>
+    <string name="show_latest_in_search_footer">Salli kunkin arvon viimeisimmän lukeman näkyä aloitusnäytön pikakuvakkeissa ja haussa. Kun pois päältä, näytetään vain arvon nimi — ei koskaan lukemaa.</string>
+    <string name="chart_summary">Kaavio %1$s: %2$s %3$s–%4$s. Pienin %5$s, suurin %6$s, viimeisin %7$s.</string>
+    <plurals name="chart_readings">
+        <item quantity="one">%d lukema</item>
+        <item quantity="other">%d lukemaa</item>
+    </plurals>
 </resources>

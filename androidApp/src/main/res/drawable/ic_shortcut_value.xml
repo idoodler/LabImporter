@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Launcher shortcut glyph for a lab value: a test tube, drawn white on the value's category colour. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path android:fillColor="#FFFFFFFF" android:fillType="evenOdd"
+        android:pathData="M8,2h8v2h-1v12a3,3 0 0 1 -6,0V4H8V2z M11,4v6h2V4h-2z" />
+</vector>

@@ -290,4 +290,12 @@
     <string name="report_issue">Sorun Bildir</string>
     <string name="support">Destek</string>
     <string name="support_footer">LabImporter ücretsiz ve açık kaynaklıdır. Faydalı bulursanız geliştirilmesini destekleyebilirsiniz.</string>
+    <string name="scan_shortcut">Laboratuvar Raporu Tara</string>
+    <string name="show_latest_in_search">Aramada son değeri göster</string>
+    <string name="show_latest_in_search_footer">Her değerin en son ölçümünün ana ekran kısayollarında ve aramada görünmesine izin verin. Kapalıyken yalnızca değerin adı gösterilir — asla bir ölçüm.</string>
+    <string name="chart_summary">%1$s grafiği: %3$s – %4$s arası %2$s. En düşük %5$s, en yüksek %6$s, en son %7$s.</string>
+    <plurals name="chart_readings">
+        <item quantity="one">%d ölçüm</item>
+        <item quantity="other">%d ölçüm</item>
+    </plurals>
 </resources>

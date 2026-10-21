@@ -306,4 +306,14 @@
     <string name="report_issue">Nahlásit problém</string>
     <string name="support">Podpořit</string>
     <string name="support_footer">LabImporter je zdarma a s otevřeným zdrojovým kódem. Pokud vám připadá užitečný, můžete podpořit jeho vývoj.</string>
+    <string name="scan_shortcut">Naskenovat laboratorní zprávu</string>
+    <string name="show_latest_in_search">Zobrazit poslední hodnotu ve vyhledávání</string>
+    <string name="show_latest_in_search_footer">Nechte nejnovější naměřenou hodnotu každého ukazatele zobrazit ve zkratkách spouštěče a ve vyhledávání. Když je vypnuto, zobrazí se jen název ukazatele — nikdy hodnota.</string>
+    <string name="chart_summary">Graf %1$s: %2$s od %3$s do %4$s. Nejnižší %5$s, nejvyšší %6$s, poslední %7$s.</string>
+    <plurals name="chart_readings">
+        <item quantity="one">%d měření</item>
+        <item quantity="few">%d měření</item>
+        <item quantity="many">%d měření</item>
+        <item quantity="other">%d měření</item>
+    </plurals>
 </resources>

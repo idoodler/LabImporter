@@ -290,4 +290,12 @@
     <string name="report_issue">Αναφορά προβλήματος</string>
     <string name="support">Υποστήριξη</string>
     <string name="support_footer">Το LabImporter είναι δωρεάν και ανοιχτού κώδικα. Αν σας φαίνεται χρήσιμο, μπορείτε να στηρίξετε την ανάπτυξή του.</string>
+    <string name="scan_shortcut">Σάρωση εργαστηριακής αναφοράς</string>
+    <string name="show_latest_in_search">Εμφάνιση τελευταίας τιμής στην αναζήτηση</string>
+    <string name="show_latest_in_search_footer">Επιτρέψτε την εμφάνιση της πιο πρόσφατης μέτρησης κάθε τιμής στις συντομεύσεις της αρχικής οθόνης και στην αναζήτηση. Όταν είναι ανενεργό, εμφανίζεται μόνο το όνομα της τιμής — ποτέ μια μέτρηση.</string>
+    <string name="chart_summary">Γράφημα %1$s: %2$s από %3$s έως %4$s. Χαμηλότερη %5$s, υψηλότερη %6$s, πιο πρόσφατη %7$s.</string>
+    <plurals name="chart_readings">
+        <item quantity="one">%d μέτρηση</item>
+        <item quantity="other">%d μετρήσεις</item>
+    </plurals>
 </resources>

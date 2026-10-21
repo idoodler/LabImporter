@@ -298,4 +298,13 @@
     <string name="report_issue">Prijavi problem</string>
     <string name="support">Podrži</string>
     <string name="support_footer">LabImporter je besplatan i otvorenog koda. Ako vam je koristan, možete podržati njegov razvoj.</string>
+    <string name="scan_shortcut">Skeniraj laboratorijski nalaz</string>
+    <string name="show_latest_in_search">Prikaži posljednju vrijednost u pretraživanju</string>
+    <string name="show_latest_in_search_footer">Dopustite da se najnovije očitanje svake vrijednosti pojavi u prečacima početnog zaslona i u pretraživanju. Kada je isključeno, prikazuje se samo naziv vrijednosti — nikada očitanje.</string>
+    <string name="chart_summary">Grafikon %1$s: %2$s od %3$s do %4$s. Najniža %5$s, najviša %6$s, posljednja %7$s.</string>
+    <plurals name="chart_readings">
+        <item quantity="one">%d očitanje</item>
+        <item quantity="few">%d očitanja</item>
+        <item quantity="other">%d očitanja</item>
+    </plurals>
 </resources>

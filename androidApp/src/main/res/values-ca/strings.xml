@@ -298,4 +298,13 @@
     <string name="report_issue">Informa d\'un problema</string>
     <string name="support">Dona suport</string>
     <string name="support_footer">LabImporter és gratuït i de codi obert. Si et resulta útil, pots donar suport al seu desenvolupament.</string>
+    <string name="scan_shortcut">Escaneja un informe de laboratori</string>
+    <string name="show_latest_in_search">Mostrar el darrer valor a la cerca</string>
+    <string name="show_latest_in_search_footer">Permet que la lectura més recent de cada valor aparegui a les dreceres del launcher i a la cerca. Quan està desactivat, només es mostra el nom del valor, mai una lectura.</string>
+    <string name="chart_summary">Gràfic de %1$s: %2$s del %3$s al %4$s. Mínim %5$s, màxim %6$s, últim %7$s.</string>
+    <plurals name="chart_readings">
+        <item quantity="one">%d lectura</item>
+        <item quantity="many">%d de lectures</item>
+        <item quantity="other">%d lectures</item>
+    </plurals>
 </resources>

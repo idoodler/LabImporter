@@ -290,4 +290,12 @@
     <string name="report_issue">Rapportera ett problem</string>
     <string name="support">Stöd</string>
     <string name="support_footer">LabImporter är gratis och har öppen källkod. Om du tycker att den är användbar kan du stödja utvecklingen.</string>
+    <string name="scan_shortcut">Skanna en labbrapport</string>
+    <string name="show_latest_in_search">Visa senaste värdet i sökning</string>
+    <string name="show_latest_in_search_footer">Låt det senaste värdet för varje mätvärde visas i genvägar på hemskärmen och i sökningen. När det är av visas bara värdets namn — aldrig ett mätvärde.</string>
+    <string name="chart_summary">Diagram för %1$s: %2$s från %3$s till %4$s. Lägsta %5$s, högsta %6$s, senaste %7$s.</string>
+    <plurals name="chart_readings">
+        <item quantity="one">%d mätning</item>
+        <item quantity="other">%d mätningar</item>
+    </plurals>
 </resources>

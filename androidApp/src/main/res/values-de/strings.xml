@@ -290,4 +290,12 @@
     <string name="report_issue">Problem melden</string>
     <string name="support">Unterstützen</string>
     <string name="support_footer">LabImporter ist kostenlos und Open Source. Wenn du es nützlich findest, kannst du seine Entwicklung unterstützen.</string>
+    <string name="scan_shortcut">Laborbericht scannen</string>
+    <string name="show_latest_in_search">Letzten Wert in der Suche anzeigen</string>
+    <string name="show_latest_in_search_footer">Lass den neuesten Messwert jedes Werts in den Verknüpfungen des Startbildschirms und in der Suche erscheinen. Wenn aus, wird nur der Name des Werts angezeigt – niemals ein Messwert.</string>
+    <string name="chart_summary">Diagramm %1$s: %2$s vom %3$s bis %4$s. Niedrigster %5$s, höchster %6$s, letzter %7$s.</string>
+    <plurals name="chart_readings">
+        <item quantity="one">%d Messwert</item>
+        <item quantity="other">%d Messwerte</item>
+    </plurals>
 </resources>

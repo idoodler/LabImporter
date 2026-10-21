@@ -13308,6 +13308,834 @@
           }
         }
       }
+    },
+    "Let each value's most recent reading appear in launcher shortcuts and search. When off, only the value's name is shown — never a reading." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Позволете най-новата стойност за всеки показател да се показва в преките пътища на стартовия екран и в търсенето. Когато е изключено, се показва само името на показателя — никога стойност."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permet que la lectura més recent de cada valor aparegui a les dreceres del launcher i a la cerca. Quan està desactivat, només es mostra el nom del valor, mai una lectura."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nechte nejnovější naměřenou hodnotu každého ukazatele zobrazit ve zkratkách spouštěče a ve vyhledávání. Když je vypnuto, zobrazí se jen název ukazatele — nikdy hodnota."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lad den seneste måling for hver værdi vises i genveje på startskærmen og i søgning. Når det er slået fra, vises kun værdiens navn — aldrig en måling."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lass den neuesten Messwert jedes Werts in den Verknüpfungen des Startbildschirms und in der Suche erscheinen. Wenn aus, wird nur der Name des Werts angezeigt – niemals ein Messwert."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Επιτρέψτε την εμφάνιση της πιο πρόσφατης μέτρησης κάθε τιμής στις συντομεύσεις της αρχικής οθόνης και στην αναζήτηση. Όταν είναι ανενεργό, εμφανίζεται μόνο το όνομα της τιμής — ποτέ μια μέτρηση."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permite que la lectura más reciente de cada valor aparezca en los accesos directos del launcher y en la búsqueda. Cuando está desactivado, solo se muestra el nombre del valor, nunca una lectura."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salli kunkin arvon viimeisimmän lukeman näkyä aloitusnäytön pikakuvakkeissa ja haussa. Kun pois päältä, näytetään vain arvon nimi — ei koskaan lukemaa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laissez la dernière mesure de chaque valeur apparaître dans les raccourcis de l’écran d’accueil et dans la recherche. Lorsque désactivé, seul le nom de la valeur est affiché, jamais une mesure."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dopustite da se najnovije očitanje svake vrijednosti pojavi u prečacima početnog zaslona i u pretraživanju. Kada je isključeno, prikazuje se samo naziv vrijednosti — nikada očitanje."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engedélyezze, hogy minden érték legutóbbi mérése megjelenjen a kezdőképernyő parancsikonjaiban és a keresésben. Kikapcsolva csak az érték neve jelenik meg — mérés soha."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consenti che la misurazione più recente di ogni valore compaia nelle scorciatoie della schermata Home e nella ricerca. Quando è disattivato, viene mostrato solo il nome del valore, mai una misurazione."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "各値の最新の測定値をランチャーのショートカットと検索に表示します。オフのときは値の名称のみが表示され、測定値は表示されません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laat de meest recente meting van elke waarde verschijnen in snelkoppelingen op het startscherm en in zoeken. Wanneer uit, wordt alleen de naam van de waarde getoond — nooit een meting."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pozwól, aby najnowszy wynik każdego parametru pojawiał się w skrótach na ekranie głównym i w wyszukiwaniu. Po wyłączeniu pokazywana jest tylko nazwa parametru — nigdy wynik."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permita que a leitura mais recente de cada valor apareça nos atalhos da tela inicial e na busca. Quando desativado, apenas o nome do valor é mostrado — nunca uma leitura."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permita que a leitura mais recente de cada valor apareça nos atalhos do ecrã principal e na pesquisa. Quando desativado, só é mostrado o nome do valor — nunca uma leitura."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permite ca cea mai recentă valoare măsurată pentru fiecare parametru să apară în comenzile rapide de pe ecranul de pornire și în căutare. Când este dezactivat, se afișează doar numele parametrului — niciodată o valoare."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разрешите показывать последний результат каждого показателя в ярлыках главного экрана и в поиске. Когда выключено, отображается только название показателя — без значения."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Povoľte, aby sa najnovšia nameraná hodnota každého ukazovateľa zobrazovala v odkazoch na ploche a vo vyhľadávaní. Keď je vypnuté, zobrazuje sa len názov ukazovateľa — nikdy hodnota."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Låt det senaste värdet för varje mätvärde visas i genvägar på hemskärmen och i sökningen. När det är av visas bara värdets namn — aldrig ett mätvärde."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Her değerin en son ölçümünün ana ekran kısayollarında ve aramada görünmesine izin verin. Kapalıyken yalnızca değerin adı gösterilir — asla bir ölçüm."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дозвольте показувати останній показник кожного значення в ярликах головного екрана та в пошуку. Коли вимкнено, відображається лише назва значення — без показника."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "让每项数值的最新读数显示在启动器快捷方式和搜索中。关闭时仅显示数值名称，绝不显示读数。"
+          }
+        }
+      }
+    },
+    "%1$@ chart: %2$@ from %3$@ to %4$@. Lowest %5$@, highest %6$@, latest %7$@." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Графика за %1$@: %2$@ от %3$@ до %4$@. Най-ниска %5$@, най-висока %6$@, последна %7$@."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gràfic de %1$@: %2$@ del %3$@ al %4$@. Mínim %5$@, màxim %6$@, últim %7$@."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Graf %1$@: %2$@ od %3$@ do %4$@. Nejnižší %5$@, nejvyšší %6$@, poslední %7$@."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diagram for %1$@: %2$@ fra %3$@ til %4$@. Laveste %5$@, højeste %6$@, seneste %7$@."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diagramm %1$@: %2$@ vom %3$@ bis %4$@. Niedrigster %5$@, höchster %6$@, letzter %7$@."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Γράφημα %1$@: %2$@ από %3$@ έως %4$@. Χαμηλότερη %5$@, υψηλότερη %6$@, πιο πρόσφατη %7$@."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gráfico de %1$@: %2$@ del %3$@ al %4$@. Mínimo %5$@, máximo %6$@, último %7$@."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kaavio %1$@: %2$@ %3$@–%4$@. Pienin %5$@, suurin %6$@, viimeisin %7$@."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Graphique %1$@ : %2$@ du %3$@ au %4$@. Minimum %5$@, maximum %6$@, dernière valeur %7$@."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grafikon %1$@: %2$@ od %3$@ do %4$@. Najniža %5$@, najviša %6$@, posljednja %7$@."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ diagram: %2$@, %3$@ – %4$@. Legalacsonyabb %5$@, legmagasabb %6$@, legutóbbi %7$@."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grafico di %1$@: %2$@ dal %3$@ al %4$@. Minimo %5$@, massimo %6$@, ultimo %7$@."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@のグラフ：%3$@〜%4$@の%2$@。最低 %5$@、最高 %6$@、最新 %7$@。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grafiek %1$@: %2$@ van %3$@ tot %4$@. Laagste %5$@, hoogste %6$@, laatste %7$@."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wykres %1$@: %2$@ od %3$@ do %4$@. Najniższy %5$@, najwyższy %6$@, ostatni %7$@."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gráfico de %1$@: %2$@ de %3$@ a %4$@. Mínimo %5$@, máximo %6$@, último %7$@."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gráfico de %1$@: %2$@ de %3$@ a %4$@. Mínimo %5$@, máximo %6$@, último %7$@."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grafic %1$@: %2$@ între %3$@ și %4$@. Minim %5$@, maxim %6$@, cel mai recent %7$@."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "График «%1$@»: %2$@ с %3$@ по %4$@. Минимум %5$@, максимум %6$@, последнее %7$@."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Graf %1$@: %2$@ od %3$@ do %4$@. Najnižšia %5$@, najvyššia %6$@, posledná %7$@."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diagram för %1$@: %2$@ från %3$@ till %4$@. Lägsta %5$@, högsta %6$@, senaste %7$@."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ grafiği: %3$@ – %4$@ arası %2$@. En düşük %5$@, en yüksek %6$@, en son %7$@."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Графік «%1$@»: %2$@ з %3$@ по %4$@. Мінімум %5$@, максимум %6$@, останнє %7$@."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@图表：%3$@至%4$@共%2$@。最低 %5$@，最高 %6$@，最新 %7$@。"
+          }
+        }
+      }
+    },
+    "%lld readings" : {
+      "localizations" : {
+        "bg" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld измерване"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld измервания"
+                }
+              }
+            }
+          }
+        },
+        "ca" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld lectura"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld de lectures"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld lectures"
+                }
+              }
+            }
+          }
+        },
+        "cs" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld měření"
+                }
+              },
+              "few" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld měření"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld měření"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld měření"
+                }
+              }
+            }
+          }
+        },
+        "da" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld måling"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld målinger"
+                }
+              }
+            }
+          }
+        },
+        "de" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Messwert"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Messwerte"
+                }
+              }
+            }
+          }
+        },
+        "el" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld μέτρηση"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld μετρήσεις"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld lectura"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld de lecturas"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld lecturas"
+                }
+              }
+            }
+          }
+        },
+        "fi" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld lukema"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld lukemaa"
+                }
+              }
+            }
+          }
+        },
+        "fr" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld mesure"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld de mesures"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld mesures"
+                }
+              }
+            }
+          }
+        },
+        "hr" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld očitanje"
+                }
+              },
+              "few" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld očitanja"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld očitanja"
+                }
+              }
+            }
+          }
+        },
+        "hu" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld mérés"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld mérés"
+                }
+              }
+            }
+          }
+        },
+        "it" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld misurazione"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld di misurazioni"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld misurazioni"
+                }
+              }
+            }
+          }
+        },
+        "ja" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld件の測定値"
+                }
+              }
+            }
+          }
+        },
+        "nl" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld meting"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld metingen"
+                }
+              }
+            }
+          }
+        },
+        "pl" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld pomiar"
+                }
+              },
+              "few" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld pomiary"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld pomiarów"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld pomiaru"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld leitura"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld de leituras"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld leituras"
+                }
+              }
+            }
+          }
+        },
+        "pt-PT" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld leitura"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld de leituras"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld leituras"
+                }
+              }
+            }
+          }
+        },
+        "ro" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld măsurătoare"
+                }
+              },
+              "few" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld măsurători"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld de măsurători"
+                }
+              }
+            }
+          }
+        },
+        "ru" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld измерение"
+                }
+              },
+              "few" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld измерения"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld измерений"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld измерения"
+                }
+              }
+            }
+          }
+        },
+        "sk" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld meranie"
+                }
+              },
+              "few" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld merania"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld merania"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld meraní"
+                }
+              }
+            }
+          }
+        },
+        "sv" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld mätning"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld mätningar"
+                }
+              }
+            }
+          }
+        },
+        "tr" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld ölçüm"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld ölçüm"
+                }
+              }
+            }
+          }
+        },
+        "uk" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld вимірювання"
+                }
+              },
+              "few" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld вимірювання"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld вимірювань"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld вимірювання"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld 次读数"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

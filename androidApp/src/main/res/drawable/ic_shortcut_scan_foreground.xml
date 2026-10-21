@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Launcher shortcut glyph: a document inside scan corners (the import screen's scan option). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group android:translateX="30" android:translateY="30" android:scaleX="2" android:scaleY="2">
+        <path android:fillColor="#FFFFFFFF" android:pathData="M2,2h5v2H4v3H2V2z M22,2v5h-2V4h-3V2h5z M2,22v-5h2v3h3v2H2z M22,22h-5v-2h3v-3h2v5z" />
+        <path android:fillColor="#FFFFFFFF" android:fillType="evenOdd" android:pathData="M7,6h10v12H7V6z M9,8v8h6V8H9z" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="M10,9.5h4v1h-4z M10,11.5h4v1h-4z M10,13.5h3v1h-3z" />
+    </group>
+</vector>

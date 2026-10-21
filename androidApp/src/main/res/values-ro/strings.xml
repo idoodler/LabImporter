@@ -298,4 +298,13 @@
     <string name="report_issue">Raportează o problemă</string>
     <string name="support">Sprijină</string>
     <string name="support_footer">LabImporter este gratuit și open source. Dacă îți este util, poți sprijini dezvoltarea sa.</string>
+    <string name="scan_shortcut">Scanează un raport de laborator</string>
+    <string name="show_latest_in_search">Afișează ultima valoare în căutare</string>
+    <string name="show_latest_in_search_footer">Permite ca cea mai recentă valoare măsurată pentru fiecare parametru să apară în comenzile rapide de pe ecranul de pornire și în căutare. Când este dezactivat, se afișează doar numele parametrului — niciodată o valoare.</string>
+    <string name="chart_summary">Grafic %1$s: %2$s între %3$s și %4$s. Minim %5$s, maxim %6$s, cel mai recent %7$s.</string>
+    <plurals name="chart_readings">
+        <item quantity="one">%d măsurătoare</item>
+        <item quantity="few">%d măsurători</item>
+        <item quantity="other">%d de măsurători</item>
+    </plurals>
 </resources>
