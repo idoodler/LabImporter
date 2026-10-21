@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    name: Shared tests, lint and APK
+    name: Tests, translations, lint and APK
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -28,8 +28,15 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v5
 
+      # Every Android string is translated into all shipped languages, and the
+      # generated values-*/strings.xml are up to date.
+      - name: Translations
+        run: |
+          python3 tools/xcstrings_to_android.py --check
+          git diff --exit-code -- androidApp/src/main/res
+
       - name: Test, lint and assemble
-        run: ./gradlew :shared:jvmTest :androidApp:lintRelease :androidApp:assembleRelease
+        run: ./gradlew :shared:jvmTest :androidApp:testDebugUnitTest :androidApp:lintRelease :androidApp:assembleRelease
 
       - name: Upload APKs
         uses: actions/upload-artifact@v4

@@ -33,7 +33,7 @@ Because the parsing runs on Apple Intelligence, LabImporter needs a compatible d
 
 ## Features
 
-- **Import** by scanning multi-page documents with the camera, picking PDFs or images from Files, pasting from the clipboard, or sending a PDF/image to LabImporter from any app via the share sheet ("Open With")
+- **Import** by scanning multi-page documents with the camera, picking PDFs or images from Files, pasting from the clipboard, sending a PDF/image to LabImporter from any app via the share sheet ("Open With"), or sharing the text of a report (e.g. selected in Mail or a patient portal) to the LabImporter share extension
 - **On-device AI parsing** — Foundation Models + Vision OCR extract lab values without sending any data to a server
 - **Review & correct** — edit values, change codes, add or remove entries before saving
 - **Dashboard** — metric cards with current value, sparkline, and a trend-direction indicator (rising / falling / steady)
@@ -43,6 +43,7 @@ Because the parsing runs on Apple Intelligence, LabImporter needs a compatible d
 - **Spotlight search** — find any tracked metric from iOS system-wide search and jump straight to its trend detail; results show only metric names by default, with an opt-in (Settings → Search) to display the latest reading
 - **iCloud sync (opt-in)** — optionally roam your dashboard layout (card order, pins, hidden metrics, custom names, and reference ranges) across your devices; your lab values always stay in Apple Health and never sync
 - **Share** — export any report as a CDA file to send to a doctor or another app
+- **Move between iPhone and Android** — Settings → Transfer exports every report as one file (a standard FHIR Bundle) and imports it on the other platform; reports already there are skipped
 - **PDF export** — generate an information-rich PDF report (cover summary, latest-results table, and trend charts), choosing which values and time range to include, in color or black & white, on A4, US Letter, or Legal paper (defaulting to your region's size)
 - **25 languages** — fully localized in 🇧🇬 Bulgarian · 🏴󠁥󠁳󠁣󠁴󠁿 Catalan · 🇭🇷 Croatian · 🇨🇿 Czech · 🇩🇰 Danish · 🇳🇱 Dutch · 🇬🇧 English · 🇫🇮 Finnish · 🇫🇷 French · 🇩🇪 German · 🇬🇷 Greek · 🇭🇺 Hungarian · 🇮🇹 Italian · 🇯🇵 Japanese · 🇵🇱 Polish · 🇧🇷 Portuguese (Brazil) · 🇵🇹 Portuguese (Portugal) · 🇷🇴 Romanian · 🇷🇺 Russian · 🇨🇳 Simplified Chinese · 🇸🇰 Slovak · 🇪🇸 Spanish · 🇸🇪 Swedish · 🇹🇷 Turkish · 🇺🇦 Ukrainian
 - **Privacy-first** — all data lives in Apple Health on your device; no account or server required
@@ -126,13 +127,13 @@ After the first manual run succeeds, builds are triggered automatically on the *
 
 ## Android (preview)
 
-The Android app (`androidApp/`) is a native Jetpack Compose app with **Material 3 Expressive** and Material You dynamic colour: category-coloured gradient backgrounds, expressive shape badges, a FAB menu for importing, predictive back and a layered adaptive icon (with dark and themed variants). It shares its business logic with iOS through a **Kotlin Multiplatform** module (`shared/`): LOINC catalog and search (the same `loinc.db`), LOINC resolution, the AI prompt and post-processing, categories, UCUM units, C-CDA export and the FHIR codec. The iOS app stays SwiftUI and links the same module as the static `LabImporterCore` framework.
+The Android app (`androidApp/`) is a native Jetpack Compose app with **Material 3 Expressive** and Material You dynamic colour: category-coloured gradient backgrounds, expressive shape badges, a FAB menu for importing, predictive back and a layered adaptive icon (with dark and themed variants). It shares its business logic with iOS through a **Kotlin Multiplatform** module (`shared/`): LOINC catalog and search (the same `loinc.db`), LOINC resolution, the AI prompt and post-processing, categories, UCUM units, C-CDA export and read-back with schema migrations, the FHIR codec, the dashboard rules and the cross-platform transfer file. The iOS app stays SwiftUI and links the same module as the static `LabImporterCore` framework — the business logic exists once, for both apps.
 
 | Step | Android technology |
 |---|---|
 | Document input | ML Kit document scanner, system file picker (PDF/images), paste, manual entry, "Open with"/share |
 | Text extraction | ML Kit Text Recognition (bundled, Latin script) — PDFs are rendered with `PdfRenderer` |
-| Lab value parsing | **Gemini Nano** via the ML Kit GenAI Prompt API (on device, AICore). Devices without Gemini Nano fall back to a rule-based reader — every value still goes through review |
+| Lab value parsing | **Gemini Nano** via the ML Kit GenAI Prompt API (on device, AICore). Like the iOS app without Apple Intelligence, a device without Gemini Nano shows **Device Not Supported** — values are never guessed. If the model still needs downloading, Android fetches it and the import waits, showing progress |
 | Storage | **Health Connect Medical Records** — FHIR R4 laboratory `Observation`s (Android 16+). Elsewhere, reports are kept privately in app storage (excluded from backup) and can be moved to Health Connect later |
 
 ### Building the Android app
@@ -143,7 +144,11 @@ Requires JDK 17+ and the Android SDK (platform 37). From the repo root:
 ./gradlew :androidApp:assembleRelease
 ```
 
-The APKs land in `androidApp/build/outputs/apk/release/` (`arm64-v8a` for phones and Apple-silicon emulators). Release test builds are signed with the debug key. `./gradlew :shared:jvmTest` runs the shared unit tests against the real LOINC catalog.
+The APKs land in `androidApp/build/outputs/apk/release/` (`arm64-v8a` for phones and Apple-silicon emulators). Release test builds are signed with the debug key.
+
+**Emulators have no Gemini Nano**, so the release APK shows *Device Not Supported* there — exactly what an unsupported phone shows. To try the rest of the app on an emulator, install a **debug** build (`./gradlew :androidApp:assembleDebug`) and tap **Use Development Stand-in** on that screen: imports then return clearly labelled *sample* values (not read from your document) so review, saving and the dashboard can be exercised. The stand-in exists only in debug builds.
+
+Tests: `./gradlew :shared:jvmTest :androidApp:testDebugUnitTest` (shared logic, plus Android unit and Compose UI tests against the real LOINC catalog); iOS: `tools/ios_test.sh`.
 
 ---
 

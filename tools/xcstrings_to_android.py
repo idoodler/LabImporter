@@ -1,17 +1,23 @@
 #!/usr/bin/env python3
-"""Reuse the iOS translations for the Android app.
+"""Generate the Android translations from String Catalogs.
 
-For every string/plural in androidApp/src/main/res/values/strings.xml whose
-English text is identical to a key in LabImporter/Localizable.xcstrings, this
-writes the existing translations into values-<lang>/strings.xml (one file per
-shipped language). Android-only strings that have no iOS twin are reported so
-they can be added to the catalog / translated — never silently left EN-only.
+For every string/plural in androidApp/src/main/res/values/strings.xml the
+translations come from, in order:
+
+  1. LabImporter/Localizable.xcstrings — the iOS catalog, when the English
+     text is identical to one of its keys (shared wording is translated once);
+  2. androidApp/translations/Android.xcstrings — Android-only wording, in the
+     same String Catalog format.
+
+The result is written to values-<lang>/strings.xml (one generated file per
+shipped language). Strings missing from both catalogs, or missing a language,
+are reported — never silently left English-only.
 
 Format specifiers are mapped both ways: Android %s / %1$s <-> iOS %@ and
 Android %d / %1$d <-> iOS %lld (positions are preserved).
 
 Usage: tools/xcstrings_to_android.py [--check]
-  --check  exit non-zero if any Android string lacks a translation
+  --check  exit non-zero if any Android string lacks a translation (CI)
 """
 
 from __future__ import annotations
@@ -24,6 +30,7 @@ import xml.etree.ElementTree as ET
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CATALOG = os.path.join(ROOT, "LabImporter", "Localizable.xcstrings")
+ANDROID_CATALOG = os.path.join(ROOT, "androidApp", "translations", "Android.xcstrings")
 RES = os.path.join(ROOT, "androidApp", "src", "main", "res")
 SOURCE = os.path.join(RES, "values", "strings.xml")
 
@@ -33,6 +40,18 @@ QUALIFIERS = {
     "fi": "fi", "fr": "fr", "hr": "hr", "hu": "hu", "it": "it", "ja": "ja", "nl": "nl",
     "pl": "pl", "pt-BR": "pt-rBR", "pt-PT": "pt-rPT", "ro": "ro", "ru": "ru", "sk": "sk",
     "sv": "sv", "tr": "tr", "uk": "uk", "zh-Hans": "b+zh+Hans",
+}
+
+# Plural quantities Android expects per locale (integers; CLDR).
+REQUIRED_QUANTITIES = {
+    "ja": ("other",), "zh-Hans": ("other",),
+    "cs": ("one", "few", "many", "other"), "sk": ("one", "few", "many", "other"),
+    "pl": ("one", "few", "many", "other"), "ru": ("one", "few", "many", "other"),
+    "uk": ("one", "few", "many", "other"),
+    "hr": ("one", "few", "other"), "ro": ("one", "few", "other"),
+    # "many" covers millions here ("1000000 de jours"), worded like "other".
+    "ca": ("one", "many", "other"), "es": ("one", "many", "other"), "fr": ("one", "many", "other"),
+    "it": ("one", "many", "other"), "pt-BR": ("one", "many", "other"), "pt-PT": ("one", "many", "other"),
 }
 
 ANDROID_SPEC = re.compile(r"%(?:(\d+)\$)?([sd])")
@@ -65,6 +84,20 @@ def to_android(text: str, positional: bool) -> str:
     return IOS_SPEC.sub(repl, text)
 
 
+def lookup(catalogs: list[dict], english: str) -> dict | None:
+    """The catalog entry for an Android English text: exact, or with sequential
+    positional specifiers dropped (Android "%1$s of %2$d" == iOS "%@ of %lld")."""
+    candidates = [to_ios(english)]
+    positions = re.findall(r"%(\d+)\$", english)
+    if positions and positions == [str(i) for i in range(1, len(positions) + 1)]:
+        candidates.append(to_ios(re.sub(r"%\d+\$", "%", english)))
+    for catalog in catalogs:
+        for key in candidates:
+            if key in catalog:
+                return catalog[key]
+    return None
+
+
 def unit_value(loc: dict) -> str | None:
     unit = loc.get("stringUnit")
     if unit and unit.get("state") in ("translated", "needs_review") and unit.get("value"):
@@ -73,10 +106,11 @@ def unit_value(loc: dict) -> str | None:
 
 
 def main() -> int:
-    catalog = json.load(open(CATALOG, encoding="utf-8"))["strings"]
+    catalogs = [json.load(open(path, encoding="utf-8"))["strings"] for path in (CATALOG, ANDROID_CATALOG) if os.path.exists(path)]
     tree = ET.parse(SOURCE)
     out: dict[str, list[str]] = {lang: [] for lang in QUALIFIERS}
     missing: list[str] = []
+    incomplete: list[str] = []
 
     for node in tree.getroot():
         name = node.get("name")
@@ -85,20 +119,21 @@ def main() -> int:
         if node.tag == "string":
             english = unescape_android("".join(node.itertext()))
             positional = "$" in english
-            entry = catalog.get(to_ios(english))
+            entry = lookup(catalogs, english)
             if not entry:
                 missing.append(name)
                 continue
             for lang in QUALIFIERS:
                 value = unit_value(entry.get("localizations", {}).get(lang, {}))
                 if value is None:
+                    incomplete.append(f"{name} [{lang}]")
                     continue
                 text = escape_android(to_android(value, positional)).replace("&", "&amp;").replace("<", "&lt;")
                 out[lang].append(f'    <string name="{name}">{text}</string>')
         elif node.tag == "plurals":
             items = {item.get("quantity"): unescape_android("".join(item.itertext())) for item in node}
             positional = "$" in items.get("other", "")
-            entry = catalog.get(to_ios(items.get("other", "")))
+            entry = lookup(catalogs, items.get("other", ""))
             if not entry:
                 missing.append(name)
                 continue
@@ -108,10 +143,13 @@ def main() -> int:
                 forms = {q: unit_value(v) for q, v in plural.items()} if plural else {"other": unit_value(loc)}
                 forms = {q: v for q, v in forms.items() if v}
                 if "other" not in forms:
+                    incomplete.append(f"{name} [{lang}]")
                     continue
-                # Android requires "one" for most locales even when iOS only
-                # ships "other" (e.g. Turkish); reuse the "other" form.
-                forms.setdefault("one", forms["other"])
+                # Android lint wants every quantity the locale uses, even when a
+                # catalog only ships "other" (e.g. a colon form that needs no
+                # agreement, or Turkish); reuse the "other" form for those.
+                for quantity in REQUIRED_QUANTITIES.get(lang, ("one", "other")):
+                    forms.setdefault(quantity, forms["other"])
                 lines = [f'    <plurals name="{name}">']
                 for quantity, value in forms.items():
                     text = escape_android(to_android(value, positional)).replace("&", "&amp;").replace("<", "&lt;")
@@ -130,12 +168,17 @@ def main() -> int:
             fh.write("</resources>\n")
 
     total = sum(1 for n in tree.getroot() if n.get("translatable") != "false")
-    print(f"{total - len(missing)}/{total} Android strings reuse iOS translations ({len(QUALIFIERS)} languages).")
+    print(f"{total - len(missing)}/{total} Android strings translated into {len(QUALIFIERS)} languages "
+          "(iOS catalog first, then androidApp/translations/Android.xcstrings).")
     if missing:
-        print("No iOS translation yet (add these to Localizable.xcstrings and translate):")
+        print("Not in any catalog (add to Localizable.xcstrings if iOS shares the wording, else to Android.xcstrings):")
         for name in missing:
             print(f"  - {name}")
-    return 1 if missing and "--check" in sys.argv else 0
+    if incomplete:
+        print("Missing a translation:")
+        for item in incomplete:
+            print(f"  - {item}")
+    return 1 if (missing or incomplete) and "--check" in sys.argv else 0
 
 
 if __name__ == "__main__":

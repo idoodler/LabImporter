@@ -34,17 +34,17 @@ jobs:
           fi
           swiftlint lint --strict --reporter github-actions-logging
 
-      # Simulator SDK + code signing disabled: confirms the branch compiles
-      # without touching App Store Connect, Match, or any repo secret. No IPA
-      # is produced (a signed archive needs real signing credentials, which
-      # this repo doesn't have configured) — this only proves the Swift code
-      # itself builds clean with Xcode 26.
-      - name: Build (Simulator SDK, unsigned)
+      # Simulator SDK + code signing disabled: confirms the branch compiles and
+      # the tests pass without touching App Store Connect, Match, or any repo
+      # secret. No IPA is produced (a signed archive needs real signing
+      # credentials, which this repo doesn't have configured).
+      - name: Unit and UI tests (Simulator SDK, unsigned)
         run: |
-          xcodebuild build \
-            -project LabImporter.xcodeproj \
-            -scheme LabImporter \
-            -destination "generic/platform=iOS Simulator" \
-            -configuration Debug \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO
+          # The newest available iPhone simulator of the selected Xcode.
+          SIMULATOR=$(xcrun simctl list devices available --json | python3 -c '
+          import json, sys
+          runtimes = json.load(sys.stdin)["devices"]
+          ios = sorted((k for k in runtimes if ".iOS-" in k), key=lambda k: [int(p) for p in k.rsplit("iOS-", 1)[1].split("-")])
+          phones = [d for d in runtimes[ios[-1]] if d["name"].startswith("iPhone")]
+          print(phones[-1]["udid"])')
+          tools/ios_test.sh all "$SIMULATOR"

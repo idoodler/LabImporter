@@ -88,9 +88,9 @@ android {
     }
 
     lint {
-        // Android-only strings without an iOS twin fall back to English until
-        // translated; tools/xcstrings_to_android.py lists them. Keep visible, not fatal.
-        warning += "MissingTranslation"
+        // Every string ships in all 25 languages (tools/xcstrings_to_android.py
+        // generates values-*/strings.xml); a missing translation fails the build.
+        fatal += "MissingTranslation"
     }
 
     packaging {

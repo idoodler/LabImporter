@@ -13,6 +13,7 @@
 		1F71BBFA86E343E8030D4772 /* report.cda.xml in Resources */ = {isa = PBXBuildFile; fileRef = FD58767C7178A49BAB8FBE6B /* report.cda.xml */; };
 		2429A57046AF0C407704B1D1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8697C8B69368D44D6635379B /* Foundation.framework */; };
 		402366324649FA7CCE9915EA /* CDAExportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D324A0B5E9721D89AFB660 /* CDAExportTests.swift */; };
+		496C508CF0C9E24DFCA3B773 /* FlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD24AABF9080FC1ABB8707AF /* FlowTests.swift */; };
 		4A2398D082C09285D2C39F94 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B256B38BDF50DF9CBDFE493B /* ModelTests.swift */; };
 		55AD043FD51A83E346BFA65E /* ParseSchemaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AC48436CB533C97960A62A4 /* ParseSchemaTests.swift */; };
 		636BA85E2FCC52EE006E8E71 /* HealthPermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 636BA85D2FCC52EE006E8E71 /* HealthPermissionView.swift */; };
@@ -282,6 +283,7 @@
 		C897701053C6666E95989E84 /* ScreenshotMode.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScreenshotMode.swift; sourceTree = "<group>"; };
 		D084E33B414D911400410893 /* ShareView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareView.swift; sourceTree = "<group>"; };
 		DE0509DCBAD0DE0B9B9BFDB9 /* LabImporterShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = LabImporterShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		FD24AABF9080FC1ABB8707AF /* FlowTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FlowTests.swift; sourceTree = "<group>"; };
 		FD58767C7178A49BAB8FBE6B /* report.cda.xml */ = {isa = PBXFileReference; includeInIndex = 1; path = report.cda.xml; sourceTree = "<group>"; };
 		FE0D199B97E02563880F592E /* LabParserErrorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LabParserErrorTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -674,6 +676,7 @@
 			isa = PBXGroup;
 			children = (
 				4E285DF31AC9A5A11C742F9F /* LaunchTests.swift */,
+				FD24AABF9080FC1ABB8707AF /* FlowTests.swift */,
 			);
 			name = LabImporterUITests;
 			path = LabImporterUITests;
@@ -925,6 +928,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				80396BC045B0FE1CEEFB9AAE /* LaunchTests.swift in Sources */,
+				496C508CF0C9E24DFCA3B773 /* FlowTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

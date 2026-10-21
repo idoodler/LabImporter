@@ -84,8 +84,8 @@ fun SettingsScreen(
     preferences: LabDisplayPreferences,
     onUpdatePreferences: ((LabDisplayPreferences) -> LabDisplayPreferences) -> Unit,
     softwareIdentity: String,
-    transfer: TransferSettings = TransferSettings(),
     modifier: Modifier = Modifier,
+    transfer: TransferSettings = TransferSettings(),
     onBack: () -> Unit = {},
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
