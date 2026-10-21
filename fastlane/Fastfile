@@ -30,6 +30,9 @@ xcconfig_path = "#{GITHUB_WORKSPACE}/Config.xcconfig"
 xcconfig      = parse_xcconfig_file(xcconfig_path)
 ENV["BUNDLE_ID"] = xcconfig["BUNDLE_IDENTIFIER"]
 BUNDLE_ID        = ENV["BUNDLE_ID"]
+# The share extension (LabImporterShare target) and the App Group it shares with the app.
+SHARE_BUNDLE_ID  = "#{BUNDLE_ID}.share"
+APP_GROUP_ID     = "group.#{BUNDLE_ID}"
 
 platform :ios do
 
@@ -65,7 +68,7 @@ platform :ios do
     match(
       type: "appstore",
       git_basic_authorization: Base64.strict_encode64("#{GITHUB_REPOSITORY_OWNER}:#{GH_PAT}"),
-      app_identifier: ["#{BUNDLE_ID}"]
+      app_identifier: ["#{BUNDLE_ID}", SHARE_BUNDLE_ID]
     )
 
     mapping = Actions.lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
@@ -75,6 +78,13 @@ platform :ios do
       profile_name: mapping["#{BUNDLE_ID}"],
       code_sign_identity: "iPhone Distribution",
       targets: ["LabImporter"]
+    )
+
+    update_code_signing_settings(
+      path: "#{GITHUB_WORKSPACE}/LabImporter.xcodeproj",
+      profile_name: mapping[SHARE_BUNDLE_ID],
+      code_sign_identity: "iPhone Distribution",
+      targets: ["LabImporterShare"]
     )
 
     gym(
@@ -137,8 +147,17 @@ platform :ios do
 
     configure_bundle_id("LabImporter", "#{BUNDLE_ID}", [
       Spaceship::ConnectAPI::BundleIdCapability::Type::HEALTHKIT,
-      Spaceship::ConnectAPI::BundleIdCapability::Type::ICLOUD
+      Spaceship::ConnectAPI::BundleIdCapability::Type::ICLOUD,
+      Spaceship::ConnectAPI::BundleIdCapability::Type::APP_GROUPS
     ])
+
+    configure_bundle_id("LabImporter Share", SHARE_BUNDLE_ID, [
+      Spaceship::ConnectAPI::BundleIdCapability::Type::APP_GROUPS
+    ])
+
+    # The App Store Connect API can enable the App Groups capability but can't
+    # create the group itself or assign it — a one-time manual step (see README).
+    UI.important("Make sure the App Group #{APP_GROUP_ID} exists and is assigned to #{BUNDLE_ID} and #{SHARE_BUNDLE_ID}.")
   end
 
   # ── Certificates ───────────────────────────────────────────────────────────
@@ -159,7 +178,7 @@ platform :ios do
       force: false,
       verbose: true,
       git_basic_authorization: Base64.strict_encode64("#{GITHUB_REPOSITORY_OWNER}:#{GH_PAT}"),
-      app_identifier: ["#{BUNDLE_ID}"]
+      app_identifier: ["#{BUNDLE_ID}", SHARE_BUNDLE_ID]
     )
   end
 
@@ -181,6 +200,7 @@ platform :ios do
     end
 
     find_bundle_id("#{BUNDLE_ID}")
+    find_bundle_id(SHARE_BUNDLE_ID)
 
     match(
       type: "appstore",

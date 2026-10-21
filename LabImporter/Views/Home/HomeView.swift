@@ -106,7 +106,9 @@ struct HomeView: View {
         .environment(searchPresentation).presentsSearchResults(reports: reports)
         // "Navigate back" also returns either layout to the dashboard.
         .onChange(of: searchPresentation.navResetToken) { _, _ in selectedSection = .dashboard }
-        .onChange(of: onboardingComplete) { _, done in if done { flushPendingImport(); flushPendingDeepLink() } }
+        .onChange(of: onboardingComplete) { _, done in
+            if done { flushPendingImport(); flushPendingDeepLink(); importSharedText() }
+        }
         .task {
             if ScreenshotMode.isActive {
                 setupScreenshotMode()
@@ -140,6 +142,8 @@ struct HomeView: View {
             // at launch until the app is fully relaunched.
             refreshClipboardState()
             Task { await loadReportsIfAuthorized() }
+            // Text shared to the share extension while LabImporter wasn't open.
+            importSharedText()
         }
         .onReceive(NotificationCenter.default.publisher(for: UIPasteboard.changedNotification)) { _ in
             // Live updates while we're already foregrounded (e.g. copying from a
@@ -160,10 +164,13 @@ struct HomeView: View {
             SiriActionBridge.shared.setScanHandler { importEngine.scan() }
         }
         .onOpenURL { url in
-            // A `labimporter://metric/<code>` deep link opens that metric's trend;
+            // A `labimporter://metric/<code>` deep link opens that metric's trend,
+            // `labimporter://share/<id>` imports text from the share extension;
             // anything else is a file handed over via "Open With".
             if let code = DeepLink.metricCode(from: url) {
                 presentTrend(for: code)
+            } else if let id = ShareInbox.itemID(from: url) {
+                importSharedText(id: id)
             } else {
                 handleIncomingFile(url)
             }
@@ -193,7 +200,7 @@ struct HomeView: View {
         .id(searchPresentation.navResetToken) // re-identified to pop to root on a deep link
         .sheet(isPresented: Binding(get: { selectedSection == .settings },
                                     set: { if !$0 { selectedSection = .dashboard } })) {
-            SettingsView(prefs: $prefs, allCodes: reports.codeNames)
+            SettingsView(prefs: $prefs, allCodes: reports.codeNames, reports: reports)
         }
     }
 
@@ -234,7 +241,7 @@ struct HomeView: View {
             }
             .id(searchPresentation.navResetToken)
         case .settings:
-            SettingsView(prefs: $prefs, allCodes: reports.codeNames, isModal: false)
+            SettingsView(prefs: $prefs, allCodes: reports.codeNames, isModal: false, reports: reports)
         }
     }
 
@@ -317,6 +324,18 @@ struct HomeView: View {
         guard let url = pendingImportURL else { return }
         pendingImportURL = nil
         importEngine.processFile(at: url)
+    }
+
+    // MARK: - Shared text (share extension)
+
+    /// Imports text the share extension left in the App Group inbox — the item
+    /// its link names, else the oldest waiting one. Waits (items stay in the
+    /// inbox) while onboarding is up or another import or review is under way.
+    private func importSharedText(id: UUID? = nil) {
+        guard onboardingComplete, !showReview, !importEngine.isProcessing, let inbox = ShareInbox.shared,
+              let item = id.flatMap({ inbox.take($0) }) ?? inbox.takeNext()
+        else { return }
+        importEngine.processText(item.text)
     }
 
     // MARK: - Import engine

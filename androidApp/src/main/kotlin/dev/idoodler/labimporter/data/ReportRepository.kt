@@ -52,6 +52,13 @@ class ReportRepository(
         reload()
     }
 
+    /** Saves several reports (an imported transfer file) and reloads once. */
+    suspend fun saveAll(reports: List<LabReport>) {
+        val target = store()
+        reports.forEach { target.save(it) }
+        reload()
+    }
+
     /** Replaces [old] with [updated] (edit flow): same id, rewritten entries. */
     suspend fun replace(old: LabReport, updated: LabReport) {
         val target = store()

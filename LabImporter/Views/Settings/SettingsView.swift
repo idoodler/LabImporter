@@ -10,7 +10,12 @@ struct SettingsView: View {
     /// when hosted as the detail pane of the iPad sidebar, where the split view
     /// owns dismissal and a Close button would be out of place.
     var isModal = true
+    /// Every saved report, for exporting them to another device (and to skip
+    /// what's already here when importing).
+    var reports: [LabReport] = []
     @Environment(\.dismiss) private var dismiss
+    @State private var showTransferImporter = false
+    @State private var transferResult: TransferResult?
     @State private var browserURL: IdentifiedURL?
     @AppStorage(CloudSyncService.enabledKey) private var iCloudSyncEnabled = false
     @AppStorage(SpotlightSearch.showLatestValueKey) private var showLatestValueInSearch = false
@@ -33,6 +38,8 @@ struct SettingsView: View {
                                          systemImage: "arrow.up.arrow.down", color: .blue)
                     }
                 }
+
+                transferSection
 
                 Section {
                     Toggle(isOn: $iCloudSyncEnabled) {
@@ -161,6 +168,48 @@ struct SettingsView: View {
                 SafariView(url: item.url)
                     .ignoresSafeArea()
             }
+            .fileImporter(isPresented: $showTransferImporter, allowedContentTypes: ReportTransferService.importTypes) { result in
+                guard case .success(let url) = result else { return }
+                Task { await importReports(from: url) }
+            }
+            .alert(item: $transferResult) { result in
+                Alert(title: Text(result.title), message: Text(result.message))
+            }
+        }
+    }
+
+    // MARK: - Transfer (iPhone ⇄ Android)
+
+    private var transferSection: some View {
+        Section {
+            ShareLink(item: ReportArchive(reports: reports), preview: SharePreview("LabImporter Reports")) {
+                SettingsRowLabel("Export All Reports", systemImage: "square.and.arrow.up", color: .green)
+            }
+            .disabled(reports.isEmpty)
+            Button {
+                showTransferImporter = true
+            } label: {
+                SettingsRowLabel("Import Reports", systemImage: "square.and.arrow.down", color: .green)
+            }
+        } header: {
+            Text("Transfer")
+        } footer: {
+            Text("""
+            Move your reports between iPhone and Android: export them as a file and import it \
+            in LabImporter on the other device. Reports that are already there are skipped.
+            """)
+        }
+    }
+
+    private func importReports(from url: URL) async {
+        do {
+            let summary = try await ReportTransferService.importFile(at: url, existing: reports)
+            transferResult = TransferResult(
+                title: String(localized: "Reports Imported"),
+                message: String(localized: "New reports: \(summary.imported) · Already present: \(summary.alreadyPresent)")
+            )
+        } catch {
+            transferResult = TransferResult(title: String(localized: "Import Failed"), message: error.localizedDescription)
         }
     }
 
@@ -377,6 +426,14 @@ struct SafariView: UIViewControllerRepresentable {
     func updateUIViewController(_ controller: SFSafariViewController, context: Context) {}
 }
 
+// MARK: - Transfer result
+
+private struct TransferResult: Identifiable {
+    let id = UUID()
+    let title: String
+    let message: String
+}
+
 // MARK: - CodeName
 
 struct CodeName: Identifiable {
@@ -397,8 +454,19 @@ struct LicenseView: View {
 // MARK: - Previews
 
 #if DEBUG
-#Preview("Settings") {
+#Preview("Settings · No Reports") {
     @Previewable @State var prefs = LabDisplayPreferences()
     SettingsView(prefs: $prefs, allCodes: CodeName.sampleCodes)
+}
+
+#Preview("Settings · With Reports") {
+    @Previewable @State var prefs = LabDisplayPreferences()
+    SettingsView(prefs: $prefs, allCodes: CodeName.sampleCodes, reports: LabReport.sampleHistory)
+}
+
+#Preview("Settings · Dark") {
+    @Previewable @State var prefs = LabDisplayPreferences()
+    SettingsView(prefs: $prefs, allCodes: CodeName.sampleCodes, reports: LabReport.sampleHistory)
+        .preferredColorScheme(.dark)
 }
 #endif

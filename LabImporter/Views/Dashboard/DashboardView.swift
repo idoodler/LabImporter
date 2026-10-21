@@ -80,7 +80,7 @@ struct DashboardView: View {
             }
         }
         .sheet(isPresented: $showSettings) {
-            SettingsView(prefs: $prefs, allCodes: reports.codeNames)
+            SettingsView(prefs: $prefs, allCodes: reports.codeNames, reports: reports)
         }
         .sheet(isPresented: $showHistorySheet) {
             NavigationStack { HistoryView(initialReports: reports) }

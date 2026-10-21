@@ -75,18 +75,35 @@ struct ParseProgress: Equatable, Sendable {
 /// unsupported language or locale was used"). Leaking that verbatim into the
 /// UI is confusing — especially in a non-English app — so we translate the
 /// cases we care about into clear, localized, actionable messages.
-enum LabParserError: LocalizedError {
+enum LabParserError: LocalizedError, Equatable {
+    /// Apple Intelligence is switched off in Settings.
+    case appleIntelligenceOff
+    /// The model is still being prepared (downloading) or its assets are missing.
+    case modelNotReady
+    /// Too many requests right now (rate limit or another request in flight).
+    case busy
     /// The on-device model couldn't classify the report's language as supported.
     case unsupportedLanguageOrLocale
     /// The document was too large for the model's context window.
     case documentTooLong
     /// The model's safety guardrails blocked the request.
     case contentBlocked
-    /// Any other generation failure — carries the system description as-is.
-    case generationFailed(String)
+    /// Any other generation failure (the system's own text is English-only and
+    /// opaque, e.g. "GenerationError -1", so the user gets a clear message instead).
+    case generationFailed
 
     var errorDescription: String? {
         switch self {
+        case .appleIntelligenceOff:
+            return String(localized: """
+            Turn on Apple Intelligence in Settings to let LabImporter read your lab reports on this device.
+            """)
+        case .modelNotReady:
+            return String(localized: """
+            Apple Intelligence is still getting ready on this device. Try again once it has finished downloading.
+            """)
+        case .busy:
+            return String(localized: "The on-device AI is busy right now. Wait a moment and try again.")
         case .unsupportedLanguageOrLocale:
             return String(localized: """
             The on-device AI couldn't recognize the language of this report. This can happen \
@@ -98,13 +115,24 @@ enum LabParserError: LocalizedError {
             This report is too long for the on-device AI to read at once. \
             Try importing fewer pages, or one report at a time.
             """)
-        case .contentBlocked:
+        case .contentBlocked, .generationFailed:
             return String(localized: """
             The on-device AI couldn't process this document. \
             Make sure it's a lab report and try again.
             """)
-        case .generationFailed(let detail):
-            return detail
+        }
+    }
+
+    /// Why the system model can't be used right now, or nil when it's available.
+    /// (Ineligible hardware never gets here: the app shows "Device Not Supported".)
+    init?(_ availability: SystemLanguageModel.Availability) {
+        switch availability {
+        case .available:
+            return nil
+        case .unavailable(.appleIntelligenceNotEnabled):
+            self = .appleIntelligenceOff
+        case .unavailable:
+            self = .modelNotReady
         }
     }
 
@@ -115,10 +143,14 @@ enum LabParserError: LocalizedError {
             self = .unsupportedLanguageOrLocale
         case .exceededContextWindowSize:
             self = .documentTooLong
-        case .guardrailViolation:
+        case .guardrailViolation, .refusal:
             self = .contentBlocked
+        case .assetsUnavailable:
+            self = .modelNotReady
+        case .rateLimited, .concurrentRequests:
+            self = .busy
         default:
-            self = .generationFailed(generationError.localizedDescription)
+            self = .generationFailed
         }
     }
 }
@@ -179,6 +211,11 @@ actor LabParserService {
         text: String,
         onProgress: (@Sendable (ParseProgress) -> Void)?
     ) async throws -> AILabReport {
+        // Say why the model can't be used (Apple Intelligence off, still
+        // downloading) instead of letting the session fail with an opaque error.
+        if let unavailable = LabParserError(SystemLanguageModel.default.availability) {
+            throw unavailable
+        }
         let session = takeSession()
 
         // Foundation Models detects the language of the *prompt* and refuses

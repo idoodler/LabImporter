@@ -10,6 +10,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Badge
+import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Lock
@@ -38,6 +40,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalContext
+import android.content.Intent
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -76,6 +84,7 @@ fun SettingsScreen(
     preferences: LabDisplayPreferences,
     onUpdatePreferences: ((LabDisplayPreferences) -> LabDisplayPreferences) -> Unit,
     softwareIdentity: String,
+    transfer: TransferSettings = TransferSettings(),
     modifier: Modifier = Modifier,
     onBack: () -> Unit = {},
 ) {
@@ -127,6 +136,9 @@ fun SettingsScreen(
 
                 item { SectionTitle(stringResource(R.string.settings_ai)) }
                 item { AiItem(ai) }
+
+                item { SectionTitle(stringResource(R.string.transfer_title)) }
+                item { TransferItems(transfer) }
 
                 if (preferences.hiddenCodes.isNotEmpty()) {
                     item { SectionTitle(stringResource(R.string.settings_hidden)) }
@@ -202,6 +214,55 @@ fun SettingsScreen(
         )
     }
 }
+
+/** Moving reports between devices (iPhone ⇄ Android) as a file — see `ReportTransfer`. */
+data class TransferSettings(
+    val hasReports: Boolean = false,
+    /** Writes every report to the transfer file and returns it for sharing. */
+    val onExport: () -> Uri? = { null },
+    val onImport: (Uri) -> Unit = {},
+)
+
+@Composable
+private fun TransferItems(transfer: TransferSettings) {
+    val context = LocalContext.current
+    val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> uri?.let(transfer.onImport) }
+    val chooserTitle = stringResource(R.string.transfer_export)
+    Column {
+        GroupedListItem(
+            0, 2,
+            onClick = if (transfer.hasReports) {
+                {
+                    transfer.onExport()?.let { uri ->
+                        val send = Intent(Intent.ACTION_SEND)
+                            .setType("application/json")
+                            .putExtra(Intent.EXTRA_STREAM, uri)
+                            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        context.startActivity(Intent.createChooser(send, chooserTitle))
+                    }
+                }
+            } else {
+                null
+            },
+            leading = { Badge(MaterialShapes.Arch, LabCategory.HEPATIC.color, Icons.Rounded.Upload) },
+            headline = { Text(stringResource(R.string.transfer_export)) },
+            supporting = { Text(stringResource(R.string.transfer_export_detail)) },
+            modifier = Modifier.alpha(if (transfer.hasReports) 1f else 0.5f),
+        )
+        GroupedListItem(
+            1, 2,
+            onClick = { picker.launch(TRANSFER_TYPES) },
+            leading = { Badge(MaterialShapes.Arch, LabCategory.ELECTROLYTES.color, Icons.Rounded.Download) },
+            headline = { Text(stringResource(R.string.transfer_import)) },
+            supporting = { Text(stringResource(R.string.transfer_import_detail)) },
+        )
+    }
+}
+
+/** What a transfer file can arrive as (providers label JSON inconsistently). */
+private val TRANSFER_TYPES = arrayOf(
+    "application/json", "application/fhir+json", "application/xml", "text/xml", "text/plain", "application/octet-stream",
+)
 
 @Composable
 private fun Badge(polygon: RoundedPolygon, color: Color, icon: androidx.compose.ui.graphics.vector.ImageVector, brush: Brush? = null) {

@@ -61,6 +61,7 @@ import dev.idoodler.labimporter.ui.onboarding.UnsupportedDeviceScreen
 import dev.idoodler.labimporter.ui.review.ReviewScreen
 import dev.idoodler.labimporter.ui.settings.AiSettings
 import dev.idoodler.labimporter.ui.settings.SettingsScreen
+import dev.idoodler.labimporter.ui.settings.TransferSettings
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 
@@ -297,6 +298,7 @@ private fun Screen(
                 onConnectHealthConnect = connectHealthConnect,
                 onUseHealthConnect = viewModel::setUseHealthConnect,
                 ai = AiSettings(aiAvailability, usingStandIn, onTryAgain = viewModel::checkAiAgain) { viewModel.useDevelopmentStandIn(false) },
+                transfer = TransferSettings(reports.isNotEmpty(), viewModel::exportAllReports, viewModel::importReports),
                 preferences = preferences,
                 onUpdatePreferences = viewModel::updateDisplayPreferences,
                 softwareIdentity = viewModel.softwareIdentity,

@@ -1,5 +1,6 @@
 package dev.idoodler.labimporter.ui
 
+import android.net.Uri
 import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -11,6 +12,8 @@ import dev.idoodler.labimporter.ai.AiException
 import dev.idoodler.labimporter.ai.AiProblem
 import dev.idoodler.labimporter.ai.FakeAi
 import dev.idoodler.labimporter.ai.UnsupportedReason
+import dev.idoodler.labimporter.core.export.CdaExport
+import dev.idoodler.labimporter.core.model.LabValue
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.datetime.LocalDate
 import org.junit.Assert.assertEquals
@@ -20,6 +23,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
+import java.io.File
 
 /** The import flow, end to end on the JVM: text → model → shared pipeline → review → saved report. */
 @RunWith(AndroidJUnit4::class)
@@ -133,5 +137,41 @@ class AppViewModelTest {
         setAvailability(AiAvailability.Unsupported(UnsupportedReason.DEVICE))
         viewModel.refresh()
         await(viewModel.aiAvailability) { ai.refreshes > 0 }
+    }
+
+    private fun file(name: String, contents: String): Uri =
+        Uri.fromFile(File(app.cacheDir, name).apply { writeText(contents) })
+
+    @Test
+    fun aTransferFileImportsOnceAndSkipsWhatIsAlreadyHere() {
+        ai.reply = { FakeAi.replyJson(listOf("2160-0", "Kreatinin", "0,8", "mg/dl")) }
+        viewModel.importText("Kreatinin 0,8 mg/dl")
+        await(viewModel.importState) { it is ImportState.Reviewing }
+        viewModel.saveDraft()
+        await(viewModel.reports) { it.size == 1 }
+        await(viewModel.message) { it != null } // "Saved 1 value"
+        viewModel.consumeMessage()
+
+        assertTrue(viewModel.exportAllReports() != null)
+        val exported = File(app.cacheDir, "exports").listFiles().orEmpty().single { it.extension == "json" }
+        viewModel.importReports(Uri.fromFile(exported))
+        assertEquals(app.getString(R.string.transfer_summary, 0, 1), await(viewModel.message) { it != null })
+        assertEquals(1, viewModel.reports.value.size)
+    }
+
+    @Test
+    fun aCdaDocumentFromTheOtherAppImports() {
+        val values = listOf(LabValue(code = "4548-4", name = "HbA1c", displayValue = "6,5", numericValue = 6.5, unit = "%"))
+        val cda = CdaExport.generate(values, LocalDate(2026, 3, 1), "LabImporter iOS")
+        viewModel.importReports(file("report.xml", cda))
+        assertEquals(app.getString(R.string.transfer_summary, 1, 0), await(viewModel.message) { it != null })
+        assertEquals(listOf("4548-4"), await(viewModel.reports) { it.isNotEmpty() }.single().entries.map { it.code })
+    }
+
+    @Test
+    fun aForeignFileIsRejectedNotGuessedAt() {
+        viewModel.importReports(file("other.json", "{\"resourceType\":\"Patient\"}"))
+        assertEquals(app.getString(R.string.transfer_unsupported), await(viewModel.message) { it != null })
+        assertTrue(viewModel.reports.value.isEmpty())
     }
 }

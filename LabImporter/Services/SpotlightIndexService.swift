@@ -9,7 +9,7 @@ import UniformTypeIdentifiers
 /// only link today is a metric detail: `labimporter://metric/<LOINC>` — note it
 /// carries a *code*, never a reading, so nothing private rides in the URL.
 enum DeepLink {
-    static let scheme = "labimporter"
+    static let scheme = DeepLinkScheme.value
 
     /// The LOINC code carried by a `labimporter://metric/<code>` URL, or `nil` for
     /// anything that isn't a metric link (e.g. an imported file URL).

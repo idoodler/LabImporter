@@ -7,6 +7,8 @@
 #   LabImporter/         the app's Swift sources (groups mirror folders)
 #   LabImporterTests/    unit tests (Swift Testing), hosted in the app
 #   LabImporterUITests/  UI tests (XCTest/XCUITest)
+#   LabImporterShare/    the share extension (text → the app via an App Group),
+#                        embedded in the app; also compiles LabImporter/Services/ShareInbox.swift
 #
 # Idempotent: creates missing targets/groups, adds new *.swift files to their
 # target, removes references to deleted files, and makes sure the shared
@@ -128,6 +130,56 @@ end
 ui = ensure_target(project, app, config_ref, 'LabImporterUITests', :ui_test_bundle, 'LabImporterUITests') do |s|
   s['PRODUCT_BUNDLE_IDENTIFIER'] = '$(BUNDLE_IDENTIFIER).uitests'
   s['TEST_TARGET_NAME'] = APP_TARGET
+end
+
+# Version numbers live at the project level so the app and its extension
+# always match (App Store requirement); agvtool/fastlane bump them there.
+%w[MARKETING_VERSION CURRENT_PROJECT_VERSION].each do |key|
+  value = app.build_configurations.map { |c| c.build_settings[key] }.compact.first
+  next unless value
+  project.build_configurations.each { |c| c.build_settings[key] = value }
+  app.build_configurations.each { |c| c.build_settings.delete(key) }
+end
+
+# Share extension: receives text and hands it to the app (see ShareInbox).
+SHARE_TARGET = 'LabImporterShare'
+share = project.targets.find { |t| t.name == SHARE_TARGET }
+unless share
+  share = project.new_target(:app_extension, SHARE_TARGET, :ios, DEPLOYMENT, nil, :swift)
+  puts "created target #{SHARE_TARGET}"
+end
+share.build_configurations.each do |config|
+  config.base_configuration_reference = config_ref
+  s = config.build_settings
+  common_settings(s)
+  s['GENERATE_INFOPLIST_FILE'] = 'NO'
+  s['INFOPLIST_FILE'] = "#{SHARE_TARGET}/Info.plist"
+  s['CODE_SIGN_ENTITLEMENTS'] = "#{SHARE_TARGET}/#{SHARE_TARGET}.entitlements"
+  s['PRODUCT_BUNDLE_IDENTIFIER'] = '$(BUNDLE_IDENTIFIER).share'
+  s['SKIP_INSTALL'] = 'YES'
+  s['APPLICATION_EXTENSION_API_ONLY'] = 'YES'
+  s['SWIFT_EMIT_LOC_STRINGS'] = 'YES'
+  s['LD_RUNPATH_SEARCH_PATHS'] = ['$(inherited)', '@executable_path/Frameworks', '@executable_path/../../Frameworks']
+end
+share_group = project.main_group.children.find { |g| g.display_name == SHARE_TARGET } ||
+              project.main_group.new_group(SHARE_TARGET, SHARE_TARGET)
+sync_sources(share, share_group, File.join(ROOT, SHARE_TARGET))
+%w[Info.plist LabImporterShare.entitlements].each do |name|
+  share_group.files.find { |f| f.path == name } || share_group.new_reference(name)
+end
+# Shared with the app: the inbox and the string catalog.
+inbox_ref = app.source_build_phase.files_references.compact.find { |r| r.path == 'ShareInbox.swift' } or abort 'no ShareInbox.swift in the app'
+share.source_build_phase.add_file_reference(inbox_ref, true)
+catalog_ref = app.resources_build_phase.files_references.compact.find { |r| r.path.to_s.end_with?('Localizable.xcstrings') } or abort 'no string catalog'
+share.resources_build_phase.add_file_reference(catalog_ref, true)
+# The app embeds (and therefore builds) the extension.
+app.add_dependency(share) unless app.dependencies.any? { |d| d.target == share }
+embed = app.copy_files_build_phases.find { |p| p.name == 'Embed Foundation Extensions' } ||
+        app.new_copy_files_build_phase('Embed Foundation Extensions')
+embed.symbol_dst_subfolder_spec = :plug_ins
+unless embed.files_references.include?(share.product_reference)
+  embed.add_file_reference(share.product_reference, true).settings = { 'ATTRIBUTES' => ['RemoveHeadersOnCopy'] }
+  puts "app: embeds #{SHARE_TARGET}"
 end
 
 project.save

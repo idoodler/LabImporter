@@ -188,6 +188,14 @@
     <string name="ai_available">Ready. Reports are read by Gemini Nano, entirely on this device.</string>
     <string name="ai_checking">Checking…</string>
     <string name="try_again">Try Again</string>
+    <!-- Transfer (iPhone ⇄ Android) -->
+    <string name="transfer_title">Transfer</string>
+    <string name="transfer_export">Export All Reports</string>
+    <string name="transfer_export_detail">Save every report as one file, for example to move them to another phone.</string>
+    <string name="transfer_import">Import Reports</string>
+    <string name="transfer_import_detail">From a LabImporter file exported on iPhone or Android. Reports that are already here are skipped.</string>
+    <string name="transfer_unsupported">This file doesn\'t contain LabImporter reports.</string>
+    <string name="transfer_summary">New reports: %1$d · Already present: %2$d</string>
     <string name="privacy_title">Private by Design</string>
     <string name="privacy_message">Everything runs on-device. LabImporter never transmits your lab data.</string>
     <string name="loinc_catalog">LOINC catalog</string>

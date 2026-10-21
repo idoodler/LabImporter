@@ -89,4 +89,25 @@ struct SharedCoreTests {
         // An unmapped code keeps the name printed on the report.
         #expect(reports.codeNames[1].name == "LOCAL")
     }
+
+    @Test func transferFilesRoundTripAndSkipWhatIsAlreadyHere() throws {
+        let reports = [
+            report(Fixtures.date(2026, 5, 6), [("2160-0", 0.8), ("2823-3", 4.1)]),
+            report(Fixtures.date(2026, 9, 10), [("4548-4", 6.5)])
+        ]
+        let file = ReportTransferService.exportContents(of: reports)
+        let fresh = try ReportTransferService.plan(contents: file, existing: [])
+        #expect(fresh.reports.count == 2)
+        #expect(fresh.alreadyPresent == 0)
+        // Importing the same file again — or sending it back — adds nothing.
+        let again = try ReportTransferService.plan(contents: file, existing: fresh.reports)
+        #expect(again.reports.isEmpty)
+        #expect(again.alreadyPresent == 2)
+        // A CDA document shared from either app imports too.
+        let cda = CDAExportService().generateCDA(labValues: reports[1].asLabValues, date: reports[1].date)
+        #expect(try ReportTransferService.plan(contents: cda, existing: []).reports.count == 1)
+        #expect(throws: ReportTransferService.Failure.self) {
+            try ReportTransferService.plan(contents: "{\"resourceType\":\"Patient\"}", existing: [])
+        }
+    }
 }

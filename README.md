@@ -100,9 +100,11 @@ This checks that all secrets are valid, that your App Store Connect API key work
 
 Go to **Actions → 2. Add Identifiers → Run workflow**.
 
-This registers your app's bundle ID in App Store Connect and enables the **HealthKit** and **iCloud (key-value storage)** capabilities on it. The iCloud capability backs the opt-in dashboard-layout sync; if you enable it after a profile already exists, re-run **3. Create Certificates** (with `ENABLE_NUKE_CERTS` or `FORCE_NUKE_CERTS` set) so the provisioning profile is regenerated to include it.
+This registers your app's bundle ID and the share extension's bundle ID in App Store Connect and enables the **HealthKit**, **iCloud (key-value storage)** and **App Groups** capabilities. The iCloud capability backs the opt-in dashboard-layout sync; if you enable it after a profile already exists, re-run **3. Create Certificates** (with `ENABLE_NUKE_CERTS` or `FORCE_NUKE_CERTS` set) so the provisioning profile is regenerated to include it.
 
-The bundle identifier is `dev.idoodler.<TEAMID>.labimporter`. The `<TEAMID>` placeholder is substituted automatically from the `TEAMID` secret at build time via `Config.xcconfig`.
+The bundle identifier is `dev.idoodler.<TEAMID>.labimporter`; the share extension's is `dev.idoodler.<TEAMID>.labimporter.share`. The `<TEAMID>` placeholder is substituted automatically from the `TEAMID` secret at build time via `Config.xcconfig`.
+
+**One manual step (App Group).** The share extension hands shared text to the app through an App Group, and the App Store Connect API can't create or assign App Groups. Once, in the [Apple Developer portal](https://developer.apple.com/account/resources/identifiers/list/applicationGroup), register the App Group `group.dev.idoodler.<TEAMID>.labimporter`, then edit both identifiers above, enable **App Groups** and assign that group. If profiles already exist, re-run **3. Create Certificates** with `ENABLE_NUKE_CERTS` or `FORCE_NUKE_CERTS` set so they include it.
 
 After this step, go to [App Store Connect](https://appstoreconnect.apple.com) and create a new app record for **LabImporter** using the bundle ID shown in the workflow log. This is required before the first build can upload to TestFlight.
 

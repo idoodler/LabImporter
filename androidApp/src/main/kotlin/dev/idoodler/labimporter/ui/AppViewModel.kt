@@ -19,6 +19,9 @@ import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.core.model.LabReport
 import dev.idoodler.labimporter.core.model.LabValue
 import dev.idoodler.labimporter.core.parse.ParseProgress
+import dev.idoodler.labimporter.core.transfer.ReportTransfer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import dev.idoodler.labimporter.data.HealthConnectAvailability
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -313,11 +316,55 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    // region Transfer (iPhone ⇄ Android)
+
+    /** Every report as the transfer file (shared `ReportTransfer`: a FHIR Bundle), ready to share. */
+    fun exportAllReports(): Uri? {
+        val all = reports.value.takeIf { it.isNotEmpty() } ?: return null
+        val file = File(exportsDirectory(), ReportTransfer.fileName(today()))
+        file.writeText(ReportTransfer.export(all, softwareIdentity))
+        return FileProvider.getUriForFile(context, "${context.packageName}.files", file)
+    }
+
+    /**
+     * Imports a transfer file — or a LabImporter CDA document from either app —
+     * skipping reports that are already here, and reports what happened.
+     */
+    fun importReports(uri: Uri) {
+        viewModelScope.launch {
+            val contents = try {
+                withContext(Dispatchers.IO) {
+                    context.contentResolver.openInputStream(uri)?.use { it.readBytes().decodeToString() }
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w(TAG, "Couldn't read the transfer file", e)
+                null
+            } ?: return@launch run { _message.value = context.getString(R.string.error_read_document) }
+            val read = ReportTransfer.read(contents) as? ReportTransfer.ReadResult.Reports
+                ?: return@launch run { _message.value = context.getString(R.string.transfer_unsupported) }
+            val plan = ReportTransfer.plan(reports.value, read.reports)
+            try {
+                // Fresh ids: storage ids from the other device mean nothing here.
+                repository.saveAll(plan.toImport.map { it.copy(id = kotlin.uuid.Uuid.random().toString()) })
+                _message.value = context.getString(R.string.transfer_summary, plan.toImport.size, plan.alreadyPresent)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _message.value = context.getString(R.string.error_save, e.message.orEmpty())
+            }
+        }
+    }
+
+    private fun exportsDirectory() = File(context.cacheDir, "exports").apply { mkdirs() }
+
+    // endregion
+
     /** Writes the report as a C-CDA document (shared generator) and returns a shareable Uri. */
     fun exportCda(report: LabReport): Uri {
         val xml = CdaExport.generate(report.asLabValues, report.date, softwareIdentity, report.patientName, report.authorName)
-        val dir = File(context.cacheDir, "exports").apply { mkdirs() }
-        val file = File(dir, "LabResults-${report.date}.xml").apply { writeText(xml) }
+        val file = File(exportsDirectory(), "LabResults-${report.date}.xml").apply { writeText(xml) }
         return FileProvider.getUriForFile(context, "${context.packageName}.files", file)
     }
 

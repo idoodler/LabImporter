@@ -7,7 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		002FF15BE9F052637638C743 /* ReportTransferService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C3A56423879B13EECC5A2D /* ReportTransferService.swift */; };
 		1980424250185345862ABDA1 /* TestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B8C45505E8153833C8E6D73 /* TestSupport.swift */; };
+		19F32D60576BCE5E4F027EBD /* LabImporterShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = DE0509DCBAD0DE0B9B9BFDB9 /* LabImporterShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		1F71BBFA86E343E8030D4772 /* report.cda.xml in Resources */ = {isa = PBXBuildFile; fileRef = FD58767C7178A49BAB8FBE6B /* report.cda.xml */; };
 		2429A57046AF0C407704B1D1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8697C8B69368D44D6635379B /* Foundation.framework */; };
 		402366324649FA7CCE9915EA /* CDAExportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D324A0B5E9721D89AFB660 /* CDAExportTests.swift */; };
@@ -15,7 +17,11 @@
 		55AD043FD51A83E346BFA65E /* ParseSchemaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AC48436CB533C97960A62A4 /* ParseSchemaTests.swift */; };
 		636BA85E2FCC52EE006E8E71 /* HealthPermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 636BA85D2FCC52EE006E8E71 /* HealthPermissionView.swift */; };
 		80396BC045B0FE1CEEFB9AAE /* LaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E285DF31AC9A5A11C742F9F /* LaunchTests.swift */; };
+		8EDE12FEB078268601ECD96D /* ShareInbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D4C1275881023AFBBE0AC /* ShareInbox.swift */; };
+		90E17444A6DE71E71633BD10 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF39E6CDE0AAC7930FA57B0 /* ShareViewController.swift */; };
 		A7AB66CBD5805334A9273027 /* SharedCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 794A5456843DA760D334FE72 /* SharedCore.swift */; };
+		A7EA43B1DB70508F02B1A197 /* ShareInbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D4C1275881023AFBBE0AC /* ShareInbox.swift */; };
+		A964924DB8628B3BF19463FD /* ShareInboxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FFE290841848738CAADD9E0 /* ShareInboxTests.swift */; };
 		AABB000000000000000040AA /* LabImporterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000020AA /* LabImporterApp.swift */; };
 		AABB000000000000000041AA /* LabValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000021AA /* LabValue.swift */; };
 		AABB000000000000000042AA /* LabMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000022AA /* LabMapping.swift */; };
@@ -101,12 +107,23 @@
 		AASI000000000000000025AA /* SearchLabValuesIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASI000000000000000026AA /* SearchLabValuesIntent.swift */; };
 		AASP000000000000000001AA /* SpotlightIndexService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASP000000000000000002AA /* SpotlightIndexService.swift */; };
 		AASP000000000000000005AA /* SearchPresentationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AASP000000000000000006AA /* SearchPresentationCoordinator.swift */; };
+		B0427DF4A38E515AE6440B76 /* ShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D084E33B414D911400410893 /* ShareView.swift */; };
+		B74DCE6EB259FAA3137014AE /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = AABB000000000000000076AA /* Localizable.xcstrings */; };
 		CA2558B52241BD4D242D483D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8697C8B69368D44D6635379B /* Foundation.framework */; };
 		D24B3094F0FD8A93BB70A34F /* ScreenshotMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C897701053C6666E95989E84 /* ScreenshotMode.swift */; };
+		D4991EEE3D0EAEDA34E1C0F5 /* LabParserErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0D199B97E02563880F592E /* LabParserErrorTests.swift */; };
 		E1E847C11A691C48C4A4BD9B /* SharedCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672B9FA541A85096FBFECE89 /* SharedCoreTests.swift */; };
+		F8B09378829F851A451D0C6A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8697C8B69368D44D6635379B /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		04B081A43427043EAFCB27C6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AABB000000000000000001AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FBD5860EFBA755CA7140ED32;
+			remoteInfo = LabImporterShare;
+		};
 		5F67C84EFFA4375319499746 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AABB000000000000000001AA /* Project object */;
@@ -123,16 +140,36 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		A46B376A93EB4A382ADABDA5 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				19F32D60576BCE5E4F027EBD /* LabImporterShare.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		1FFE290841848738CAADD9E0 /* ShareInboxTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareInboxTests.swift; sourceTree = "<group>"; };
+		347D4C1275881023AFBBE0AC /* ShareInbox.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareInbox.swift; sourceTree = "<group>"; };
 		3B41D7BB510B15B47C17F1B2 /* LabImporterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LabImporterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4E285DF31AC9A5A11C742F9F /* LaunchTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LaunchTests.swift; sourceTree = "<group>"; };
 		636BA85D2FCC52EE006E8E71 /* HealthPermissionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthPermissionView.swift; sourceTree = "<group>"; };
 		672B9FA541A85096FBFECE89 /* SharedCoreTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SharedCoreTests.swift; sourceTree = "<group>"; };
+		74513630FCB091D21B39F7C2 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		794A5456843DA760D334FE72 /* SharedCore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SharedCore.swift; sourceTree = "<group>"; };
 		7CC9022D4642CE32D74F146D /* LabImporterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LabImporterUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8697C8B69368D44D6635379B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		92C3A56423879B13EECC5A2D /* ReportTransferService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReportTransferService.swift; sourceTree = "<group>"; };
 		9AC48436CB533C97960A62A4 /* ParseSchemaTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParseSchemaTests.swift; sourceTree = "<group>"; };
+		9AF39E6CDE0AAC7930FA57B0 /* ShareViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		9B8C45505E8153833C8E6D73 /* TestSupport.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TestSupport.swift; sourceTree = "<group>"; };
+		9E404ED15E76CE89D2D8ABB6 /* LabImporterShare.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = LabImporterShare.entitlements; sourceTree = "<group>"; };
 		AABB000000000000000019AA /* LabImporter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LabImporter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AABB000000000000000020AA /* LabImporterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabImporterApp.swift; sourceTree = "<group>"; };
 		AABB000000000000000021AA /* LabValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabValue.swift; sourceTree = "<group>"; };
@@ -243,10 +280,21 @@
 		B256B38BDF50DF9CBDFE493B /* ModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ModelTests.swift; sourceTree = "<group>"; };
 		C3D324A0B5E9721D89AFB660 /* CDAExportTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CDAExportTests.swift; sourceTree = "<group>"; };
 		C897701053C6666E95989E84 /* ScreenshotMode.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScreenshotMode.swift; sourceTree = "<group>"; };
+		D084E33B414D911400410893 /* ShareView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareView.swift; sourceTree = "<group>"; };
+		DE0509DCBAD0DE0B9B9BFDB9 /* LabImporterShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = LabImporterShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD58767C7178A49BAB8FBE6B /* report.cda.xml */ = {isa = PBXFileReference; includeInIndex = 1; path = report.cda.xml; sourceTree = "<group>"; };
+		FE0D199B97E02563880F592E /* LabParserErrorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LabParserErrorTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		06D50CF30A7B7BB76994B91E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F8B09378829F851A451D0C6A /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		252ADDFDC38AAF1DFE286F16 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -305,6 +353,8 @@
 				9B8C45505E8153833C8E6D73 /* TestSupport.swift */,
 				672B9FA541A85096FBFECE89 /* SharedCoreTests.swift */,
 				9AC48436CB533C97960A62A4 /* ParseSchemaTests.swift */,
+				FE0D199B97E02563880F592E /* LabParserErrorTests.swift */,
+				1FFE290841848738CAADD9E0 /* ShareInboxTests.swift */,
 			);
 			name = LabImporterTests;
 			path = LabImporterTests;
@@ -320,6 +370,7 @@
 				8B85208B717EA34074BB2027 /* LabImporterTests */,
 				DC24B3BAE3CEC68FBD9243CB /* LabImporterUITests */,
 				0A1ED1104428D91DF1FF9462 /* Golden */,
+				F5271A53A87D105C9A49D46A /* LabImporterShare */,
 			);
 			sourceTree = "<group>";
 		};
@@ -329,6 +380,7 @@
 				AABB000000000000000019AA /* LabImporter.app */,
 				3B41D7BB510B15B47C17F1B2 /* LabImporterTests.xctest */,
 				7CC9022D4642CE32D74F146D /* LabImporterUITests.xctest */,
+				DE0509DCBAD0DE0B9B9BFDB9 /* LabImporterShare.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -378,6 +430,8 @@
 				AABB0000000000000000D0AA /* CloudSyncService.swift */,
 				AASP000000000000000002AA /* SpotlightIndexService.swift */,
 				794A5456843DA760D334FE72 /* SharedCore.swift */,
+				347D4C1275881023AFBBE0AC /* ShareInbox.swift */,
+				92C3A56423879B13EECC5A2D /* ReportTransferService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -625,6 +679,18 @@
 			path = LabImporterUITests;
 			sourceTree = "<group>";
 		};
+		F5271A53A87D105C9A49D46A /* LabImporterShare */ = {
+			isa = PBXGroup;
+			children = (
+				D084E33B414D911400410893 /* ShareView.swift */,
+				9AF39E6CDE0AAC7930FA57B0 /* ShareViewController.swift */,
+				74513630FCB091D21B39F7C2 /* Info.plist */,
+				9E404ED15E76CE89D2D8ABB6 /* LabImporterShare.entitlements */,
+			);
+			name = LabImporterShare;
+			path = LabImporterShare;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -675,15 +741,34 @@
 				AABB000000000000000089AA /* Generate LOINC resource */,
 				AABB0000000000000000ABAA /* Copy LICENSE */,
 				AABB000000000000000088AA /* Embed Build Metadata */,
+				A46B376A93EB4A382ADABDA5 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				503E68440D20F4BD76B17484 /* PBXTargetDependency */,
 			);
 			name = LabImporter;
 			productName = LabImporter;
 			productReference = AABB000000000000000019AA /* LabImporter.app */;
 			productType = "com.apple.product-type.application";
+		};
+		FBD5860EFBA755CA7140ED32 /* LabImporterShare */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1CB3A1C9CE200943BD1738A2 /* Build configuration list for PBXNativeTarget "LabImporterShare" */;
+			buildPhases = (
+				C5171C2C71C1F3615F768755 /* Sources */,
+				06D50CF30A7B7BB76994B91E /* Frameworks */,
+				F8A8F28EDEC29CE2BD8A1C5C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LabImporterShare;
+			productName = LabImporterShare;
+			productReference = DE0509DCBAD0DE0B9B9BFDB9 /* LabImporterShare.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -716,6 +801,7 @@
 				AABB000000000000000005AA /* LabImporter */,
 				5052CDF32644F8A1AB7A4F39 /* LabImporterTests */,
 				863CCDC4183FFEB091CEE6D1 /* LabImporterUITests */,
+				FBD5860EFBA755CA7140ED32 /* LabImporterShare */,
 			);
 		};
 /* End PBXProject section */
@@ -736,6 +822,14 @@
 				AABB000000000000000052AA /* Assets.xcassets in Resources */,
 				AAIC000000000000000002AA /* AppIcon.icon in Resources */,
 				AABB000000000000000077AA /* Localizable.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F8A8F28EDEC29CE2BD8A1C5C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B74DCE6EB259FAA3137014AE /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -821,6 +915,8 @@
 				1980424250185345862ABDA1 /* TestSupport.swift in Sources */,
 				E1E847C11A691C48C4A4BD9B /* SharedCoreTests.swift in Sources */,
 				55AD043FD51A83E346BFA65E /* ParseSchemaTests.swift in Sources */,
+				D4991EEE3D0EAEDA34E1C0F5 /* LabParserErrorTests.swift in Sources */,
+				A964924DB8628B3BF19463FD /* ShareInboxTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -914,12 +1010,30 @@
 				AAMS000000000000000001AA /* MetricSearchResultsView.swift in Sources */,
 				AANV000000000000000001AA /* NewValuesSiriPromptView.swift in Sources */,
 				A7AB66CBD5805334A9273027 /* SharedCore.swift in Sources */,
+				8EDE12FEB078268601ECD96D /* ShareInbox.swift in Sources */,
+				002FF15BE9F052637638C743 /* ReportTransferService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C5171C2C71C1F3615F768755 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B0427DF4A38E515AE6440B76 /* ShareView.swift in Sources */,
+				90E17444A6DE71E71633BD10 /* ShareViewController.swift in Sources */,
+				A7EA43B1DB70508F02B1A197 /* ShareInbox.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		503E68440D20F4BD76B17484 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = LabImporterShare;
+			target = FBD5860EFBA755CA7140ED32 /* LabImporterShare */;
+			targetProxy = 04B081A43427043EAFCB27C6 /* PBXContainerItemProxy */;
+		};
 		D002EBD367F0E7F6C66E0DBE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = LabImporter;
@@ -935,6 +1049,32 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		1DE3D808F56A1D54984D0F84 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AABB000000000000000039AA /* Config.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = LabImporterShare/LabImporterShare.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = LabImporterShare/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_IDENTIFIER).share";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		1F0D77EA2CF30711D6E921EE /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = AABB000000000000000039AA /* Config.xcconfig */;
@@ -1011,6 +1151,33 @@
 			};
 			name = Debug;
 		};
+		979A1FEFFB21C24B04600BDE /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AABB000000000000000039AA /* Config.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = LabImporterShare/LabImporterShare.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = LabImporterShare/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_IDENTIFIER).share";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		AABB000000000000000002AA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1045,6 +1212,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -1065,6 +1233,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1108,6 +1277,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1122,6 +1292,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.1.0;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -1138,7 +1309,6 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = LabImporter/LabImporter.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -1154,7 +1324,6 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -1180,7 +1349,6 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = LabImporter/LabImporter.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -1196,7 +1364,6 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -1217,6 +1384,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1CB3A1C9CE200943BD1738A2 /* Build configuration list for PBXNativeTarget "LabImporterShare" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				979A1FEFFB21C24B04600BDE /* Release */,
+				1DE3D808F56A1D54984D0F84 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		5054BF8AD6B8E135A5B1B611 /* Build configuration list for PBXNativeTarget "LabImporterUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
