@@ -49,6 +49,9 @@ data class ReviewDraft(
     val authorName: String,
     /** Which model read the values; null for manual entry and edits. */
     val engine: AiEngine?,
+    /** Names the model read from the report — offered as suggestions, never applied unasked (as on iOS). */
+    val detectedPatientName: String? = null,
+    val detectedAuthorName: String? = null,
     /** Set when editing an already-saved report. */
     val original: LabReport? = null,
 )
@@ -96,6 +99,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     val usingStandIn: StateFlow<Boolean> = ai.isUsingStandIn
     val healthConnectPermissions: Set<String> = container.healthConnect.permissions
     val softwareIdentity: String = container.softwareIdentity
+    val appInfo = container.appInfo
 
     private val _importState = MutableStateFlow<ImportState>(ImportState.Idle)
     val importState: StateFlow<ImportState> = _importState.asStateFlow()
@@ -225,9 +229,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             ReviewDraft(
                 values = result.values,
                 date = result.reportDate ?: today(),
-                patientName = result.patientName ?: preferences.patientName.value,
-                authorName = result.authorName.orEmpty(),
+                patientName = preferences.patientName.value,
+                authorName = preferences.authorName.value,
                 engine = engine,
+                detectedPatientName = result.patientName?.trim()?.takeIf { it.isNotEmpty() },
+                detectedAuthorName = result.authorName?.trim()?.takeIf { it.isNotEmpty() },
             ),
         )
     }
@@ -259,7 +265,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 values = listOf(blankValue()),
                 date = today(),
                 patientName = preferences.patientName.value,
-                authorName = "",
+                authorName = preferences.authorName.value,
                 engine = null,
             ),
         )
@@ -305,6 +311,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             runCatching {
                 if (draft.original != null) repository.replace(draft.original, report) else repository.save(report)
             }.onSuccess {
+                // A new report's names are remembered for the next one; editing an old report leaves them.
+                if (draft.original == null) {
+                    preferences.setPatientName(draft.patientName.trim())
+                    preferences.setAuthorName(draft.authorName.trim())
+                }
                 _importState.value = ImportState.Idle
                 _message.value = context.resources.getQuantityString(R.plurals.saved_values, report.entries.size, report.entries.size)
             }.onFailure {

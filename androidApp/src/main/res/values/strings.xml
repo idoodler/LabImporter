@@ -162,7 +162,7 @@
 
     <!-- Settings -->
     <string name="settings_patient">Patient</string>
-    <string name="patient_hint">Used for new reports when the report doesn\'t show a name.</string>
+    <string name="patient_hint">Filled in for new reports. A different name found in a report is offered as a suggestion.</string>
     <string name="settings_storage">Storage</string>
     <string name="settings_ai">On-Device AI</string>
     <string name="hidden">Hidden</string>
@@ -328,4 +328,16 @@
         <item quantity="other">%d reports deleted</item>
     </plurals>
     <string name="delete_some_failed">Some reports couldn\'t be removed.</string>
+
+    <!-- Review suggestions (iOS wording) -->
+    <string name="detected_in_report">Detected in report: \"%1$s\"</string>
+    <string name="use">Use</string>
+    <string name="welcome_back">Welcome back, %1$s</string>
+
+    <!-- About & support (iOS wording) -->
+    <string name="license">License</string>
+    <string name="view_on_github">View on GitHub</string>
+    <string name="report_issue">Report an Issue</string>
+    <string name="support">Support</string>
+    <string name="support_footer">LabImporter is free and open source. If you find it useful, you can support its development.</string>
 </resources>

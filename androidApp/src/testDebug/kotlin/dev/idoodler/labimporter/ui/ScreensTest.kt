@@ -266,4 +266,18 @@ class ScreensTest {
         compose.onAllNodesWithText(string(R.string.delete)).onLast().performClick()
         assertEquals(setOf("r1", "r2", "r3"), deleted.last())
     }
+
+    @Test
+    fun reviewOffersTheNameFoundInTheReport() {
+        var draft by mutableStateOf(
+            ReviewDraft(listOf(value("a", "2160-0", 0.8)), LocalDate(2026, 5, 6), "", "", AiEngine.GEMINI_NANO, detectedPatientName = "Erika Muster"),
+        )
+        compose.setContent { LabImporterTheme { ReviewScreen(draft, { draft = it(draft) }, { _, _ -> }, { "" }, {}, {}, {}) } }
+        val suggestion = app.getString(R.string.detected_in_report, "Erika Muster")
+        compose.onNode(hasScrollAction()).performScrollToNode(hasText(suggestion))
+        compose.onNodeWithText(string(R.string.use)).performClick()
+        assertEquals("Erika Muster", draft.patientName)
+        // Once used, the suggestion goes away.
+        compose.onNodeWithText(suggestion).assertDoesNotExist()
+    }
 }

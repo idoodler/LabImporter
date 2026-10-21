@@ -7,9 +7,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Badge
+import androidx.compose.material.icons.rounded.BugReport
+import androidx.compose.material.icons.rounded.Code
+import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material.icons.rounded.Cake
 import androidx.compose.material.icons.rounded.Check
@@ -67,6 +73,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.graphics.shapes.RoundedPolygon
 import dev.idoodler.labimporter.R
 import dev.idoodler.labimporter.ai.AiAvailability
@@ -74,6 +81,7 @@ import dev.idoodler.labimporter.ai.AiProblem
 import dev.idoodler.labimporter.ai.DevelopmentStandIn
 import dev.idoodler.labimporter.ai.messageRes
 import dev.idoodler.labimporter.core.LabCore
+import dev.idoodler.labimporter.core.about.FundingLink
 import dev.idoodler.labimporter.core.model.LabCategory
 import dev.idoodler.labimporter.data.HealthConnectAvailability
 import dev.idoodler.labimporter.data.PatientDetails
@@ -103,10 +111,14 @@ fun SettingsScreen(
     onBack: () -> Unit = {},
     onOpenSortEditor: () -> Unit = {},
     onOpenCatalog: () -> Unit = {},
+    about: AboutSettings = AboutSettings(),
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     var showLicense by remember { mutableStateOf(false) }
     var showDisclaimer by remember { mutableStateOf(false) }
+    var showAppLicense by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val open = { url: String -> context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri())) }
     Box(modifier.fillMaxSize()) {
         CategoryWash(listOf(LabCategory.ENDOCRINE.color, LabCategory.BLOOD_GAS.color, LabCategory.HEMATOLOGY.color), intensity = 0.7f)
         Scaffold(
@@ -175,27 +187,83 @@ fun SettingsScreen(
 
                 item { SectionTitle(stringResource(R.string.settings_about)) }
                 item {
-                    GroupedListItem(
-                        0, 3,
-                        leading = { Badge(MaterialShapes.Clover4Leaf, LabCategory.HEPATIC.color, Icons.Rounded.Lock) },
-                        headline = { Text(stringResource(R.string.privacy_title)) },
-                        supporting = { Text(stringResource(R.string.privacy_message)) },
-                    )
+                    // Rows shown depend on what the build knows (a fork without a remote has no GitHub rows).
+                    val rows = buildList<@Composable (Int, Int) -> Unit> {
+                        add { i, n ->
+                            GroupedListItem(
+                                i, n,
+                                leading = { Badge(MaterialShapes.Clover4Leaf, LabCategory.HEPATIC.color, Icons.Rounded.Lock) },
+                                headline = { Text(stringResource(R.string.privacy_title)) },
+                                supporting = { Text(stringResource(R.string.privacy_message)) },
+                            )
+                        }
+                        add { i, n ->
+                            GroupedListItem(
+                                i, n, onClick = { showDisclaimer = true },
+                                leading = { Badge(MaterialShapes.SoftBurst, LabCategory.GLYCEMIC.color, Icons.Rounded.Info) },
+                                headline = { Text(stringResource(R.string.disclaimer_title)) },
+                            )
+                        }
+                        if (about.licenseText != null) {
+                            add { i, n ->
+                                GroupedListItem(
+                                    i, n, onClick = { showAppLicense = true },
+                                    leading = { Badge(MaterialShapes.Cookie4Sided, LabCategory.HEMATOLOGY.color, Icons.Rounded.Description) },
+                                    headline = { Text(stringResource(R.string.license)) },
+                                )
+                            }
+                        }
+                        about.repositoryUrl?.let { url ->
+                            add { i, n ->
+                                GroupedListItem(
+                                    i, n, onClick = { open(url) },
+                                    leading = { Badge(MaterialShapes.Square, LabCategory.OTHER.color, Icons.Rounded.Code) },
+                                    headline = { Text(stringResource(R.string.view_on_github)) },
+                                    trailing = { Icon(Icons.AutoMirrored.Rounded.OpenInNew, null) },
+                                )
+                            }
+                        }
+                        about.newIssueUrl?.let { url ->
+                            add { i, n ->
+                                GroupedListItem(
+                                    i, n, onClick = { open(url) },
+                                    leading = { Badge(MaterialShapes.Burst, LabCategory.CARDIAC.color, Icons.Rounded.BugReport) },
+                                    headline = { Text(stringResource(R.string.report_issue)) },
+                                    trailing = { Icon(Icons.AutoMirrored.Rounded.OpenInNew, null) },
+                                )
+                            }
+                        }
+                        add { i, n ->
+                            GroupedListItem(
+                                i, n,
+                                leading = { Badge(MaterialShapes.Pentagon, LabCategory.OTHER.color, Icons.Rounded.Tag) },
+                                headline = { Text(stringResource(R.string.version)) },
+                                supporting = { Text(softwareIdentity) },
+                            )
+                        }
+                    }
+                    Column { rows.forEachIndexed { index, row -> row(index, rows.size) } }
                 }
-                item {
-                    GroupedListItem(
-                        1, 3, onClick = { showDisclaimer = true },
-                        leading = { Badge(MaterialShapes.SoftBurst, LabCategory.GLYCEMIC.color, Icons.Rounded.Info) },
-                        headline = { Text(stringResource(R.string.disclaimer_title)) },
-                    )
-                }
-                item {
-                    GroupedListItem(
-                        2, 3,
-                        leading = { Badge(MaterialShapes.Pentagon, LabCategory.OTHER.color, Icons.Rounded.Tag) },
-                        headline = { Text(stringResource(R.string.version)) },
-                        supporting = { Text(softwareIdentity) },
-                    )
+
+                if (about.fundingLinks.isNotEmpty()) {
+                    item { SectionTitle(stringResource(R.string.support)) }
+                    item {
+                        Column {
+                            about.fundingLinks.forEachIndexed { index, link ->
+                                GroupedListItem(
+                                    index, about.fundingLinks.size, onClick = { open(link.url) },
+                                    leading = { Badge(MaterialShapes.Heart, LabCategory.CARDIAC.color, Icons.Rounded.Favorite) },
+                                    headline = { Text(link.title) },
+                                    trailing = { Icon(Icons.AutoMirrored.Rounded.OpenInNew, null) },
+                                )
+                            }
+                            Text(
+                                stringResource(R.string.support_footer), style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -209,6 +277,15 @@ fun SettingsScreen(
             confirmButton = { TextButton(onClick = { showLicense = false }) { Text(stringResource(R.string.ok)) } },
         )
     }
+    if (showAppLicense) {
+        AlertDialog(
+            onDismissRequest = { showAppLicense = false },
+            icon = { Icon(Icons.Rounded.Description, null) },
+            title = { Text(stringResource(R.string.license)) },
+            text = { Text(about.licenseText.orEmpty(), Modifier.verticalScroll(rememberScrollState())) },
+            confirmButton = { TextButton(onClick = { showAppLicense = false }) { Text(stringResource(R.string.ok)) } },
+        )
+    }
     if (showDisclaimer) {
         AlertDialog(
             onDismissRequest = { showDisclaimer = false },
@@ -219,6 +296,14 @@ fun SettingsScreen(
         )
     }
 }
+
+/** Project links and the license from the build (the iOS `AppInfo`); missing ones hide their rows. */
+data class AboutSettings(
+    val repositoryUrl: String? = null,
+    val newIssueUrl: String? = null,
+    val fundingLinks: List<FundingLink> = emptyList(),
+    val licenseText: String? = null,
+)
 
 /** The patient's name (for new reports) and the details shown on the PDF cover. */
 data class PatientSettings(

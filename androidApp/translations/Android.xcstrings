@@ -6513,154 +6513,6 @@
         }
       }
     },
-    "Used for new reports when the report doesn't show a name." : {
-      "localizations" : {
-        "bg" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Използва се за нови отчети, когато в отчета не е посочено име."
-          }
-        },
-        "ca" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "S'utilitza per als informes nous quan l'informe no mostra cap nom."
-          }
-        },
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Použije se pro nové protokoly, pokud protokol neuvádí jméno."
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bruges til nye rapporter, når rapporten ikke viser et navn."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wird für neue Berichte verwendet, wenn der Bericht keinen Namen zeigt."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Χρησιμοποιείται για νέες αναφορές όταν η αναφορά δεν εμφανίζει όνομα."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se usa en los informes nuevos cuando el informe no muestra ningún nombre."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Käytetään uusissa raporteissa, kun raportissa ei näy nimeä."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Utilisé pour les nouveaux rapports lorsque le rapport n’indique pas de nom."
-          }
-        },
-        "hr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Koristi se za nova izvješća kada izvješće ne prikazuje ime."
-          }
-        },
-        "hu" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Új jelentéseknél használatos, ha a jelentésen nem szerepel név."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Usato per i nuovi referti quando il referto non mostra un nome."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "レポートに氏名が記載されていない場合、新しいレポートに使用されます。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wordt gebruikt voor nieuwe rapporten als het rapport geen naam toont."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Używane w nowych raportach, gdy raport nie zawiera nazwiska."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Usado em novos relatórios quando o relatório não mostra um nome."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Utilizado em novos relatórios quando o relatório não mostra um nome."
-          }
-        },
-        "ro" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Folosit pentru rapoartele noi când raportul nu afișează un nume."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Используется для новых отчётов, если в отчёте не указано имя."
-          }
-        },
-        "sk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Použije sa pre nové správy, ak správa neuvádza meno."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Används för nya rapporter när rapporten inte visar något namn."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Raporda ad görünmediğinde yeni raporlar için kullanılır."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Використовується для нових звітів, якщо у звіті не вказано ім'я."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "当报告中没有显示姓名时，用于新报告。"
-          }
-        }
-      }
-    },
     "Storage" : {
       "localizations" : {
         "bg" : {
@@ -13253,6 +13105,206 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "Filled in for new reports. A different name found in a report is offered as a suggestion." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Попълва се за новите отчети. Различно име, открито в отчет, се предлага като предложение."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S'emplena als informes nous. Si un informe mostra un altre nom, s'ofereix com a suggeriment."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vyplní se u nových protokolů. Jiné jméno nalezené v protokolu se nabídne jako návrh."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Udfyldes for nye rapporter. Et andet navn i en rapport foreslås i stedet."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wird für neue Berichte eingetragen. Ein anderer Name aus einem Bericht wird als Vorschlag angeboten."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Συμπληρώνεται στις νέες αναφορές. Ένα διαφορετικό όνομα που βρίσκεται σε αναφορά προτείνεται ως εναλλακτική."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se rellena en los informes nuevos. Si un informe muestra otro nombre, se ofrece como sugerencia."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Täytetään uusiin raportteihin. Raportista löytyvä eri nimi tarjotaan ehdotuksena."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renseigné pour les nouveaux rapports. Un autre nom trouvé dans un rapport est proposé en suggestion."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Upisuje se za nova izvješća. Drugo ime pronađeno u izvješću nudi se kao prijedlog."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Az új jelentéseknél ez kerül kitöltésre. A jelentésben talált eltérő nevet javaslatként kínálja fel az app."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inserito nei nuovi referti. Un nome diverso trovato in un referto viene proposto come suggerimento."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新しいレポートに入力されます。レポートに別の名前がある場合は候補として表示されます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wordt ingevuld bij nieuwe rapporten. Een andere naam uit een rapport wordt als suggestie aangeboden."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wpisywane w nowych raportach. Inne imię i nazwisko znalezione w raporcie zostanie zaproponowane jako sugestia."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preenchido nos novos relatórios. Um nome diferente encontrado em um relatório é oferecido como sugestão."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preenchido nos novos relatórios. Um nome diferente encontrado num relatório é apresentado como sugestão."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se completează în rapoartele noi. Un alt nume găsit într-un raport este oferit ca sugestie."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подставляется в новые отчёты. Другое имя, найденное в отчёте, предлагается как вариант."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vyplní sa v nových správach. Iné meno nájdené v správe sa ponúkne ako návrh."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fylls i för nya rapporter. Ett annat namn som hittas i en rapport föreslås."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeni raporlara doldurulur. Raporda bulunan farklı bir ad öneri olarak sunulur."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Підставляється в нові звіти. Інше ім’я, знайдене у звіті, пропонується як варіант."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新报告会自动填入。报告中出现的其他姓名会作为建议提供。"
+          }
+        }
+      }
+    },
+    "Welcome to" : {
+      "comment" : "Gender-neutral Android wording where iOS inflects automatically (^[…](inflect: true)).",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Te damos la bienvenida a"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ti diamo il benvenuto in"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Boas-vindas ao"
+          }
+        }
+      }
+    },
+    "Welcome back, %@" : {
+      "comment" : "Gender-neutral Android wording where iOS inflects automatically (^[…](inflect: true)).",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hola de nuevo, %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bon retour, %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Che piacere rivederti, %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Que bom ver você de novo, %@"
           }
         }
       }

@@ -315,12 +315,27 @@ private fun DetailsCard(draft: ReviewDraft, onUpdateDraft: ((ReviewDraft) -> Rev
                 label = { Text(stringResource(R.string.lab_or_doctor)) }, singleLine = true,
                 shape = MaterialTheme.shapes.large, modifier = Modifier.fillMaxWidth(),
             )
+            Suggestion(draft.detectedAuthorName, draft.authorName) { name -> onUpdateDraft { it.copy(authorName = name) } }
             OutlinedTextField(
                 value = draft.patientName, onValueChange = { v -> onUpdateDraft { it.copy(patientName = v) } },
                 label = { Text(stringResource(R.string.patient)) }, singleLine = true,
                 shape = MaterialTheme.shapes.large, modifier = Modifier.fillMaxWidth(),
             )
+            Suggestion(draft.detectedPatientName, draft.patientName) { name -> onUpdateDraft { it.copy(patientName = name) } }
         }
+    }
+}
+
+/** "Detected in report: “…”" with a Use button, when the report names someone other than the field does. */
+@Composable
+private fun Suggestion(detected: String?, current: String, onUse: (String) -> Unit) {
+    if (detected.isNullOrBlank() || detected == current.trim()) return
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(start = 4.dp)) {
+        Text(
+            stringResource(R.string.detected_in_report, detected), style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, modifier = Modifier.weight(1f),
+        )
+        TextButton(onClick = { onUse(detected) }) { Text(stringResource(R.string.use), fontWeight = FontWeight.SemiBold) }
     }
 }
 

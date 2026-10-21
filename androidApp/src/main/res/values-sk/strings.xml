@@ -145,7 +145,7 @@
     <string name="requirement_update_detail">Udržiavajte Android, Služby Google Play a AICore aktuálne. Na novo nastavenom telefóne môže chvíľu trvať, kým bude Gemini Nano k dispozícii.</string>
     <string name="check_again">Skontrolovať znova</string>
     <string name="settings_patient">Pacient</string>
-    <string name="patient_hint">Použije sa pre nové správy, ak správa neuvádza meno.</string>
+    <string name="patient_hint">Vyplní sa v nových správach. Iné meno nájdené v správe sa ponúkne ako návrh.</string>
     <string name="settings_storage">Úložisko</string>
     <string name="settings_ai">AI v zariadení</string>
     <string name="hidden">Skryté</string>
@@ -298,4 +298,12 @@
         <item quantity="other">%d správ odstránených</item>
     </plurals>
     <string name="delete_some_failed">Niektoré správy sa nepodarilo odstrániť.</string>
+    <string name="detected_in_report">Rozpoznané v správe: „%1$s“</string>
+    <string name="use">Použiť</string>
+    <string name="welcome_back">Vitajte späť, %1$s</string>
+    <string name="license">Licencia</string>
+    <string name="view_on_github">Zobraziť na GitHube</string>
+    <string name="report_issue">Nahlásiť problém</string>
+    <string name="support">Podporiť</string>
+    <string name="support_footer">LabImporter je bezplatný a s otvoreným zdrojovým kódom. Ak vám je užitočný, môžete podporiť jeho vývoj.</string>
 </resources>

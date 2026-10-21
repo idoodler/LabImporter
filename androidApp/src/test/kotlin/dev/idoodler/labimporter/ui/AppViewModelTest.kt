@@ -74,7 +74,9 @@ class AppViewModelTest {
         val draft = (await(viewModel.importState) { it is ImportState.Reviewing } as ImportState.Reviewing).draft
         assertEquals(AiEngine.GEMINI_NANO, draft.engine)
         assertEquals(LocalDate(2026, 5, 6), draft.date)
-        assertEquals("Max Mustermann", draft.patientName)
+        // A name read from the report is only offered (as on iOS); the field keeps the remembered one.
+        assertEquals("", draft.patientName)
+        assertEquals("Max Mustermann", draft.detectedPatientName)
         // Resolved in the report's own language by the shared catalog search, offered as suggestions.
         assertTrue(draft.values.all { it.isSuggestedCode && Regex("^\\d+-\\d$").matches(it.code) })
         assertEquals(listOf(0.8, 6.5), draft.values.map { it.numericValue })
@@ -89,6 +91,21 @@ class AppViewModelTest {
         val reports = await(viewModel.reports) { it.isNotEmpty() }
         assertEquals(listOf("2160-0"), reports.single().entries.map { it.code })
         assertEquals(ImportState.Idle, viewModel.importState.value)
+    }
+
+    @Test
+    fun namesUsedForANewReportAreFilledInForTheNext() {
+        ai.reply = { FakeAi.replyJson(listOf("2160-0", "Kreatinin", "0,8", "mg/dl")) }
+        viewModel.importText("Kreatinin 0,8 mg/dl")
+        await(viewModel.importState) { it is ImportState.Reviewing }
+        viewModel.updateDraft { it.copy(patientName = it.detectedPatientName.orEmpty(), authorName = "Labor Dr. Muster") }
+        viewModel.saveDraft()
+        await(viewModel.reports) { it.isNotEmpty() }
+
+        viewModel.importText("Kreatinin 0,9 mg/dl")
+        val next = (await(viewModel.importState) { it is ImportState.Reviewing } as ImportState.Reviewing).draft
+        assertEquals("Max Mustermann", next.patientName)
+        assertEquals("Labor Dr. Muster", next.authorName)
     }
 
     @Test

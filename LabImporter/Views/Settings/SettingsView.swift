@@ -288,20 +288,13 @@ struct FundingLink: Identifiable {
     let id = UUID()
     let platform: FundingPlatform
     let url: URL
-
-    /// Row title. Custom links have no brand, so we show their host (e.g.
-    /// `paypal.me`); every other platform shows its brand name.
-    var title: String {
-        if platform == .custom {
-            return url.host?.replacingOccurrences(of: "www.", with: "") ?? url.absoluteString
-        }
-        return platform.brandName
-    }
+    /// Brand name, or a custom link's host (shared rule, LabImporterCore `FundingLink`).
+    let title: String
 }
 
-/// The funding platforms GitHub's `FUNDING.yml` supports. Raw values match the
-/// YAML keys verbatim so a parsed config maps straight onto these cases, and
-/// `allCases` declaration order is the order rows appear in Settings.
+/// The funding platforms GitHub's `FUNDING.yml` supports — raw values are the
+/// YAML keys. URLs, titles and display order come from the shared core
+/// (LabImporterCore `FundingPlatform`); this adds the row's symbol and colour.
 enum FundingPlatform: String, CaseIterable {
     case github
     case koFi = "ko_fi"
@@ -316,25 +309,6 @@ enum FundingPlatform: String, CaseIterable {
     case lfxCrowdfunding = "lfx_crowdfunding"
     case thanksDev = "thanks_dev"
     case custom
-
-    /// Brand name shown in the row (not localized — these are proper nouns).
-    var brandName: String {
-        switch self {
-        case .github: return "GitHub Sponsors"
-        case .koFi: return "Ko-fi"
-        case .buyMeACoffee: return "Buy Me a Coffee"
-        case .patreon: return "Patreon"
-        case .openCollective: return "Open Collective"
-        case .liberapay: return "Liberapay"
-        case .polar: return "Polar"
-        case .issuehunt: return "IssueHunt"
-        case .tidelift: return "Tidelift"
-        case .communityBridge: return "LFX Mentorship"
-        case .lfxCrowdfunding: return "LFX Crowdfunding"
-        case .thanksDev: return "thanks.dev"
-        case .custom: return "Custom"
-        }
-    }
 
     var systemImage: String {
         switch self {
@@ -370,40 +344,6 @@ enum FundingPlatform: String, CaseIterable {
         case .thanksDev: return .brown
         case .custom: return .gray
         }
-    }
-
-    /// `String(format:)` template for the funding URL, with `%@` standing in for
-    /// the entry value. Templates mirror the ones GitHub's Sponsor button uses;
-    /// `custom` entries are already full URLs, so their template is just `%@`.
-    private var urlTemplate: String {
-        switch self {
-        case .github: return "https://github.com/sponsors/%@"
-        case .koFi: return "https://ko-fi.com/%@"
-        case .buyMeACoffee: return "https://www.buymeacoffee.com/%@"
-        case .patreon: return "https://www.patreon.com/%@"
-        case .openCollective: return "https://opencollective.com/%@"
-        case .liberapay: return "https://liberapay.com/%@/donate"
-        case .polar: return "https://polar.sh/%@"
-        case .issuehunt: return "https://issuehunt.io/r/%@"
-        case .tidelift: return "https://tidelift.com/funding/github/%@"
-        case .communityBridge: return "https://mentorship.lfx.linuxfoundation.org/project/%@"
-        case .lfxCrowdfunding: return "https://crowdfunding.lfx.linuxfoundation.org/projects/%@"
-        case .thanksDev: return "https://thanks.dev/%@"
-        case .custom: return "%@"
-        }
-    }
-
-    /// Builds the public funding URL for a parsed entry value. The value is the
-    /// raw YAML value: a username for most platforms, `platform/package` for
-    /// Tidelift, the `u/gh/<user>` path tail for thanks.dev, or a full URL for
-    /// `custom`.
-    func url(for value: String) -> URL? {
-        // FUNDING.yml allows schemeless custom URLs (e.g. `octocat.com`), but the
-        // in-app browser only opens http(s) — default a missing scheme to https.
-        if self == .custom, !value.contains("://") {
-            return URL(string: "https://\(value)")
-        }
-        return URL(string: String(format: urlTemplate, value))
     }
 }
 

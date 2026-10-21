@@ -34,6 +34,31 @@ val buildLoincDb = tasks.register<BuildLoincDb>("buildLoincDb") {
     outputDir.set(layout.buildDirectory.dir("generated/loincAssets"))
 }
 
+/** Copies the repo's LICENSE and .github/FUNDING.yml (when present) into the app's assets for Settings. */
+abstract class StageAboutAssets : DefaultTask() {
+    @get:InputFiles abstract val sources: ConfigurableFileCollection
+    @get:OutputDirectory abstract val outputDir: DirectoryProperty
+
+    @TaskAction
+    fun run() {
+        val out = outputDir.get().asFile
+        out.deleteRecursively()
+        out.mkdirs()
+        sources.files.filter { it.isFile }.forEach { it.copyTo(out.resolve(it.name.lowercase().removePrefix(".")), overwrite = true) }
+    }
+}
+
+val stageAboutAssets = tasks.register<StageAboutAssets>("stageAboutAssets") {
+    sources.from(rootProject.file("LICENSE"), rootProject.file(".github/FUNDING.yml"))
+    outputDir.set(layout.buildDirectory.dir("generated/aboutAssets"))
+}
+
+/** Git facts stamped into BuildConfig (like the iOS Info.plist keys); empty outside a git checkout. */
+fun git(vararg args: String): String = providers.exec {
+    commandLine("git", *args)
+    isIgnoreExitValue = true
+}.standardOutput.asText.get().trim()
+
 // The shared module's JVM tests read the catalog from the root build dir.
 val copyLoincForTests = tasks.register<Copy>("copyLoincForTests") {
     from(buildLoincDb)
@@ -51,6 +76,9 @@ android {
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"
+        buildConfigField("String", "GIT_REMOTE", "\"${git("remote", "get-url", "origin")}\"")
+        buildConfigField("String", "GIT_BRANCH", "\"${git("rev-parse", "--abbrev-ref", "HEAD").ifEmpty { "unknown" }}\"")
+        buildConfigField("String", "GIT_COMMIT", "\"${git("rev-parse", "--short", "HEAD").ifEmpty { "unknown" }}\"")
     }
 
     buildTypes {
@@ -75,7 +103,10 @@ android {
         }
     }
 
-    buildFeatures { compose = true }
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -140,6 +171,7 @@ tasks.withType<Test>().configureEach {
 androidComponents {
     onVariants { variant ->
         variant.sources.assets?.addGeneratedSourceDirectory(buildLoincDb, BuildLoincDb::outputDir)
+        variant.sources.assets?.addGeneratedSourceDirectory(stageAboutAssets, StageAboutAssets::outputDir)
     }
 }
 

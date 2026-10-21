@@ -135,7 +135,7 @@
     <string name="requirement_update_detail">Tartsd naprakészen az Androidot, a Google Play-szolgáltatásokat és az AICore-t. Frissen beállított telefonon eltarthat egy ideig, amíg a Gemini Nano elérhetővé válik.</string>
     <string name="check_again">Ellenőrzés újra</string>
     <string name="settings_patient">Páciens</string>
-    <string name="patient_hint">Új jelentéseknél használatos, ha a jelentésen nem szerepel név.</string>
+    <string name="patient_hint">Az új jelentéseknél ez kerül kitöltésre. A jelentésben talált eltérő nevet javaslatként kínálja fel az app.</string>
     <string name="settings_storage">Tárolás</string>
     <string name="settings_ai">MI az eszközön</string>
     <string name="hidden">Rejtett</string>
@@ -282,4 +282,12 @@
         <item quantity="other">%d jelentés törölve</item>
     </plurals>
     <string name="delete_some_failed">Néhány jelentést nem sikerült törölni.</string>
+    <string name="detected_in_report">A leletben felismerve: „%1$s”</string>
+    <string name="use">Használat</string>
+    <string name="welcome_back">Üdv újra, %1$s</string>
+    <string name="license">Licenc</string>
+    <string name="view_on_github">Megtekintés a GitHubon</string>
+    <string name="report_issue">Probléma jelentése</string>
+    <string name="support">Támogatás</string>
+    <string name="support_footer">A LabImporter ingyenes és nyílt forráskódú. Ha hasznosnak találod, támogathatod a fejlesztését.</string>
 </resources>

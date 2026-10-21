@@ -4,10 +4,16 @@
 For every string/plural in androidApp/src/main/res/values/strings.xml the
 translations come from, in order:
 
-  1. LabImporter/Localizable.xcstrings — the iOS catalog, when the English
-     text is identical to one of its keys (shared wording is translated once);
-  2. androidApp/translations/Android.xcstrings — Android-only wording, in the
-     same String Catalog format.
+  1. androidApp/translations/Android.xcstrings — Android-only wording, in the
+     same String Catalog format; it also overrides single languages of shared
+     wording where Android needs different text (e.g. a gender-neutral form
+     where iOS inflects automatically);
+  2. LabImporter/Localizable.xcstrings — the iOS catalog, when the English
+     text is identical to one of its keys (shared wording is translated once).
+
+Apple's automatic grammar agreement markup (`^[word](inflect: true)`) has no
+Android equivalent; a translation containing it must be overridden in
+Android.xcstrings, and --check fails otherwise.
 
 The result is written to values-<lang>/strings.xml (one generated file per
 shipped language). Strings missing from both catalogs, or missing a language,
@@ -85,17 +91,28 @@ def to_android(text: str, positional: bool) -> str:
 
 
 def lookup(catalogs: list[dict], english: str) -> dict | None:
-    """The catalog entry for an Android English text: exact, or with sequential
-    positional specifiers dropped (Android "%1$s of %2$d" == iOS "%@ of %lld")."""
+    """The entry for an Android English text: exact, or with sequential
+    positional specifiers dropped (Android "%1$s of %2$d" == iOS "%@ of %lld").
+    Localizations from earlier catalogs win per language (Android overrides)."""
     candidates = [to_ios(english)]
     positions = re.findall(r"%(\d+)\$", english)
     if positions and positions == [str(i) for i in range(1, len(positions) + 1)]:
         candidates.append(to_ios(re.sub(r"%\d+\$", "%", english)))
+    merged: dict | None = None
     for catalog in catalogs:
         for key in candidates:
             if key in catalog:
-                return catalog[key]
-    return None
+                localizations = catalog[key].get("localizations", {})
+                if merged is None:
+                    merged = {"localizations": dict(localizations)}
+                else:
+                    for lang, loc in localizations.items():
+                        merged["localizations"].setdefault(lang, loc)
+                break
+    return merged
+
+
+INFLECTION = re.compile(r"\^\[[^\]]*\]\(inflect:")
 
 
 def unit_value(loc: dict) -> str | None:
@@ -106,11 +123,12 @@ def unit_value(loc: dict) -> str | None:
 
 
 def main() -> int:
-    catalogs = [json.load(open(path, encoding="utf-8"))["strings"] for path in (CATALOG, ANDROID_CATALOG) if os.path.exists(path)]
+    catalogs = [json.load(open(path, encoding="utf-8"))["strings"] for path in (ANDROID_CATALOG, CATALOG) if os.path.exists(path)]
     tree = ET.parse(SOURCE)
     out: dict[str, list[str]] = {lang: [] for lang in QUALIFIERS}
     missing: list[str] = []
     incomplete: list[str] = []
+    inflected: list[str] = []
 
     for node in tree.getroot():
         name = node.get("name")
@@ -127,6 +145,9 @@ def main() -> int:
                 value = unit_value(entry.get("localizations", {}).get(lang, {}))
                 if value is None:
                     incomplete.append(f"{name} [{lang}]")
+                    continue
+                if INFLECTION.search(value):
+                    inflected.append(f"{name} [{lang}]")
                     continue
                 text = escape_android(to_android(value, positional)).replace("&", "&amp;").replace("<", "&lt;")
                 out[lang].append(f'    <string name="{name}">{text}</string>')
@@ -169,7 +190,7 @@ def main() -> int:
 
     total = sum(1 for n in tree.getroot() if n.get("translatable") != "false")
     print(f"{total - len(missing)}/{total} Android strings translated into {len(QUALIFIERS)} languages "
-          "(iOS catalog first, then androidApp/translations/Android.xcstrings).")
+          "(androidApp/translations/Android.xcstrings first, then the iOS catalog).")
     if missing:
         print("Not in any catalog (add to Localizable.xcstrings if iOS shares the wording, else to Android.xcstrings):")
         for name in missing:
@@ -178,7 +199,11 @@ def main() -> int:
         print("Missing a translation:")
         for item in incomplete:
             print(f"  - {item}")
-    return 1 if (missing or incomplete) and "--check" in sys.argv else 0
+    if inflected:
+        print("Uses Apple's inflection markup (override it in Android.xcstrings with neutral wording):")
+        for item in inflected:
+            print(f"  - {item}")
+    return 1 if (missing or incomplete or inflected) and "--check" in sys.argv else 0
 
 
 if __name__ == "__main__":

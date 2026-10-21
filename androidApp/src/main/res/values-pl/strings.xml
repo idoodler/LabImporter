@@ -145,7 +145,7 @@
     <string name="requirement_update_detail">Aktualizuj Androida, Usługi Google Play i AICore. Na świeżo skonfigurowanym telefonie udostępnienie Gemini Nano może chwilę potrwać.</string>
     <string name="check_again">Sprawdź ponownie</string>
     <string name="settings_patient">Pacjent</string>
-    <string name="patient_hint">Używane w nowych raportach, gdy raport nie zawiera nazwiska.</string>
+    <string name="patient_hint">Wpisywane w nowych raportach. Inne imię i nazwisko znalezione w raporcie zostanie zaproponowane jako sugestia.</string>
     <string name="settings_storage">Pamięć</string>
     <string name="settings_ai">AI na urządzeniu</string>
     <string name="hidden">Ukryte</string>
@@ -298,4 +298,12 @@
         <item quantity="other">Usunięto %d raportu</item>
     </plurals>
     <string name="delete_some_failed">Nie udało się usunąć niektórych raportów.</string>
+    <string name="detected_in_report">Wykryto w raporcie: „%1$s“</string>
+    <string name="use">Użyj</string>
+    <string name="welcome_back">Witaj ponownie, %1$s</string>
+    <string name="license">Licencja</string>
+    <string name="view_on_github">Zobacz na GitHubie</string>
+    <string name="report_issue">Zgłoś problem</string>
+    <string name="support">Wesprzyj</string>
+    <string name="support_footer">LabImporter jest darmowy i open source. Jeśli uznasz go za przydatny, możesz wesprzeć jego rozwój.</string>
 </resources>

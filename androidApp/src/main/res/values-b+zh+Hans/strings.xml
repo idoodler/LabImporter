@@ -130,7 +130,7 @@
     <string name="requirement_update_detail">请保持 Android、Google Play 服务和 AICore 为最新版本。在刚设置好的手机上，Gemini Nano 可能需要一段时间才能使用。</string>
     <string name="check_again">再次检查</string>
     <string name="settings_patient">患者</string>
-    <string name="patient_hint">当报告中没有显示姓名时，用于新报告。</string>
+    <string name="patient_hint">新报告会自动填入。报告中出现的其他姓名会作为建议提供。</string>
     <string name="settings_storage">存储</string>
     <string name="settings_ai">设备端 AI</string>
     <string name="hidden">已隐藏</string>
@@ -274,4 +274,12 @@
         <item quantity="other">已删除 %d 份报告</item>
     </plurals>
     <string name="delete_some_failed">部分报告无法移除。</string>
+    <string name="detected_in_report">在报告中检测到：\"%1$s\"</string>
+    <string name="use">使用</string>
+    <string name="welcome_back">欢迎回来，%1$s</string>
+    <string name="license">许可证</string>
+    <string name="view_on_github">在 GitHub 上查看</string>
+    <string name="report_issue">报告问题</string>
+    <string name="support">支持</string>
+    <string name="support_footer">LabImporter 是免费的开源应用。如果你觉得有用，可以支持它的开发。</string>
 </resources>

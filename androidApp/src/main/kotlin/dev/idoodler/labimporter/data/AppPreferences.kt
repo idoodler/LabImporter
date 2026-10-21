@@ -38,6 +38,10 @@ class AppPreferences(context: Context) {
     private val _patientName = MutableStateFlow(prefs.getString(KEY_PATIENT, "").orEmpty())
     val patientName: StateFlow<String> = _patientName.asStateFlow()
 
+    private val _authorName = MutableStateFlow(prefs.getString(KEY_AUTHOR, "").orEmpty())
+    /** The lab or doctor of the last saved report — pre-filled for the next one (iOS `authorName`). */
+    val authorName: StateFlow<String> = _authorName.asStateFlow()
+
     private val _patientDetails = MutableStateFlow(
         PatientDetails(
             dateOfBirth = prefs.getString(KEY_DATE_OF_BIRTH, null)?.let { runCatching { LocalDate.parse(it) }.getOrNull() },
@@ -70,6 +74,11 @@ class AppPreferences(context: Context) {
         prefs.edit { putString(KEY_PATIENT, value) }
     }
 
+    fun setAuthorName(value: String) {
+        _authorName.value = value
+        prefs.edit { putString(KEY_AUTHOR, value) }
+    }
+
     fun setPatientDetails(value: PatientDetails) {
         _patientDetails.value = value
         prefs.edit {
@@ -90,6 +99,7 @@ class AppPreferences(context: Context) {
     private companion object {
         const val KEY_WELCOME = "hasSeenWelcome"
         const val KEY_PATIENT = "patientName"
+        const val KEY_AUTHOR = "authorName"
         const val KEY_DATE_OF_BIRTH = "patientDateOfBirth"
         const val KEY_SEX = "patientSex"
         const val KEY_STORAGE = "storageMode"

@@ -145,7 +145,7 @@
     <string name="requirement_update_detail">Udržujte Android, Služby Google Play a AICore aktuální. Na nově nastaveném telefonu může chvíli trvat, než bude Gemini Nano k dispozici.</string>
     <string name="check_again">Zkontrolovat znovu</string>
     <string name="settings_patient">Pacient</string>
-    <string name="patient_hint">Použije se pro nové protokoly, pokud protokol neuvádí jméno.</string>
+    <string name="patient_hint">Vyplní se u nových protokolů. Jiné jméno nalezené v protokolu se nabídne jako návrh.</string>
     <string name="settings_storage">Úložiště</string>
     <string name="settings_ai">AI na zařízení</string>
     <string name="hidden">Skryté</string>
@@ -298,4 +298,12 @@
         <item quantity="other">%d protokolů smazáno</item>
     </plurals>
     <string name="delete_some_failed">Některé protokoly se nepodařilo odstranit.</string>
+    <string name="detected_in_report">Rozpoznáno v protokolu: „%1$s“</string>
+    <string name="use">Použít</string>
+    <string name="welcome_back">Vítejte zpět, %1$s</string>
+    <string name="license">Licence</string>
+    <string name="view_on_github">Zobrazit na GitHubu</string>
+    <string name="report_issue">Nahlásit problém</string>
+    <string name="support">Podpořit</string>
+    <string name="support_footer">LabImporter je zdarma a s otevřeným zdrojovým kódem. Pokud vám připadá užitečný, můžete podpořit jeho vývoj.</string>
 </resources>

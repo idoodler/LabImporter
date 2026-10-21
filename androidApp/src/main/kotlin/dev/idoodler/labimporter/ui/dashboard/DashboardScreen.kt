@@ -51,6 +51,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
@@ -99,6 +101,7 @@ fun DashboardScreen(
     isLoading: Boolean = false,
     onOpenReports: () -> Unit = {},
     onOpenSettings: () -> Unit = {},
+    patientName: String = "",
 ) {
     // Shared rules (LabImporterCore `Dashboard`), identical on iOS.
     val metrics = remember(reports, preferences) { Dashboard.sorted(Dashboard.metrics(reports), preferences) }
@@ -154,6 +157,16 @@ fun DashboardScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxSize(),
             ) {
+                // A personal welcome when the patient's name is known (iOS shows the same).
+                val firstName = patientName.trim().substringBefore(' ')
+                if (firstName.isNotEmpty()) {
+                    item(span = { GridItemSpan(maxLineSpan) }, key = "greeting") {
+                        Text(
+                            stringResource(R.string.welcome_back, firstName), style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(horizontal = 2.dp).semantics { heading() },
+                        )
+                    }
+                }
                 if (categories.size > 1) {
                     item(span = { GridItemSpan(maxLineSpan) }, key = "filters") {
                         CategoryFilterRow(categories.map { it.key to it.value }, filter) { filter = it }

@@ -140,7 +140,7 @@
     <string name="requirement_update_detail">Redovito ažurirajte Android, Usluge za Google Play i AICore. Na tek postavljenom telefonu može proći neko vrijeme dok Gemini Nano ne postane dostupan.</string>
     <string name="check_again">Provjeri ponovno</string>
     <string name="settings_patient">Pacijent</string>
-    <string name="patient_hint">Koristi se za nova izvješća kada izvješće ne prikazuje ime.</string>
+    <string name="patient_hint">Upisuje se za nova izvješća. Drugo ime pronađeno u izvješću nudi se kao prijedlog.</string>
     <string name="settings_storage">Pohrana</string>
     <string name="settings_ai">Umjetna inteligencija na uređaju</string>
     <string name="hidden">Skriveno</string>
@@ -290,4 +290,12 @@
         <item quantity="other">%d izvješća izbrisano</item>
     </plurals>
     <string name="delete_some_failed">Neka izvješća nije bilo moguće ukloniti.</string>
+    <string name="detected_in_report">Otkriveno u nalazu: „%1$s“</string>
+    <string name="use">Upotrijebi</string>
+    <string name="welcome_back">Dobro došli natrag, %1$s</string>
+    <string name="license">Licenca</string>
+    <string name="view_on_github">Prikaži na GitHubu</string>
+    <string name="report_issue">Prijavi problem</string>
+    <string name="support">Podrži</string>
+    <string name="support_footer">LabImporter je besplatan i otvorenog koda. Ako vam je koristan, možete podržati njegov razvoj.</string>
 </resources>

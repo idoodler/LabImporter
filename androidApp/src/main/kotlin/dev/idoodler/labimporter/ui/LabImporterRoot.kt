@@ -63,6 +63,7 @@ import dev.idoodler.labimporter.ui.importflow.rememberImportActions
 import dev.idoodler.labimporter.ui.onboarding.OnboardingScreen
 import dev.idoodler.labimporter.ui.onboarding.UnsupportedDeviceScreen
 import dev.idoodler.labimporter.ui.review.ReviewScreen
+import dev.idoodler.labimporter.ui.settings.AboutSettings
 import dev.idoodler.labimporter.ui.settings.AiSettings
 import dev.idoodler.labimporter.ui.settings.PatientSettings
 import dev.idoodler.labimporter.ui.settings.SettingsScreen
@@ -310,6 +311,7 @@ private fun Screen(
             isLoading = isLoading,
             onOpenReports = { push(Destination.Reports) },
             onOpenSettings = { push(Destination.Settings) },
+            patientName = viewModel.patientName.collectAsStateWithLifecycle().value,
         )
         Destination.Reports -> HistoryScreen(
             reports, onOpenReport = { push(Destination.Report(it.id)) }, onBack = pop,
@@ -334,6 +336,7 @@ private fun Screen(
                 onBack = pop,
                 onOpenSortEditor = { push(Destination.SortEditor) },
                 onOpenCatalog = { push(Destination.Catalog) },
+                about = viewModel.appInfo.let { AboutSettings(it.repositoryUrl, it.newIssueUrl, it.fundingLinks, it.licenseText) },
             )
         }
         Destination.SortEditor -> SortEditorScreen(

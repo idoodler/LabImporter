@@ -140,7 +140,7 @@
     <string name="requirement_update_detail">Mantieni aggiornati Android, Google Play Services e AICore. Su un telefono appena configurato, Gemini Nano potrebbe richiedere un po’ di tempo per diventare disponibile.</string>
     <string name="check_again">Controlla di nuovo</string>
     <string name="settings_patient">Paziente</string>
-    <string name="patient_hint">Usato per i nuovi referti quando il referto non mostra un nome.</string>
+    <string name="patient_hint">Inserito nei nuovi referti. Un nome diverso trovato in un referto viene proposto come suggerimento.</string>
     <string name="settings_storage">Archiviazione</string>
     <string name="settings_ai">IA sul dispositivo</string>
     <string name="hidden">Nascosto</string>
@@ -192,7 +192,7 @@
     <string name="lab_values">Valori di laboratorio</string>
     <string name="ready_to_save">Pronto per il salvataggio</string>
     <string name="duplicates_short">Duplicato</string>
-    <string name="welcome_to">^[Benvenuto](inflect: true) in</string>
+    <string name="welcome_to">Ti diamo il benvenuto in</string>
     <string name="step_of">Passaggio %1$d di %2$d</string>
     <string name="version">Versione</string>
     <string name="window_2y">2 A</string>
@@ -290,4 +290,12 @@
         <item quantity="other">%d referti eliminati</item>
     </plurals>
     <string name="delete_some_failed">Non è stato possibile rimuovere alcuni referti.</string>
+    <string name="detected_in_report">Rilevato nel referto: «%1$s»</string>
+    <string name="use">Usa</string>
+    <string name="welcome_back">Che piacere rivederti, %1$s</string>
+    <string name="license">Licenza</string>
+    <string name="view_on_github">Visualizza su GitHub</string>
+    <string name="report_issue">Segnala un problema</string>
+    <string name="support">Sostieni</string>
+    <string name="support_footer">LabImporter è gratuito e open source. Se lo trovi utile, puoi sostenerne lo sviluppo.</string>
 </resources>

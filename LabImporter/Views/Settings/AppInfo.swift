@@ -1,4 +1,5 @@
 import Foundation
+import LabImporterCore
 
 // MARK: - App info
 
@@ -27,24 +28,17 @@ enum AppInfo {
               let config = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             return []
         }
-        // `allCases` declaration order drives the display order in Settings.
-        return FundingPlatform.allCases.flatMap { platform -> [FundingLink] in
-            // A platform's value is either a single scalar (e.g. `ko_fi: name`)
-            // or an array (e.g. `github: [a, b]`, `custom: [url1, url2]`).
-            let raw = config[platform.rawValue]
-            let values: [String]
-            if let single = raw as? String {
-                values = [single]
-            } else if let many = raw as? [Any] {
-                values = many.compactMap { $0 as? String }
-            } else {
-                values = []
-            }
-            return values.compactMap { value in
-                let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
-                guard !trimmed.isEmpty, let url = platform.url(for: trimmed) else { return nil }
-                return FundingLink(platform: platform, url: url)
-            }
+        // A platform's value is either a single scalar (e.g. `ko_fi: name`) or an
+        // array (e.g. `github: [a, b]`); the shared core (LabImporterCore `About`)
+        // turns entries into URLs and titles, identically on Android.
+        let entries = config.mapValues { raw -> [String] in
+            if let single = raw as? String { return [single] }
+            return (raw as? [Any])?.compactMap { $0 as? String } ?? []
+        }
+        return LabImporterCore.About.shared.fundingLinks(config: entries).compactMap { link in
+            guard let platform = FundingPlatform(rawValue: link.platform.key),
+                  let url = URL(string: link.url) else { return nil }
+            return FundingLink(platform: platform, url: url, title: link.title)
         }
     }
 
@@ -65,8 +59,7 @@ enum AppInfo {
     /// `nil` when the build did not stamp a URL (e.g. local Xcode builds), in
     /// which case the GitHub buttons are hidden.
     static var repositoryURL: URL? {
-        guard let value = string("GitRepositoryURL") else { return nil }
-        return webURL(from: value)
+        LabImporterCore.About.shared.repositoryWebUrl(remote: string("GitRepositoryURL")).flatMap(URL.init(string:))
     }
 
     /// Whether the source repository has GitHub Issues enabled, stamped into
@@ -84,35 +77,9 @@ enum AppInfo {
     /// the repository has Issues disabled (`repositoryHasIssues == false`) so
     /// the "Report an Issue" row is hidden.
     static var newIssueURL: URL? {
-        guard repositoryHasIssues != false,
-              let base = repositoryURL?.appendingPathComponent("issues/new"),
-              var components = URLComponents(url: base, resolvingAgainstBaseURL: false) else { return nil }
-        let body = """
-
-
-        ---
-        Version: \(version) (\(build))
-        Branch: \(branch)
-        Commit: \(commit)
-        """
-        components.queryItems = [URLQueryItem(name: "body", value: body)]
-        return components.url
-    }
-
-    /// Normalizes a git remote string (`https`, `.git` suffix, or `git@host:owner/repo`
-    /// SSH form) into a browsable `https` web URL.
-    private static func webURL(from remote: String) -> URL? {
-        var value = remote.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !value.isEmpty else { return nil }
-
-        if let range = value.range(of: "git@") {
-            // git@github.com:owner/repo(.git) -> https://github.com/owner/repo
-            let hostAndPath = value[range.upperBound...].replacingOccurrences(of: ":", with: "/")
-            value = "https://" + hostAndPath
-        }
-        if value.hasSuffix(".git") {
-            value = String(value.dropLast(4))
-        }
-        return URL(string: value)
+        guard repositoryHasIssues != false, let repository = repositoryURL else { return nil }
+        return URL(string: LabImporterCore.About.shared.newIssueUrl(
+            repositoryUrl: repository.absoluteString, version: version, build: build, branch: branch, commit: commit
+        ))
     }
 }
