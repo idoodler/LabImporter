@@ -20,14 +20,51 @@ Because the parsing runs on Apple Intelligence, LabImporter needs a compatible d
 
 ## Screenshots
 
+Every screenshot shows made-up sample data (patient "Max Mustermann", four reports over one year) — no real lab results. Expand a device to see its screens in light and dark mode.
+
+<details>
+<summary><b>iPhone</b> — iOS, SwiftUI with Liquid Glass</summary>
+
 | | Light | Dark |
 |---|---|---|
-| **Dashboard** — metric cards with sparklines | ![Dashboard Light](screenshots/01-dashboard-light.png) | ![Dashboard Dark](screenshots/01-dashboard-dark.png) |
-| **Trends** — interactive per-metric chart | ![Trends Light](screenshots/02-trends-light.png) | ![Trends Dark](screenshots/02-trends-dark.png) |
-| **Review** — AI-extracted values before saving | ![Review Light](screenshots/03-review-light.png) | ![Review Dark](screenshots/03-review-dark.png) |
-| **Reports** — full import history by year | ![Reports Light](screenshots/04-history-light.png) | ![Reports Dark](screenshots/04-history-dark.png) |
-| **Settings** — sort, sync, and LOINC catalog | ![Settings Light](screenshots/05-settings-light.png) | ![Settings Dark](screenshots/05-settings-dark.png) |
-| **PDF Export** — pick sections, range, and values | ![PDF Export Light](screenshots/06-pdf-export-light.png) | ![PDF Export Dark](screenshots/06-pdf-export-dark.png) |
+| **Dashboard** — metric cards with sparklines | <img src="screenshots/ios/01-dashboard-light.png" width="240" alt="Dashboard, light"> | <img src="screenshots/ios/01-dashboard-dark.png" width="240" alt="Dashboard, dark"> |
+| **Trends** — interactive per-metric chart | <img src="screenshots/ios/02-trends-light.png" width="240" alt="Trends, light"> | <img src="screenshots/ios/02-trends-dark.png" width="240" alt="Trends, dark"> |
+| **Review** — AI-extracted values before saving | <img src="screenshots/ios/03-review-light.png" width="240" alt="Review, light"> | <img src="screenshots/ios/03-review-dark.png" width="240" alt="Review, dark"> |
+| **Reports** — full import history by year | <img src="screenshots/ios/04-reports-light.png" width="240" alt="Reports, light"> | <img src="screenshots/ios/04-reports-dark.png" width="240" alt="Reports, dark"> |
+| **Settings** — sort, search, storage and transfer | <img src="screenshots/ios/05-settings-light.png" width="240" alt="Settings, light"> | <img src="screenshots/ios/05-settings-dark.png" width="240" alt="Settings, dark"> |
+| **PDF Export** — pick sections, range and values | <img src="screenshots/ios/06-pdf-export-light.png" width="240" alt="PDF Export, light"> | <img src="screenshots/ios/06-pdf-export-dark.png" width="240" alt="PDF Export, dark"> |
+
+</details>
+
+<details>
+<summary><b>iPhone Duo</b> — the foldable iPhone, unfolded</summary>
+
+| | Light | Dark |
+|---|---|---|
+| **Dashboard** — metric cards with sparklines | <img src="screenshots/ios-duo/01-dashboard-light.png" width="280" alt="Dashboard, light"> | <img src="screenshots/ios-duo/01-dashboard-dark.png" width="280" alt="Dashboard, dark"> |
+| **Trends** — the chart as a sheet over the dashboard | <img src="screenshots/ios-duo/02-trends-light.png" width="280" alt="Trends, light"> | <img src="screenshots/ios-duo/02-trends-dark.png" width="280" alt="Trends, dark"> |
+| **Review** — AI-extracted values before saving | <img src="screenshots/ios-duo/03-review-light.png" width="280" alt="Review, light"> | <img src="screenshots/ios-duo/03-review-dark.png" width="280" alt="Review, dark"> |
+| **Reports** — full import history by year | <img src="screenshots/ios-duo/04-reports-light.png" width="280" alt="Reports, light"> | <img src="screenshots/ios-duo/04-reports-dark.png" width="280" alt="Reports, dark"> |
+| **Settings** — sort, search, storage and transfer | <img src="screenshots/ios-duo/05-settings-light.png" width="280" alt="Settings, light"> | <img src="screenshots/ios-duo/05-settings-dark.png" width="280" alt="Settings, dark"> |
+| **PDF Export** — pick sections, range and values | <img src="screenshots/ios-duo/06-pdf-export-light.png" width="280" alt="PDF Export, light"> | <img src="screenshots/ios-duo/06-pdf-export-dark.png" width="280" alt="PDF Export, dark"> |
+
+</details>
+
+<details>
+<summary><b>Android</b> — Jetpack Compose with Material 3 Expressive</summary>
+
+| | Light | Dark |
+|---|---|---|
+| **Dashboard** — metric cards with sparklines | <img src="screenshots/android/01-dashboard-light.png" width="220" alt="Dashboard, light"> | <img src="screenshots/android/01-dashboard-dark.png" width="220" alt="Dashboard, dark"> |
+| **Trends** — interactive per-metric chart | <img src="screenshots/android/02-trends-light.png" width="220" alt="Trends, light"> | <img src="screenshots/android/02-trends-dark.png" width="220" alt="Trends, dark"> |
+| **Review** — values read by the on-device model (here the downloaded Gemma) before saving | <img src="screenshots/android/03-review-light.png" width="220" alt="Review, light"> | <img src="screenshots/android/03-review-dark.png" width="220" alt="Review, dark"> |
+| **Reports** — full import history by year | <img src="screenshots/android/04-reports-light.png" width="220" alt="Reports, light"> | <img src="screenshots/android/04-reports-dark.png" width="220" alt="Reports, dark"> |
+| **Settings** — patient details, sort, search and storage | <img src="screenshots/android/05-settings-light.png" width="220" alt="Settings, light"> | <img src="screenshots/android/05-settings-dark.png" width="220" alt="Settings, dark"> |
+| **PDF Export** — pick sections, range and values | <img src="screenshots/android/06-pdf-export-light.png" width="220" alt="PDF Export, light"> | <img src="screenshots/android/06-pdf-export-dark.png" width="220" alt="PDF Export, dark"> |
+
+</details>
+
+<sub>Taken in the iOS Simulator (the app's debug screenshot mode, `--ss`) and the Android emulator, where the same sample reports were imported from [`screenshots/sample-reports.json`](screenshots/sample-reports.json) (Settings → Transfer → Import Reports). That file is a regular LabImporter transfer file, so it also works for trying the iPhone ⇄ Android transfer.</sub>
 
 ---
 

@@ -579,6 +579,22 @@ Required secrets: `GH_PAT`, `TEAMID`, `FASTLANE_ISSUER_ID`, `FASTLANE_KEY_ID`,
 - **New user-facing text:** always `String(localized:)`; add to
   `Localizable.xcstrings` and translate the key into **all 25 shipped languages**
   (see UI patterns) — never EN-only or EN+DE-only.
+- **README screenshots** live in `screenshots/ios`, `screenshots/ios-duo` and
+  `screenshots/android` (the README shows each device in a collapsed
+  `<details>`), always with made-up sample data, in English, light and dark,
+  status bar at 9:41, scaled to half size (`sips --resampleWidth`).
+  iOS: the DEBUG screenshot mode — `xcrun simctl launch <sim> <bundle id>
+  -AppleLanguages "(en)" -AppleLocale en_US --ss --ss-screen
+  dashboard|trends|review|history|settings|pdf` (sample history from
+  `PreviewSampleData`), `simctl ui <sim> appearance light|dark`,
+  `simctl status_bar <sim> override --time 9:41 …`; on an iPhone 17 Pro and an
+  "iPhone Duo" (foldable) simulator (`simctl create "iPhone Duo"
+  com.apple.CoreSimulator.SimDeviceType.iPhone-Duo <iOS 27.1 runtime>`, ~2 GB;
+  its launches take ~20 s). Android: the emulator with a release build; import
+  `screenshots/sample-reports.json` (the same reports as iOS's sample history)
+  via Settings → Import Reports, `cmd uimode night yes|no`, the SystemUI demo
+  mode for the status bar; the Review screen is a real read of a shared text
+  report (Gemma on the emulator's CPU, ~1 min).
 - **Before pushing:** make sure `swiftlint lint --strict` passes (the hook enforces it).
 - **Xcode project:** don't hand-edit `project.pbxproj` for new files/targets — run
   `GEM_HOME=~/.gem/ruby/2.6.0 ruby tools/sync_xcode_project.rb` (needs the
