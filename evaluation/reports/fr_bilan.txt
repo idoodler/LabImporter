@@ -1,0 +1,16 @@
+Laboratoire de Biologie Médicale du Parc
+Patient : Mme Claire Dubois      Née le 02/07/1981
+Prélèvement du 03/10/2026 à 08:15
+
+BIOCHIMIE
+Glycémie à jeun ........ 5,4 mmol/L (0,97 g/L)     [3,9 - 5,8]
+Créatinine ............. 71 µmol/L                 [45 - 84]
+Cholestérol total ...... 2,14 g/L                  [< 2,00]
+HDL-cholestérol ........ 0,62 g/L
+Triglycérides .......... 0,98 g/L
+Ferritine .............. 34 µg/L                   [15 - 150]
+TSH .................... 2,31 mUI/L                [0,27 - 4,20]
+HÉMATOLOGIE
+Hémoglobine ............ 12,8 g/dL
+Leucocytes ............. 7,2 G/L
+Plaquettes ............. 245 G/L

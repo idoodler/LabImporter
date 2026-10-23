@@ -1,0 +1,13 @@
+{
+  "reportDate": "2026-06-05",
+  "patientName": "Anna Kowalska",
+  "values": [
+    {"names": ["WBC", "leukocyt"], "value": 6.1, "unit": "tys/µl", "loinc": "6690-2"},
+    {"names": ["RBC", "erytrocyt"], "value": 4.71, "unit": "mln/µl", "loinc": "789-8"},
+    {"names": ["HGB", "hemoglobin"], "value": 14.0, "unit": "g/dl", "loinc": "718-7"},
+    {"names": ["PLT", "płytki", "plytki"], "value": 198, "unit": "tys/µl", "loinc": "777-3"},
+    {"names": ["Glukoza"], "value": 94, "unit": "mg/dl", "loinc": "2345-7"},
+    {"names": ["Kreatynina"], "value": 0.82, "unit": "mg/dl", "loinc": "2160-0"},
+    {"names": ["Cholesterol"], "value": 176, "unit": "mg/dl", "loinc": "2093-3"}
+  ]
+}

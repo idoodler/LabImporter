@@ -1,0 +1,20 @@
+{
+  "reportDate": "2026-09-30",
+  "patientName": "John Doe",
+  "values": [
+    {"names": ["Glucose"], "value": 92, "unit": "mg/dL", "loinc": "2345-7"},
+    {"names": ["BUN", "Urea"], "value": 18, "unit": "mg/dL", "loinc": "3094-0"},
+    {"names": ["Creatinine"], "value": 0.94, "unit": "mg/dL", "loinc": "2160-0"},
+    {"names": ["Sodium"], "value": 139, "unit": "mmol/L", "loinc": "2951-2"},
+    {"names": ["Potassium"], "value": 4.3, "unit": "mmol/L", "loinc": "2823-3"},
+    {"names": ["ALT", "Alanine"], "value": 51, "unit": "U/L", "loinc": "1742-6"},
+    {"names": ["Cholesterol, Total", "Total Cholesterol", "Cholesterol"], "value": 214, "unit": "mg/dL", "loinc": "2093-3"},
+    {"names": ["HDL"], "value": 47, "unit": "mg/dL", "loinc": "2085-9"},
+    {"names": ["Triglyceride"], "value": 156, "unit": "mg/dL", "loinc": "2571-8"},
+    {"names": ["LDL"], "value": 138, "unit": "mg/dL", "loinc": "13457-7"},
+    {"names": ["A1c", "HbA1c", "Hemoglobin A1c"], "value": 5.9, "unit": "%", "loinc": "4548-4"}
+  ],
+  "notNumeric": [
+    {"names": ["eGFR", "GFR"]}
+  ]
+}

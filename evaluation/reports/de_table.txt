@@ -1,0 +1,20 @@
+MVZ Labor Rhein-Main
+Patient: Erika Musterfrau      geb. 12.03.1975
+Eingang: 14.09.2026      Befund: 15.09.2026
+Material: Serum, EDTA-Blut
+
+Untersuchung          Ergebnis       Einheit        Referenzbereich
+Kleines Blutbild
+Leukozyten            6,8            /nl            3,9 - 10,2
+Erythrozyten          4,52           /pl            3,92 - 5,08
+Hämoglobin            13,1           g/dl           11,2 - 15,7
+Hämatokrit            39,4           %              34,1 - 44,9
+MCV                   87,2           fl             79 - 98
+Thrombozyten          263            /nl            150 - 370
+Klinische Chemie
+Natrium               141            mmol/l         136 - 145
+Kalium                5,6     H      mmol/l         3,5 - 5,1
+Kreatinin             1,12    H      mg/dl          0,51 - 0,95
+eGFR (CKD-EPI)        58      L      ml/min/1,73m²  > 60
+ALT (GPT)             22             U/l            < 35
+CRP                   < 0,5          mg/dl          < 0,5

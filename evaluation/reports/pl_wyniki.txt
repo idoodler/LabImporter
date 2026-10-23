@@ -1,0 +1,10 @@
+Laboratorium Diagnostyczne CENTRUM
+Pacjent: Anna Kowalska      Data pobrania: 05.06.2026
+Morfologia krwi
+WBC (leukocyty)        6,1     tys/µl     4,0 - 10,0
+RBC (erytrocyty)       4,71    mln/µl     3,80 - 5,20
+HGB (hemoglobina)      14,0    g/dl       12,0 - 16,0
+PLT (płytki krwi)      198     tys/µl     150 - 400
+Glukoza                94      mg/dl      70 - 99
+Kreatynina             0,82    mg/dl      0,57 - 1,11
+Cholesterol całkowity  176     mg/dl      < 190

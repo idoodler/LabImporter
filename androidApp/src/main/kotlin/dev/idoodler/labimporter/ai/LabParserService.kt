@@ -12,7 +12,8 @@ import kotlin.time.TimeSource
 /**
  * Reads lab values out of report text with the on-device model. The
  * instructions, the reply schema and every step after the model (number
- * parsing, LOINC resolution in the report's own language, de-duplication) are
+ * parsing, LOINC resolution in the report's own language, checking the date
+ * against the text, de-duplication) are
  * shared with iOS (LabImporterCore `LabParsePrompt` / `LabParsePipeline`), so
  * both apps turn the same reply into the same values.
  */
@@ -31,7 +32,7 @@ class LabParserService(private val ai: OnDeviceAi) {
         ) { partial -> onProgress(LabParsePrompt.progress(partial)) }
         val generated = started.elapsedNow()
         val report = LabParsePrompt.decodeJsonReply(reply) ?: throw AiException(AiProblem.FAILED)
-        val result = withContext(Dispatchers.Default) { LabParsePipeline.postProcess(report) }
+        val result = withContext(Dispatchers.Default) { LabParsePipeline.postProcess(report, text) }
         Log.i(TAG, "Read ${result.values.size} values: model $generated, post-processing ${started.elapsedNow() - generated}")
         return result
     }

@@ -136,9 +136,25 @@ Config.xcconfig  # BUNDLE_IDENTIFIER = dev.idoodler.$(DEVELOPMENT_TEAM).labimpor
   (everyday spellings like "Kreatinin" differ from the LOINC translation
   "Creatinin"), then without little words ("Albumin im Urin"), then by word stem
   ("Cholesterin" → "Cholesterol"); finally the printed code, **as a whole word
-  only** (so "KREA" never prefix-matches "Kreatinkinase"). The most commonly
-  ordered hit is offered as a suggestion (`isSuggestedCode`). There is no static
-  abbreviation table — resolution is entirely catalog/FTS driven.
+  only** (so "KREA" never prefix-matches "Kreatinkinase"). Hits are ranked by
+  `LoincRanking`, not by commonness alone: a label that *names* the test beats
+  one that merely mentions it (Hämoglobin → 718-7, not MCHC; plain
+  "Cholesterol" is total cholesterol, never the cholesterol/HDL ratio — the
+  word "total" is dropped as a retry), the unit's kind of quantity (`UnitKind`)
+  rules out terms that can't hold the value (mg/dl is never a urine-strip
+  finding or a crystal count) and picks mass vs. moles, and a molar unit keeps
+  the name's usual specimen (µmol/l creatinine → serum, not blood). The winner is
+  offered as a suggestion (`isSuggestedCode`); nothing fitting → the printed code
+  stays for the user to map. A *second* suggestion for an already-claimed LOINC
+  stays unmapped instead of replacing a value. There is no static abbreviation
+  table — resolution is entirely catalog/FTS driven. The model's report date
+  is kept only if the report text prints it (`verifiedDate`; a mis-copied year
+  falls back to the one printed date with that day and month, else no date).
+- **Model quality check:** `evaluation/` (JVM, not part of the app or CI) runs
+  an on-device model over synthetic sample reports with the app's exact prompt,
+  schema and post-processing, and scores values, LOINC codes and dates — see
+  `evaluation/README.md`. Re-run it (or `--args="replay"` for post-processing
+  changes) before touching the prompt, the LOINC ranking or the downloaded model.
 
 ### CDA round-trip
 - **Export:** the shared `CdaExport.generate` (via `CDAExportService.generateCDA`)
@@ -267,10 +283,12 @@ shared/        # Kotlin Multiplatform (android, iosArm64, iosSimulatorArm64, jvm
                          #   ordering, trend windows, code names)
     loinc/LoincDirectory # androidx.sqlite over the same loinc.db (bundled driver on
                          #   Android/JVM, system SQLite on iOS); search + bestMatch for resolution
+    loinc/LoincRanking   # which catalog hit fits a printed name (label fit, UnitKind, specimen)
     export/              # Ucum, CdaExport (C-CDA R2.1), CdaParser, FhirLabCodec, ReportSchema
                          #   (one schema version + migration chain for CDA and FHIR)
     parse/               # LabParseSchema/LabParsePrompt (shared AI instructions, guide texts,
-                         #   JSON contract), LabParsePipeline (numbers, LOINC resolution, dedup)
+                         #   JSON contract/schema), LabParsePipeline (numbers, LOINC resolution,
+                         #   date check against the text, dedup)
     transfer/            # ReportTransfer: iPhone ⇄ Android file (FHIR Bundle; also reads CDA)
     export/PdfReport.kt  # PDF content + pagination (PdfReport, PdfLayout) — both apps' PDFs
     model/               # … also ChartAxis (rounded chart ticks), SortEditorState (Sort & Visibility rules)

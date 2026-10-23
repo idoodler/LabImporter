@@ -1,0 +1,19 @@
+Riverside Clinical Laboratory
+Patient: John Doe     DOB: 04/18/1968     Sex: M
+Collected: 09/30/2026 07:42     Reported: 09/30/2026 14:10
+
+COMPREHENSIVE METABOLIC PANEL
+Test                    Result    Flag   Units          Reference Range
+Glucose                 92               mg/dL          65-99
+BUN                     18               mg/dL          7-25
+Creatinine              0.94             mg/dL          0.60-1.29
+eGFR                    >60              mL/min/1.73m2  > OR = 60
+Sodium                  139              mmol/L         135-146
+Potassium               4.3              mmol/L         3.5-5.3
+ALT                     51        H      U/L            9-46
+LIPID PANEL
+Cholesterol, Total      214       H      mg/dL          <200
+HDL Cholesterol         47               mg/dL          > OR = 40
+Triglycerides           156       H      mg/dL          <150
+LDL-Cholesterol         138       H      mg/dL (calc)   <100
+Hemoglobin A1c          5.9       H      % of total Hgb <5.7

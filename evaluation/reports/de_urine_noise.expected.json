@@ -1,0 +1,16 @@
+{
+  "reportDate": "2026-10-02",
+  "patientName": "Thomas Becker",
+  "values": [
+    {"names": ["Albumin im Urin", "Albumin"], "value": 45, "unit": "mg/l", "loinc": "1754-1"},
+    {"names": ["Kreatinin"], "value": 1.1, "unit": "g/l"},
+    {"names": ["Quotient", "Albumin/Kreatinin", "ACR"], "value": 40.9, "unit": "mg/g"}
+  ],
+  "notNumeric": [
+    {"names": ["Leukozyten"]},
+    {"names": ["Nitrit"]},
+    {"names": ["Eiweiß", "Eiweiss", "Protein"]},
+    {"names": ["Glucose"]},
+    {"names": ["Blut"]}
+  ]
+}

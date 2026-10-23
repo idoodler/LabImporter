@@ -179,10 +179,10 @@ actor LabParserService {
     ) async throws -> ParseResult {
         let report = try await parseWithFoundationModels(text: text, onProgress: onProgress)
         // Number parsing, LOINC resolution (in the report's own language), date
-        // validation and de-duplication are shared with Android so both apps turn
+        // validation against the text and de-duplication are shared with Android so both apps turn
         // the same model output into the same values (LabImporterCore.LabParsePipeline).
         SharedCore.start()
-        let result = LabParsePipeline.shared.postProcess(report: report.shared)
+        let result = LabParsePipeline.shared.postProcess(report: report.shared, sourceText: text)
         return ParseResult(
             values: result.values.map(LabValue.init(shared:)),
             reportDate: result.reportDate.map(Date.init(shared:)),

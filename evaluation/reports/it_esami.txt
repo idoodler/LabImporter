@@ -1,0 +1,14 @@
+Centro Analisi Cliniche San Marco
+Paziente: Rossi Giulia      Data di nascita: 21/11/1990
+Data prelievo: 18/08/2026
+
+ESAME                     RISULTATO   UNITÀ      VALORI DI RIFERIMENTO
+Emoglobina                13,6        g/dL       12,0 - 16,0
+Globuli bianchi           5,9         10^3/µL    4,0 - 10,0
+Piastrine                 301         10^3/µL    150 - 400
+Glicemia                  88          mg/dL      70 - 110
+Colesterolo totale        231 *       mg/dL      < 200
+Colesterolo HDL           68          mg/dL      > 45
+Trigliceridi              112         mg/dL      < 150
+Creatinina                0,78        mg/dL      0,50 - 1,10
+Vitamina D (25-OH)        19,4 *      ng/mL      30 - 100

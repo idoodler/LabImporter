@@ -96,20 +96,28 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
         LIMIT ?3 OFFSET ?4
         """,
     )
-    /** [searchStatement] across every catalog language (the import resolver's fallback). */
-    private val anyLanguageSearchStatement = prepare(
+    /** Every matching label with its term's attributes, for [bestMatch] to rank (one row per label). */
+    private val candidateStatement = prepare(
         """
-        SELECT l.code,
-               (SELECT name FROM label WHERE code = l.code AND lang = ?2),
-               (SELECT descr FROM label WHERE code = l.code AND lang = ?2),
-               t.english, t.ucum, t.rank
+        SELECT l.code, l.name, t.rank, t.property, t.scale, t.system
+        FROM label_fts f
+        JOIN label l ON l.rowid = f.rowid
+        JOIN term t ON t.code = l.code
+        WHERE label_fts MATCH ?1 AND l.lang IN (?2, 'en')
+        ORDER BY t.rank
+        LIMIT ?3
+        """,
+    )
+    /** [candidateStatement] across every catalog language (the import resolver's fallback). */
+    private val anyLanguageCandidateStatement = prepare(
+        """
+        SELECT l.code, l.name, t.rank, t.property, t.scale, t.system
         FROM label_fts f
         JOIN label l ON l.rowid = f.rowid
         JOIN term t ON t.code = l.code
         WHERE label_fts MATCH ?1
-        GROUP BY l.code
         ORDER BY t.rank
-        LIMIT ?3 OFFSET ?4
+        LIMIT ?3
         """,
     )
     private val topStatement = prepare(
@@ -239,31 +247,53 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
     }
 
     /**
-     * The most commonly ordered term whose label matches [query] — its words,
-     * or word prefixes when [prefix] — in [language] plus English, or in every
-     * catalog language when [anyLanguage]. Null when nothing matches.
+     * The term whose label fits [query] best (see [LoincRanking]) — its
+     * words, or word prefixes when [prefix] — in [language] plus English, or
+     * in every catalog language when [anyLanguage]. A term that can't hold a
+     * value in [unit] never fits. Null when nothing does.
      */
-    fun bestMatch(query: String, language: String, prefix: Boolean = true, anyLanguage: Boolean = false): LoincTerm? {
+    fun bestMatch(
+        query: String,
+        language: String,
+        prefix: Boolean = true,
+        anyLanguage: Boolean = false,
+        unit: String = "",
+    ): LoincMatch? {
         val match = ftsQuery(query, prefix) ?: return null
-        return lock.withLock {
-            val statement = (if (anyLanguage) anyLanguageSearchStatement else searchStatement) ?: return@withLock null
+        val candidates = lock.withLock {
+            val statement = (if (anyLanguage) anyLanguageCandidateStatement else candidateStatement) ?: return@withLock emptyList()
             try {
                 statement.bindText(1, match)
-                statement.bindText(2, language)
-                statement.bindLong(3, 1)
-                statement.bindLong(4, 0)
-                collect(statement).firstOrNull()
+                if (!anyLanguage) statement.bindText(2, language)
+                statement.bindLong(3, CANDIDATE_LABELS)
+                val byCode = linkedMapOf<String, MutableList<String>>()
+                val terms = mutableMapOf<String, LoincCandidate>()
+                while (statement.step()) {
+                    val code = statement.text(0).orEmpty()
+                    byCode.getOrPut(code) { mutableListOf() } += statement.text(1).orEmpty()
+                    if (code !in terms) {
+                        terms[code] = LoincCandidate(
+                            code, statement.getLong(2).toInt(), statement.text(3).orEmpty(),
+                            statement.text(4).orEmpty(), statement.text(5).orEmpty(), emptyList(),
+                        )
+                    }
+                }
+                byCode.map { (code, labels) -> terms.getValue(code).copy(labels = labels) }
             } finally {
                 statement.reset(); statement.clearBindings()
             }
         }
+        return LoincRanking.best(query, candidates, unit)
     }
 
     // endregion
 
     override fun close() {
         lock.withLock {
-            listOf(termStatement, searchStatement, anyLanguageSearchStatement, topStatement, detailStatement, classificationStatement)
+            listOf(
+                termStatement, searchStatement, candidateStatement, anyLanguageCandidateStatement, topStatement, detailStatement,
+                classificationStatement,
+            )
                 .forEach { it?.close() }
             connection?.close()
         }
@@ -365,10 +395,30 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
             }
         }
 
+        /**
+         * [name] without the word for "total" ("Cholesterin gesamt",
+         * "Colesterolo totale"): LOINC calls total cholesterol plain
+         * "Cholesterol" and has "total" only in ratios like Cholesterol.total/
+         * HDL. Null when there's no such word or nothing else.
+         */
+        fun withoutTotal(name: String): String? {
+            val all = tokens(name).filterNot { it in STOP_WORDS }
+            val kept = all.filterNot { it in TOTAL_WORDS }
+            return kept.takeIf { it.isNotEmpty() && it.size < all.size }?.joinToString(" ")
+        }
+
+        /** Catalog rows read per lookup — every label of the few hundred most common matching terms. */
+        private const val CANDIDATE_LABELS = 400L
+
         private fun tokens(text: String): List<String> =
             text.lowercase().split(Regex("[^\\p{L}\\p{N}]+")).filter { it.isNotEmpty() }
 
-        private val STOP_WORDS = setOf(
+        private val TOTAL_WORDS = setOf(
+            "total", "totale", "totaal", "totalt", "gesamt", "całkowity", "całkowita", "całkowite", "celkový", "celková",
+            "celkové", "ukupni", "ukupna", "ukupno", "összes", "totală", "toplam", "ολική", "ολικό", "общий", "загальний", "общ",
+        )
+
+        internal val STOP_WORDS = setOf(
             // de, en
             "der", "die", "das", "des", "dem", "den", "im", "in", "am", "an", "von", "vom", "mit", "und", "auf", "bei", "zum", "zur",
             "of", "the", "and", "for", "at", "by", "with", "on",

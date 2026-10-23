@@ -1,0 +1,17 @@
+{
+  "reportDate": "2026-07-27",
+  "patientName": "Carlos Martínez",
+  "values": [
+    {"names": ["HbA1c", "glicosilada", "Hemoglobina"], "value": 6.1, "unit": "%", "loinc": "4548-4"},
+    {"names": ["Glucosa"], "value": 112, "unit": "mg/dL", "loinc": "2345-7"},
+    {"names": ["Colesterol"], "value": 189, "unit": "mg/dL", "loinc": "2093-3"},
+    {"names": ["úrico", "urico"], "value": 7.4, "unit": "mg/dL"},
+    {"names": ["GOT", "AST", "Aspartato"], "value": 28, "unit": "U/L"},
+    {"names": ["GPT", "ALT", "Alanina"], "value": 35, "unit": "U/L"},
+    {"names": ["Ferritina"], "value": 245, "unit": "ng/mL", "loinc": "2276-4"},
+    {"names": ["TSH", "Tirotropina"], "value": 1.72, "unit": "µUI/mL", "loinc": "3016-3"}
+  ],
+  "notNumeric": [
+    {"names": ["Proteínas", "Proteinas", "Protein"]}
+  ]
+}

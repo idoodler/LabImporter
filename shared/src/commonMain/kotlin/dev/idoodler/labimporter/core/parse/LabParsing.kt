@@ -2,6 +2,7 @@ package dev.idoodler.labimporter.core.parse
 
 import dev.idoodler.labimporter.core.LabCore
 import dev.idoodler.labimporter.core.loinc.LoincDirectory
+import dev.idoodler.labimporter.core.loinc.LoincMatch
 import dev.idoodler.labimporter.core.model.LabMapping
 import dev.idoodler.labimporter.core.model.LabValue
 import dev.idoodler.labimporter.core.model.deduplicatedByLoinc
@@ -102,6 +103,23 @@ object LabParsePrompt {
     }
 
     /**
+     * The reply as a JSON Schema, for runtimes that constrain decoding to one
+     * (LiteRT-LM's `ResponseFormat.json`): the same fields as [jsonContract],
+     * so [decodeJsonReply] reads both.
+     */
+    val jsonSchema: String = buildString {
+        val string = "{\"type\":\"string\"}"
+        append("{\"type\":\"object\",\"properties\":{")
+        append("\"entries\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{")
+        append(listOf("code", "name", "rawValue", "unit").joinToString(",") { "\"$it\":$string" })
+        append("},\"required\":[\"code\",\"name\",\"rawValue\",\"unit\"]}},")
+        // Decoding can only produce a yyyy-MM-dd date or none ("03/10/2026" once came back "203-10-03").
+        append("\"reportDate\":{\"type\":\"string\",\"pattern\":\"^([0-9]{4}-[0-9]{2}-[0-9]{2})?$\"},")
+        append(listOf("patientName", "authorName", "reportLanguage").joinToString(",") { "\"$it\":$string" })
+        append("},\"required\":[\"entries\",\"reportDate\",\"patientName\",\"authorName\",\"reportLanguage\"]}")
+    }
+
+    /**
      * Wraps the report in a few sentences of plain English: on-device models
      * detect the language of the *prompt* and can refuse terse, code-heavy
      * reports otherwise (names stay in the report's own language).
@@ -137,28 +155,36 @@ object LabParsePrompt {
 /** Turns the model's raw extraction into reviewable, LOINC-resolved values. */
 object LabParsePipeline {
 
-    fun postProcess(report: AiLabReport): ParseResult {
-        val values = report.entries
-            .filter { it.code.isNotBlank() || it.name.isNotBlank() }
-            .map { entry ->
-                val numeric = if (entry.rawValue == "-") null else NumberFormatting.parse(entry.rawValue)
-                val (code, suggested) = resolveLoinc(entry.code, entry.name, report.reportLanguage)
-                val display = LabMapping.displayName(code)
-                LabValue(
-                    code = code,
-                    // An unmapped value shows the model's expanded name ("Kreatinin"), not the mnemonic.
-                    name = if (display == code) entry.name.trim().ifEmpty { entry.code } else display,
-                    displayValue = entry.rawValue,
-                    numericValue = numeric,
-                    unit = entry.unit.trim(),
-                    isSuggestedCode = suggested,
-                )
-            }
-        // A report can list a test twice and two names can resolve to the same
-        // LOINC: keep one entry per LOINC, the app's canonical identity.
+    /** @param sourceText the report text the model read, to check its date against. */
+    fun postProcess(report: AiLabReport, sourceText: String): ParseResult {
+        val entries = report.entries.filter { it.code.isNotBlank() || it.name.isNotBlank() }
+        val units = entries.map { unitWithoutFlag(it.unit) }
+        val resolved = entries.mapIndexed { index, entry -> resolveLoinc(entry.code, entry.name, report.reportLanguage, units[index]) }
+        // Two names can land on one LOINC ("Erythrozyten" and "Hämoglobin" once both found MCHC):
+        // a printed code keeps it and so does the first suggestion; a later suggestion stays unmapped
+        // for the user to place, instead of one value silently replacing the other.
+        val claimed = resolved.filterNot { it.second }.mapTo(mutableSetOf()) { it.first }
+        val values = entries.mapIndexed { index, entry ->
+            val (resolvedCode, resolvedSuggested) = resolved[index]
+            val collides = resolvedSuggested && !claimed.add(resolvedCode)
+            val code = if (collides) entry.code.trim().ifEmpty { entry.name.trim() } else resolvedCode
+            val suggested = resolvedSuggested && !collides
+            val numeric = if (entry.rawValue == "-") null else NumberFormatting.parse(entry.rawValue)
+            val display = LabMapping.displayName(code)
+            LabValue(
+                code = code,
+                // An unmapped value shows the model's expanded name ("Kreatinin"), not the mnemonic.
+                name = if (display == code) entry.name.trim().ifEmpty { entry.code } else display,
+                displayValue = entry.rawValue,
+                numericValue = numeric,
+                unit = units[index],
+                isSuggestedCode = suggested,
+            )
+        }
+        // A report can list a test twice: keep one entry per LOINC, the app's canonical identity.
         return ParseResult(
             values = values.deduplicatedByLoinc(),
-            reportDate = parseDate(report.reportDate),
+            reportDate = verifiedDate(parseDate(report.reportDate), sourceText),
             patientName = report.patientName.trim().ifEmpty { null },
             authorName = report.authorName.trim().ifEmpty { null },
         )
@@ -169,27 +195,89 @@ object LabParsePipeline {
      * passes through. Otherwise the model's test name is looked up — in the
      * report's own language (plus English), then in every catalog language
      * (everyday spellings often differ from the LOINC translation: "Kreatinin"
-     * vs. "Creatinin"), then without little words ("Albumin im Urin"), then
-     * by word stem ("Cholesterin" → "Cholesterol") — and finally the printed
-     * code, as a whole word only ("TSH"; "KREA" must not prefix-match
-     * "Kreatinkinase"). The most commonly ordered hit is offered
-     * as a *suggestion* the user confirms in review. Unresolved entries keep
-     * the printed code so they can be mapped by hand.
+     * vs. "Creatinin"), then without little words ("Albumin im Urin") or the
+     * word "total" ("Colesterolo totale"), then by word stem ("Cholesterin" →
+     * "Cholesterol") — and finally the printed code, as a whole word only
+     * ("TSH"; "KREA" must not prefix-match "Kreatinkinase"). The term that
+     * fits best ([LoincRanking]: its label names the test and no more, of the
+     * kind of quantity [unit] measures) is offered as a *suggestion* the user
+     * confirms in review. Unresolved entries keep the printed code so they can
+     * be mapped by hand.
      */
-    fun resolveLoinc(printed: String, name: String, language: String): Pair<String, Boolean> {
+    fun resolveLoinc(printed: String, name: String, language: String, unit: String = ""): Pair<String, Boolean> {
         val directory = LabCore.loinc ?: return printed to false
         val trimmedPrinted = printed.trim()
         if (directory.isKnownLoinc(trimmedPrinted)) return trimmedPrinted to false
         val lang = directory.resolvedLanguage(language)
-        val trimmedName = name.trim()
-        val match = trimmedName.takeIf { it.isNotEmpty() }?.let { term ->
-            directory.bestMatch(term, lang)
-                ?: directory.bestMatch(term, lang, anyLanguage = true)
-                ?: LoincDirectory.withoutStopWords(term)?.let { directory.bestMatch(it, lang) }
-                ?: LoincDirectory.stemmedQueries(term).firstNotNullOfOrNull { directory.bestMatch(it, lang, anyLanguage = true) }
-        } ?: trimmedPrinted.takeIf { it.isNotEmpty() }?.let { directory.bestMatch(it, lang, prefix = false) }
-        return match?.let { it.code to true } ?: (printed to false)
+        val term = name.trim()
+        // (query, any catalog language) — earlier steps win a tie.
+        val steps = if (term.isEmpty()) emptyList() else buildList {
+            add(term to false)
+            add(term to true)
+            LoincDirectory.withoutStopWords(term)?.let { add(it to false) }
+            LoincDirectory.withoutTotal(term)?.let { add(it to false); add(it to true) }
+            LoincDirectory.stemmedQueries(term).forEach { add(it to true) }
+        }
+        var best: LoincMatch? = null
+        for ((query, anyLanguage) in steps) {
+            val match = directory.bestMatch(query, lang, anyLanguage = anyLanguage, unit = unit) ?: continue
+            if (best == null || match < best) best = match
+            if (match.isExact) break
+        }
+        if (best == null && trimmedPrinted.isNotEmpty()) best = directory.bestMatch(trimmedPrinted, lang, prefix = false, unit = unit)
+        return best?.let { it.code to true } ?: (printed to false)
     }
+
+    /**
+     * [unit] without a high/low flag the model read into it from the next
+     * column ("H mmol/l" → "mmol/l"); anything else unchanged.
+     */
+    fun unitWithoutFlag(unit: String): String {
+        val trimmed = unit.trim()
+        val first = trimmed.substringBefore(' ')
+        return if (first != trimmed && first in FLAGS) trimmed.substringAfter(' ').trim() else trimmed
+    }
+
+    private val FLAGS = setOf("H", "L", "HH", "LL", "+", "-", "*", "↑", "↓", "!")
+
+    /**
+     * The model's date if the report prints it. Models mis-copy digits —
+     * "03/10/2026" came back as 2031-10-03 — so a date the text doesn't show
+     * is no date (the user sets it in review), unless exactly one printed date
+     * has its day and month: then that one is what the model was copying. A
+     * text without numeric dates ("3. Oktober 2026") can't be checked and
+     * keeps the model's date.
+     */
+    fun verifiedDate(date: LocalDate?, sourceText: String): LocalDate? {
+        if (date == null) return null
+        val printed = printedDates(sourceText)
+        if (printed.isEmpty() || date in printed) return date
+        return printed.filter { it.day == date.day && it.month == date.month }.distinct().singleOrNull()
+    }
+
+    /**
+     * Every numeric date in [text]: ISO, day-first with dots, and with
+     * slashes or dashes both readings where both are valid (09/10/2026 is
+     * October or September). Two-digit years are 20xx.
+     */
+    fun printedDates(text: String): Set<LocalDate> = buildSet {
+        ISO_DATE.findAll(text).forEach { m ->
+            val (year, month, day) = m.destructured
+            date(year.toInt(), month.toInt(), day.toInt())?.let(::add)
+        }
+        NUMERIC_DATE.findAll(text).forEach { m ->
+            val (first, separator, second, yearText) = m.destructured
+            val year = yearText.toInt().let { if (yearText.length == 2) 2000 + it else it }
+            date(year, second.toInt(), first.toInt())?.let(::add)
+            if (separator != ".") date(year, first.toInt(), second.toInt())?.let(::add)
+        }
+    }
+
+    private fun date(year: Int, month: Int, day: Int): LocalDate? =
+        if (month in 1..12 && day in 1..31) runCatching { LocalDate(year, month, day) }.getOrNull() else null
+
+    private val ISO_DATE = Regex("(?<!\\d)(\\d{4})-(\\d{1,2})-(\\d{1,2})(?!\\d)")
+    private val NUMERIC_DATE = Regex("(?<![\\d.,/-])(\\d{1,2})([./-])(\\d{1,2})\\2(\\d{4}|\\d{2})(?![\\d.,/-])")
 
     /** The model's `yyyy-MM-dd` date; anything else is no date (the user sets it in review). */
     fun parseDate(raw: String): LocalDate? {

@@ -71,7 +71,7 @@ class CatalogTest {
             ),
             reportDate = "2026-05-06", patientName = " Max ", reportLanguage = "de",
         )
-        val result = LabParsePipeline.postProcess(report)
+        val result = LabParsePipeline.postProcess(report, "Befund vom 06.05.2026")
         val byName = result.values.associateBy { it.displayValue }
         assertEquals("2160-0", byName.getValue("0,80").code)
         assertFalse(byName.getValue("0,80").isSuggestedCode)
@@ -121,6 +121,61 @@ class CatalogTest {
         val (tsh, suggested) = LabParsePipeline.resolveLoinc("TSH", "", "de")
         assertTrue(suggested)
         assertEquals("3016-3", tsh)
+    }
+
+    @Test
+    fun theTermThatNamesTheTestWinsOverOneThatMentionsIt() {
+        // MCHC ("…Hämoglobinkonzentration eines Erythrozyten") is ordered more often than either.
+        assertEquals("718-7" to true, LabParsePipeline.resolveLoinc("HB", "Hämoglobin", "de", "g/dl"))
+        assertEquals("789-8" to true, LabParsePipeline.resolveLoinc("ERY", "Erythrozyten", "de", "/pl"))
+        assertEquals("718-7" to true, LabParsePipeline.resolveLoinc("Hb", "Emoglobina", "it", "g/dl"))
+        assertEquals("718-7" to true, LabParsePipeline.resolveLoinc("Hb", "Hémoglobine", "fr", "g/dl"))
+        assertEquals("718-7" to true, LabParsePipeline.resolveLoinc("HGB", "HGB", "pl", "g/dl"))
+        assertEquals("787-2" to true, LabParsePipeline.resolveLoinc("MCV", "MCV", "de", "fl"))
+        assertEquals("6690-2" to true, LabParsePipeline.resolveLoinc("WBC", "WBC", "pl", "10^3/µl"))
+        // Total cholesterol is plain "Cholesterol" in LOINC — never the cholesterol/HDL ratio.
+        assertEquals("2093-3" to true, LabParsePipeline.resolveLoinc("CHOL", "Cholesterol", "pl", "mg/dl"))
+        assertEquals("2093-3" to true, LabParsePipeline.resolveLoinc("CHOL", "Cholesterol, Total", "en", "mg/dL"))
+        assertEquals("2093-3" to true, LabParsePipeline.resolveLoinc("COL", "Colesterolo totale", "it", "mg/dl"))
+        assertEquals("2093-3" to true, LabParsePipeline.resolveLoinc("CT", "Cholestérol total", "fr", "g/l"))
+        assertEquals("1975-2" to true, LabParsePipeline.resolveLoinc("BILI", "Bilirubin gesamt", "de", "mg/dl"))
+        assertEquals("13457-7" to true, LabParsePipeline.resolveLoinc("LDL", "LDL-Cholesterol", "en", "mg/dL (calc)"))
+    }
+
+    @Test
+    fun theUnitRulesOutTermsThatCantHoldTheValue() {
+        // Only uric acid *crystals* are called "ácido úrico" in Spanish LOINC: unmapped beats wrong.
+        assertEquals("AU" to false, LabParsePipeline.resolveLoinc("AU", "Ácido úrico", "es", "mg/dl"))
+        // "G/l" counts cells (giga per litre).
+        assertEquals("6690-2" to true, LabParsePipeline.resolveLoinc("LEU", "Leucocytes", "fr", "G/l"))
+        assertEquals("777-3" to true, LabParsePipeline.resolveLoinc("PLT", "Plaquettes", "fr", "G/l"))
+        // A quantity in mg/l isn't the urine-strip finding.
+        val (albumin, _) = LabParsePipeline.resolveLoinc("MALB-U", "Albumin im Urin", "de", "mg/l")
+        assertEquals("MCnc", LabCore.loinc!!.detail(albumin)!!.property)
+        assertEquals("Urine", LabCore.loinc!!.detail(albumin)!!.system)
+        // Moles keep the usual specimen: serum creatinine, blood hemoglobin.
+        assertEquals("14682-9" to true, LabParsePipeline.resolveLoinc("KREA", "Kreatinin", "de", "µmol/l"))
+        assertEquals("59260-0" to true, LabParsePipeline.resolveLoinc("HB", "Hämoglobin", "de", "mmol/l"))
+    }
+
+    @Test
+    fun aSecondNameForTheSameLoincStaysUnmappedInsteadOfReplacingAValue() {
+        val (glucose, _) = LabParsePipeline.resolveLoinc("", "Glucose", "de", "mg/dl")
+        val twice = AiLabReport(
+            entries = listOf(AiLabEntry("GLU", "Glucose", "92", "mg/dl"), AiLabEntry("GLUC", "Glucose", "95", "H mg/dl")),
+            reportLanguage = "de",
+        )
+        val values = LabParsePipeline.postProcess(twice, "").values
+        assertEquals(listOf("92", "95"), values.map { it.displayValue })
+        assertEquals(listOf(glucose, "GLUC"), values.map { it.code })
+        assertEquals(listOf(true, false), values.map { it.isSuggestedCode })
+        assertEquals("mg/dl", values[1].unit)
+        // A printed LOINC claims its code ahead of any suggestion.
+        val printed = AiLabReport(
+            entries = listOf(AiLabEntry("GLU", "Glucose", "92", "mg/dl"), AiLabEntry(glucose, "Glucose", "90", "mg/dl")),
+            reportLanguage = "de",
+        )
+        assertEquals(listOf("GLU", glucose), LabParsePipeline.postProcess(printed, "").values.map { it.code })
     }
 
     @Test

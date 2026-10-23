@@ -16,3 +16,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "LabImporter"
 include(":shared", ":androidApp")
+// Model quality check (not part of the app or CI): see evaluation/README.md.
+include(":evaluation")

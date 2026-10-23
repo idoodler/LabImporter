@@ -1,0 +1,19 @@
+{
+  "patientName": "Erika Musterfrau",
+  "values": [
+    {"names": ["Leukozyten", "Leuko", "WBC"], "value": 6.8, "unit": "/nl", "loinc": "6690-2"},
+    {"names": ["Erythrozyten", "Ery", "RBC"], "value": 4.52, "unit": "/pl", "loinc": "789-8"},
+    {"names": ["Hämoglobin", "Haemoglobin", "Hb"], "value": 13.1, "unit": "g/dl", "loinc": "718-7"},
+    {"names": ["Hämatokrit", "Hkt", "Haematokrit"], "value": 39.4, "unit": "%", "loinc": "4544-3"},
+    {"names": ["MCV"], "value": 87.2, "unit": "fl", "loinc": "787-2"},
+    {"names": ["Thrombozyten", "Thrombo", "PLT"], "value": 263, "unit": "/nl", "loinc": "777-3"},
+    {"names": ["Natrium"], "value": 141, "unit": "mmol/l", "loinc": "2951-2"},
+    {"names": ["Kalium"], "value": 5.6, "unit": "mmol/l", "loinc": "2823-3"},
+    {"names": ["Kreatinin"], "value": 1.12, "unit": "mg/dl", "loinc": "2160-0"},
+    {"names": ["GFR", "eGFR", "Filtrationsrate"], "value": 58, "unit": "ml/min/1,73m²"},
+    {"names": ["ALT", "GPT", "Alanin"], "value": 22, "unit": "U/l", "loinc": "1742-6"}
+  ],
+  "notNumeric": [
+    {"names": ["CRP", "C-reaktiv"]}
+  ]
+}

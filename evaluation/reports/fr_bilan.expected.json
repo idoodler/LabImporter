@@ -1,0 +1,16 @@
+{
+  "reportDate": "2026-10-03",
+  "patientName": "Claire Dubois",
+  "values": [
+    {"names": ["Glyc", "Glucose"], "value": 5.4, "unit": "mmol/L", "alternatives": [{"value": 0.97, "unit": "g/L"}]},
+    {"names": ["Créatinine", "Creatinine"], "value": 71, "unit": "µmol/L", "loinc": "14682-9"},
+    {"names": ["Cholestérol total", "Cholesterol total", "Cholestérol"], "value": 2.14, "unit": "g/L", "loinc": "2093-3"},
+    {"names": ["HDL"], "value": 0.62, "unit": "g/L", "loinc": "2085-9"},
+    {"names": ["Triglyc"], "value": 0.98, "unit": "g/L", "loinc": "2571-8"},
+    {"names": ["Ferritine", "Ferritin"], "value": 34, "unit": "µg/L", "loinc": "2276-4"},
+    {"names": ["TSH", "Thyréostimuline"], "value": 2.31, "unit": "mUI/L", "loinc": "3016-3"},
+    {"names": ["Hémoglobine", "Hemoglobine"], "value": 12.8, "unit": "g/dL", "loinc": "718-7"},
+    {"names": ["Leucocytes", "Leucocyte"], "value": 7.2, "unit": "G/L", "loinc": "6690-2"},
+    {"names": ["Plaquettes", "Plaquette"], "value": 245, "unit": "G/L", "loinc": "777-3"}
+  ]
+}

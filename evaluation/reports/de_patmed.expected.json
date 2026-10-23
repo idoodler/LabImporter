@@ -1,0 +1,20 @@
+{
+  "reportDate": "2026-05-06",
+  "patientName": "Max Mustermann",
+  "values": [
+    {"names": ["Kreatinin", "KREA", "Creatinin"], "value": 0.8, "unit": "mg/dl", "loinc": "2160-0"},
+    {"names": ["Harnsäure", "HARNS", "Urat"], "value": 5.1, "unit": "mg/dl", "loinc": "3084-1"},
+    {"names": ["GPT", "ALT", "Alanin"], "value": 59, "unit": "U/l", "loinc": "1742-6"},
+    {"names": ["GGT", "Gamma"], "value": 31, "unit": "U/l", "loinc": "2324-2"},
+    {"names": ["HbA1c", "HB-A1C"], "value": 6.5, "unit": "%", "loinc": "4548-4"},
+    {"names": ["Glucose", "Glukose"], "value": 104, "unit": "mg/dl"},
+    {"names": ["Cholesterin"], "value": 198, "unit": "mg/dl", "loinc": "2093-3"},
+    {"names": ["HDL"], "value": 52, "unit": "mg/dl", "loinc": "2085-9"},
+    {"names": ["LDL"], "value": 121, "unit": "mg/dl", "loinc": "13457-7"},
+    {"names": ["Triglycerid"], "value": 133, "unit": "mg/dl", "loinc": "2571-8"},
+    {"names": ["Kalium"], "value": 4.1, "unit": "mmol/l", "loinc": "2823-3"},
+    {"names": ["Natrium"], "value": 139, "unit": "mmol/l", "loinc": "2951-2"},
+    {"names": ["TSH", "Thyreotropin"], "value": 1.9, "unit": "mU/l", "loinc": "3016-3"},
+    {"names": ["Ferritin"], "value": 88, "unit": "ng/ml", "loinc": "2276-4"}
+  ]
+}

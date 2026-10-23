@@ -1,0 +1,15 @@
+{
+  "reportDate": "2026-08-18",
+  "patientName": "Giulia",
+  "values": [
+    {"names": ["Emoglobina"], "value": 13.6, "unit": "g/dL", "loinc": "718-7"},
+    {"names": ["Globuli bianchi", "Leucociti"], "value": 5.9, "unit": "10^3/µL"},
+    {"names": ["Piastrine"], "value": 301, "unit": "10^3/µL", "loinc": "777-3"},
+    {"names": ["Glicemia", "Glucosio"], "value": 88, "unit": "mg/dL"},
+    {"names": ["Colesterolo totale", "Colesterolo"], "value": 231, "unit": "mg/dL", "loinc": "2093-3"},
+    {"names": ["HDL"], "value": 68, "unit": "mg/dL", "loinc": "2085-9"},
+    {"names": ["Trigliceridi"], "value": 112, "unit": "mg/dL", "loinc": "2571-8"},
+    {"names": ["Creatinina"], "value": 0.78, "unit": "mg/dL", "loinc": "2160-0"},
+    {"names": ["Vitamina D", "25-OH"], "value": 19.4, "unit": "ng/mL"}
+  ]
+}

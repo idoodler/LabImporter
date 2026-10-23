@@ -9,6 +9,8 @@ import dev.idoodler.labimporter.core.model.ReferenceRange
 import dev.idoodler.labimporter.core.parse.LabParsePipeline
 import dev.idoodler.labimporter.core.parse.LabParsePrompt
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -69,12 +71,42 @@ class ModelTest {
     }
 
     @Test
+    fun theJsonSchemaDescribesExactlyTheDecodedFields() {
+        val schema = Json.parseToJsonElement(LabParsePrompt.jsonSchema).jsonObject
+        val properties = schema.getValue("properties").jsonObject
+        assertEquals(setOf("entries", "reportDate", "patientName", "authorName", "reportLanguage"), properties.keys)
+        val entry = properties.getValue("entries").jsonObject.getValue("items").jsonObject.getValue("properties").jsonObject
+        assertEquals(setOf("code", "name", "rawValue", "unit"), entry.keys)
+        // A reply shaped by the schema decodes.
+        val reply = "{\"entries\":[{\"code\":\"\",\"name\":\"Ferritin\",\"rawValue\":\"88\",\"unit\":\"ng/ml\"}]," +
+            "\"reportDate\":\"\",\"patientName\":\"\",\"authorName\":\"\",\"reportLanguage\":\"de\"}"
+        assertEquals("Ferritin", LabParsePrompt.decodeJsonReply(reply)!!.entries.single().name)
+    }
+
+    @Test
     fun onlyIsoDatesAreAccepted() {
         assertEquals(LocalDate(2026, 5, 6), LabParsePipeline.parseDate("2026-05-06"))
         assertNull(LabParsePipeline.parseDate("06.05.2026"))
         assertNull(LabParsePipeline.parseDate("05/06/2026"))
         assertNull(LabParsePipeline.parseDate("2026-13-01"))
         assertNull(LabParsePipeline.parseDate(""))
+    }
+
+    @Test
+    fun aDateTheReportDoesntPrintIsNoDate() {
+        val text = "Patient geb. 12.03.1975\nPrélèvement du 03/10/2026 à 08:15, Referenz 3,92 - 5,08"
+        assertEquals(setOf(LocalDate(1975, 3, 12), LocalDate(2026, 10, 3), LocalDate(2026, 3, 10)), LabParsePipeline.printedDates(text))
+        assertEquals(LocalDate(2026, 10, 3), LabParsePipeline.verifiedDate(LocalDate(2026, 10, 3), text))
+        // A mis-copied year: the one printed date with that day and month is what the model read.
+        assertEquals(LocalDate(2026, 10, 3), LabParsePipeline.verifiedDate(LocalDate(2031, 10, 3), text))
+        assertNull(LabParsePipeline.verifiedDate(LocalDate(2026, 10, 4), text))
+        // Two printed dates share day and month: no way to tell which, so none.
+        assertNull(LabParsePipeline.verifiedDate(LocalDate(2031, 10, 3), "03.10.2026 und 03.10.2025"))
+        // Nothing numeric to check against (month names): the model's date stands.
+        assertEquals(LocalDate(2026, 10, 3), LabParsePipeline.verifiedDate(LocalDate(2026, 10, 3), "3. Oktober 2026"))
+        assertEquals(setOf(LocalDate(2026, 9, 30)), LabParsePipeline.printedDates("Collected: 09/30/2026 07:42"))
+        assertEquals(setOf(LocalDate(2026, 5, 6)), LabParsePipeline.printedDates("2026-05-06 und 06.05.26"))
+        assertNull(LabParsePipeline.verifiedDate(null, text))
     }
 
     @Test
