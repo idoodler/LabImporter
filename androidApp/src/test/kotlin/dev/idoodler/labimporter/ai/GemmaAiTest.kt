@@ -65,12 +65,16 @@ class FakeRuntime : GemmaRuntime {
         loads += gpu
         if ((gpu && failGpu) || (!gpu && failCpu)) throw IllegalStateException("can't run on ${if (gpu) "GPU" else "CPU"}")
         return object : GemmaSession {
+            private var isClosed = false
+
             override fun generate(instructions: String, prompt: String, responseSchema: String?, maxOutputTokens: Int): Flow<String> = flow {
+                check(!isClosed) { "engine closed" } // Like the native engine after close().
                 error?.let { throw it }
                 reply.forEach { emit(it) }
             }
 
             override fun close() {
+                isClosed = true
                 closed++
             }
         }
@@ -101,7 +105,7 @@ class GemmaAiTest {
         device: GemmaModelStore.DeviceFacts = GemmaModelStore.DeviceFacts(supports64Bit = true, isLowRamDevice = false),
         free: Long = Long.MAX_VALUE,
     ) = GemmaModelStore(
-        { File(folder.root, "models") }, { prefs }, { device },
+        { File(folder.root, "models") }, { prefs }, { device }, File(folder.root, "litertlm"),
         expectedSize = modelBytes.size.toLong(), expectedSha256 = modelSha, freeSpace = { free },
     )
 
@@ -166,6 +170,18 @@ class GemmaAiTest {
         assertEquals(listOf(1L), downloads.removed)
         assertTrue(checkNotNull(store().modelFile).isFile)
         assertFalse(checkNotNull(store().downloadFile).exists())
+    }
+
+    @Test
+    fun returningFromThePermissionDialogDoesNotStartASecondDownload() = runTest {
+        val ai = gemma()
+        // The user taps Download; the app resumes from the notification permission dialog at once.
+        val tap = backgroundScope.launch { ai.download(allowMobileData = false) }
+        val resume = backgroundScope.launch { ai.refresh() }
+        runCurrent()
+        tap.join()
+        resume.join()
+        assertEquals(1, downloads.started.size)
     }
 
     @Test
@@ -316,10 +332,21 @@ class GemmaAiTest {
     }
 
     @Test
+    fun aParseKeepsItsModelWhenTheAppLeavesWhileItLoads() = runTest {
+        val ai = gemma()
+        installed(ai)
+        ai.onUiHidden() // The user switched away right after starting the import.
+        assertEquals("{\"entries\":[]}", ai.generate("i", "p", "{}") {})
+        assertEquals(1, runtime.closed) // Released after the parse, not before it.
+    }
+
+    @Test
     fun removingCancelsOrDeletesAndOffersItAgain() = runTest {
         val ai = gemma()
         installed(ai)
+        val cache = File(folder.root, "litertlm/weights.bin").apply { parentFile?.mkdirs(); writeText("gpu weights") }
         ai.remove()
+        assertFalse("the runtime's cache goes with the model", cache.exists())
         assertEquals(AiAvailability.Unsupported(UnsupportedReason.DEVICE, modelDownload = true), ai.availability.value)
         assertFalse(ai.installed.value)
         assertFalse(checkNotNull(store().modelFile).exists())

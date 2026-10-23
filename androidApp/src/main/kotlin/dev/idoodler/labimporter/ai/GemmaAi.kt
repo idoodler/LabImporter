@@ -69,6 +69,11 @@ class GemmaAi(
     val events: SharedFlow<ModelEvent> = _events.asSharedFlow()
 
     private var watch: Job? = null
+    /**
+     * One decision at a time about starting, restarting or removing the download: the user's
+     * Download and the refresh on returning from the permission dialog once both started one.
+     */
+    private val startLock = Mutex()
     /** One path at a time finishes a download: the in-app watcher or the background job ([finishDownload]). */
     private val installLock = Mutex()
     private val sessionLock = Mutex()
@@ -88,15 +93,17 @@ class GemmaAi(
             store.loading = false
             store.lastFailure = AiProblem.LOAD_FAILED
         }
-        val failure = store.lastFailure
-        val downloadId = store.downloadId
-        when {
-            failure != null -> state.value = AiAvailability.PreparationFailed(failure)
-            store.isInstalled -> state.value = AiAvailability.Ready
-            downloadId != null -> watch(downloadId)
-            store.unverifiedFile != null -> installLock.withLock { if (!store.isInstalled) verifyAndInstall() }
-            store.wanted -> startDownload()
-            else -> state.value = AiAvailability.Unsupported(UnsupportedReason.DEVICE, modelDownload = true)
+        startLock.withLock {
+            val failure = store.lastFailure
+            val downloadId = store.downloadId
+            when {
+                failure != null -> state.value = AiAvailability.PreparationFailed(failure)
+                store.isInstalled -> state.value = AiAvailability.Ready
+                downloadId != null -> watch(downloadId)
+                store.unverifiedFile != null -> installLock.withLock { if (!store.isInstalled) verifyAndInstall() }
+                store.wanted -> startDownload()
+                else -> state.value = AiAvailability.Unsupported(UnsupportedReason.DEVICE, modelDownload = true)
+            }
         }
     }
 
@@ -107,24 +114,28 @@ class GemmaAi(
 
     /** The user's go-ahead: fetch the model (Wi-Fi only unless [allowMobileData]). */
     suspend fun download(allowMobileData: Boolean) = withContext(io) {
-        store.wanted = true
-        store.allowMobileData = allowMobileData
-        store.lastFailure = null
-        // A download waiting for Wi-Fi is restarted with mobile data allowed.
-        watch?.cancel()
-        store.downloadId?.let { downloads.remove(it) }
-        store.downloadId = null
-        startDownload()
+        startLock.withLock {
+            store.wanted = true
+            store.allowMobileData = allowMobileData
+            store.lastFailure = null
+            // A download waiting for Wi-Fi is restarted with mobile data allowed.
+            watch?.cancel()
+            store.downloadId?.let { downloads.remove(it) }
+            store.downloadId = null
+            startDownload()
+        }
     }
 
     /** Cancels a download or deletes the model — back to the offer. */
     suspend fun remove() {
-        watch?.cancel()
-        store.downloadId?.let { withContext(io) { downloads.remove(it) } }
-        closeSession()
-        withContext(io) { store.delete() }
-        _installed.value = false
-        state.value = AiAvailability.Unsupported(UnsupportedReason.DEVICE, modelDownload = true)
+        startLock.withLock {
+            watch?.cancel()
+            store.downloadId?.let { withContext(io) { downloads.remove(it) } }
+            closeSession()
+            withContext(io) { store.delete() }
+            _installed.value = false
+            state.value = AiAvailability.Unsupported(UnsupportedReason.DEVICE, modelDownload = true)
+        }
     }
 
     /**
@@ -138,6 +149,7 @@ class GemmaAi(
         if (status.isFinal) settle(id, status)
     }
 
+    /** Call with [startLock] held. */
     private suspend fun startDownload() {
         val free = withContext(io) { store.freeBytes() }
         val destination = store.downloadFile
@@ -256,9 +268,11 @@ class GemmaAi(
     }
 
     override suspend fun generate(instructions: String, prompt: String, responseSchema: String?, onPartialReply: (String) -> Unit): String {
-        val session = loadedSession()
+        // Set before loading: a model that finishes loading after the app went to the background
+        // must not be released under this parse (see load()).
         generating = true
         try {
+            val session = loadedSession()
             val reply = StringBuilder()
             var pieces = 0
             session.generate(instructions, prompt, responseSchema, MAX_OUTPUT_TOKENS).flowOn(compute).collect { piece ->

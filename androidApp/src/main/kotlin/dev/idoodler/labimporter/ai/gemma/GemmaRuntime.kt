@@ -16,7 +16,10 @@ import java.io.File
 
 /** The few LiteRT-LM calls [dev.idoodler.labimporter.ai.GemmaAi] makes — a seam, so its states and errors are testable without the native runtime. */
 fun interface GemmaRuntime {
-    /** Loads the model (blocking, seconds); throws when [gpu] — or the CPU — can't run it. */
+    /**
+     * Loads the model and runs one step with it (blocking, seconds); throws
+     * when [gpu] — or the CPU — can't run it.
+     */
     fun load(modelPath: String, gpu: Boolean): GemmaSession
 }
 
@@ -45,8 +48,14 @@ class LiteRtGemmaRuntime(private val cacheDir: File) : GemmaRuntime {
         )
         try {
             engine.initialize()
+            // The GPU backend initializes without a GPU driver and only fails at the first step
+            // ("Can not find OpenCL library on this device", seen on the emulator): take that step
+            // now, so a phone without one falls back to the CPU instead of failing every report.
+            engine.createConversation(ConversationConfig(maxOutputToken = 1)).use { it.sendMessage("OK") }
         } catch (e: Throwable) {
             engine.close()
+            // What the GPU backend converted before failing (1.5 GB of weights on the Mac) is of no use to the CPU.
+            if (gpu) cacheDir.deleteRecursively()
             throw e
         }
         return LiteRtSession(engine)

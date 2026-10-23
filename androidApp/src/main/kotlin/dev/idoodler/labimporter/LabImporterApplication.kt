@@ -118,7 +118,7 @@ class LabImporterApplication : Application(), AppContainerOwner {
  */
 fun defaultAi(context: Context, preferences: AppPreferences, scope: CoroutineScope) = SelectableAi(
     gemini = GeminiNanoAi(scope),
-    gemma = GemmaAi(GemmaModelStore(context), SystemModelDownloads(context), LiteRtGemmaRuntime(File(context.cacheDir, "litertlm")), scope),
+    gemma = GemmaModelStore(context).let { store -> GemmaAi(store, SystemModelDownloads(context), LiteRtGemmaRuntime(store.runtimeCache), scope) },
     standIn = DevelopmentStandIn.create(),
     useStandIn = preferences.useDevelopmentStandIn,
     scope = scope,

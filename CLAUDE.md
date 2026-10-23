@@ -369,7 +369,17 @@ tools/generate_android_icon.py # layered adaptive launcher icon (+ night + monoc
   networking APIs, if the URL stops being the pinned one, or if a library's
   telemetry backend returns (ML Kit's Clearcut backend is removed in the
   manifest). LiteRT-LM has no R8 rules of its own — keep the ones in
-  `proguard-rules.pro` and smoke-test the release APK.
+  `proguard-rules.pro` and smoke-test the release APK. Its GPU backend
+  *initializes* without a GPU driver and only fails at the first step ("Can not
+  find OpenCL library", as on the emulator), so `LiteRtGemmaRuntime.load` takes
+  one step before calling the GPU usable; the CPU fallback follows from that.
+  The GPU backend converts the weights into the cache folder (1.5 GB on the
+  Mac) — deleted with the model and when the GPU fails. **Testing on the
+  emulator** costs ~4–5 GB of host disk (the model plus that cache inside the
+  AVD image) and the AVD needs ≥ 4 GB RAM; an emulator whose host disk fills up
+  goes offline. The model download's background path (download manager →
+  `ModelDownloadReceiver` → `ModelInstallJob` → "AI Model Ready", with the app's
+  process killed mid-download) was verified on the emulator with a release build.
 - **Emulators:** they have no Gemini Nano, so a release build shows "Device Not
   Supported". Debug builds additionally offer a clearly labelled *development
   stand-in* on that screen (or `adb shell am start -n

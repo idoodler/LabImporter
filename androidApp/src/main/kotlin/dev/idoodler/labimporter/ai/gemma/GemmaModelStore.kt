@@ -19,12 +19,15 @@ import java.security.MessageDigest
  * Everything here touches the disk: call it off the main thread.
  *
  * @param directory where the model goes; null when there's no such storage.
+ * @param runtimeCache where LiteRT-LM keeps what it derives from the model
+ *   (the GPU backend's converted weights — 1.5 GB on the Mac); deleted with the model.
  * @param expectedSize / [expectedSha256] the pinned file (tests use a small one).
  */
 class GemmaModelStore(
     directory: () -> File?,
     preferences: () -> SharedPreferences,
     device: () -> DeviceFacts,
+    val runtimeCache: File,
     private val expectedSize: Long = GemmaModel.SIZE_BYTES,
     private val expectedSha256: String = GemmaModel.SHA256,
     private val freeSpace: (File) -> Long = { StatFs(it.path).availableBytes },
@@ -33,6 +36,7 @@ class GemmaModelStore(
         { context.getExternalFilesDir(MODELS_FOLDER) },
         { context.getSharedPreferences("gemma_model", Context.MODE_PRIVATE) },
         { DeviceFacts.of(context) },
+        File(context.cacheDir, "litertlm"),
     )
 
     private val directory: File? by lazy(directory)
@@ -130,9 +134,10 @@ class GemmaModelStore(
         return true
     }
 
-    /** Deletes the model and any partial download and forgets the choice to download it. */
+    /** Deletes the model, any partial download and the runtime's cache, and forgets the choice to download it. */
     fun delete() {
         listOfNotNull(modelFile, downloadFile).forEach { it.delete() }
+        runtimeCache.deleteRecursively()
         preferences.edit { clear() }
     }
 
