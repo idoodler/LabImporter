@@ -394,10 +394,11 @@ tools/generate_android_icon.py # layered adaptive launcher icon (+ night + monoc
   caption-bar inset. `WindowInsetsGuardrailTest` fails on status-bar-only
   padding. Keep backgrounds full-bleed; pad the content. Android 13 and older
   draw that caption inside the app's window (`DecorCaptionView`) over the
-  content, and on Waydroid (LineageOS 20) its inset arrives as 0:
-  `LegacyCaption` then moves the content below the caption (only when one
-  visibly covers it and no inset was reported; a no-op on Android 14+ and in
-  fullscreen; it logs `Legacy caption covers the content by N px`).
+  content, and on Waydroid (LineageOS 20) its inset is 0 at first and arrives
+  a layout pass later: `LegacyCaption` moves the content below the caption
+  until then (only while one visibly covers it and no inset was reported; a
+  no-op on Android 14+ and in fullscreen; it logs `Legacy caption covers the
+  content by N px`). Verified on Waydroid multi-window, Android 13.
 - **Android storage:** Health Connect *Medical Records* (FHIR R4 laboratory
   `Observation`s, Android 16+, still `@ExperimentalPersonalHealthRecordApi`).
   There's no `DiagnosticReport`, so each Observation carries its report id as a

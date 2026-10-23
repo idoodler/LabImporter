@@ -12,10 +12,12 @@ import androidx.core.view.WindowInsetsCompat
  * Android 13 and older draw a freeform window's caption — back, minimise,
  * maximise, close — inside the app's own window (`DecorCaptionView`), over the
  * content (`Window.isOverlayWithDecorCaptionEnabled` defaults to true there).
- * The platform should report it as the caption-bar inset, which the UI pads
- * for, but on Waydroid (LineageOS 20) that inset arrives as 0 and buttons end
- * up under the caption's. Where a caption visibly covers the content and no
- * caption inset was reported, the content moves below the caption instead.
+ * The platform reports it as the caption-bar inset, which the UI pads for —
+ * but on Waydroid (LineageOS 20) it is 0 at first and only arrives a layout
+ * pass later, and without this the buttons stayed under the caption's. While
+ * a caption visibly covers the content and no caption inset was reported, the
+ * content moves below the caption; once the inset arrives, the padding goes
+ * and the UI's own (safeDrawing) padding takes over — never both.
  * Nothing changes on Android 14+ (the caption is drawn by the system there and
  * reported), in fullscreen, or wherever the inset arrives.
  */
