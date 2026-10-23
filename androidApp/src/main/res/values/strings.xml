@@ -153,9 +153,12 @@
     <!-- Device not supported (like iOS: no on-device AI, no app) -->
     <string name="unsupported_title">Device Not Supported</string>
     <string name="unsupported_message">LabImporter needs Gemini Nano, Android\'s on-device AI, to read your lab reports privately on your device.</string>
+    <string name="unsupported_unknown_title">Couldn\'t Check On-Device AI</string>
+    <string name="unsupported_unknown_message">LabImporter couldn\'t get an answer from Android\'s on-device AI service (AICore). Make sure Google Play services and AICore are up to date, then check again.</string>
+    <string name="supported_phones">Supported Phones</string>
     <string name="unsupported_update_message">LabImporter needs a newer version of Android\'s on-device AI. Update your device, then check again.</string>
     <string name="requirement_device_title">Device with Gemini Nano</string>
-    <string name="requirement_device_detail">Gemini Nano runs on selected recent phones, for example Google Pixel 9 and later.</string>
+    <string name="requirement_device_detail">Google lets apps use Gemini Nano only on selected phones, for example Pixel 9 and 10, Galaxy S26 and Galaxy Z Fold7. Some phones use it only for their own features.</string>
     <string name="requirement_update_title">Latest OS</string>
     <string name="requirement_update_detail">Keep Android, Google Play services and AICore up to date. On a newly set-up phone, Gemini Nano can take a while to become available.</string>
     <string name="check_again">Check Again</string>

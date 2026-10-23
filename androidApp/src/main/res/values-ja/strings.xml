@@ -123,9 +123,12 @@
     </plurals>
     <string name="unsupported_title">非対応のデバイス</string>
     <string name="unsupported_message">LabImporterで検査報告書をデバイス上で非公開のまま読み取るには、Androidのデバイス上AIであるGemini Nanoが必要です。</string>
+    <string name="unsupported_unknown_title">端末内AIを確認できません</string>
+    <string name="unsupported_unknown_message">LabImporter は Android の端末内 AI サービス（AICore）から応答を受け取れませんでした。Google Play 開発者サービスと AICore が最新であることを確認してから、もう一度確認してください。</string>
+    <string name="supported_phones">対応スマートフォン</string>
     <string name="unsupported_update_message">LabImporterには、より新しいバージョンのAndroidのデバイス上AIが必要です。デバイスをアップデートしてから、もう一度確認してください。</string>
     <string name="requirement_device_title">Gemini Nano対応デバイス</string>
-    <string name="requirement_device_detail">Gemini Nanoは一部の最近のスマートフォン（例：Google Pixel 9以降）で動作します。</string>
+    <string name="requirement_device_detail">Google がアプリに Gemini Nano の利用を許可しているのは、Pixel 9・10、Galaxy S26、Galaxy Z Fold7 など一部のスマートフォンだけです。Gemini Nano を自社機能にのみ使うスマートフォンもあります。</string>
     <string name="requirement_update_title">最新のOS</string>
     <string name="requirement_update_detail">Android、Google Play開発者サービス、AICoreを最新の状態に保ってください。設定したばかりのスマートフォンでは、Gemini Nanoが利用可能になるまでしばらくかかることがあります。</string>
     <string name="check_again">もう一度確認</string>

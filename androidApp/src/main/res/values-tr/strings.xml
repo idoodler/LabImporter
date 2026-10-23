@@ -128,9 +128,12 @@
     </plurals>
     <string name="unsupported_title">Cihaz Desteklenmiyor</string>
     <string name="unsupported_message">LabImporter\'ın laboratuvar raporlarınızı cihazınızda gizli bir şekilde okuyabilmesi için Android\'in cihaz üzerindeki yapay zekası Gemini Nano gerekir.</string>
+    <string name="unsupported_unknown_title">Cihaz içi yapay zekâ denetlenemedi</string>
+    <string name="unsupported_unknown_message">LabImporter, Android\'in cihaz içi yapay zekâ hizmetinden (AICore) yanıt alamadı. Google Play Hizmetleri ve AICore\'un güncel olduğundan emin olun, ardından yeniden denetleyin.</string>
+    <string name="supported_phones">Desteklenen telefonlar</string>
     <string name="unsupported_update_message">LabImporter\'ın Android\'in cihaz üzerindeki yapay zekasının daha yeni bir sürümüne ihtiyacı var. Cihazınızı güncelleyip tekrar kontrol edin.</string>
     <string name="requirement_device_title">Gemini Nano destekli cihaz</string>
-    <string name="requirement_device_detail">Gemini Nano, örneğin Google Pixel 9 ve sonrası gibi seçili yeni telefonlarda çalışır.</string>
+    <string name="requirement_device_detail">Google, uygulamaların Gemini Nano\'yu yalnızca belirli telefonlarda kullanmasına izin verir; örneğin Pixel 9 ve 10, Galaxy S26 ve Galaxy Z Fold7. Bazı telefonlar onu yalnızca kendi özellikleri için kullanır.</string>
     <string name="requirement_update_title">En Son İşletim Sistemi</string>
     <string name="requirement_update_detail">Android\'i, Google Play Hizmetleri\'ni ve AICore\'u güncel tutun. Yeni kurulmuş bir telefonda Gemini Nano\'nun kullanılabilir hale gelmesi biraz zaman alabilir.</string>
     <string name="check_again">Tekrar kontrol et</string>

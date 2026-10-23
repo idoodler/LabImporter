@@ -56,17 +56,27 @@ sealed interface AiAvailability {
     /**
      * This device can't run the model (or can't yet). LabImporter can't work
      * without it — exactly like the iOS app on hardware without Apple
-     * Intelligence.
+     * Intelligence. [detail] is the system's own answer (a status or error
+     * code), shown as-is so the reason can be reported and checked.
      */
-    data class Unsupported(val reason: UnsupportedReason) : AiAvailability
+    data class Unsupported(val reason: UnsupportedReason, val detail: String? = null) : AiAvailability
 }
 
 enum class UnsupportedReason {
-    /** No Gemini Nano on this device — or it hasn't received its AI configuration yet. */
+    /**
+     * The system says this phone doesn't offer Gemini Nano to apps (ML Kit
+     * Prompt API) — also phones that use Gemini Nano only for their own features.
+     */
     DEVICE,
 
     /** Gemini Nano needs newer system software (Android, Play services or AICore). */
     UPDATE_REQUIRED,
+
+    /**
+     * The system didn't give an answer (no reply in time, an unexpected error,
+     * no ML Kit client) — not a verdict on the phone, so it isn't called unsupported.
+     */
+    NOT_DETERMINED,
 }
 
 /** Why the model couldn't read a report (or get ready), as the user is told. */

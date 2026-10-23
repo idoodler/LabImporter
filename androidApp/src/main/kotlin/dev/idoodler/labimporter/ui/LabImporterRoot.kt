@@ -137,15 +137,20 @@ fun LabImporterRoot(viewModel: AppViewModel) {
     // Like iOS: without the on-device AI there is no app, only the reason why.
     val availability by viewModel.aiAvailability.collectAsStateWithLifecycle()
     var lastUnsupported by rememberSaveable { mutableStateOf<UnsupportedReason?>(null) }
+    var lastDetail by rememberSaveable { mutableStateOf<String?>(null) }
     LaunchedEffect(availability) {
-        if (availability != AiAvailability.Checking) lastUnsupported = (availability as? AiAvailability.Unsupported)?.reason
+        if (availability != AiAvailability.Checking) {
+            lastUnsupported = (availability as? AiAvailability.Unsupported)?.reason
+            lastDetail = (availability as? AiAvailability.Unsupported)?.detail
+        }
     }
     // While "Check Again" runs the screen stays, showing that it's checking.
-    val unsupportedReason = (availability as? AiAvailability.Unsupported)?.reason
-        ?: lastUnsupported.takeIf { availability == AiAvailability.Checking }
+    val unsupported = availability as? AiAvailability.Unsupported
+    val unsupportedReason = unsupported?.reason ?: lastUnsupported.takeIf { availability == AiAvailability.Checking }
     unsupportedReason?.let { reason ->
         UnsupportedDeviceScreen(
             reason = reason,
+            detail = unsupported?.detail ?: lastDetail,
             checking = availability == AiAvailability.Checking,
             onCheckAgain = viewModel::checkAiAgain,
             standIn = DevelopmentStandIn.texts,

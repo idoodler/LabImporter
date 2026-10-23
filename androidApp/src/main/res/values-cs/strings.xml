@@ -138,9 +138,12 @@
     </plurals>
     <string name="unsupported_title">Zařízení není podporováno</string>
     <string name="unsupported_message">LabImporter potřebuje Gemini Nano, AI na zařízení od Androidu, aby mohl soukromě číst vaše laboratorní protokoly přímo ve vašem zařízení.</string>
+    <string name="unsupported_unknown_title">AI v zařízení nelze ověřit</string>
+    <string name="unsupported_unknown_message">LabImporter nedostal odpověď od služby AI v zařízení Android (AICore). Ujistěte se, že Služby Google Play a AICore jsou aktuální, a zkontrolujte to znovu.</string>
+    <string name="supported_phones">Podporované telefony</string>
     <string name="unsupported_update_message">LabImporter potřebuje novější verzi AI na zařízení od Androidu. Aktualizujte zařízení a zkontrolujte to znovu.</string>
     <string name="requirement_device_title">Zařízení s Gemini Nano</string>
-    <string name="requirement_device_detail">Gemini Nano běží na vybraných novějších telefonech, například na Google Pixel 9 a novějších.</string>
+    <string name="requirement_device_detail">Google umožňuje aplikacím používat Gemini Nano jen na vybraných telefonech, například Pixel 9 a 10, Galaxy S26 a Galaxy Z Fold7. Některé telefony ho používají jen pro vlastní funkce.</string>
     <string name="requirement_update_title">Nejnovější systém</string>
     <string name="requirement_update_detail">Udržujte Android, Služby Google Play a AICore aktuální. Na nově nastaveném telefonu může chvíli trvat, než bude Gemini Nano k dispozici.</string>
     <string name="check_again">Zkontrolovat znovu</string>

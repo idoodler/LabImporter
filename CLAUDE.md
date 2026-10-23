@@ -310,7 +310,16 @@ tools/generate_android_icon.py # layered adaptive launcher icon (+ night + monoc
   for it); UNAVAILABLE or an incompatible AICore → `UnsupportedDeviceScreen`
   replaces the app ("Device Not Supported", with Check Again), the counterpart of
   iOS's `UnsupportedDeviceView`. Every `GenAiException` maps to an `AiProblem`
-  with a specific message (`GenAiErrors`); the token limit is checked up front
+  with a specific message (`GenAiErrors`). Only the system's own verdict makes a
+  phone "unsupported" (feature status UNAVAILABLE, NOT_AVAILABLE/NOT_SUPPORTED;
+  update errors ask for an update); no reply, an unexpected error or no client
+  is `NOT_DETERMINED` ("couldn't check"). The screen shows the system's answer
+  (`Unsupported.detail`). Note: Google offers the Prompt API only on some phones
+  (ML Kit's device list) — e.g. not the Galaxy S25, which has Gemini Nano only
+  for the other GenAI APIs. **Release builds:** R8 once broke ML Kit's component
+  lookup (keep rules in `proguard-rules.pro`) — after changing shrinking, run the
+  release APK on an emulator and check logcat for `Gemini Nano feature status`.
+  The token limit is checked up front
   and a reply cut off at the output limit counts as "too long" (same advice as
   iOS). A reply that isn't a complete, well-formed result is a failure, not an
   empty result.

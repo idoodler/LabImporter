@@ -80,6 +80,23 @@ class LabImporterRootTest {
     }
 
     @Test
+    fun aFailedCheckIsNotCalledUnsupportedAndShowsTheSystemsAnswer() {
+        ai.state.value = AiAvailability.Unsupported(UnsupportedReason.NOT_DETERMINED, "AICore: no status within 30 s")
+        launch()
+        compose.onNodeWithText(string(R.string.unsupported_unknown_title)).assertIsDisplayed()
+        compose.onNodeWithText(string(R.string.unsupported_title)).assertDoesNotExist()
+        compose.onNodeWithText("${string(R.string.details)}: AICore: no status within 30 s").assertExists()
+    }
+
+    @Test
+    fun anUnsupportedPhoneLinksToGooglesList() {
+        ai.state.value = AiAvailability.Unsupported(UnsupportedReason.DEVICE, "Prompt API: UNAVAILABLE")
+        launch()
+        compose.onNodeWithText(string(R.string.supported_phones)).assertExists()
+        compose.onNodeWithText("${string(R.string.details)}: Prompt API: UNAVAILABLE").assertExists()
+    }
+
+    @Test
     fun anOutdatedSystemAsksForAnUpdate() {
         ai.state.value = AiAvailability.Unsupported(UnsupportedReason.UPDATE_REQUIRED)
         launch()

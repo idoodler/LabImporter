@@ -123,9 +123,12 @@
     </plurals>
     <string name="unsupported_title">设备不受支持</string>
     <string name="unsupported_message">LabImporter 需要 Android 的设备端 AI——Gemini Nano，才能在你的设备上私密地读取化验报告。</string>
+    <string name="unsupported_unknown_title">无法检查设备端 AI</string>
+    <string name="unsupported_unknown_message">LabImporter 未能从 Android 的设备端 AI 服务（AICore）获得响应。请确保 Google Play 服务和 AICore 已更新，然后再检查一次。</string>
+    <string name="supported_phones">支持的手机</string>
     <string name="unsupported_update_message">LabImporter 需要更新版本的 Android 设备端 AI。请更新你的设备，然后再次检查。</string>
     <string name="requirement_device_title">支持 Gemini Nano 的设备</string>
-    <string name="requirement_device_detail">Gemini Nano 可在部分较新的手机上运行，例如 Google Pixel 9 及更新机型。</string>
+    <string name="requirement_device_detail">Google 只允许应用在部分手机上使用 Gemini Nano，例如 Pixel 9 和 10、Galaxy S26 以及 Galaxy Z Fold7。有些手机只将其用于自家功能。</string>
     <string name="requirement_update_title">最新系统</string>
     <string name="requirement_update_detail">请保持 Android、Google Play 服务和 AICore 为最新版本。在刚设置好的手机上，Gemini Nano 可能需要一段时间才能使用。</string>
     <string name="check_again">再次检查</string>

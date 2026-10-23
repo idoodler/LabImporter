@@ -6069,154 +6069,6 @@
         }
       }
     },
-    "Gemini Nano runs on selected recent phones, for example Google Pixel 9 and later." : {
-      "localizations" : {
-        "bg" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gemini Nano работи на избрани по-нови телефони, например Google Pixel 9 и по-нови."
-          }
-        },
-        "ca" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El Gemini Nano funciona en alguns telèfons recents, per exemple el Google Pixel 9 i posteriors."
-          }
-        },
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gemini Nano běží na vybraných novějších telefonech, například na Google Pixel 9 a novějších."
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gemini Nano kører på udvalgte nyere telefoner, f.eks. Google Pixel 9 og nyere."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gemini Nano läuft auf ausgewählten neueren Smartphones, zum Beispiel ab dem Google Pixel 9."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Το Gemini Nano λειτουργεί σε επιλεγμένα πρόσφατα τηλέφωνα, για παράδειγμα στο Google Pixel 9 και νεότερα."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gemini Nano funciona en algunos teléfonos recientes, por ejemplo, Google Pixel 9 y posteriores."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gemini Nano toimii valituissa uudemmissa puhelimissa, esimerkiksi Google Pixel 9:ssä ja uudemmissa."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gemini Nano fonctionne sur certains téléphones récents, par exemple le Google Pixel 9 et les modèles ultérieurs."
-          }
-        },
-        "hr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gemini Nano radi na odabranim novijim telefonima, primjerice na Google Pixelu 9 i novijima."
-          }
-        },
-        "hu" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A Gemini Nano egyes újabb telefonokon fut, például a Google Pixel 9-en és az újabbakon."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gemini Nano funziona su alcuni telefoni recenti, ad esempio Google Pixel 9 e successivi."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gemini Nanoは一部の最近のスマートフォン（例：Google Pixel 9以降）で動作します。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gemini Nano werkt op bepaalde recente telefoons, bijvoorbeeld de Google Pixel 9 en nieuwer."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gemini Nano działa na wybranych nowszych telefonach, na przykład Google Pixel 9 i nowszych."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "O Gemini Nano funciona em alguns celulares recentes, por exemplo, Google Pixel 9 e posteriores."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "O Gemini Nano funciona em alguns telemóveis recentes, por exemplo, no Google Pixel 9 e posteriores."
-          }
-        },
-        "ro" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gemini Nano rulează pe anumite telefoane recente, de exemplu Google Pixel 9 și modelele mai noi."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gemini Nano работает на некоторых новых телефонах, например на Google Pixel 9 и более поздних."
-          }
-        },
-        "sk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gemini Nano beží na vybraných novších telefónoch, napríklad na Google Pixel 9 a novších."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gemini Nano fungerar på utvalda nyare telefoner, till exempel Google Pixel 9 och senare."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gemini Nano, örneğin Google Pixel 9 ve sonrası gibi seçili yeni telefonlarda çalışır."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gemini Nano працює на деяких нових телефонах, наприклад на Google Pixel 9 і новіших."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gemini Nano 可在部分较新的手机上运行，例如 Google Pixel 9 及更新机型。"
-          }
-        }
-      }
-    },
     "Keep Android, Google Play services and AICore up to date. On a newly set-up phone, Gemini Nano can take a while to become available." : {
       "localizations" : {
         "bg" : {
@@ -14133,6 +13985,598 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "Couldn't Check On-Device AI" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Неуспешна проверка на AI на устройството"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No s'ha pogut comprovar la IA del dispositiu"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI v zařízení nelze ověřit"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI på enheden kunne ikke tjekkes"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On-Device-KI konnte nicht geprüft werden"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Δεν ήταν δυνατός ο έλεγχος της AI της συσκευής"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido comprobar la IA del dispositivo"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laitteen tekoälyä ei voitu tarkistaa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de vérifier l’IA de l’appareil"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI na uređaju nije moguće provjeriti"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Az eszközön futó MI nem ellenőrizhető"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossibile verificare l’IA del dispositivo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "端末内AIを確認できません"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI op het apparaat kon niet worden gecontroleerd"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie można sprawdzić AI na urządzeniu"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível verificar a IA do dispositivo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível verificar a IA do dispositivo"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI-ul de pe dispozitiv nu a putut fi verificat"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось проверить ИИ на устройстве"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI v zariadení sa nepodarilo overiť"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI på enheten kunde inte kontrolleras"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cihaz içi yapay zekâ denetlenemedi"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не вдалося перевірити ШІ на пристрої"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法检查设备端 AI"
+          }
+        }
+      }
+    },
+    "LabImporter couldn't get an answer from Android's on-device AI service (AICore). Make sure Google Play services and AICore are up to date, then check again." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter не получи отговор от услугата за AI на устройството в Android (AICore). Уверете се, че Google Play услуги и AICore са актуални, след това проверете отново."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter no ha rebut resposta del servei d'IA del dispositiu d'Android (AICore). Comprova que els Serveis de Google Play i AICore estiguin actualitzats i torna-ho a comprovar."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter nedostal odpověď od služby AI v zařízení Android (AICore). Ujistěte se, že Služby Google Play a AICore jsou aktuální, a zkontrolujte to znovu."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter fik ikke svar fra Androids AI-tjeneste på enheden (AICore). Sørg for, at Google Play-tjenester og AICore er opdateret, og tjek igen."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter hat keine Antwort vom On-Device-KI-Dienst von Android (AICore) erhalten. Stelle sicher, dass Google Play-Dienste und AICore aktuell sind, und prüfe es erneut."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Το LabImporter δεν έλαβε απάντηση από την υπηρεσία AI της συσκευής Android (AICore). Βεβαιωθείτε ότι οι Υπηρεσίες Google Play και το AICore είναι ενημερωμένα και ελέγξτε ξανά."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter no ha recibido respuesta del servicio de IA del dispositivo de Android (AICore). Asegúrate de que los Servicios de Google Play y AICore estén actualizados y vuelve a comprobarlo."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter ei saanut vastausta Androidin laitteen tekoälypalvelulta (AICore). Varmista, että Google Play Palvelut ja AICore ovat ajan tasalla, ja tarkista uudelleen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter n’a pas obtenu de réponse du service d’IA de l’appareil Android (AICore). Vérifiez que les services Google Play et AICore sont à jour, puis réessayez."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter nije dobio odgovor od Androidove usluge AI na uređaju (AICore). Provjerite jesu li Usluge za Google Play i AICore ažurirani pa provjerite ponovno."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A LabImporter nem kapott választ az Android eszközön futó MI-szolgáltatásától (AICore). Győződjön meg róla, hogy a Google Play-szolgáltatások és az AICore naprakész, majd ellenőrizze újra."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter non ha ricevuto risposta dal servizio IA del dispositivo Android (AICore). Assicurati che Google Play Services e AICore siano aggiornati, poi riprova."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter は Android の端末内 AI サービス（AICore）から応答を受け取れませんでした。Google Play 開発者サービスと AICore が最新であることを確認してから、もう一度確認してください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter kreeg geen antwoord van de AI-dienst op het apparaat van Android (AICore). Zorg dat Google Play-services en AICore up-to-date zijn en controleer opnieuw."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter nie otrzymał odpowiedzi od usługi AI na urządzeniu z Androidem (AICore). Upewnij się, że Usługi Google Play i AICore są aktualne, a potem sprawdź ponownie."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O LabImporter não recebeu resposta do serviço de IA do dispositivo Android (AICore). Verifique se o Google Play Services e o AICore estão atualizados e tente novamente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O LabImporter não recebeu resposta do serviço de IA do dispositivo Android (AICore). Certifique-se de que os Serviços do Google Play e o AICore estão atualizados e verifique novamente."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter nu a primit răspuns de la serviciul AI de pe dispozitivul Android (AICore). Asigură-te că Serviciile Google Play și AICore sunt actualizate, apoi verifică din nou."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter не получил ответа от службы ИИ на устройстве Android (AICore). Убедитесь, что Сервисы Google Play и AICore обновлены, и проверьте ещё раз."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter nedostal odpoveď od služby AI v zariadení s Androidom (AICore). Uistite sa, že Služby Google Play a AICore sú aktuálne, a skontrolujte to znova."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter fick inget svar från Androids AI-tjänst på enheten (AICore). Se till att Google Play-tjänster och AICore är uppdaterade och kontrollera igen."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter, Android'in cihaz içi yapay zekâ hizmetinden (AICore) yanıt alamadı. Google Play Hizmetleri ve AICore'un güncel olduğundan emin olun, ardından yeniden denetleyin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter не отримав відповіді від служби ШІ на пристрої Android (AICore). Переконайтеся, що Сервіси Google Play і AICore оновлено, і перевірте ще раз."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter 未能从 Android 的设备端 AI 服务（AICore）获得响应。请确保 Google Play 服务和 AICore 已更新，然后再检查一次。"
+          }
+        }
+      }
+    },
+    "Supported Phones" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поддържани телефони"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Telèfons compatibles"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Podporované telefony"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Understøttede telefoner"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unterstützte Telefone"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Υποστηριζόμενα τηλέφωνα"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teléfonos compatibles"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tuetut puhelimet"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Téléphones compatibles"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Podržani telefoni"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Támogatott telefonok"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Telefoni supportati"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "対応スマートフォン"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ondersteunde telefoons"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obsługiwane telefony"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Celulares compatíveis"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Telemóveis compatíveis"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Telefoane compatibile"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поддерживаемые телефоны"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Podporované telefóny"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Telefoner som stöds"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desteklenen telefonlar"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Підтримувані телефони"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "支持的手机"
+          }
+        }
+      }
+    },
+    "Google lets apps use Gemini Nano only on selected phones, for example Pixel 9 and 10, Galaxy S26 and Galaxy Z Fold7. Some phones use it only for their own features." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google позволява на приложенията да използват Gemini Nano само на избрани телефони, например Pixel 9 и 10, Galaxy S26 и Galaxy Z Fold7. Някои телефони го използват само за собствените си функции."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google només permet que les apps facin servir Gemini Nano en determinats telèfons, per exemple Pixel 9 i 10, Galaxy S26 i Galaxy Z Fold7. Alguns telèfons només el fan servir per a les seves pròpies funcions."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google umožňuje aplikacím používat Gemini Nano jen na vybraných telefonech, například Pixel 9 a 10, Galaxy S26 a Galaxy Z Fold7. Některé telefony ho používají jen pro vlastní funkce."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google lader kun apps bruge Gemini Nano på udvalgte telefoner, f.eks. Pixel 9 og 10, Galaxy S26 og Galaxy Z Fold7. Nogle telefoner bruger det kun til deres egne funktioner."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google lässt Apps Gemini Nano nur auf ausgewählten Telefonen nutzen, zum Beispiel Pixel 9 und 10, Galaxy S26 und Galaxy Z Fold7. Manche Telefone nutzen es nur für eigene Funktionen."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Η Google επιτρέπει στις εφαρμογές να χρησιμοποιούν το Gemini Nano μόνο σε επιλεγμένα τηλέφωνα, για παράδειγμα Pixel 9 και 10, Galaxy S26 και Galaxy Z Fold7. Ορισμένα τηλέφωνα το χρησιμοποιούν μόνο για τις δικές τους λειτουργίες."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google solo permite que las apps usen Gemini Nano en algunos teléfonos, por ejemplo Pixel 9 y 10, Galaxy S26 y Galaxy Z Fold7. Algunos teléfonos solo lo usan para sus propias funciones."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google sallii sovellusten käyttää Gemini Nanoa vain valituissa puhelimissa, esimerkiksi Pixel 9 ja 10, Galaxy S26 ja Galaxy Z Fold7. Jotkin puhelimet käyttävät sitä vain omiin toimintoihinsa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google ne permet aux apps d’utiliser Gemini Nano que sur certains téléphones, par exemple les Pixel 9 et 10, le Galaxy S26 et le Galaxy Z Fold7. Certains téléphones ne l’utilisent que pour leurs propres fonctionnalités."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google aplikacijama dopušta korištenje Gemini Nano samo na odabranim telefonima, primjerice Pixel 9 i 10, Galaxy S26 i Galaxy Z Fold7. Neki telefoni koriste ga samo za vlastite značajke."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A Google csak bizonyos telefonokon engedi, hogy az appok használják a Gemini Nanót, például Pixel 9 és 10, Galaxy S26 és Galaxy Z Fold7. Egyes telefonok csak a saját funkcióikhoz használják."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google consente alle app di usare Gemini Nano solo su alcuni telefoni, ad esempio Pixel 9 e 10, Galaxy S26 e Galaxy Z Fold7. Alcuni telefoni lo usano solo per le proprie funzioni."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google がアプリに Gemini Nano の利用を許可しているのは、Pixel 9・10、Galaxy S26、Galaxy Z Fold7 など一部のスマートフォンだけです。Gemini Nano を自社機能にのみ使うスマートフォンもあります。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google laat apps Gemini Nano alleen gebruiken op bepaalde telefoons, bijvoorbeeld Pixel 9 en 10, Galaxy S26 en Galaxy Z Fold7. Sommige telefoons gebruiken het alleen voor hun eigen functies."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google pozwala aplikacjom korzystać z Gemini Nano tylko na wybranych telefonach, np. Pixel 9 i 10, Galaxy S26 i Galaxy Z Fold7. Niektóre telefony używają go tylko do własnych funkcji."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Google só permite que apps usem o Gemini Nano em alguns celulares, por exemplo Pixel 9 e 10, Galaxy S26 e Galaxy Z Fold7. Alguns celulares o usam apenas para os próprios recursos."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A Google só permite que as apps utilizem o Gemini Nano em alguns telemóveis, por exemplo Pixel 9 e 10, Galaxy S26 e Galaxy Z Fold7. Alguns telemóveis só o utilizam para as próprias funcionalidades."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google permite aplicațiilor să folosească Gemini Nano doar pe anumite telefoane, de exemplu Pixel 9 și 10, Galaxy S26 și Galaxy Z Fold7. Unele telefoane îl folosesc doar pentru propriile funcții."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google разрешает приложениям использовать Gemini Nano только на некоторых телефонах, например Pixel 9 и 10, Galaxy S26 и Galaxy Z Fold7. Некоторые телефоны используют его только для собственных функций."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google umožňuje aplikáciám používať Gemini Nano len na vybraných telefónoch, napríklad Pixel 9 a 10, Galaxy S26 a Galaxy Z Fold7. Niektoré telefóny ho používajú len na vlastné funkcie."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google låter appar använda Gemini Nano endast på vissa telefoner, till exempel Pixel 9 och 10, Galaxy S26 och Galaxy Z Fold7. Vissa telefoner använder det bara för sina egna funktioner."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google, uygulamaların Gemini Nano'yu yalnızca belirli telefonlarda kullanmasına izin verir; örneğin Pixel 9 ve 10, Galaxy S26 ve Galaxy Z Fold7. Bazı telefonlar onu yalnızca kendi özellikleri için kullanır."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google дозволяє застосункам використовувати Gemini Nano лише на окремих телефонах, наприклад Pixel 9 і 10, Galaxy S26 і Galaxy Z Fold7. Деякі телефони використовують його лише для власних функцій."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google 只允许应用在部分手机上使用 Gemini Nano，例如 Pixel 9 和 10、Galaxy S26 以及 Galaxy Z Fold7。有些手机只将其用于自家功能。"
           }
         }
       }

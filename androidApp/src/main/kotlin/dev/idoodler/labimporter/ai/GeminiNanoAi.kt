@@ -42,11 +42,15 @@ class GeminiNanoAi(
     private val state = MutableStateFlow<AiAvailability>(AiAvailability.Checking)
     override val availability: StateFlow<AiAvailability> = state.asStateFlow()
 
+    /** Why no client could be created, for the unsupported screen's details. */
+    private var clientFailure: String? = null
+
     private val model: GenerativeModel? by lazy {
         try {
             client()
         } catch (e: Exception) {
             Log.w(TAG, "No ML Kit GenAI client on this device", e)
+            clientFailure = "ML Kit client: ${e.javaClass.simpleName}"
             null
         }
     }
@@ -55,31 +59,34 @@ class GeminiNanoAi(
     override suspend fun refresh() {
         // "Check Again" on the unsupported screen shows that it's checking.
         if (state.value is AiAvailability.Unsupported) state.value = AiAvailability.Checking
-        val model = model ?: return unsupported(UnsupportedReason.DEVICE)
+        // Only the system's own answer makes a phone "unsupported"; anything that
+        // isn't an answer (no client, no reply, an unexpected error) is "couldn't check".
+        val model = model ?: return unsupported(UnsupportedReason.NOT_DETERMINED, clientFailure)
         val status = try {
             withTimeout(STATUS_TIMEOUT_MS) { model.checkStatus() }
         } catch (e: TimeoutCancellationException) {
             Log.w(TAG, "AICore didn't report a status in time", e)
-            return unsupported(UnsupportedReason.DEVICE)
+            return unsupported(UnsupportedReason.NOT_DETERMINED, "AICore: no status within ${STATUS_TIMEOUT_MS / 1000} s")
         } catch (e: CancellationException) {
             throw e
         } catch (e: GenAiException) {
             Log.w(TAG, "checkStatus failed (${e.errorCode})", e)
-            return unsupported(GenAiErrors.unsupportedReason(e.errorCode))
+            return unsupported(GenAiErrors.unsupportedReason(e.errorCode), "AICore: ${GenAiErrors.describe(e.errorCode)}")
         } catch (e: Exception) {
             Log.w(TAG, "checkStatus failed", e)
-            return unsupported(UnsupportedReason.DEVICE)
+            return unsupported(UnsupportedReason.NOT_DETERMINED, "checkStatus: ${e.javaClass.simpleName}")
         }
         Log.i(TAG, "Gemini Nano feature status: $status")
         when (status) {
             FeatureStatus.AVAILABLE -> state.value = AiAvailability.Ready
             FeatureStatus.DOWNLOADABLE, FeatureStatus.DOWNLOADING -> startDownload(model)
-            else -> unsupported(UnsupportedReason.DEVICE)
+            FeatureStatus.UNAVAILABLE -> unsupported(UnsupportedReason.DEVICE, "Prompt API: UNAVAILABLE")
+            else -> unsupported(UnsupportedReason.NOT_DETERMINED, "Prompt API: status $status")
         }
     }
 
-    private fun unsupported(reason: UnsupportedReason) {
-        state.value = AiAvailability.Unsupported(reason)
+    private fun unsupported(reason: UnsupportedReason, detail: String?) {
+        state.value = AiAvailability.Unsupported(reason, detail)
     }
 
     /** Gemini Nano is fetched by AICore; the flow reports its progress. */
@@ -208,7 +215,8 @@ class GeminiNanoAi(
 
     private companion object {
         const val TAG = "GeminiNanoAi"
-        const val STATUS_TIMEOUT_MS = 10_000L
+        /** AICore binds and may fetch its configuration on the first call; give it time. */
+        const val STATUS_TIMEOUT_MS = 30_000L
         const val BUSY_RETRIES = 3
         const val BUSY_BACKOFF_MS = 1_000L
 
@@ -235,10 +243,23 @@ object GenAiErrors {
         else -> AiProblem.DOWNLOAD_FAILED
     }
 
+    /** What a failed status check means: only "not available/supported" is a verdict on the phone. */
     fun unsupportedReason(code: Int): UnsupportedReason = when (code) {
         ErrorCode.NEEDS_SYSTEM_UPDATE, ErrorCode.AICORE_INCOMPATIBLE -> UnsupportedReason.UPDATE_REQUIRED
-        else -> UnsupportedReason.DEVICE
+        ErrorCode.NOT_AVAILABLE, ErrorCode.NOT_SUPPORTED -> UnsupportedReason.DEVICE
+        else -> UnsupportedReason.NOT_DETERMINED
     }
+
+    /** An error code as ML Kit names it, for the details line (e.g. `604 NEEDS_SYSTEM_UPDATE`). */
+    fun describe(code: Int): String = "$code ${NAMES[code] ?: "error"}"
+
+    private val NAMES = mapOf(
+        ErrorCode.UNKNOWN to "UNKNOWN", ErrorCode.NOT_AVAILABLE to "NOT_AVAILABLE", ErrorCode.NOT_SUPPORTED to "NOT_SUPPORTED",
+        ErrorCode.BUSY to "BUSY", ErrorCode.NEEDS_SYSTEM_UPDATE to "NEEDS_SYSTEM_UPDATE",
+        ErrorCode.AICORE_INCOMPATIBLE to "AICORE_INCOMPATIBLE", ErrorCode.NOT_ENOUGH_DISK_SPACE to "NOT_ENOUGH_DISK_SPACE",
+        ErrorCode.CANCELLED to "CANCELLED", ErrorCode.BACKGROUND_USE_BLOCKED to "BACKGROUND_USE_BLOCKED",
+        ErrorCode.PER_APP_BATTERY_USE_QUOTA_EXCEEDED to "PER_APP_BATTERY_USE_QUOTA_EXCEEDED",
+    )
 
     fun affectsAvailability(code: Int): Boolean = generationProblem(code) == AiProblem.UNAVAILABLE
 }

@@ -128,9 +128,12 @@
     </plurals>
     <string name="unsupported_title">Az eszköz nem támogatott</string>
     <string name="unsupported_message">A LabImporternek a Gemini Nanóra, az Android eszközön futó MI-jére van szüksége ahhoz, hogy privát módon, az eszközödön olvassa be a laborleleteidet.</string>
+    <string name="unsupported_unknown_title">Az eszközön futó MI nem ellenőrizhető</string>
+    <string name="unsupported_unknown_message">A LabImporter nem kapott választ az Android eszközön futó MI-szolgáltatásától (AICore). Győződjön meg róla, hogy a Google Play-szolgáltatások és az AICore naprakész, majd ellenőrizze újra.</string>
+    <string name="supported_phones">Támogatott telefonok</string>
     <string name="unsupported_update_message">A LabImporternek az Android eszközön futó MI-jének újabb verziójára van szüksége. Frissítsd az eszközt, majd ellenőrizd újra.</string>
     <string name="requirement_device_title">Gemini Nanót támogató eszköz</string>
-    <string name="requirement_device_detail">A Gemini Nano egyes újabb telefonokon fut, például a Google Pixel 9-en és az újabbakon.</string>
+    <string name="requirement_device_detail">A Google csak bizonyos telefonokon engedi, hogy az appok használják a Gemini Nanót, például Pixel 9 és 10, Galaxy S26 és Galaxy Z Fold7. Egyes telefonok csak a saját funkcióikhoz használják.</string>
     <string name="requirement_update_title">Legújabb operációs rendszer</string>
     <string name="requirement_update_detail">Tartsd naprakészen az Androidot, a Google Play-szolgáltatásokat és az AICore-t. Frissen beállított telefonon eltarthat egy ideig, amíg a Gemini Nano elérhetővé válik.</string>
     <string name="check_again">Ellenőrzés újra</string>

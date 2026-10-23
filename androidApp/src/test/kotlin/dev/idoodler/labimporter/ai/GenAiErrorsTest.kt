@@ -4,6 +4,7 @@ import com.google.mlkit.genai.common.GenAiException.ErrorCode
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
 /** Every ML Kit error the user can hit ends in an actionable, specific message. */
@@ -38,10 +39,29 @@ class GenAiErrorsTest {
     }
 
     @Test
-    fun outdatedSystemSoftwareAsksForAnUpdate() {
+    fun onlyTheSystemsVerdictMakesAPhoneUnsupported() {
         assertEquals(UnsupportedReason.UPDATE_REQUIRED, GenAiErrors.unsupportedReason(ErrorCode.NEEDS_SYSTEM_UPDATE))
         assertEquals(UnsupportedReason.UPDATE_REQUIRED, GenAiErrors.unsupportedReason(ErrorCode.AICORE_INCOMPATIBLE))
         assertEquals(UnsupportedReason.DEVICE, GenAiErrors.unsupportedReason(ErrorCode.NOT_SUPPORTED))
+        assertEquals(UnsupportedReason.DEVICE, GenAiErrors.unsupportedReason(ErrorCode.NOT_AVAILABLE))
+        // Anything else is a failed check, not a verdict on the phone.
+        listOf(ErrorCode.UNKNOWN, ErrorCode.BUSY, ErrorCode.CANCELLED, ErrorCode.REQUEST_PROCESSING_ERROR).forEach {
+            assertEquals("code $it", UnsupportedReason.NOT_DETERMINED, GenAiErrors.unsupportedReason(it))
+        }
+    }
+
+    @Test
+    fun errorCodesAreNamedForTheDetailsLine() {
+        assertEquals("604 NEEDS_SYSTEM_UPDATE", GenAiErrors.describe(ErrorCode.NEEDS_SYSTEM_UPDATE))
+        assertEquals("16 NOT_SUPPORTED", GenAiErrors.describe(ErrorCode.NOT_SUPPORTED))
+        assertEquals("12345 error", GenAiErrors.describe(12345))
+    }
+
+    @Test
+    fun noMlKitClientMeansCouldNotCheckNotUnsupported() = runBlocking {
+        val ai = GeminiNanoAi(this, client = { throw IllegalStateException("no AICore") })
+        ai.refresh()
+        assertEquals(AiAvailability.Unsupported(UnsupportedReason.NOT_DETERMINED, "ML Kit client: IllegalStateException"), ai.availability.value)
     }
 
     @Test

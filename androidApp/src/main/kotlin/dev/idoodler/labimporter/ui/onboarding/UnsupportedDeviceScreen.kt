@@ -25,6 +25,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.core.net.toUri
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material3.Icon
+import androidx.compose.material3.TextButton
+import androidx.compose.material.icons.automirrored.rounded.OpenInNew
+import androidx.compose.foundation.text.selection.SelectionContainer
+import android.content.Intent
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,6 +63,7 @@ private val WarningOrange = Color(0xFFFF9500)
  * Android counterpart of iOS's `UnsupportedDeviceView`. LabImporter reads
  * reports only with its on-device AI and never guesses values instead.
  *
+ * @param detail the system's own answer (status or error code), shown for reporting.
  * @param checking a "Check Again" is in flight.
  * @param standIn debug builds only: the development stand-in offer.
  */
@@ -64,9 +72,11 @@ fun UnsupportedDeviceScreen(
     reason: UnsupportedReason,
     checking: Boolean,
     onCheckAgain: () -> Unit,
+    detail: String? = null,
     standIn: StandInTexts? = null,
     onUseStandIn: () -> Unit = {},
 ) {
+    val context = LocalContext.current
     Box(Modifier.fillMaxSize()) {
         CategoryWash(welcomePalette, animated = true, intensity = 1.25f)
         Column(Modifier.fillMaxSize().safeDrawingPadding()) {
@@ -74,12 +84,17 @@ fun UnsupportedDeviceScreen(
                 content = {
                     ShapeBadge(MaterialShapes.Cookie7Sided, WarningOrange, Icons.Rounded.WarningAmber, size = 128.dp)
                     Text(
-                        stringResource(R.string.unsupported_title), style = MaterialTheme.typography.headlineLargeEmphasized,
+                        stringResource(if (reason == UnsupportedReason.NOT_DETERMINED) R.string.unsupported_unknown_title else R.string.unsupported_title),
+                        style = MaterialTheme.typography.headlineLargeEmphasized,
                         fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, modifier = Modifier.semantics { heading() },
                     )
                     Text(
                         stringResource(
-                            if (reason == UnsupportedReason.UPDATE_REQUIRED) R.string.unsupported_update_message else R.string.unsupported_message,
+                            when (reason) {
+                                UnsupportedReason.DEVICE -> R.string.unsupported_message
+                                UnsupportedReason.UPDATE_REQUIRED -> R.string.unsupported_update_message
+                                UnsupportedReason.NOT_DETERMINED -> R.string.unsupported_unknown_message
+                            },
                         ),
                         style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -93,6 +108,21 @@ fun UnsupportedDeviceScreen(
                             Requirement(
                                 MaterialShapes.Clover4Leaf, LabCategory.HEPATIC.color, Icons.Rounded.SystemUpdate,
                                 R.string.requirement_update_title, R.string.requirement_update_detail,
+                            )
+                        }
+                    }
+                    // Google's current list of phones that offer Gemini Nano to apps.
+                    TextButton(onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, SUPPORTED_PHONES_URL.toUri())) }) {
+                        Icon(Icons.AutoMirrored.Rounded.OpenInNew, null, Modifier.size(18.dp))
+                        Spacer(Modifier.width(6.dp))
+                        Text(stringResource(R.string.supported_phones))
+                    }
+                    // The system's own answer, so the reason can be reported and checked.
+                    detail?.let {
+                        SelectionContainer {
+                            Text(
+                                "${stringResource(R.string.details)}: $it", style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center,
                             )
                         }
                     }
@@ -131,12 +161,15 @@ private fun Requirement(polygon: RoundedPolygon, color: Color, icon: ImageVector
     }
 }
 
+/** ML Kit's list of phones per GenAI API (the Prompt API's is the one that counts). */
+private const val SUPPORTED_PHONES_URL = "https://developers.google.com/ml-kit/genai"
+
 private val previewStandIn = StandInTexts("Use Development Stand-in", "Debug build only. Imports return sample values.", "", "", "", "")
 
 @Preview(name = "Unsupported", widthDp = 400, heightDp = 860)
 @Composable
 private fun UnsupportedPreview() {
-    LabImporterTheme(dynamicColor = false) { UnsupportedDeviceScreen(UnsupportedReason.DEVICE, checking = false, onCheckAgain = {}) }
+    LabImporterTheme(dynamicColor = false) { UnsupportedDeviceScreen(UnsupportedReason.DEVICE, checking = false, onCheckAgain = {}, detail = "Prompt API: UNAVAILABLE") }
 }
 
 @Preview(name = "Unsupported – dark", widthDp = 400, heightDp = 860, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
@@ -165,4 +198,12 @@ private fun StandInPreview() {
 @Composable
 private fun UnsupportedLandscapePreview() {
     LabImporterTheme(dynamicColor = false) { UnsupportedDeviceScreen(UnsupportedReason.DEVICE, checking = false, onCheckAgain = {}) }
+}
+
+@Preview(name = "Couldn't check", widthDp = 400, heightDp = 1000)
+@Composable
+private fun UnsupportedNotDeterminedPreview() {
+    LabImporterTheme(dynamicColor = false) {
+        UnsupportedDeviceScreen(UnsupportedReason.NOT_DETERMINED, checking = false, onCheckAgain = {}, detail = "AICore: no status within 30 s")
+    }
 }

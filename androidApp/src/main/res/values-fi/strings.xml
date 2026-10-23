@@ -128,9 +128,12 @@
     </plurals>
     <string name="unsupported_title">Laitetta ei tueta</string>
     <string name="unsupported_message">LabImporter tarvitsee Gemini Nanon, Androidin laitteella toimivan tekoälyn, lukeakseen laboratorioraporttisi yksityisesti laitteellasi.</string>
+    <string name="unsupported_unknown_title">Laitteen tekoälyä ei voitu tarkistaa</string>
+    <string name="unsupported_unknown_message">LabImporter ei saanut vastausta Androidin laitteen tekoälypalvelulta (AICore). Varmista, että Google Play Palvelut ja AICore ovat ajan tasalla, ja tarkista uudelleen.</string>
+    <string name="supported_phones">Tuetut puhelimet</string>
     <string name="unsupported_update_message">LabImporter tarvitsee uudemman version Androidin laitteella toimivasta tekoälystä. Päivitä laitteesi ja tarkista sitten uudelleen.</string>
     <string name="requirement_device_title">Laite, jossa on Gemini Nano</string>
-    <string name="requirement_device_detail">Gemini Nano toimii valituissa uudemmissa puhelimissa, esimerkiksi Google Pixel 9:ssä ja uudemmissa.</string>
+    <string name="requirement_device_detail">Google sallii sovellusten käyttää Gemini Nanoa vain valituissa puhelimissa, esimerkiksi Pixel 9 ja 10, Galaxy S26 ja Galaxy Z Fold7. Jotkin puhelimet käyttävät sitä vain omiin toimintoihinsa.</string>
     <string name="requirement_update_title">Uusin käyttöjärjestelmä</string>
     <string name="requirement_update_detail">Pidä Android, Google Play Palvelut ja AICore ajan tasalla. Juuri käyttöön otetussa puhelimessa Gemini Nanon saatavuus voi kestää hetken.</string>
     <string name="check_again">Tarkista uudelleen</string>

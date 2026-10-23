@@ -128,9 +128,12 @@
     </plurals>
     <string name="unsupported_title">Apparaat niet ondersteund</string>
     <string name="unsupported_message">LabImporter heeft Gemini Nano nodig, de AI op het apparaat van Android, om je laboratoriumrapporten privé op je apparaat te lezen.</string>
+    <string name="unsupported_unknown_title">AI op het apparaat kon niet worden gecontroleerd</string>
+    <string name="unsupported_unknown_message">LabImporter kreeg geen antwoord van de AI-dienst op het apparaat van Android (AICore). Zorg dat Google Play-services en AICore up-to-date zijn en controleer opnieuw.</string>
+    <string name="supported_phones">Ondersteunde telefoons</string>
     <string name="unsupported_update_message">LabImporter heeft een nieuwere versie van de AI op het apparaat van Android nodig. Werk je apparaat bij en controleer het opnieuw.</string>
     <string name="requirement_device_title">Apparaat met Gemini Nano</string>
-    <string name="requirement_device_detail">Gemini Nano werkt op bepaalde recente telefoons, bijvoorbeeld de Google Pixel 9 en nieuwer.</string>
+    <string name="requirement_device_detail">Google laat apps Gemini Nano alleen gebruiken op bepaalde telefoons, bijvoorbeeld Pixel 9 en 10, Galaxy S26 en Galaxy Z Fold7. Sommige telefoons gebruiken het alleen voor hun eigen functies.</string>
     <string name="requirement_update_title">Nieuwste besturingssysteem</string>
     <string name="requirement_update_detail">Houd Android, Google Play-services en AICore up-to-date. Op een pas ingestelde telefoon kan het even duren voordat Gemini Nano beschikbaar is.</string>
     <string name="check_again">Opnieuw controleren</string>

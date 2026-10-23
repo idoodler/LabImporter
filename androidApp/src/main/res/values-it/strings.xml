@@ -133,9 +133,12 @@
     </plurals>
     <string name="unsupported_title">Dispositivo non supportato</string>
     <string name="unsupported_message">LabImporter ha bisogno di Gemini Nano, l’IA sul dispositivo di Android, per leggere i tuoi referti di laboratorio in modo privato sul tuo dispositivo.</string>
+    <string name="unsupported_unknown_title">Impossibile verificare l’IA del dispositivo</string>
+    <string name="unsupported_unknown_message">LabImporter non ha ricevuto risposta dal servizio IA del dispositivo Android (AICore). Assicurati che Google Play Services e AICore siano aggiornati, poi riprova.</string>
+    <string name="supported_phones">Telefoni supportati</string>
     <string name="unsupported_update_message">LabImporter ha bisogno di una versione più recente dell’IA sul dispositivo di Android. Aggiorna il dispositivo, quindi controlla di nuovo.</string>
     <string name="requirement_device_title">Dispositivo con Gemini Nano</string>
-    <string name="requirement_device_detail">Gemini Nano funziona su alcuni telefoni recenti, ad esempio Google Pixel 9 e successivi.</string>
+    <string name="requirement_device_detail">Google consente alle app di usare Gemini Nano solo su alcuni telefoni, ad esempio Pixel 9 e 10, Galaxy S26 e Galaxy Z Fold7. Alcuni telefoni lo usano solo per le proprie funzioni.</string>
     <string name="requirement_update_title">Sistema operativo più recente</string>
     <string name="requirement_update_detail">Mantieni aggiornati Android, Google Play Services e AICore. Su un telefono appena configurato, Gemini Nano potrebbe richiedere un po’ di tempo per diventare disponibile.</string>
     <string name="check_again">Controlla di nuovo</string>
