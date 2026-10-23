@@ -183,7 +183,9 @@ Requires JDK 17+ and the Android SDK (platform 37). From the repo root:
 
 The APKs land in `androidApp/build/outputs/apk/release/` (`arm64-v8a` for phones and Apple-silicon emulators). Release test builds are signed with the debug key.
 
-**Emulators have no Gemini Nano**, so the release APK shows *Device Not Supported* there — exactly what an unsupported phone shows. To try the rest of the app on an emulator, install a **debug** build (`./gradlew :androidApp:assembleDebug`) and tap **Use Development Stand-in** on that screen: imports then return clearly labelled *sample* values (not read from your document) so review, saving and the dashboard can be exercised. The stand-in exists only in debug builds.
+The app version (both apps) is set once, as `MARKETING_VERSION` in `Config.xcconfig`.
+
+**Emulators have no Gemini Nano**, so the release APK offers the Gemma download there, just as on a phone without it (2.6 GB; it then reads reports on the emulator's CPU, about a minute each). For a quicker look, install a **debug** build (`./gradlew :androidApp:assembleDebug`) and tap **Use Development Stand-in** on that screen: imports then return clearly labelled *sample* values (not read from your document) so review, saving and the dashboard can be exercised. The stand-in exists only in debug builds.
 
 Tests: `./gradlew :shared:jvmTest :androidApp:testDebugUnitTest` (shared logic, plus Android unit and Compose UI tests against the real LOINC catalog); iOS: `tools/ios_test.sh`.
 

@@ -1,3 +1,9 @@
+// The app version — the one place it's set, for both apps: Xcode uses it for
+// the iPhone app and its share extension (CFBundleShortVersionString), Gradle
+// reads it for Android (versionName; versionCode 2.0.0 → 20000). Build numbers
+// aren't set here: TestFlight's comes from CI, Android's follows the version.
+MARKETING_VERSION = 2.0.0
+
 // Customise the bundle identifier prefix here.
 // $(DEVELOPMENT_TEAM) is substituted automatically by Xcode and Fastlane.
 BUNDLE_IDENTIFIER = dev.idoodler.$(DEVELOPMENT_TEAM).labimporter

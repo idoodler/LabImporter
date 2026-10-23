@@ -132,13 +132,16 @@ ui = ensure_target(project, app, config_ref, 'LabImporterUITests', :ui_test_bund
   s['TEST_TARGET_NAME'] = APP_TARGET
 end
 
-# Version numbers live at the project level so the app and its extension
-# always match (App Store requirement); agvtool/fastlane bump them there.
-%w[MARKETING_VERSION CURRENT_PROJECT_VERSION].each do |key|
-  value = app.build_configurations.map { |c| c.build_settings[key] }.compact.first
-  next unless value
-  project.build_configurations.each { |c| c.build_settings[key] = value }
-  app.build_configurations.each { |c| c.build_settings.delete(key) }
+# The version is set once, in Config.xcconfig (shared with Android), which
+# every target uses — so it never belongs in the project file.
+(project.build_configurations + app.build_configurations).each { |c| c.build_settings.delete('MARKETING_VERSION') }
+
+# The build number lives at the project level so the app and its extension
+# always match (App Store requirement); agvtool/fastlane bump it there.
+value = app.build_configurations.map { |c| c.build_settings['CURRENT_PROJECT_VERSION'] }.compact.first
+if value
+  project.build_configurations.each { |c| c.build_settings['CURRENT_PROJECT_VERSION'] = value }
+  app.build_configurations.each { |c| c.build_settings.delete('CURRENT_PROJECT_VERSION') }
 end
 
 # Share extension: receives text and hands it to the app (see ShareInbox).

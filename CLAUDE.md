@@ -85,7 +85,7 @@ shared/, androidApp/  # Kotlin Multiplatform core + Android app — see "Android
 fastlane/        # Fastfile (build/release/certs lanes) + Matchfile (git storage)
 .github/workflows/  # numbered setup workflows + lint + build
 .claude/         # SessionStart hook (installs SwiftLint) + pre-push lint hook
-Config.xcconfig  # BUNDLE_IDENTIFIER = dev.idoodler.$(DEVELOPMENT_TEAM).labimporter
+Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENTIFIER = dev.idoodler.$(DEVELOPMENT_TEAM).labimporter
 ```
 
 ## Architecture & key conventions
@@ -579,6 +579,12 @@ Required secrets: `GH_PAT`, `TEAMID`, `FASTLANE_ISSUER_ID`, `FASTLANE_KEY_ID`,
 - **New user-facing text:** always `String(localized:)`; add to
   `Localizable.xcstrings` and translate the key into **all 25 shipped languages**
   (see UI patterns) — never EN-only or EN+DE-only.
+- **Bumping the version:** change `MARKETING_VERSION` in `Config.xcconfig` —
+  the only place it's set. The iPhone app and its share extension take it from
+  there, and Gradle reads it for Android (`versionName`; `versionCode` follows
+  as MAJOR×10000 + MINOR×100 + PATCH, so minor and patch stay below 100). Never
+  set it in the Xcode project (`tools/sync_xcode_project.rb` removes it). Build
+  numbers aren't in that file: TestFlight's is set by CI (latest + 1).
 - **README screenshots** live in `screenshots/ios`, `screenshots/ios-duo` and
   `screenshots/android` (the README shows each device in a collapsed
   `<details>`), always with made-up sample data, in English, light and dark,

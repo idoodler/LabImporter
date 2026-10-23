@@ -59,6 +59,18 @@ fun git(vararg args: String): String = providers.exec {
     isIgnoreExitValue = true
 }.standardOutput.asText.get().trim()
 
+/** The app version, set once for both apps: `MARKETING_VERSION` in the repo root's Config.xcconfig. */
+val appVersion: String = providers.fileContents(rootProject.layout.projectDirectory.file("Config.xcconfig")).asText.get()
+    .lineSequence()
+    .firstNotNullOfOrNull { Regex("""^\s*MARKETING_VERSION\s*=\s*(\d+\.\d+\.\d+)\s*$""").find(it)?.groupValues?.get(1) }
+    ?: error("Config.xcconfig needs MARKETING_VERSION = MAJOR.MINOR.PATCH")
+
+/** 2.0.0 → 20000, 2.1.3 → 20103: rises with every version bump (Android installs only an equal or higher one). */
+val appVersionCode: Int = appVersion.split('.').map(String::toInt).let { (major, minor, patch) ->
+    require(minor < 100 && patch < 100) { "versionCode needs minor and patch below 100: $appVersion" }
+    major * 10_000 + minor * 100 + patch
+}
+
 // The shared module's JVM tests read the catalog from the root build dir.
 val copyLoincForTests = tasks.register<Copy>("copyLoincForTests") {
     from(buildLoincDb)
@@ -74,8 +86,8 @@ android {
         applicationId = "dev.idoodler.labimporter"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = appVersionCode
+        versionName = appVersion
         buildConfigField("String", "GIT_REMOTE", "\"${git("remote", "get-url", "origin")}\"")
         buildConfigField("String", "GIT_BRANCH", "\"${git("rev-parse", "--abbrev-ref", "HEAD").ifEmpty { "unknown" }}\"")
         buildConfigField("String", "GIT_COMMIT", "\"${git("rev-parse", "--short", "HEAD").ifEmpty { "unknown" }}\"")
@@ -87,7 +99,7 @@ android {
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             // Test builds only: signed with the debug key so the APK installs
-            // directly. Real releases need an upload key (see README).
+            // directly. Real releases need their own release key.
             signingConfig = signingConfigs.getByName("debug")
         }
     }
