@@ -180,6 +180,8 @@
     <string name="hc_connect">Verbinden met Health Connect</string>
     <string name="hc_in_use">Rapporten worden als FHIR-labuitslagen in Health Connect bewaard.</string>
     <string name="hc_available">Beschikbaar. Maak verbinding om rapporten in Health Connect te bewaren in plaats van alleen in LabImporter.</string>
+    <string name="hc_ready_title">Health Connect is beschikbaar</string>
+    <string name="hc_ready_message">Je rapporten staan alleen in LabImporter. Maak verbinding om ze naar Health Connect te verplaatsen, waar ze bij de rest van je gezondheidsgegevens worden bewaard.</string>
     <string name="hc_local_selected">Verbonden, maar rapporten worden momenteel alleen in LabImporter bewaard.</string>
     <string name="hc_update_required">Update Health Connect via de Play Store om er rapporten in te bewaren.</string>
     <string name="hc_medical_unsupported">Medische dossiers van Health Connect vereisen Android 16 of hoger. Rapporten worden privé in LabImporter op dit apparaat bewaard.</string>

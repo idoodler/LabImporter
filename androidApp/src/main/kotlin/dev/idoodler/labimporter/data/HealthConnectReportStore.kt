@@ -35,6 +35,13 @@ enum class HealthConnectAvailability {
     AVAILABLE,
 }
 
+/** Health Connect as [ReportRepository] uses it — a seam, so moving reports into it is testable. */
+interface HealthConnectStore : LabReportStore {
+    fun availability(): HealthConnectAvailability
+
+    suspend fun hasPermissions(): Boolean
+}
+
 /**
  * Saves reports to Health Connect's *Medical Records* store as FHIR R4
  * laboratory Observations (see `FhirLabCodec`) — the Android counterpart of
@@ -48,7 +55,7 @@ enum class HealthConnectAvailability {
 class HealthConnectReportStore(
     private val context: Context,
     private val softwareIdentity: String,
-) : LabReportStore {
+) : HealthConnectStore {
 
     val permissions: Set<String> = setOf(
         HealthPermission.PERMISSION_WRITE_MEDICAL_DATA,
@@ -63,7 +70,7 @@ class HealthConnectReportStore(
         }
     }
 
-    fun availability(): HealthConnectAvailability {
+    override fun availability(): HealthConnectAvailability {
         val sdk = HealthConnectClient.getSdkStatus(context)
         if (sdk == HealthConnectClient.SDK_UNAVAILABLE_PROVIDER_UPDATE_REQUIRED) return HealthConnectAvailability.UPDATE_REQUIRED
         if (sdk != HealthConnectClient.SDK_AVAILABLE) return HealthConnectAvailability.NOT_INSTALLED
@@ -77,7 +84,7 @@ class HealthConnectReportStore(
         }
     }
 
-    suspend fun hasPermissions(): Boolean {
+    override suspend fun hasPermissions(): Boolean {
         val c = client ?: return false
         return runCatching { c.permissionController.getGrantedPermissions().containsAll(permissions) }.getOrDefault(false)
     }

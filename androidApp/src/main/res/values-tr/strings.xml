@@ -180,6 +180,8 @@
     <string name="hc_connect">Health Connect\'e bağlan</string>
     <string name="hc_in_use">Raporlar Health Connect\'e FHIR laboratuvar sonuçları olarak kaydedilir.</string>
     <string name="hc_available">Kullanılabilir. Raporları yalnızca LabImporter\'a değil Health Connect\'e kaydetmek için bağlanın.</string>
+    <string name="hc_ready_title">Health Connect kullanılabilir</string>
+    <string name="hc_ready_message">Raporlarınız yalnızca LabImporter\'da tutuluyor. Diğer sağlık verilerinizle birlikte saklanacakları Health Connect\'e taşımak için bağlanın.</string>
     <string name="hc_local_selected">Bağlandı, ancak raporlar şu anda yalnızca LabImporter\'a kaydediliyor.</string>
     <string name="hc_update_required">Raporları oraya kaydetmek için Health Connect\'i Play Store\'dan güncelleyin.</string>
     <string name="hc_medical_unsupported">Health Connect tıbbi kayıtları için Android 16 veya sonraki bir sürüm gerekir. Raporlar bu cihazda LabImporter\'da gizli olarak saklanır.</string>

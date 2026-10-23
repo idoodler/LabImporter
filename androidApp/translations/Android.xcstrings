@@ -19612,6 +19612,302 @@
           }
         }
       }
+    },
+    "Health Connect Is Available" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect е наличен"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect està disponible"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect je k dispozici"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect er tilgængelig"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect ist verfügbar"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Το Health Connect είναι διαθέσιμο"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect está disponible"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect on käytettävissä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect est disponible"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect je dostupan"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elérhető a Health Connect"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect è disponibile"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ヘルスコネクトを利用できます"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect is beschikbaar"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect jest dostępne"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Health Connect está disponível"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Health Connect está disponível"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect este disponibil"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect доступен"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect je k dispozícii"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect är tillgängligt"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect kullanılabilir"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect доступний"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect 现已可用"
+          }
+        }
+      }
+    },
+    "Your reports are kept only in LabImporter. Connect to move them to Health Connect, where they're stored with the rest of your health data." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отчетите ви се пазят само в LabImporter. Свържете се, за да ги преместите в Health Connect, където се съхраняват заедно с останалите ви здравни данни."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Els teus informes només es guarden a LabImporter. Connecta't per moure'ls a Health Connect, on es guarden amb la resta de les teves dades de salut."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vaše protokoly jsou uložené jen v LabImporteru. Připojte se a přesuňte je do Health Connect, kde budou spolu s ostatními zdravotními údaji."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dine rapporter gemmes kun i LabImporter. Opret forbindelse for at flytte dem til Health Connect, hvor de gemmes sammen med resten af dine helbredsdata."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Berichte liegen nur in LabImporter. Verbinde dich, um sie in Health Connect zu verschieben, wo sie bei deinen übrigen Gesundheitsdaten gespeichert sind."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Οι αναφορές σας φυλάσσονται μόνο στο LabImporter. Συνδεθείτε για να τις μεταφέρετε στο Health Connect, όπου αποθηκεύονται μαζί με τα υπόλοιπα δεδομένα υγείας σας."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tus informes solo se guardan en LabImporter. Conéctate para moverlos a Health Connect, donde se guardan junto al resto de tus datos de salud."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raporttisi ovat vain LabImporterissa. Yhdistä, niin ne siirretään Health Connectiin muiden terveystietojesi joukkoon."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vos rapports ne sont conservés que dans LabImporter. Connectez-vous pour les déplacer dans Health Connect, où ils sont stockés avec le reste de vos données de santé."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vaša izvješća čuvaju se samo u LabImporteru. Povežite se kako biste ih premjestili u Health Connect, gdje se pohranjuju uz ostale vaše zdravstvene podatke."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A jelentéseid csak a LabImporterben vannak. Csatlakozz, hogy átkerüljenek a Health Connectbe, ahol a többi egészségügyi adatoddal együtt tárolódnak."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I tuoi referti sono conservati solo in LabImporter. Connettiti per spostarli in Health Connect, dove vengono archiviati insieme al resto dei tuoi dati sanitari."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レポートは現在LabImporterにのみ保存されています。接続すると、ほかの健康データと一緒に保存されるヘルスコネクトに移動します。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je rapporten staan alleen in LabImporter. Maak verbinding om ze naar Health Connect te verplaatsen, waar ze bij de rest van je gezondheidsgegevens worden bewaard."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Twoje raporty są przechowywane tylko w LabImporterze. Połącz, aby przenieść je do Health Connect, gdzie będą razem z pozostałymi danymi o zdrowiu."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seus relatórios estão guardados só no LabImporter. Conecte-se para movê-los para o Health Connect, onde ficam junto com o restante dos seus dados de saúde."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os seus relatórios estão guardados apenas no LabImporter. Ligue-se para os mover para o Health Connect, onde ficam junto do resto dos seus dados de saúde."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapoartele tale sunt păstrate doar în LabImporter. Conectează-te ca să le muți în Health Connect, unde sunt stocate alături de restul datelor tale de sănătate."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваши отчёты хранятся только в LabImporter. Подключитесь, чтобы перенести их в Health Connect, где они будут храниться вместе с остальными данными о здоровье."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vaše správy sú uložené len v LabImporteri. Pripojte sa a presuňte ich do Health Connect, kde budú spolu s ostatnými zdravotnými údajmi."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dina rapporter finns bara i LabImporter. Anslut för att flytta dem till Health Connect, där de lagras tillsammans med resten av dina hälsodata."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raporlarınız yalnızca LabImporter'da tutuluyor. Diğer sağlık verilerinizle birlikte saklanacakları Health Connect'e taşımak için bağlanın."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваші звіти зберігаються лише в LabImporter. Під'єднайтеся, щоб перенести їх у Health Connect, де вони зберігатимуться разом з іншими даними про здоров'я."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的报告目前只保存在 LabImporter 中。连接后可将它们移至 Health Connect，与你的其他健康数据存放在一起。"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

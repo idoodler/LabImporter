@@ -392,7 +392,13 @@ tools/generate_android_icon.py # layered adaptive launcher icon (+ night + monoc
   There's no `DiagnosticReport`, so each Observation carries its report id as a
   `meta.tag`, plus the `ReportSchema` version tag. Without Health Connect the same
   FHIR JSON is kept in `noBackupFilesDir` (`LocalReportStore`) and moved over when
-  the user connects.
+  the user connects — one report at a time, each local copy deleted only once
+  Health Connect has it. A move that stops half-way (or saves made while Health
+  Connect was unavailable) is finished on the next `ReportRepository.reload()`,
+  and any report not yet moved stays listed meanwhile (upserts make retries
+  harmless). After an update to Android 16 the dashboard offers the move
+  (`HealthConnectOfferCard`, `HealthConnectState.offersMove`) until the user
+  connects or says "Not Now".
 - **Transfer (iPhone ⇄ Android):** Settings → Export All Reports writes one FHIR
   Bundle file (`ReportTransfer`); Import Reports reads it (or a single CDA from
   either app) and skips reports already present (content fingerprint). No server,

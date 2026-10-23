@@ -180,6 +180,8 @@
     <string name="hc_connect">Yhdistä Health Connectiin</string>
     <string name="hc_in_use">Raportit tallennetaan Health Connectiin FHIR-laboratoriotuloksina.</string>
     <string name="hc_available">Käytettävissä. Yhdistä, niin raportit tallennetaan Health Connectiin eikä vain LabImporteriin.</string>
+    <string name="hc_ready_title">Health Connect on käytettävissä</string>
+    <string name="hc_ready_message">Raporttisi ovat vain LabImporterissa. Yhdistä, niin ne siirretään Health Connectiin muiden terveystietojesi joukkoon.</string>
     <string name="hc_local_selected">Yhdistetty, mutta raportit tallennetaan tällä hetkellä vain LabImporteriin.</string>
     <string name="hc_update_required">Päivitä Health Connect Play Kaupasta, jotta voit tallentaa raportteja sinne.</string>
     <string name="hc_medical_unsupported">Health Connectin terveystiedot edellyttävät Android 16:ta tai uudempaa. Raportit tallennetaan yksityisesti LabImporteriin tälle laitteelle.</string>

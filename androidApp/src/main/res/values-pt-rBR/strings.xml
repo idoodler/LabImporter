@@ -185,6 +185,8 @@
     <string name="hc_connect">Conectar ao Health Connect</string>
     <string name="hc_in_use">Os relatórios são salvos no Health Connect como resultados laboratoriais FHIR.</string>
     <string name="hc_available">Disponível. Conecte-se para salvar relatórios no Health Connect em vez de apenas no LabImporter.</string>
+    <string name="hc_ready_title">O Health Connect está disponível</string>
+    <string name="hc_ready_message">Seus relatórios estão guardados só no LabImporter. Conecte-se para movê-los para o Health Connect, onde ficam junto com o restante dos seus dados de saúde.</string>
     <string name="hc_local_selected">Conectado, mas no momento os relatórios são salvos apenas no LabImporter.</string>
     <string name="hc_update_required">Atualize o Health Connect pela Play Store para salvar relatórios nele.</string>
     <string name="hc_medical_unsupported">Os registros médicos do Health Connect exigem o Android 16 ou posterior. Os relatórios são armazenados de forma privada no LabImporter neste dispositivo.</string>

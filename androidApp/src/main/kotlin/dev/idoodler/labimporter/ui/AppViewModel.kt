@@ -40,6 +40,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -83,7 +85,15 @@ data class HealthConnectState(
     val availability: HealthConnectAvailability = HealthConnectAvailability.NOT_INSTALLED,
     val granted: Boolean = false,
     val inUse: Boolean = false,
-)
+) {
+    /**
+     * Whether to offer moving reports here: Health Connect works but was never
+     * connected (a user who connected and then chose app storage isn't asked
+     * again), there's something to move, and the offer wasn't turned down.
+     */
+    fun offersMove(hasReports: Boolean, dismissed: Boolean): Boolean =
+        availability == HealthConnectAvailability.AVAILABLE && !granted && !inUse && hasReports && !dismissed
+}
 
 /**
  * Orchestrates the whole import flow (document → text → AI parse → review →
@@ -224,6 +234,18 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             refreshHealthConnect()
         }
     }
+
+    /**
+     * Whether the dashboard offers to move reports into Health Connect: it became available
+     * (e.g. after the update to Android 16), it isn't connected yet, there are reports kept in
+     * the app, and the user hasn't said "Not Now".
+     */
+    val offerHealthConnect: StateFlow<Boolean> =
+        combine(healthConnect, reports, preferences.healthConnectOfferDismissed) { hc, reports, dismissed ->
+            hc.offersMove(hasReports = reports.isNotEmpty(), dismissed = dismissed)
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    fun dismissHealthConnectOffer() = preferences.setHealthConnectOfferDismissed(true)
 
     fun setUseHealthConnect(enabled: Boolean) {
         viewModelScope.launch {

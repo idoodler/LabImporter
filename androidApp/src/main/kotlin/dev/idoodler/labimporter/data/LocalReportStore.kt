@@ -41,9 +41,5 @@ class LocalReportStore(context: Context, private val softwareIdentity: String) :
         Unit
     }
 
-    suspend fun deleteAll() = withContext(Dispatchers.IO) {
-        directory.listFiles().orEmpty().forEach { it.delete() }
-    }
-
     private fun file(report: LabReport) = File(directory, "${report.id.filter { it.isLetterOrDigit() || it == '-' }}.json")
 }

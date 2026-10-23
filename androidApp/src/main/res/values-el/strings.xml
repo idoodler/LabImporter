@@ -180,6 +180,8 @@
     <string name="hc_connect">Σύνδεση με το Health Connect</string>
     <string name="hc_in_use">Οι αναφορές αποθηκεύονται στο Health Connect ως εργαστηριακά αποτελέσματα FHIR.</string>
     <string name="hc_available">Διαθέσιμο. Συνδεθείτε για να αποθηκεύετε τις αναφορές στο Health Connect αντί μόνο στο LabImporter.</string>
+    <string name="hc_ready_title">Το Health Connect είναι διαθέσιμο</string>
+    <string name="hc_ready_message">Οι αναφορές σας φυλάσσονται μόνο στο LabImporter. Συνδεθείτε για να τις μεταφέρετε στο Health Connect, όπου αποθηκεύονται μαζί με τα υπόλοιπα δεδομένα υγείας σας.</string>
     <string name="hc_local_selected">Συνδέθηκε, αλλά οι αναφορές αποθηκεύονται προς το παρόν μόνο στο LabImporter.</string>
     <string name="hc_update_required">Ενημερώστε το Health Connect από το Play Store για να αποθηκεύετε αναφορές εκεί.</string>
     <string name="hc_medical_unsupported">Τα ιατρικά αρχεία του Health Connect απαιτούν Android 16 ή νεότερη έκδοση. Οι αναφορές αποθηκεύονται ιδιωτικά στο LabImporter σε αυτήν τη συσκευή.</string>

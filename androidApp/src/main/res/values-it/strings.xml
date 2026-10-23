@@ -185,6 +185,8 @@
     <string name="hc_connect">Connetti a Health Connect</string>
     <string name="hc_in_use">I referti vengono salvati in Health Connect come risultati di laboratorio FHIR.</string>
     <string name="hc_available">Disponibile. Connettiti per salvare i referti in Health Connect anziché solo in LabImporter.</string>
+    <string name="hc_ready_title">Health Connect è disponibile</string>
+    <string name="hc_ready_message">I tuoi referti sono conservati solo in LabImporter. Connettiti per spostarli in Health Connect, dove vengono archiviati insieme al resto dei tuoi dati sanitari.</string>
     <string name="hc_local_selected">Connesso, ma al momento i referti vengono salvati solo in LabImporter.</string>
     <string name="hc_update_required">Aggiorna Health Connect dal Play Store per salvarvi i referti.</string>
     <string name="hc_medical_unsupported">Le cartelle cliniche di Health Connect richiedono Android 16 o versioni successive. I referti vengono archiviati in modo privato in LabImporter su questo dispositivo.</string>

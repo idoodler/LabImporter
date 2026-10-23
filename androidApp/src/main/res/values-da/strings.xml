@@ -180,6 +180,8 @@
     <string name="hc_connect">Opret forbindelse til Health Connect</string>
     <string name="hc_in_use">Rapporter gemmes i Health Connect som FHIR-laboratorieresultater.</string>
     <string name="hc_available">Tilgængelig. Opret forbindelse for at gemme rapporter i Health Connect i stedet for kun i LabImporter.</string>
+    <string name="hc_ready_title">Health Connect er tilgængelig</string>
+    <string name="hc_ready_message">Dine rapporter gemmes kun i LabImporter. Opret forbindelse for at flytte dem til Health Connect, hvor de gemmes sammen med resten af dine helbredsdata.</string>
     <string name="hc_local_selected">Forbundet, men rapporter gemmes i øjeblikket kun i LabImporter.</string>
     <string name="hc_update_required">Opdater Health Connect fra Play Butik for at gemme rapporter der.</string>
     <string name="hc_medical_unsupported">Helbredsjournaler i Health Connect kræver Android 16 eller nyere. Rapporter gemmes privat i LabImporter på denne enhed.</string>

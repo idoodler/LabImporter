@@ -109,8 +109,12 @@ fun DashboardScreen(
     onOpenReports: (() -> Unit)? = {},
     onOpenSettings: (() -> Unit)? = {},
     patientName: String = "",
-    /** The model download's state while it isn't ready ([dev.idoodler.labimporter.ui.components.ModelStatusCard]). */
-    modelStatus: (@Composable () -> Unit)? = null,
+    /**
+     * Cards above everything else while something needs the user's eye: the model download
+     * ([dev.idoodler.labimporter.ui.components.ModelStatusCard]), Health Connect becoming
+     * available ([HealthConnectOfferCard]).
+     */
+    notices: (@Composable () -> Unit)? = null,
 ) {
     // Shared rules (LabImporterCore `Dashboard`), identical on iOS.
     val metrics = remember(reports, preferences) { Dashboard.sorted(Dashboard.metrics(reports), preferences) }
@@ -122,7 +126,7 @@ fun DashboardScreen(
         return
     }
     if (metrics.isEmpty()) {
-        DashboardEmpty(importActions, onOpenReports?.takeIf { reports.isNotEmpty() }, onOpenSettings, modelStatus, modifier)
+        DashboardEmpty(importActions, onOpenReports?.takeIf { reports.isNotEmpty() }, onOpenSettings, notices, modifier)
         return
     }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -163,8 +167,8 @@ fun DashboardScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxSize(),
             ) {
-                modelStatus?.let { status ->
-                    item(span = { GridItemSpan(maxLineSpan) }, key = "model") { status() }
+                notices?.let { content ->
+                    item(span = { GridItemSpan(maxLineSpan) }, key = "notices") { content() }
                 }
                 // A personal welcome when the patient's name is known (iOS shows the same).
                 val firstName = patientName.trim().substringBefore(' ')
@@ -346,7 +350,7 @@ private fun DashboardEmpty(
     importActions: ImportActions,
     onOpenReports: (() -> Unit)?,
     onOpenSettings: (() -> Unit)?,
-    modelStatus: (@Composable () -> Unit)?,
+    notices: (@Composable () -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier.fillMaxSize()) {
@@ -373,8 +377,8 @@ private fun DashboardEmpty(
                 color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center,
             )
             Spacer(Modifier.height(28.dp))
-            modelStatus?.let { status ->
-                Box(Modifier.widthIn(max = 520.dp).padding(bottom = 16.dp)) { status() }
+            notices?.let { content ->
+                Box(Modifier.widthIn(max = 520.dp).padding(bottom = 16.dp)) { content() }
             }
             ImportOptionCards(importActions, Modifier.widthIn(max = 520.dp))
         }
@@ -416,7 +420,7 @@ private fun DashboardEmptyPreview() {
 @Composable
 private fun DashboardEmptyDownloadingPreview() {
     LabImporterTheme(dynamicColor = false) {
-        DashboardScreen(emptyList(), LabDisplayPreferences(), {}, previewActions, modelStatus = {
+        DashboardScreen(emptyList(), LabDisplayPreferences(), {}, previewActions, notices = {
             ModelStatusCard(AiAvailability.Preparing(1_100_000_000, GemmaModel.SIZE_BYTES), AiEngine.GEMMA, {}, {})
         })
     }
@@ -426,9 +430,17 @@ private fun DashboardEmptyDownloadingPreview() {
 @Composable
 private fun DashboardWaitingPreview() {
     LabImporterTheme(dynamicColor = false) {
-        DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, previewActions, modelStatus = {
+        DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, previewActions, notices = {
             ModelStatusCard(AiAvailability.Preparing(0, GemmaModel.SIZE_BYTES, PreparingStage.WAITING_FOR_WIFI), AiEngine.GEMMA, {}, {})
         })
+    }
+}
+
+@Preview(name = "Populated – Health Connect available", widthDp = 400, heightDp = 900)
+@Composable
+private fun DashboardHealthConnectOfferPreview() {
+    LabImporterTheme(dynamicColor = false) {
+        DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, previewActions, notices = { HealthConnectOfferCard({}, {}) })
     }
 }
 

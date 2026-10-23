@@ -175,6 +175,8 @@
     <string name="hc_connect">连接 Health Connect</string>
     <string name="hc_in_use">报告会以 FHIR 化验结果的形式保存到 Health Connect。</string>
     <string name="hc_available">可用。连接后，报告将保存到 Health Connect，而不只是保存在 LabImporter 中。</string>
+    <string name="hc_ready_title">Health Connect 现已可用</string>
+    <string name="hc_ready_message">你的报告目前只保存在 LabImporter 中。连接后可将它们移至 Health Connect，与你的其他健康数据存放在一起。</string>
     <string name="hc_local_selected">已连接，但目前报告仅保存在 LabImporter 中。</string>
     <string name="hc_update_required">请从 Play 商店更新 Health Connect，以便将报告保存到其中。</string>
     <string name="hc_medical_unsupported">Health Connect 医疗记录需要 Android 16 或更高版本。报告会私密地存储在此设备的 LabImporter 中。</string>

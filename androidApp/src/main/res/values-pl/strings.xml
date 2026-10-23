@@ -190,6 +190,8 @@
     <string name="hc_connect">Połącz z Health Connect</string>
     <string name="hc_in_use">Raporty są zapisywane w Health Connect jako wyniki badań w formacie FHIR.</string>
     <string name="hc_available">Dostępne. Połącz, aby zapisywać raporty w Health Connect, a nie tylko w LabImporterze.</string>
+    <string name="hc_ready_title">Health Connect jest dostępne</string>
+    <string name="hc_ready_message">Twoje raporty są przechowywane tylko w LabImporterze. Połącz, aby przenieść je do Health Connect, gdzie będą razem z pozostałymi danymi o zdrowiu.</string>
     <string name="hc_local_selected">Połączono, ale raporty są obecnie zapisywane tylko w LabImporterze.</string>
     <string name="hc_update_required">Zaktualizuj Health Connect w Sklepie Play, aby zapisywać w nim raporty.</string>
     <string name="hc_medical_unsupported">Dokumentacja medyczna Health Connect wymaga Androida 16 lub nowszego. Raporty są przechowywane prywatnie w LabImporterze na tym urządzeniu.</string>

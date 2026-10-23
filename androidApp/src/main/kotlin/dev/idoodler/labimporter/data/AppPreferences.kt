@@ -59,6 +59,10 @@ class AppPreferences(context: Context) {
     )
     val storageMode: StateFlow<StorageMode> = _storageMode.asStateFlow()
 
+    private val _healthConnectOfferDismissed = MutableStateFlow(prefs.getBoolean(KEY_HC_OFFER_DISMISSED, false))
+    /** The user answered "Not Now" to the dashboard's offer to move reports into Health Connect. */
+    val healthConnectOfferDismissed: StateFlow<Boolean> = _healthConnectOfferDismissed.asStateFlow()
+
     /** Debug builds: the developer chose the development stand-in over Gemini Nano. */
     val useDevelopmentStandIn: Boolean get() = prefs.getBoolean(KEY_STAND_IN, false)
 
@@ -101,6 +105,11 @@ class AppPreferences(context: Context) {
         prefs.edit { putString(KEY_STORAGE, value.name) }
     }
 
+    fun setHealthConnectOfferDismissed(value: Boolean) {
+        _healthConnectOfferDismissed.value = value
+        prefs.edit { putBoolean(KEY_HC_OFFER_DISMISSED, value) }
+    }
+
     fun setUseDevelopmentStandIn(value: Boolean) {
         prefs.edit { putBoolean(KEY_STAND_IN, value) }
     }
@@ -114,5 +123,6 @@ class AppPreferences(context: Context) {
         const val KEY_STORAGE = "storageMode"
         const val KEY_SHOW_LATEST_VALUE = "showLatestValueInSearch"
         const val KEY_STAND_IN = "useDevelopmentStandIn"
+        const val KEY_HC_OFFER_DISMISSED = "healthConnectOfferDismissed"
     }
 }

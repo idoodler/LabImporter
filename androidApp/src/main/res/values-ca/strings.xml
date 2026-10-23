@@ -185,6 +185,8 @@
     <string name="hc_connect">Connecta\'t a Health Connect</string>
     <string name="hc_in_use">Els informes es desen a Health Connect com a resultats de laboratori FHIR.</string>
     <string name="hc_available">Disponible. Connecta\'t per desar els informes a Health Connect en lloc de només al LabImporter.</string>
+    <string name="hc_ready_title">Health Connect està disponible</string>
+    <string name="hc_ready_message">Els teus informes només es guarden a LabImporter. Connecta\'t per moure\'ls a Health Connect, on es guarden amb la resta de les teves dades de salut.</string>
     <string name="hc_local_selected">Connectat, però ara mateix els informes només es desen al LabImporter.</string>
     <string name="hc_update_required">Actualitza Health Connect des de Play Store per desar-hi informes.</string>
     <string name="hc_medical_unsupported">Els registres mèdics de Health Connect requereixen Android 16 o posterior. Els informes es guarden de forma privada al LabImporter en aquest dispositiu.</string>

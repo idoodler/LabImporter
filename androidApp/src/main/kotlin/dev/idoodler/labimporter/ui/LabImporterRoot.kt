@@ -4,6 +4,9 @@ import androidx.activity.BackEventCompat
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.PredictiveBackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import dev.idoodler.labimporter.ui.dashboard.HealthConnectOfferCard
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
@@ -390,18 +393,7 @@ private fun Screen(
     when (destination) {
         Destination.Home -> DashboardScreen(
             reports, preferences,
-            modelStatus = viewModel.aiAvailability.collectAsStateWithLifecycle().value.let { availability ->
-                if (availability is AiAvailability.Preparing || availability is AiAvailability.PreparationFailed) {
-                    {
-                        ModelStatusCard(
-                            availability, viewModel.aiEngine, onTryAgain = viewModel::checkAiAgain,
-                            onUseMobileData = { viewModel.downloadModel(allowMobileData = true) },
-                        )
-                    }
-                } else {
-                    null
-                }
-            },
+            notices = dashboardNotices(viewModel, connectHealthConnect),
             onOpenMetric = { push(Destination.Trend(it)) },
             importActions = importActions,
             isLoading = isLoading,
@@ -461,6 +453,30 @@ private fun Screen(
                 exportCda = { viewModel.exportCda(report) },
                 onOpenTerm = { push(Destination.Term(it)) },
             )
+        }
+    }
+}
+
+/**
+ * The dashboard's notices: the model download while it isn't ready, and the
+ * offer to move reports into Health Connect once it's available. Null when
+ * there's nothing to say.
+ */
+@Composable
+private fun dashboardNotices(viewModel: AppViewModel, connectHealthConnect: () -> Unit): (@Composable () -> Unit)? {
+    val availability by viewModel.aiAvailability.collectAsStateWithLifecycle()
+    val offerHealthConnect by viewModel.offerHealthConnect.collectAsStateWithLifecycle()
+    val modelNotice = availability is AiAvailability.Preparing || availability is AiAvailability.PreparationFailed
+    if (!modelNotice && !offerHealthConnect) return null
+    return {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            if (modelNotice) {
+                ModelStatusCard(
+                    availability, viewModel.aiEngine, onTryAgain = viewModel::checkAiAgain,
+                    onUseMobileData = { viewModel.downloadModel(allowMobileData = true) },
+                )
+            }
+            if (offerHealthConnect) HealthConnectOfferCard(onConnect = connectHealthConnect, onDismiss = viewModel::dismissHealthConnectOffer)
         }
     }
 }

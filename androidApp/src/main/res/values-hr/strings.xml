@@ -185,6 +185,8 @@
     <string name="hc_connect">Poveži s Health Connectom</string>
     <string name="hc_in_use">Izvješća se spremaju u Health Connect kao FHIR laboratorijski rezultati.</string>
     <string name="hc_available">Dostupno. Povežite se kako biste izvješća spremali u Health Connect umjesto samo u LabImporter.</string>
+    <string name="hc_ready_title">Health Connect je dostupan</string>
+    <string name="hc_ready_message">Vaša izvješća čuvaju se samo u LabImporteru. Povežite se kako biste ih premjestili u Health Connect, gdje se pohranjuju uz ostale vaše zdravstvene podatke.</string>
     <string name="hc_local_selected">Povezano, ali izvješća se trenutačno spremaju samo u LabImporter.</string>
     <string name="hc_update_required">Ažurirajte Health Connect iz Trgovine Play kako biste ondje spremali izvješća.</string>
     <string name="hc_medical_unsupported">Medicinski zapisi Health Connecta zahtijevaju Android 16 ili noviji. Izvješća se privatno pohranjuju u LabImporteru na ovom uređaju.</string>

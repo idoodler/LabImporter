@@ -180,6 +180,8 @@
     <string name="hc_connect">Csatlakozás a Health Connecthez</string>
     <string name="hc_in_use">A jelentések FHIR-laboreredményként kerülnek a Health Connectbe.</string>
     <string name="hc_available">Elérhető. Csatlakozz, hogy a jelentések ne csak a LabImporterbe, hanem a Health Connectbe kerüljenek.</string>
+    <string name="hc_ready_title">Elérhető a Health Connect</string>
+    <string name="hc_ready_message">A jelentéseid csak a LabImporterben vannak. Csatlakozz, hogy átkerüljenek a Health Connectbe, ahol a többi egészségügyi adatoddal együtt tárolódnak.</string>
     <string name="hc_local_selected">Csatlakoztatva, de a jelentések jelenleg csak a LabImporterbe kerülnek.</string>
     <string name="hc_update_required">Frissítsd a Health Connectet a Play Áruházból, hogy oda menthesd a jelentéseket.</string>
     <string name="hc_medical_unsupported">A Health Connect egészségügyi adataihoz Android 16 vagy újabb szükséges. A jelentések privát módon, a LabImporterben tárolódnak ezen az eszközön.</string>

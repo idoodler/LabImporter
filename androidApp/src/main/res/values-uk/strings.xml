@@ -190,6 +190,8 @@
     <string name="hc_connect">Під\'єднатися до Health Connect</string>
     <string name="hc_in_use">Звіти зберігаються в Health Connect як результати аналізів у форматі FHIR.</string>
     <string name="hc_available">Доступно. Під\'єднайтеся, щоб зберігати звіти в Health Connect, а не лише в LabImporter.</string>
+    <string name="hc_ready_title">Health Connect доступний</string>
+    <string name="hc_ready_message">Ваші звіти зберігаються лише в LabImporter. Під\'єднайтеся, щоб перенести їх у Health Connect, де вони зберігатимуться разом з іншими даними про здоров\'я.</string>
     <string name="hc_local_selected">Під\'єднано, але зараз звіти зберігаються лише в LabImporter.</string>
     <string name="hc_update_required">Оновіть Health Connect у Play Маркеті, щоб зберігати в ньому звіти.</string>
     <string name="hc_medical_unsupported">Для медичних записів Health Connect потрібен Android 16 або новіший. Звіти зберігаються приватно в LabImporter на цьому пристрої.</string>

@@ -185,6 +185,8 @@
     <string name="hc_connect">Conectează-te la Health Connect</string>
     <string name="hc_in_use">Rapoartele sunt salvate în Health Connect ca rezultate de laborator FHIR.</string>
     <string name="hc_available">Disponibil. Conectează-te ca să salvezi rapoartele în Health Connect, nu doar în LabImporter.</string>
+    <string name="hc_ready_title">Health Connect este disponibil</string>
+    <string name="hc_ready_message">Rapoartele tale sunt păstrate doar în LabImporter. Conectează-te ca să le muți în Health Connect, unde sunt stocate alături de restul datelor tale de sănătate.</string>
     <string name="hc_local_selected">Conectat, dar momentan rapoartele sunt salvate doar în LabImporter.</string>
     <string name="hc_update_required">Actualizează Health Connect din Magazin Play ca să salvezi rapoarte acolo.</string>
     <string name="hc_medical_unsupported">Dosarele medicale Health Connect necesită Android 16 sau o versiune ulterioară. Rapoartele sunt stocate privat în LabImporter pe acest dispozitiv.</string>

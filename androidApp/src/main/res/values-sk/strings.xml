@@ -190,6 +190,8 @@
     <string name="hc_connect">Pripojiť k Health Connect</string>
     <string name="hc_in_use">Správy sa ukladajú do Health Connect ako laboratórne výsledky FHIR.</string>
     <string name="hc_available">K dispozícii. Pripojte sa, aby ste ukladali správy do Health Connect, a nie len v LabImporteri.</string>
+    <string name="hc_ready_title">Health Connect je k dispozícii</string>
+    <string name="hc_ready_message">Vaše správy sú uložené len v LabImporteri. Pripojte sa a presuňte ich do Health Connect, kde budú spolu s ostatnými zdravotnými údajmi.</string>
     <string name="hc_local_selected">Pripojené, ale správy sa zatiaľ ukladajú iba v LabImporteri.</string>
     <string name="hc_update_required">Aktualizujte Health Connect v Obchode Play, aby ste doň mohli ukladať správy.</string>
     <string name="hc_medical_unsupported">Zdravotné záznamy Health Connect vyžadujú Android 16 alebo novší. Správy sa ukladajú súkromne v LabImporteri v tomto zariadení.</string>

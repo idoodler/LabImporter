@@ -1,5 +1,6 @@
 package dev.idoodler.labimporter.data
 
+import android.util.Log
 import dev.idoodler.labimporter.core.LabReportStore
 import dev.idoodler.labimporter.core.model.LabReport
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,8 +13,8 @@ import kotlinx.coroutines.flow.asStateFlow
  * on-device fallback) on launch, on resume and after every change.
  */
 class ReportRepository(
-    private val local: LocalReportStore,
-    private val healthConnect: HealthConnectReportStore,
+    private val local: LabReportStore,
+    private val healthConnect: HealthConnectStore,
     private val preferences: AppPreferences,
 ) {
     private val _reports = MutableStateFlow<List<LabReport>>(emptyList())
@@ -41,11 +42,31 @@ class ReportRepository(
 
     suspend fun reload() {
         _isLoading.value = true
-        runCatching { store().loadReports().sortedByDescending { it.date } }
+        runCatching {
+            val target = store()
+            // Reports a move into Health Connect didn't get to — it stopped half-way, or Health
+            // Connect was unavailable for a while and saves went to the app: move them now, and
+            // list any still left, so no report seems lost while Health Connect is in use.
+            val stillLocal = if (target === healthConnect) moveLocalReports() else emptyList()
+            (target.loadReports() + stillLocal).distinctBy { it.id }.sortedByDescending { it.date }
+        }
             .onSuccess { _reports.value = it; _lastError.value = null }
             .onFailure { _lastError.value = it.message }
         _isLoading.value = false
     }
+
+    /**
+     * Moves every report kept in the app into Health Connect, deleting each
+     * local copy only once Health Connect has it (saving again is harmless:
+     * Health Connect upserts by id). Returns the reports that couldn't be moved.
+     */
+    private suspend fun moveLocalReports(): List<LabReport> =
+        local.loadReports().filterNot { report ->
+            runCatching {
+                healthConnect.save(report)
+                local.delete(report)
+            }.onFailure { Log.w(TAG, "Couldn't move report ${report.id} to Health Connect yet", it) }.isSuccess
+        }
 
     suspend fun save(report: LabReport) {
         store().save(report)
@@ -82,7 +103,8 @@ class ReportRepository(
 
     /**
      * Turns Health Connect on and moves any on-device reports into it, so the
-     * user never ends up with data split across two stores.
+     * user never ends up with data split across two stores. Returns how many
+     * moved; any that couldn't are moved on a later [reload] and listed meanwhile.
      */
     suspend fun enableHealthConnect(): Int {
         preferences.setStorageMode(StorageMode.HEALTH_CONNECT)
@@ -90,15 +112,18 @@ class ReportRepository(
             preferences.setStorageMode(StorageMode.LOCAL)
             return 0
         }
-        val pending = local.loadReports()
-        pending.forEach { healthConnect.save(it) }
-        local.deleteAll()
+        val pending = local.loadReports().size
+        val left = moveLocalReports()
         reload()
-        return pending.size
+        return pending - left.size
     }
 
     suspend fun useLocalStorage() {
         preferences.setStorageMode(StorageMode.LOCAL)
         reload()
+    }
+
+    private companion object {
+        const val TAG = "ReportRepository"
     }
 }

@@ -175,6 +175,8 @@
     <string name="hc_connect">ヘルスコネクトに接続</string>
     <string name="hc_in_use">レポートはFHIR形式の検査結果としてヘルスコネクトに保存されます。</string>
     <string name="hc_available">利用可能です。接続すると、LabImporterだけでなくヘルスコネクトにもレポートを保存できます。</string>
+    <string name="hc_ready_title">ヘルスコネクトを利用できます</string>
+    <string name="hc_ready_message">レポートは現在LabImporterにのみ保存されています。接続すると、ほかの健康データと一緒に保存されるヘルスコネクトに移動します。</string>
     <string name="hc_local_selected">接続済みですが、現在レポートはLabImporterにのみ保存されています。</string>
     <string name="hc_update_required">レポートを保存するには、Playストアでヘルスコネクトをアップデートしてください。</string>
     <string name="hc_medical_unsupported">ヘルスコネクトの医療記録にはAndroid 16以降が必要です。レポートはこのデバイスのLabImporter内に非公開で保存されます。</string>
