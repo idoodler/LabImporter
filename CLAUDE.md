@@ -387,6 +387,12 @@ tools/generate_android_icon.py # layered adaptive launcher icon (+ night + monoc
   it streams a fixed sample reply through the real shared pipeline so review,
   saving and the dashboard can be exercised; its results carry a "sample values"
   banner. It lives only in `src/debug` and never ships.
+- **Window insets:** screens pad their top with `safeDrawing` / `systemBars`
+  (Material's Scaffold, top bars and rail do by default), never the status bar
+  alone: in a freeform window (Waydroid multi-window, ChromeOS, DeX, desktop
+  mode) Android draws its caption bar over the app and reports it only as the
+  caption-bar inset. `WindowInsetsGuardrailTest` fails on status-bar-only
+  padding. Keep backgrounds full-bleed; pad the content.
 - **Android storage:** Health Connect *Medical Records* (FHIR R4 laboratory
   `Observation`s, Android 16+, still `@ExperimentalPersonalHealthRecordApi`).
   There's no `DiagnosticReport`, so each Observation carries its report id as a

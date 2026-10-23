@@ -11,10 +11,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -356,7 +360,9 @@ private fun DashboardEmpty(
     Box(modifier.fillMaxSize()) {
         CategoryWash(welcomePalette, animated = true)
         Column(
-            Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding().navigationBarsPadding()
+            // safeDrawing, not just the status bar: in a freeform window (Waydroid, ChromeOS, DeX,
+            // desktop mode) Android draws its caption bar over the top of the app.
+            Modifier.fillMaxSize().verticalScroll(rememberScrollState()).safeDrawingPadding()
                 .padding(horizontal = 20.dp, vertical = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -383,7 +389,7 @@ private fun DashboardEmpty(
             ImportOptionCards(importActions, Modifier.widthIn(max = 520.dp))
         }
         // Drawn after the full-screen scrolling column so it sits on top and receives taps.
-        Row(Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(4.dp)) {
+        Row(Modifier.align(Alignment.TopEnd).windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.End)).padding(4.dp)) {
             if (onOpenReports != null) {
                 IconButton(onClick = onOpenReports) { Icon(Icons.Rounded.History, stringResource(R.string.history_title)) }
             }
