@@ -4,21 +4,26 @@ import kotlinx.coroutines.flow.StateFlow
 
 /**
  * The on-device language model that reads lab reports — Gemini Nano on
- * Android, the counterpart of Apple Intelligence in the iOS app. As on iOS
- * there is no lesser fallback that would guess values: when the model can't
- * be used the app says so ([AiAvailability.Unsupported] blocks the app, like
- * iOS's "Device Not Supported"), and problems during a parse surface as an
- * [AiException] the user is told about.
+ * Android, the counterpart of Apple Intelligence in the iOS app, or on phones
+ * that don't offer Gemini Nano to apps the Gemma model the user chose to
+ * download ([GemmaAi]). As on iOS there is no lesser fallback that would guess
+ * values: when no model can be used the app says so
+ * ([AiAvailability.Unsupported] blocks the app, like iOS's "Device Not
+ * Supported"), and problems during a parse surface as an [AiException] the
+ * user is told about.
  */
 interface OnDeviceAi {
     /** Whether the model can be used right now; starts as [AiAvailability.Checking]. */
     val availability: StateFlow<AiAvailability>
 
     /**
-     * Asks the system again — on launch, on resume and from "Check Again" —
-     * and starts the model download when the device needs one.
+     * Asks the system again — on launch and on resume — and starts the model
+     * download when the device needs one.
      */
     suspend fun refresh()
+
+    /** "Check Again" / "Try Again": like [refresh], and also retries what failed last time. */
+    suspend fun tryAgain() = refresh()
 
     /** Loads the model ahead of a parse, while the user is still picking or scanning. */
     suspend fun prewarm()
@@ -27,9 +32,11 @@ interface OnDeviceAi {
      * Runs [prompt] under [instructions] and returns the complete reply,
      * reporting the reply so far through [onPartialReply] while it streams.
      *
+     * @param responseSchema a JSON Schema the reply must follow, for models
+     *   that can constrain their output to one (the instructions also spell it out).
      * @throws AiException when the model can't produce a complete reply.
      */
-    suspend fun generate(instructions: String, prompt: String, onPartialReply: (String) -> Unit): String
+    suspend fun generate(instructions: String, prompt: String, responseSchema: String?, onPartialReply: (String) -> Unit): String
 }
 
 /** What the on-device model can do right now. */
@@ -41,10 +48,14 @@ sealed interface AiAvailability {
     data object Ready : AiAvailability
 
     /**
-     * Supported, but the system is still fetching the model. [totalBytes] is
-     * null until the download reports its size.
+     * Supported, but the model is still being fetched. [totalBytes] is null
+     * until the download reports its size.
      */
-    data class Preparing(val downloadedBytes: Long = 0, val totalBytes: Long? = null) : AiAvailability {
+    data class Preparing(
+        val downloadedBytes: Long = 0,
+        val totalBytes: Long? = null,
+        val stage: PreparingStage = PreparingStage.DOWNLOADING,
+    ) : AiAvailability {
         /** 0…1, or null while the size is unknown. */
         val fraction: Float?
             get() = totalBytes?.takeIf { it > 0 }?.let { (downloadedBytes.toDouble() / it).toFloat().coerceIn(0f, 1f) }
@@ -58,8 +69,29 @@ sealed interface AiAvailability {
      * without it — exactly like the iOS app on hardware without Apple
      * Intelligence. [detail] is the system's own answer (a status or error
      * code), shown as-is so the reason can be reported and checked.
+     *
+     * @param modelDownload the phone can run the Gemma model instead, once
+     *   the user downloads it ([GemmaModel]).
      */
-    data class Unsupported(val reason: UnsupportedReason, val detail: String? = null) : AiAvailability
+    data class Unsupported(
+        val reason: UnsupportedReason,
+        val detail: String? = null,
+        val modelDownload: Boolean = false,
+    ) : AiAvailability
+}
+
+/** What [AiAvailability.Preparing] is waiting for. */
+enum class PreparingStage {
+    DOWNLOADING,
+
+    /** The download only runs on Wi-Fi (the default) and there is none. */
+    WAITING_FOR_WIFI,
+
+    /** No connection at all; the download continues once there is one. */
+    WAITING_FOR_NETWORK,
+
+    /** Checking the downloaded file against its pinned SHA-256. */
+    VERIFYING,
 }
 
 enum class UnsupportedReason {
@@ -101,6 +133,9 @@ enum class AiProblem {
 
     /** The model is no longer available on this device. */
     UNAVAILABLE,
+
+    /** The downloaded model couldn't be loaded on this phone (or the app closed while it loaded). */
+    LOAD_FAILED,
 
     /** Anything else: the model produced no usable reply. */
     FAILED,

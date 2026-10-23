@@ -16,3 +16,7 @@
 -keep class com.google.firebase.components.** { *; }
 -keep class * implements com.google.firebase.components.ComponentRegistrar { *; }
 -keep class com.google.mlkit.common.** { *; }
+
+# LiteRT-LM (Gemma) ships no R8 rules of its own: its native library calls back into
+# these classes by name (messages, contents, configs), so they must keep their names.
+-keep class com.google.ai.edge.litertlm.** { *; }

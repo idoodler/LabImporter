@@ -65,6 +65,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.idoodler.labimporter.R
+import dev.idoodler.labimporter.ai.AiAvailability
+import dev.idoodler.labimporter.ai.AiEngine
+import dev.idoodler.labimporter.ai.PreparingStage
+import dev.idoodler.labimporter.ai.gemma.GemmaModel
+import dev.idoodler.labimporter.ui.components.ModelStatusCard
 import dev.idoodler.labimporter.core.model.LabCategory
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.core.model.LabReport
@@ -104,6 +109,8 @@ fun DashboardScreen(
     onOpenReports: (() -> Unit)? = {},
     onOpenSettings: (() -> Unit)? = {},
     patientName: String = "",
+    /** The model download's state while it isn't ready ([dev.idoodler.labimporter.ui.components.ModelStatusCard]). */
+    modelStatus: (@Composable () -> Unit)? = null,
 ) {
     // Shared rules (LabImporterCore `Dashboard`), identical on iOS.
     val metrics = remember(reports, preferences) { Dashboard.sorted(Dashboard.metrics(reports), preferences) }
@@ -115,7 +122,7 @@ fun DashboardScreen(
         return
     }
     if (metrics.isEmpty()) {
-        DashboardEmpty(importActions, onOpenReports?.takeIf { reports.isNotEmpty() }, onOpenSettings, modifier)
+        DashboardEmpty(importActions, onOpenReports?.takeIf { reports.isNotEmpty() }, onOpenSettings, modelStatus, modifier)
         return
     }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -156,6 +163,9 @@ fun DashboardScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxSize(),
             ) {
+                modelStatus?.let { status ->
+                    item(span = { GridItemSpan(maxLineSpan) }, key = "model") { status() }
+                }
                 // A personal welcome when the patient's name is known (iOS shows the same).
                 val firstName = patientName.trim().substringBefore(' ')
                 if (firstName.isNotEmpty()) {
@@ -336,6 +346,7 @@ private fun DashboardEmpty(
     importActions: ImportActions,
     onOpenReports: (() -> Unit)?,
     onOpenSettings: (() -> Unit)?,
+    modelStatus: (@Composable () -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier.fillMaxSize()) {
@@ -362,6 +373,9 @@ private fun DashboardEmpty(
                 color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center,
             )
             Spacer(Modifier.height(28.dp))
+            modelStatus?.let { status ->
+                Box(Modifier.widthIn(max = 520.dp).padding(bottom = 16.dp)) { status() }
+            }
             ImportOptionCards(importActions, Modifier.widthIn(max = 520.dp))
         }
         // Drawn after the full-screen scrolling column so it sits on top and receives taps.
@@ -396,6 +410,26 @@ private fun DashboardDarkPreview() {
 @Composable
 private fun DashboardEmptyPreview() {
     LabImporterTheme(dynamicColor = false) { DashboardScreen(emptyList(), LabDisplayPreferences(), {}, previewActions) }
+}
+
+@Preview(name = "Empty – model downloading", widthDp = 400, heightDp = 1000)
+@Composable
+private fun DashboardEmptyDownloadingPreview() {
+    LabImporterTheme(dynamicColor = false) {
+        DashboardScreen(emptyList(), LabDisplayPreferences(), {}, previewActions, modelStatus = {
+            ModelStatusCard(AiAvailability.Preparing(1_100_000_000, GemmaModel.SIZE_BYTES), AiEngine.GEMMA, {}, {})
+        })
+    }
+}
+
+@Preview(name = "Populated – model waiting for Wi-Fi", widthDp = 400, heightDp = 900)
+@Composable
+private fun DashboardWaitingPreview() {
+    LabImporterTheme(dynamicColor = false) {
+        DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, previewActions, modelStatus = {
+            ModelStatusCard(AiAvailability.Preparing(0, GemmaModel.SIZE_BYTES, PreparingStage.WAITING_FOR_WIFI), AiEngine.GEMMA, {}, {})
+        })
+    }
 }
 
 @Preview(name = "Empty – dark", widthDp = 400, heightDp = 900, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)

@@ -71,6 +71,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.idoodler.labimporter.R
 import dev.idoodler.labimporter.ai.AiEngine
+import dev.idoodler.labimporter.ai.gemma.GemmaModel
 import dev.idoodler.labimporter.ai.DevelopmentStandIn
 import dev.idoodler.labimporter.core.model.LabCategory
 import dev.idoodler.labimporter.core.model.LabMapping
@@ -177,7 +178,11 @@ fun ReviewScreen(
                             }
                             Row(Modifier.padding(top = 14.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 StatusPill(canSave, duplicates.isNotEmpty())
-                                if (draft.engine == AiEngine.GEMINI_NANO) EngineChip(Icons.Rounded.AutoAwesome, stringResource(R.string.engine_gemini))
+                                when (draft.engine) {
+                                    AiEngine.GEMINI_NANO -> EngineChip(Icons.Rounded.AutoAwesome, stringResource(R.string.engine_gemini))
+                                    AiEngine.GEMMA -> EngineChip(Icons.Rounded.AutoAwesome, GemmaModel.NAME)
+                                    AiEngine.DEVELOPMENT_STAND_IN, null -> Unit
+                                }
                             }
                             if (categories.isNotEmpty()) {
                                 FlowRow(
@@ -447,6 +452,12 @@ private val previewDraft = ReviewDraft(
 @Composable
 private fun ReviewPreview() {
     LabImporterTheme(dynamicColor = false) { ReviewScreen(previewDraft, {}, { _, _ -> }, { "" }, {}, {}, {}) }
+}
+
+@Preview(name = "Read by Gemma", widthDp = 400, heightDp = 1100)
+@Composable
+private fun ReviewGemmaPreview() {
+    LabImporterTheme(dynamicColor = false) { ReviewScreen(previewDraft.copy(engine = AiEngine.GEMMA), {}, { _, _ -> }, { "" }, {}, {}, {}) }
 }
 
 @Preview(name = "Development stand-in (debug) – dark", widthDp = 400, heightDp = 1100, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)

@@ -14,5 +14,6 @@ val AiProblem.messageRes: Int
         AiProblem.NOT_ENOUGH_STORAGE -> R.string.ai_problem_storage
         AiProblem.DOWNLOAD_FAILED -> R.string.ai_problem_download
         AiProblem.UNAVAILABLE -> R.string.ai_problem_unavailable
+        AiProblem.LOAD_FAILED -> R.string.ai_problem_load_failed
         AiProblem.FAILED -> R.string.error_parse
     }

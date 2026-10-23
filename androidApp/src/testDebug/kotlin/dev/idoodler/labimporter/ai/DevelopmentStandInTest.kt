@@ -24,7 +24,7 @@ class DevelopmentStandInTest {
     @Test
     fun itStreamsAReplyInTheSharedContract() = runTest {
         val partials = mutableListOf<String>()
-        val reply = ai.generate(LabParsePrompt.instructions, LabParsePrompt.prompt("anything")) { partials += it }
+        val reply = ai.generate(LabParsePrompt.instructions, LabParsePrompt.prompt("anything"), LabParsePrompt.jsonSchema) { partials += it }
         assertTrue(partials.size > 1)
         assertTrue(partials.all { reply.startsWith(it) })
         val report = checkNotNull(LabParsePrompt.decodeJsonReply(reply))

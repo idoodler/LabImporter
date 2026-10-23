@@ -28,7 +28,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import dev.idoodler.labimporter.R
+import dev.idoodler.labimporter.ai.AiAvailability
+import dev.idoodler.labimporter.ai.AiEngine
+import dev.idoodler.labimporter.ai.PreparingStage
 import dev.idoodler.labimporter.core.parse.ParseProgress
+import dev.idoodler.labimporter.ui.components.preparingProgress
+import dev.idoodler.labimporter.ui.components.preparingTitle
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 import java.text.NumberFormat
 
@@ -36,8 +41,8 @@ import java.text.NumberFormat
 sealed interface ProcessingStage {
     data object Reading : ProcessingStage
 
-    /** Gemini Nano is still downloading; [fraction] is null while its size is unknown. */
-    data class PreparingModel(val fraction: Float?) : ProcessingStage
+    /** The model is still downloading (or being checked); [engine] says which one. */
+    data class PreparingModel(val preparing: AiAvailability.Preparing, val engine: AiEngine) : ProcessingStage
 
     data class Parsing(val progress: ParseProgress) : ProcessingStage
 }
@@ -59,28 +64,28 @@ private fun ProcessingCard(stage: ProcessingStage, onCancel: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            val fraction = (stage as? ProcessingStage.PreparingModel)?.fraction
+            val fraction = (stage as? ProcessingStage.PreparingModel)?.preparing
+                ?.takeIf { it.stage == PreparingStage.DOWNLOADING }?.fraction
             if (fraction != null) {
                 CircularWavyProgressIndicator(progress = { fraction }, modifier = Modifier.size(88.dp))
             } else {
                 ContainedLoadingIndicator(Modifier.size(88.dp))
             }
             Text(
-                stringResource(
-                    when (stage) {
-                        ProcessingStage.Reading -> R.string.processing_reading
-                        is ProcessingStage.PreparingModel -> R.string.processing_preparing
-                        is ProcessingStage.Parsing -> R.string.processing_parsing
-                    },
-                ),
+                when (stage) {
+                    ProcessingStage.Reading -> stringResource(R.string.processing_reading)
+                    is ProcessingStage.PreparingModel -> preparingTitle(stage.preparing, stage.engine)
+                    is ProcessingStage.Parsing -> stringResource(R.string.processing_parsing)
+                },
                 style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center,
             )
             when (stage) {
                 ProcessingStage.Reading -> Unit
                 is ProcessingStage.PreparingModel -> {
                     if (fraction != null) {
+                        val percent = remember(fraction) { NumberFormat.getPercentInstance().format(fraction) }
                         Text(
-                            remember(fraction) { NumberFormat.getPercentInstance().format(fraction) },
+                            listOfNotNull(percent, preparingProgress(stage.preparing)).joinToString(" · "),
                             style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
@@ -114,16 +119,48 @@ private fun ReadingPreview() {
     LabImporterTheme(dynamicColor = false) { ProcessingCard(ProcessingStage.Reading) {} }
 }
 
-@Preview(name = "Downloading the model")
+@Preview(name = "Downloading Gemini Nano")
 @Composable
 private fun PreparingPreview() {
-    LabImporterTheme(dynamicColor = false) { ProcessingCard(ProcessingStage.PreparingModel(0.42f)) {} }
+    LabImporterTheme(dynamicColor = false) {
+        ProcessingCard(ProcessingStage.PreparingModel(AiAvailability.Preparing(420_000_000, 1_000_000_000), AiEngine.GEMINI_NANO)) {}
+    }
 }
 
 @Preview(name = "Downloading – size unknown, dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun PreparingUnknownPreview() {
-    LabImporterTheme(darkTheme = true, dynamicColor = false) { ProcessingCard(ProcessingStage.PreparingModel(null)) {} }
+    LabImporterTheme(darkTheme = true, dynamicColor = false) {
+        ProcessingCard(ProcessingStage.PreparingModel(AiAvailability.Preparing(), AiEngine.GEMINI_NANO)) {}
+    }
+}
+
+@Preview(name = "Downloading Gemma")
+@Composable
+private fun GemmaDownloadingPreview() {
+    LabImporterTheme(dynamicColor = false) {
+        ProcessingCard(ProcessingStage.PreparingModel(AiAvailability.Preparing(1_100_000_000, 2_588_147_712), AiEngine.GEMMA)) {}
+    }
+}
+
+@Preview(name = "Gemma waiting for Wi-Fi")
+@Composable
+private fun GemmaWaitingPreview() {
+    LabImporterTheme(dynamicColor = false) {
+        ProcessingCard(
+            ProcessingStage.PreparingModel(AiAvailability.Preparing(0, 2_588_147_712, PreparingStage.WAITING_FOR_WIFI), AiEngine.GEMMA),
+        ) {}
+    }
+}
+
+@Preview(name = "Gemma checking the download – dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun GemmaVerifyingPreview() {
+    LabImporterTheme(darkTheme = true, dynamicColor = false) {
+        ProcessingCard(
+            ProcessingStage.PreparingModel(AiAvailability.Preparing(2_588_147_712, 2_588_147_712, PreparingStage.VERIFYING), AiEngine.GEMMA),
+        ) {}
+    }
 }
 
 @Preview(name = "Parsing – dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)

@@ -135,7 +135,8 @@ class GeminiNanoAi(
         }
     }
 
-    override suspend fun generate(instructions: String, prompt: String, onPartialReply: (String) -> Unit): String {
+    // The Prompt API has no JSON Schema mode; the instructions spell the reply out instead.
+    override suspend fun generate(instructions: String, prompt: String, responseSchema: String?, onPartialReply: (String) -> Unit): String {
         val model = model ?: throw AiException(AiProblem.UNAVAILABLE)
         try {
             val request = request(model, instructions, prompt)

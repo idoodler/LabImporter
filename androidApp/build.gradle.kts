@@ -190,6 +190,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.process)
 
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.play.services)
@@ -199,6 +200,8 @@ dependencies {
     implementation(libs.mlkit.genai.prompt)
     implementation(libs.mlkit.text.recognition)
     implementation(libs.mlkit.document.scanner)
+    // Gemma on phones without Gemini Nano for apps (see ai/GemmaAi.kt).
+    implementation(libs.litertlm.android)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

@@ -53,7 +53,7 @@ internal class DevelopmentAi : OnDeviceAi {
 
     override suspend fun prewarm() = Unit
 
-    override suspend fun generate(instructions: String, prompt: String, onPartialReply: (String) -> Unit): String {
+    override suspend fun generate(instructions: String, prompt: String, responseSchema: String?, onPartialReply: (String) -> Unit): String {
         val reply = sampleReply(Random(prompt.hashCode() xor Clock.System.now().epochSeconds.toInt()))
         // Stream value by value, like the model, so the progress dialog behaves as on a phone.
         var from = 0

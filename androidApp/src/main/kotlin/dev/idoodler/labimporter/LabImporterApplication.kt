@@ -3,8 +3,16 @@ package dev.idoodler.labimporter
 import android.app.Application
 import android.content.Context
 import android.os.StrictMode
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.ProcessLifecycleOwner
 import dev.idoodler.labimporter.ai.DevelopmentStandIn
 import dev.idoodler.labimporter.ai.GeminiNanoAi
+import dev.idoodler.labimporter.ai.GemmaAi
+import dev.idoodler.labimporter.ai.gemma.GemmaModelStore
+import dev.idoodler.labimporter.ai.gemma.ModelDownloadNotifications
+import dev.idoodler.labimporter.ai.gemma.LiteRtGemmaRuntime
+import dev.idoodler.labimporter.ai.gemma.SystemModelDownloads
 import dev.idoodler.labimporter.ai.LabParserService
 import dev.idoodler.labimporter.ai.SelectableAi
 import dev.idoodler.labimporter.core.LabCore
@@ -41,7 +49,28 @@ class LabImporterApplication : Application(), AppContainerOwner {
             StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().detectDiskReads().detectDiskWrites().detectCustomSlowCalls().penaltyLog().build())
         }
         val preferences = AppPreferences(this)
-        container = AppContainer(this, preferences, defaultAi(preferences, appScope))
+        container = AppContainer(this, preferences, defaultAi(this, preferences, appScope))
+        // Gemma's memory goes back to the system while the app isn't on screen, and the model
+        // download — which carries on in the background — reports how it went in a notification.
+        val modelNotifications = ModelDownloadNotifications(this)
+        val lifecycle = ProcessLifecycleOwner.get().lifecycle
+        lifecycle.addObserver(
+            LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_START -> {
+                        container.ai.onUiVisible()
+                        modelNotifications.cancel()
+                    }
+                    Lifecycle.Event.ON_STOP -> container.ai.onUiHidden()
+                    else -> Unit
+                }
+            },
+        )
+        appScope.launch {
+            container.ai.modelEvents.collect { event ->
+                if (!lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) modelNotifications.show(event)
+            }
+        }
         // Like iOS's launch check: is the on-device model usable (or does it need downloading)?
         appScope.launch { container.ai.refresh() }
         // Unpacking the 34 MB catalog after an install/update takes a moment;
@@ -82,9 +111,18 @@ class LabImporterApplication : Application(), AppContainerOwner {
     }
 }
 
-/** Gemini Nano; in debug builds optionally the development stand-in (see [DevelopmentStandIn]). */
-fun defaultAi(preferences: AppPreferences, scope: CoroutineScope) =
-    SelectableAi(GeminiNanoAi(scope), DevelopmentStandIn.create(), preferences.useDevelopmentStandIn, scope)
+/**
+ * Gemini Nano; the downloadable Gemma model where the system says Gemini Nano
+ * is unsupported; in debug builds optionally the development stand-in (see
+ * [DevelopmentStandIn]).
+ */
+fun defaultAi(context: Context, preferences: AppPreferences, scope: CoroutineScope) = SelectableAi(
+    gemini = GeminiNanoAi(scope),
+    gemma = GemmaAi(GemmaModelStore(context), SystemModelDownloads(context), LiteRtGemmaRuntime(File(context.cacheDir, "litertlm")), scope),
+    standIn = DevelopmentStandIn.create(),
+    useStandIn = preferences.useDevelopmentStandIn,
+    scope = scope,
+)
 
 /** Simple manual DI: everything long-lived the UI needs. */
 class AppContainer(context: Context, val preferences: AppPreferences, val ai: SelectableAi) {

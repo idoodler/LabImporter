@@ -72,7 +72,7 @@ sealed interface ImportState {
     data object Idle : ImportState
     data object ReadingDocument : ImportState
     /** The model is still being downloaded; the import continues once it's ready. */
-    data class PreparingModel(val preparing: AiAvailability.Preparing) : ImportState
+    data class PreparingModel(val preparing: AiAvailability.Preparing, val engine: AiEngine) : ImportState
     data class Parsing(val progress: ParseProgress) : ImportState
     data class Reviewing(val draft: ReviewDraft) : ImportState
     data class Failed(val message: String) : ImportState
@@ -104,7 +104,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     val hasSeenWelcome: StateFlow<Boolean> = preferences.hasSeenWelcome
     val patientName: StateFlow<String> = preferences.patientName
     val patientDetails: StateFlow<PatientDetails> = preferences.patientDetails
-    /** Whether Gemini Nano can read reports; [AiAvailability.Unsupported] blocks the app like iOS. */
+    /** Whether an on-device model can read reports; [AiAvailability.Unsupported] blocks the app like iOS. */
     val aiAvailability: StateFlow<AiAvailability> = ai.availability
 
     /** Debug builds: the development stand-in replaces Gemini Nano. */
@@ -158,12 +158,30 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
         // The model can become available later (AI configuration arriving, a system update).
         val availability = ai.availability.value
-        if (availability is AiAvailability.Unsupported || availability is AiAvailability.PreparationFailed) checkAiAgain()
+        if (availability is AiAvailability.Unsupported || availability is AiAvailability.PreparationFailed) {
+            viewModelScope.launch { ai.refresh() }
+        }
     }
 
-    /** "Check Again" / "Try Again": asks the system once more and restarts a failed model download. */
+    /** "Check Again" / "Try Again": asks the system once more and retries a failed model download. */
     fun checkAiAgain() {
-        viewModelScope.launch { ai.refresh() }
+        viewModelScope.launch { ai.tryAgain() }
+    }
+
+    /** The downloaded Gemma model is on the phone. */
+    val modelInstalled: StateFlow<Boolean> = ai.gemmaInstalled
+
+    /** Which model reads reports — follows [aiAvailability]. */
+    val aiEngine: AiEngine get() = ai.engine
+
+    /** The user's go-ahead to download the Gemma model (Wi-Fi only unless [allowMobileData]). */
+    fun downloadModel(allowMobileData: Boolean) {
+        viewModelScope.launch { ai.downloadModel(allowMobileData) }
+    }
+
+    /** Cancels the model download or deletes the downloaded model. */
+    fun removeModel() {
+        viewModelScope.launch { ai.removeModel() }
     }
 
     /** Debug builds: opt into (or out of) the development stand-in. */
@@ -279,7 +297,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private suspend fun awaitModel(): Boolean {
         if (ai.availability.value is AiAvailability.PreparationFailed) ai.refresh() // Retry the download first.
         val settled = ai.availability
-            .onEach { if (it is AiAvailability.Preparing) _importState.value = ImportState.PreparingModel(it) }
+            .onEach { if (it is AiAvailability.Preparing) _importState.value = ImportState.PreparingModel(it, ai.engine) }
             .first { it !is AiAvailability.Checking && it !is AiAvailability.Preparing }
         return when (settled) {
             AiAvailability.Ready -> true

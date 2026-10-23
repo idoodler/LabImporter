@@ -4,6 +4,13 @@ import androidx.activity.BackEventCompat
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.PredictiveBackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
+import dev.idoodler.labimporter.ui.components.ModelStatusCard
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -134,14 +141,36 @@ fun LabImporterRoot(viewModel: AppViewModel) {
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refresh() }
 
+    // The download carries on in the background; a notification says when it's done — so ask
+    // for that permission as the user starts it (the download starts either way).
+    val context = LocalContext.current
+    var pendingDownload by rememberSaveable { mutableStateOf<Boolean?>(null) }
+    val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+        pendingDownload?.let(viewModel::downloadModel)
+        pendingDownload = null
+    }
+    val startModelDownload: (Boolean) -> Unit = { allowMobileData ->
+        val needsPermission = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        if (needsPermission) {
+            pendingDownload = allowMobileData
+            notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            viewModel.downloadModel(allowMobileData)
+        }
+    }
+
     // Like iOS: without the on-device AI there is no app, only the reason why.
     val availability by viewModel.aiAvailability.collectAsStateWithLifecycle()
     var lastUnsupported by rememberSaveable { mutableStateOf<UnsupportedReason?>(null) }
     var lastDetail by rememberSaveable { mutableStateOf<String?>(null) }
+    var lastModelDownload by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(availability) {
         if (availability != AiAvailability.Checking) {
-            lastUnsupported = (availability as? AiAvailability.Unsupported)?.reason
-            lastDetail = (availability as? AiAvailability.Unsupported)?.detail
+            val unsupported = availability as? AiAvailability.Unsupported
+            lastUnsupported = unsupported?.reason
+            lastDetail = unsupported?.detail
+            lastModelDownload = unsupported?.modelDownload == true
         }
     }
     // While "Check Again" runs the screen stays, showing that it's checking.
@@ -153,6 +182,8 @@ fun LabImporterRoot(viewModel: AppViewModel) {
             detail = unsupported?.detail ?: lastDetail,
             checking = availability == AiAvailability.Checking,
             onCheckAgain = viewModel::checkAiAgain,
+            modelDownload = unsupported?.modelDownload ?: lastModelDownload,
+            onDownloadModel = startModelDownload,
             standIn = DevelopmentStandIn.texts,
             onUseStandIn = { viewModel.useDevelopmentStandIn(true) },
         )
@@ -193,7 +224,7 @@ fun LabImporterRoot(viewModel: AppViewModel) {
 
     when (val state = importState) {
         ImportState.ReadingDocument -> ProcessingDialog(ProcessingStage.Reading, viewModel::cancelImport)
-        is ImportState.PreparingModel -> ProcessingDialog(ProcessingStage.PreparingModel(state.preparing.fraction), viewModel::cancelImport)
+        is ImportState.PreparingModel -> ProcessingDialog(ProcessingStage.PreparingModel(state.preparing, state.engine), viewModel::cancelImport)
         is ImportState.Parsing -> ProcessingDialog(ProcessingStage.Parsing(state.progress), viewModel::cancelImport)
         is ImportState.Failed -> AlertDialog(
             onDismissRequest = viewModel::cancelImport,
@@ -359,6 +390,18 @@ private fun Screen(
     when (destination) {
         Destination.Home -> DashboardScreen(
             reports, preferences,
+            modelStatus = viewModel.aiAvailability.collectAsStateWithLifecycle().value.let { availability ->
+                if (availability is AiAvailability.Preparing || availability is AiAvailability.PreparationFailed) {
+                    {
+                        ModelStatusCard(
+                            availability, viewModel.aiEngine, onTryAgain = viewModel::checkAiAgain,
+                            onUseMobileData = { viewModel.downloadModel(allowMobileData = true) },
+                        )
+                    }
+                } else {
+                    null
+                }
+            },
             onOpenMetric = { push(Destination.Trend(it)) },
             importActions = importActions,
             isLoading = isLoading,
@@ -378,12 +421,17 @@ private fun Screen(
             val patientDetails by viewModel.patientDetails.collectAsStateWithLifecycle()
             val aiAvailability by viewModel.aiAvailability.collectAsStateWithLifecycle()
             val usingStandIn by viewModel.usingStandIn.collectAsStateWithLifecycle()
+            val modelInstalled by viewModel.modelInstalled.collectAsStateWithLifecycle()
             SettingsScreen(
                 patient = PatientSettings(patientName, patientDetails, viewModel::setPatientName, viewModel::setPatientDetails),
                 healthConnect = healthConnect,
                 onConnectHealthConnect = connectHealthConnect,
                 onUseHealthConnect = viewModel::setUseHealthConnect,
-                ai = AiSettings(aiAvailability, usingStandIn, onTryAgain = viewModel::checkAiAgain) { viewModel.useDevelopmentStandIn(false) },
+                ai = AiSettings(
+                    aiAvailability, usingStandIn, onTryAgain = viewModel::checkAiAgain, onUseGemini = { viewModel.useDevelopmentStandIn(false) },
+                    engine = viewModel.aiEngine, modelInstalled = modelInstalled,
+                    onUseMobileData = { viewModel.downloadModel(allowMobileData = true) }, onRemoveModel = viewModel::removeModel,
+                ),
                 transfer = TransferSettings(reports.isNotEmpty(), viewModel::exportAllReports, viewModel::importReports),
                 softwareIdentity = viewModel.softwareIdentity,
                 onBack = pop.takeUnless { railRoot },

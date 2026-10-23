@@ -297,7 +297,9 @@ shared/        # Kotlin Multiplatform (android, iosArm64, iosSimulatorArm64, jvm
   src/jvmTest/           # the shared tests (+ golden/report.cda.xml, also used by the Swift tests)
 androidApp/    # Jetpack Compose, Material 3 Expressive, dynamic colour
   ai/                    # OnDeviceAi (availability/problems), GeminiNanoAi (ML Kit GenAI Prompt API),
-                         #   SelectableAi, LabParserService (shared prompt + pipeline)
+                         #   GemmaAi (downloaded Gemma via LiteRT-LM), SelectableAi, LabParserService
+  ai/gemma/              # GemmaModel (pinned file), ModelDownloads (the only network code), GemmaModelStore,
+                         #   GemmaRuntime (LiteRT-LM), ModelInstallJob, ModelDownloadNotifications
   src/debug/…/ai/        # DevelopmentStandIn — debug builds only (emulators); src/release has a null stub
   data/                  # HealthConnectReportStore (FHIR Medical Records), LocalReportStore, ReportRepository,
                          #   AppPreferences (incl. patient date of birth/sex for the PDF cover)
@@ -341,6 +343,33 @@ tools/generate_android_icon.py # layered adaptive launcher icon (+ night + monoc
   and a reply cut off at the output limit counts as "too long" (same advice as
   iOS). A reply that isn't a complete, well-formed result is a failure, not an
   empty result.
+- **Gemma for phones without Gemini Nano for apps** (`GemmaAi`, `ai/gemma/`).
+  Where the system says Gemini Nano is unsupported and the phone is 64-bit and
+  not low-RAM, `SelectableAi` merges the system's verdict with an *offer*
+  (`Unsupported.modelDownload`): `UnsupportedDeviceScreen` shows the download of
+  Google's open **Gemma 4 E2B** (Apache 2.0) in the LiteRT-LM format — its size,
+  that only the model file is fetched (from huggingface.co), the license, Wi-Fi
+  only unless the user allows mobile data. `GemmaModel` pins one file of one
+  revision with its size and SHA-256; any change there needs the quality check
+  (`evaluation/`) first. The **system download manager** fetches it
+  (`SystemModelDownloads` — the app's only network code), so it carries on in the
+  background and survives the app being closed; `ModelDownloadReceiver` →
+  `ModelInstallJob` checks and installs it when it completes, and
+  `ModelDownloadNotifications` tells a user who isn't in the app (checking /
+  ready / why not; the download's own progress is the system's notification).
+  While it downloads the app is usable and the dashboard (`ModelStatusCard`),
+  Settings and the import dialog show progress, a wait for Wi-Fi or the check.
+  A failed download, a damaged file (SHA-256 mismatch) or a load that took the
+  app down (`GemmaModelStore.loading`) stays failed until **Try Again** — 2.6 GB
+  never restart by themselves. The model loads on first use (GPU, else CPU),
+  output constrained to `LabParsePrompt.jsonSchema`, and is released when the app
+  goes to the background. Gemini Nano wins wherever it's available; Settings then
+  offers to delete the no-longer-needed model. **INTERNET** is declared for this
+  download only: `NetworkGuardrailTest` fails if any other app or shared code uses
+  networking APIs, if the URL stops being the pinned one, or if a library's
+  telemetry backend returns (ML Kit's Clearcut backend is removed in the
+  manifest). LiteRT-LM has no R8 rules of its own — keep the ones in
+  `proguard-rules.pro` and smoke-test the release APK.
 - **Emulators:** they have no Gemini Nano, so a release build shows "Device Not
   Supported". Debug builds additionally offer a clearly labelled *development
   stand-in* on that screen (or `adb shell am start -n
@@ -553,6 +582,8 @@ Required secrets: `GH_PAT`, `TEAMID`, `FASTLANE_ISSUER_ID`, `FASTLANE_KEY_ID`,
 ## Privacy note
 
 This is a health app. All lab processing is on-device by design. (The only
-network use is the system downloading Gemini Nano on Android — no lab data.) Do not introduce
-network calls that transmit lab data, and don't weaken the "no server" guarantee
-described in `README.md`.
+network use on Android is downloading an on-device model — Gemini Nano by the
+system's AICore, or the pinned Gemma file the user chose to download, by the
+system download manager — never lab data; `NetworkGuardrailTest` enforces it.)
+Do not introduce network calls that transmit lab data, and don't weaken the "no
+server" guarantee described in `README.md`.

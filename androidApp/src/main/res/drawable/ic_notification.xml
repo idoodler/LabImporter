@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Status bar icon: the launcher's monochrome art (ic_launcher_monochrome) filling a 24 dp frame. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="1024" android:viewportHeight="1024">
+    <group android:pivotX="517" android:pivotY="510" android:scaleX="1.4" android:scaleY="1.4" android:translateX="-5" android:translateY="2">
+        <path android:fillColor="#FFFFFFFF" android:fillType="evenOdd" android:pathData="M269,170h288a76,76 0 0 1 76,76v388a76,76 0 0 1 -76,76h-288a76,76 0 0 1 -76,-76v-388a76,76 0 0 1 76,-76zM289,264h248a24,24 0 0 1 24,24v0a24,24 0 0 1 -24,24h-248a24,24 0 0 1 -24,-24v0a24,24 0 0 1 24,-24zM289,360h162a24,24 0 0 1 24,24v0a24,24 0 0 1 -24,24h-162a24,24 0 0 1 -24,-24v0a24,24 0 0 1 24,-24zM289,456h102a24,24 0 0 1 24,24v0a24,24 0 0 1 -24,24h-102a24,24 0 0 1 -24,-24v0a24,24 0 0 1 24,-24z" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="M 627.0 838.8 C 577.0 802.0 441.0 718.0 441.0 612.0 C 441.0 544.0 489.0 494.0 543.0 494.0 C 591.0 494.0 623.0 522.0 641.0 560.0 C 659.0 522.0 691.0 494.0 739.0 494.0 C 793.0 494.0 841.0 544.0 841.0 612.0 C 841.0 718.0 705.0 802.0 655.0 838.8 Q 641.0 850.0 627.0 838.8 Z" />
+    </group>
+</vector>

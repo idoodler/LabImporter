@@ -133,7 +133,7 @@ The Android app (`androidApp/`) is a native Jetpack Compose app with **Material 
 |---|---|
 | Document input | ML Kit document scanner, system file picker (PDF/images), paste, manual entry, "Open with"/share |
 | Text extraction | ML Kit Text Recognition (bundled, Latin script) — PDFs are rendered with `PdfRenderer` |
-| Lab value parsing | **Gemini Nano** via the ML Kit GenAI Prompt API (on device, AICore). Like the iOS app without Apple Intelligence, a device without Gemini Nano shows **Device Not Supported** — values are never guessed. If the model still needs downloading, Android fetches it and the import waits, showing progress |
+| Lab value parsing | **Gemini Nano** via the ML Kit GenAI Prompt API (on device, AICore). If the model still needs downloading, Android fetches it and the import waits, showing progress. On phones that don't offer Gemini Nano to apps (e.g. Galaxy S25), LabImporter offers to download Google's open **Gemma 4 E2B** model once (2.6 GB, Apache 2.0, from Hugging Face; Wi-Fi only unless you allow mobile data) and runs it on the phone with **LiteRT-LM** — the download continues in the background and a notification says when it's ready. Where neither can run, the app shows **Device Not Supported**, like the iOS app without Apple Intelligence — values are never guessed |
 | Storage | **Health Connect Medical Records** — FHIR R4 laboratory `Observation`s (Android 16+). Elsewhere, reports are kept privately in app storage (excluded from backup) and can be moved to Health Connect later |
 
 ### Building the Android app
@@ -201,7 +201,7 @@ When enabled, only your **dashboard layout** roams across your devices through y
 
 ## Privacy
 
-All processing happens entirely on-device. No lab data is sent to any server. The Foundation Models framework runs the language model locally without any network requests. The optional [iCloud sync](#icloud-sync) carries only your dashboard layout — never lab values or patient metadata. The Spotlight search index also stays on-device and contains only metric names unless you explicitly opt in to showing the latest reading in results.
+All processing happens entirely on-device. No lab data is sent to any server. The Foundation Models framework runs the language model locally without any network requests. On Android, the only network use is downloading an on-device model: Gemini Nano by the system, or — only on phones without Gemini Nano for apps, and only when you tap Download — the pinned Gemma model file from Hugging Face, fetched by Android's download manager and checked against its SHA-256. That request carries nothing about you or your reports; a build-time test (`NetworkGuardrailTest`) fails if any other code reaches for the network, and ML Kit's usage-statistics backend is removed so it can't send either. The optional [iCloud sync](#icloud-sync) carries only your dashboard layout — never lab values or patient metadata. The Spotlight search index also stays on-device and contains only metric names unless you explicitly opt in to showing the latest reading in results.
 
 ---
 
@@ -210,6 +210,8 @@ All processing happens entirely on-device. No lab data is sent to any server. Th
 ### On-device AI inside the app
 
 Lab value extraction is powered by Apple's on-device Foundation Models framework (`LanguageModelSession` / `@Generable`). The language model runs entirely on the device — no lab data is transmitted to any external server or API. An Apple Intelligence-capable device (iPhone 15 Pro, iPhone 16, or newer, or an iPad with Apple silicon, on iOS / iPadOS 26+) is required for parsing; on unsupported hardware the app shows a "Device Not Supported" screen.
+
+On Android, the same prompt runs on **Gemini Nano** (ML Kit GenAI Prompt API) or, on phones without Gemini Nano for apps, on the downloaded **Gemma 4 E2B** model (LiteRT-LM, output constrained to the reply's JSON Schema). Both run entirely on the phone. The model quality check in `evaluation/` runs the app's exact prompt and post-processing over sample reports in several languages; see its README for the last result.
 
 ### Built with AI assistance
 

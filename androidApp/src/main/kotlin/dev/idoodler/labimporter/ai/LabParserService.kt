@@ -29,6 +29,7 @@ class LabParserService(private val ai: OnDeviceAi) {
         val reply = ai.generate(
             instructions = LabParsePrompt.instructions + "\n\n" + LabParsePrompt.jsonContract,
             prompt = LabParsePrompt.prompt(text),
+            responseSchema = LabParsePrompt.jsonSchema,
         ) { partial -> onProgress(LabParsePrompt.progress(partial)) }
         val generated = started.elapsedNow()
         val report = LabParsePrompt.decodeJsonReply(reply) ?: throw AiException(AiProblem.FAILED)

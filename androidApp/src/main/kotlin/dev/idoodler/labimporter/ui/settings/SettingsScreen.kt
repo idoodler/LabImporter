@@ -79,6 +79,12 @@ import androidx.core.net.toUri
 import androidx.graphics.shapes.RoundedPolygon
 import dev.idoodler.labimporter.R
 import dev.idoodler.labimporter.ai.AiAvailability
+import dev.idoodler.labimporter.ai.AiEngine
+import dev.idoodler.labimporter.ai.PreparingStage
+import dev.idoodler.labimporter.ai.gemma.GemmaModel
+import dev.idoodler.labimporter.ui.components.fileSize
+import dev.idoodler.labimporter.ui.components.preparingProgress
+import dev.idoodler.labimporter.ui.components.preparingTitle
 import dev.idoodler.labimporter.ai.AiProblem
 import dev.idoodler.labimporter.ai.DevelopmentStandIn
 import dev.idoodler.labimporter.ai.messageRes
@@ -513,24 +519,36 @@ private fun HealthConnectItem(state: HealthConnectState, onConnect: () -> Unit, 
 /** The on-device AI row: the model's state and what the user can do about it. */
 data class AiSettings(
     val availability: AiAvailability,
-    /** Debug builds: the development stand-in replaces Gemini Nano. */
+    /** Debug builds: the development stand-in replaces the real models. */
     val usingStandIn: Boolean = false,
     val onTryAgain: () -> Unit = {},
     val onUseGemini: () -> Unit = {},
+    /** Which model reads reports (Gemma where the system says Gemini Nano is unsupported). */
+    val engine: AiEngine = AiEngine.GEMINI_NANO,
+    /** The downloaded Gemma model is on the phone. */
+    val modelInstalled: Boolean = false,
+    /** Restarts the model download with mobile data allowed. */
+    val onUseMobileData: () -> Unit = {},
+    /** Cancels the model download or deletes the model. */
+    val onRemoveModel: () -> Unit = {},
 )
 
 @Composable
 private fun AiItem(ai: AiSettings) {
     val standIn = DevelopmentStandIn.texts?.takeIf { ai.usingStandIn }
+    val gemma = ai.engine == AiEngine.GEMMA && standIn == null
+    // The downloaded model can be managed while it downloads, once it's there — and after Gemini Nano made it unnecessary.
+    val showModel = standIn == null && (ai.modelInstalled || (gemma && ai.availability !is AiAvailability.Unsupported))
+    val count = if (showModel) 2 else 1
     GroupedListItem(
-        0, 1,
+        0, count,
         leading = {
             Badge(
                 MaterialShapes.Sunny, MaterialTheme.colorScheme.primary, Icons.Rounded.AutoAwesome,
                 brush = Brush.linearGradient(listOf(LabCategory.BLOOD_GAS.color, LabCategory.ENDOCRINE.color, LabCategory.HEMATOLOGY.color)),
             )
         },
-        headline = { Text(stringResource(R.string.ai_title), fontWeight = FontWeight.SemiBold) },
+        headline = { Text(if (gemma) GemmaModel.NAME else stringResource(R.string.ai_title), fontWeight = FontWeight.SemiBold) },
         supporting = {
             Column {
                 val availability = ai.availability
@@ -538,13 +556,19 @@ private fun AiItem(ai: AiSettings) {
                     Text(standIn.active)
                     OutlinedButton(onClick = ai.onUseGemini, modifier = Modifier.padding(top = 10.dp)) { Text(standIn.useGemini) }
                 } else when (availability) {
-                    AiAvailability.Ready -> Text(stringResource(R.string.ai_available))
+                    AiAvailability.Ready -> Text(stringResource(if (gemma) R.string.ai_available_gemma else R.string.ai_available))
                     AiAvailability.Checking -> Text(stringResource(R.string.ai_checking))
                     is AiAvailability.Preparing -> {
-                        Text(stringResource(R.string.processing_preparing))
-                        val fraction = availability.fraction
+                        Text(preparingTitle(availability, ai.engine))
+                        preparingProgress(availability)?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
+                        val fraction = availability.fraction.takeIf { availability.stage == PreparingStage.DOWNLOADING }
                         val modifier = Modifier.fillMaxWidth().padding(top = 10.dp)
                         if (fraction != null) LinearWavyProgressIndicator(progress = { fraction }, modifier) else LinearWavyProgressIndicator(modifier)
+                        if (gemma && availability.stage == PreparingStage.WAITING_FOR_WIFI) {
+                            OutlinedButton(onClick = ai.onUseMobileData, modifier = Modifier.padding(top = 10.dp)) {
+                                Text(stringResource(R.string.model_use_mobile_data))
+                            }
+                        }
                     }
                     is AiAvailability.PreparationFailed -> {
                         Text(stringResource(availability.problem.messageRes))
@@ -555,6 +579,50 @@ private fun AiItem(ai: AiSettings) {
             }
         },
     )
+    if (showModel) ModelItem(ai, downloading = gemma && ai.availability is AiAvailability.Preparing && !ai.modelInstalled)
+}
+
+/** The downloaded Gemma model: what it is, and cancelling or deleting it. */
+@Composable
+private fun ModelItem(ai: AiSettings, downloading: Boolean) {
+    var confirmDelete by remember { mutableStateOf(false) }
+    val size = fileSize(GemmaModel.SIZE_BYTES)
+    GroupedListItem(
+        1, 2,
+        leading = { Badge(MaterialShapes.Cookie9Sided, LabCategory.HEMATOLOGY.color, Icons.Rounded.Download) },
+        headline = { Text(stringResource(R.string.model_settings_title), fontWeight = FontWeight.SemiBold) },
+        supporting = {
+            Column {
+                Text(stringResource(R.string.model_settings_summary, GemmaModel.NAME, size, GemmaModel.LICENSE))
+                // Gemini Nano became available after the download: the model only takes up space now.
+                if (ai.engine != AiEngine.GEMMA && ai.modelInstalled) {
+                    Text(stringResource(R.string.model_not_needed), Modifier.padding(top = 6.dp))
+                }
+                OutlinedButton(
+                    onClick = { if (downloading) ai.onRemoveModel() else confirmDelete = true },
+                    modifier = Modifier.padding(top = 10.dp),
+                ) {
+                    Text(stringResource(if (downloading) R.string.model_cancel_download else R.string.model_delete))
+                }
+            }
+        },
+    )
+    if (confirmDelete) {
+        AlertDialog(
+            onDismissRequest = { confirmDelete = false },
+            icon = { Icon(Icons.Rounded.Download, null) },
+            title = { Text(stringResource(R.string.model_delete_title)) },
+            text = {
+                Text(stringResource(if (ai.engine == AiEngine.GEMMA) R.string.model_delete_message else R.string.model_delete_message_unneeded, size))
+            },
+            confirmButton = {
+                TextButton(onClick = { confirmDelete = false; ai.onRemoveModel() }) {
+                    Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text(stringResource(R.string.cancel)) } },
+        )
+    }
 }
 
 @Preview(name = "Local storage, model downloading", widthDp = 400, heightDp = 1100)
@@ -577,6 +645,54 @@ private fun SettingsDarkPreview() {
         SettingsScreen(
             PatientSettings(), HealthConnectState(HealthConnectAvailability.AVAILABLE, granted = true, inUse = true), {}, {},
             AiSettings(AiAvailability.Ready), "LabImporter 1.0 (1) Android", onBack = {},
+        )
+    }
+}
+
+@Preview(name = "Gemma ready", widthDp = 400, heightDp = 1200)
+@Composable
+private fun SettingsGemmaPreview() {
+    LabImporterTheme(dynamicColor = false) {
+        SettingsScreen(
+            PatientSettings(), HealthConnectState(HealthConnectAvailability.AVAILABLE, granted = true, inUse = true), {}, {},
+            AiSettings(AiAvailability.Ready, engine = AiEngine.GEMMA, modelInstalled = true),
+            "LabImporter 1.0 (1) Android", onBack = {},
+        )
+    }
+}
+
+@Preview(name = "Gemma waiting for Wi-Fi – dark", widthDp = 400, heightDp = 1200, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun SettingsGemmaWaitingPreview() {
+    LabImporterTheme(darkTheme = true, dynamicColor = false) {
+        SettingsScreen(
+            PatientSettings(), HealthConnectState(HealthConnectAvailability.MEDICAL_RECORDS_UNSUPPORTED), {}, {},
+            AiSettings(AiAvailability.Preparing(800_000_000, 2_588_147_712, PreparingStage.WAITING_FOR_WIFI), engine = AiEngine.GEMMA),
+            "LabImporter 1.0 (1) Android", onBack = {},
+        )
+    }
+}
+
+@Preview(name = "Gemma no longer needed", widthDp = 400, heightDp = 1200)
+@Composable
+private fun SettingsGemmaUnneededPreview() {
+    LabImporterTheme(dynamicColor = false) {
+        SettingsScreen(
+            PatientSettings(), HealthConnectState(HealthConnectAvailability.AVAILABLE, granted = true, inUse = true), {}, {},
+            AiSettings(AiAvailability.Ready, engine = AiEngine.GEMINI_NANO, modelInstalled = true),
+            "LabImporter 1.0 (1) Android", onBack = {},
+        )
+    }
+}
+
+@Preview(name = "Gemma couldn't load", widthDp = 400, heightDp = 1200)
+@Composable
+private fun SettingsGemmaLoadFailedPreview() {
+    LabImporterTheme(dynamicColor = false) {
+        SettingsScreen(
+            PatientSettings(), HealthConnectState(HealthConnectAvailability.NOT_INSTALLED), {}, {},
+            AiSettings(AiAvailability.PreparationFailed(AiProblem.LOAD_FAILED), engine = AiEngine.GEMMA, modelInstalled = true),
+            "LabImporter 1.0 (1) Android", onBack = {},
         )
     }
 }

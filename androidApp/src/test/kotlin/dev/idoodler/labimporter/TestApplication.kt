@@ -2,6 +2,7 @@ package dev.idoodler.labimporter
 
 import android.app.Application
 import dev.idoodler.labimporter.ai.FakeAi
+import dev.idoodler.labimporter.ai.GemmaAi
 import dev.idoodler.labimporter.ai.OnDeviceAi
 import dev.idoodler.labimporter.ai.SelectableAi
 import dev.idoodler.labimporter.core.LabCore
@@ -18,7 +19,7 @@ class TestApplication : Application(), AppContainerOwner {
     private val preferences by lazy { AppPreferences(this) }
 
     override val container: AppContainer by lazy {
-        AppContainer(this, preferences, SelectableAi(ai, standIn, preferences.useDevelopmentStandIn, MainScope()))
+        AppContainer(this, preferences, SelectableAi(ai, gemma, standIn, preferences.useDevelopmentStandIn, MainScope()))
     }
 
     override fun onCreate() {
@@ -33,5 +34,8 @@ class TestApplication : Application(), AppContainerOwner {
 
         /** The development stand-in it may switch to (null like a release build). */
         var standIn: OnDeviceAi? = null
+
+        /** The downloadable model behind [ai] (null: none, as on a phone that can't run it). */
+        var gemma: GemmaAi? = null
     }
 }

@@ -25,15 +25,27 @@ class FakeAi(initial: AiAvailability = AiAvailability.Ready) : OnDeviceAi {
     /** Every (instructions, prompt) the model was asked. */
     val requests = mutableListOf<Pair<String, String>>()
 
+    /** The response schema of every request. */
+    val schemas = mutableListOf<String?>()
+
+    var tryAgains = 0
+        private set
+
     override suspend fun refresh() {
         refreshes++
         onRefresh()
     }
 
+    override suspend fun tryAgain() {
+        tryAgains++
+        refresh()
+    }
+
     override suspend fun prewarm() = Unit
 
-    override suspend fun generate(instructions: String, prompt: String, onPartialReply: (String) -> Unit): String {
+    override suspend fun generate(instructions: String, prompt: String, responseSchema: String?, onPartialReply: (String) -> Unit): String {
         requests += instructions to prompt
+        schemas += responseSchema
         val full = reply()
         onPartialReply(full.take(full.length / 2))
         onPartialReply(full)
