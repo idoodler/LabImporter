@@ -392,7 +392,12 @@ tools/generate_android_icon.py # layered adaptive launcher icon (+ night + monoc
   alone: in a freeform window (Waydroid multi-window, ChromeOS, DeX, desktop
   mode) Android draws its caption bar over the app and reports it only as the
   caption-bar inset. `WindowInsetsGuardrailTest` fails on status-bar-only
-  padding. Keep backgrounds full-bleed; pad the content.
+  padding. Keep backgrounds full-bleed; pad the content. Android 13 and older
+  draw that caption inside the app's window (`DecorCaptionView`) over the
+  content, and on Waydroid (LineageOS 20) its inset arrives as 0:
+  `LegacyCaption` then moves the content below the caption (only when one
+  visibly covers it and no inset was reported; a no-op on Android 14+ and in
+  fullscreen; it logs `Legacy caption covers the content by N px`).
 - **Android storage:** Health Connect *Medical Records* (FHIR R4 laboratory
   `Observation`s, Android 16+, still `@ExperimentalPersonalHealthRecordApi`).
   There's no `DiagnosticReport`, so each Observation carries its report id as a

@@ -18,6 +18,7 @@ import dev.idoodler.labimporter.shortcuts.LauncherShortcuts
 import dev.idoodler.labimporter.ui.AppViewModel
 import dev.idoodler.labimporter.ui.LaunchRequest
 import dev.idoodler.labimporter.ui.LabImporterRoot
+import dev.idoodler.labimporter.ui.LegacyCaption
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 
 class MainActivity : ComponentActivity() {
@@ -40,6 +41,8 @@ class MainActivity : ComponentActivity() {
             val catalogReady by LabImporterApplication.catalogReady.collectAsState()
             LabImporterTheme { if (catalogReady) LabImporterRoot(viewModel) }
         }
+        // Freeform windows on Android 13 and older (Waydroid): the caption isn't always reported as an inset.
+        LegacyCaption.keepContentBelow(this)
     }
 
     override fun onNewIntent(intent: Intent) {
