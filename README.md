@@ -142,8 +142,8 @@ Set these under **Settings → Secrets and variables → Actions → Variables**
 
 | Variable | Value | Effect |
 |---|---|---|
-| `ENABLE_NUKE_CERTS` | `true` | Allow automatic certificate renewal when the Distribution cert expires |
-| `FORCE_NUKE_CERTS` | `true` | Immediately revoke and recreate all Distribution certificates |
+| `ENABLE_NUKE_CERTS` | `true` | Allow automatic certificate renewal once the Distribution cert has expired or is missing (does nothing while it's valid) |
+| `FORCE_NUKE_CERTS` | `true` | Immediately revoke and recreate all Distribution certificates — this affects **every app** whose profiles share the `Match-Secrets` repository (Trio, for example), not just LabImporter. A new target or capability doesn't need it: see [When the build can't find a provisioning profile](#when-the-build-cant-find-a-provisioning-profile) |
 
 ### First-time setup (run once, in order)
 
@@ -157,11 +157,11 @@ This checks that all secrets are valid, that your App Store Connect API key work
 
 Go to **Actions → 2. Add Identifiers → Run workflow**.
 
-This registers your app's bundle ID and the share extension's bundle ID in App Store Connect and enables the **HealthKit**, **iCloud (key-value storage)** and **App Groups** capabilities. The iCloud capability backs the opt-in dashboard-layout sync; if you enable it after a profile already exists, re-run **3. Create Certificates** (with `ENABLE_NUKE_CERTS` or `FORCE_NUKE_CERTS` set) so the provisioning profile is regenerated to include it.
+This registers your app's bundle ID and the share extension's bundle ID in App Store Connect and enables the **HealthKit**, **iCloud (key-value storage)** and **App Groups** capabilities. The iCloud capability backs the opt-in dashboard-layout sync. If profiles already exist when a capability is added, re-run **3. Create Certificates** afterwards so they include it — no nuke variables needed.
 
 The bundle identifier is `dev.idoodler.<TEAMID>.labimporter`; the share extension's is `dev.idoodler.<TEAMID>.labimporter.share`. The `<TEAMID>` placeholder is substituted automatically from the `TEAMID` secret at build time via `Config.xcconfig`.
 
-**One manual step (App Group).** The share extension hands shared text to the app through an App Group, and the App Store Connect API can't create or assign App Groups. Once, in the [Apple Developer portal](https://developer.apple.com/account/resources/identifiers/list/applicationGroup), register the App Group `group.dev.idoodler.<TEAMID>.labimporter`, then edit both identifiers above, enable **App Groups** and assign that group. If profiles already exist, re-run **3. Create Certificates** with `ENABLE_NUKE_CERTS` or `FORCE_NUKE_CERTS` set so they include it.
+**One manual step (App Group).** The share extension hands shared text to the app through an App Group, and the App Store Connect API can't create or assign App Groups. Once, in the [Apple Developer portal](https://developer.apple.com/account/resources/identifiers/list/applicationGroup), register the App Group `group.dev.idoodler.<TEAMID>.labimporter`, then edit both identifiers above, enable **App Groups** and assign that group. Do this before **3. Create Certificates**, so the profiles it creates include the group; if profiles already exist, re-run **3. Create Certificates** afterwards.
 
 After this step, go to [App Store Connect](https://appstoreconnect.apple.com) and create a new app record for **LabImporter** using the bundle ID shown in the workflow log. This is required before the first build can upload to TestFlight.
 
@@ -169,7 +169,9 @@ After this step, go to [App Store Connect](https://appstoreconnect.apple.com) an
 
 Go to **Actions → 3. Create Certificates → Run workflow**.
 
-This generates the Distribution certificate and provisioning profile and stores them encrypted in the `Match-Secrets` repository.
+This generates the Distribution certificate and the provisioning profiles for the app and the share extension, and stores them encrypted in the `Match-Secrets` repository. It also recreates any profile Apple has marked **Invalid** — which happens when an identifier's capabilities or App Groups change — using the existing certificate, so re-running it is all a capability change needs.
+
+The workflow carries on even if creating the profiles fails (`fastlane certs || true`), so a green run doesn't prove they exist: check the log of its **Check and create or update Distribution certificate and profiles if needed** step.
 
 #### 4. Build LabImporter
 
@@ -178,6 +180,24 @@ Go to **Actions → 4. Build LabImporter → Run workflow**.
 This runs on a GitHub-hosted `macos-26` runner with Xcode 26.2, builds and archives the app, increments the build number automatically from the latest TestFlight build, and uploads the IPA to TestFlight.
 
 After the first manual run succeeds, builds are triggered automatically on the **first Sunday of each month**.
+
+### When the build can't find a provisioning profile
+
+**4. Build LabImporter** only reads the profiles in `Match-Secrets` (match runs `readonly`), so it stops when the app gained a target or capability after the setup workflows last ran — for example the share extension and its App Group in LabImporter 2.0.0:
+
+```
+No matching provisioning profiles found for 'AppStore_dev.idoodler.<TEAMID>.labimporter.share.mobileprovision'
+A new one cannot be created because you enabled `readonly`
+```
+
+Re-run the setup, in this order:
+
+1. **2. Add Identifiers** — registers the new bundle ID and enables the new capabilities.
+2. **The manual App Group step** in the Apple Developer portal (see [2. Add Identifiers](#2-add-identifiers)) — before step 3, so the new profiles include the group.
+3. **3. Create Certificates** — creates the missing profiles and recreates the ones Apple marked Invalid, with the existing certificate. Check its log, since the run stays green even if this fails.
+4. **4. Build LabImporter**.
+
+Don't set `FORCE_NUKE_CERTS` for this: it revokes the Distribution certificate, so every other app whose profiles are in the same `Match-Secrets` repository (Trio, for example) needs its certificates recreated as well. `ENABLE_NUKE_CERTS` doesn't help either — it only acts once the certificate has expired.
 
 ---
 

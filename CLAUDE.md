@@ -519,6 +519,11 @@ and run in order on first setup:
    one-time manual step in the developer portal — see README).
 3. **`create_certs.yml`** — creates/renews the Distribution cert + profile via
    Match; honors `ENABLE_NUKE_CERTS` / `FORCE_NUKE_CERTS` repo variables.
+   Its `certs` lane also recreates profiles Apple marked Invalid, so a new
+   target or capability needs steps 2 → manual App Group → 3, never a nuke
+   (the `Match-Secrets` repo is shared with Trio; see README "When the build
+   can't find a provisioning profile"). It runs `fastlane certs || true`, so
+   read its log rather than trusting a green run.
 4. **`build_labimporter.yml`** — on `macos-26` with Xcode 26.2: lints, bumps the
    build number from the latest TestFlight build, builds, archives, uploads to
    TestFlight. Manual + scheduled (first Sunday monthly).
