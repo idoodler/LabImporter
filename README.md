@@ -9,9 +9,10 @@
 
 <p align="center">Native iOS and Android apps that import lab report values into Apple Health / Health Connect using on-device AI.</p>
 
-Scan, import, or paste your lab report — the app uses Vision OCR and the on-device Foundation Models framework to extract values, lets you review and correct them, then saves them directly into Apple Health as a CDA clinical document.
+Scan, import, or paste your lab report — LabImporter reads the values with on-device OCR and an on-device language model, lets you review and correct them, then saves them to your device's health store: **Apple Health** on iPhone and iPad (as a CDA clinical document), **Health Connect** on Android (as FHIR laboratory results). Nothing is sent to a server, and no account is needed.
 
-Because the parsing runs on Apple Intelligence, LabImporter needs a compatible device: an **iPhone 15 Pro, iPhone 16, or newer**, or an **iPad with Apple silicon (M1 or later)**, running **iOS or iPadOS 26.0 or later**.
+- **iPhone and iPad:** parsing runs on Apple Intelligence, so LabImporter needs an **iPhone 15 Pro, iPhone 16, or newer**, or an **iPad with Apple silicon (M1 or later)**, running **iOS or iPadOS 26.0 or later**.
+- **Android:** runs on **Android 8.0 or later** and reads reports with **Gemini Nano** where the phone offers it to apps, or else with Google's open **Gemma** model, downloaded once. See [Requirements](#requirements).
 
 > [!IMPORTANT]
 > **Not medical advice.** LabImporter is not a medical device and does not provide medical advice, diagnosis, or treatment. Extracted values may be inaccurate or incomplete — always verify them against your original report and never make medical decisions based on this app. See the [Medical disclaimer](#medical-disclaimer) below.
@@ -70,24 +71,33 @@ Every screenshot shows made-up sample data (patient "Max Mustermann", four repor
 
 ## Features
 
-- **Import** by scanning multi-page documents with the camera, picking PDFs or images from Files, pasting from the clipboard, sending a PDF/image to LabImporter from any app via the share sheet ("Open With"), or sharing the text of a report (e.g. selected in Mail or a patient portal) to the LabImporter share extension
-- **On-device AI parsing** — Foundation Models + Vision OCR extract lab values without sending any data to a server
-- **Review & correct** — edit values, change codes, add or remove entries before saving
+Both apps have every feature unless it is marked *iPhone* or *Android*.
+
+- **Import** by scanning multi-page documents with the camera, picking PDFs or images, pasting text, or creating a report by hand — or send a report from another app: a PDF or image via "Open With" / Share, or the text of a report (e.g. selected in Mail or a patient portal) via the share sheet
+- **On-device AI parsing** — the values are read on the device, never on a server: *iPhone* with Foundation Models (Apple Intelligence) and Vision OCR; *Android* with Gemini Nano or the downloaded Gemma model and ML Kit text recognition. Where no model can run, the app says so instead of guessing values
+- **Gemma for phones without Gemini Nano** *(Android)* — on phones that don't offer Gemini Nano to apps (e.g. Galaxy S25), LabImporter offers a one-time download of Google's open Gemma 4 E2B model (2.6 GB, pinned and checked against its SHA-256). The download continues in the background when you leave the app, and a notification says when the model is ready
+- **LOINC matching** — every value is matched to its LOINC code from the bundled catalog (about 18,500 lab terms, named in every app language), searched in the report's own language and ranked by how well the printed label names the test and whether the unit fits; a report date is kept only when the report actually prints it
+- **Review & correct** — edit values, change codes (search or browse the LOINC catalog), add or remove entries before saving
 - **Dashboard** — metric cards with current value, sparkline, and a trend-direction indicator (rising / falling / steady)
 - **Trend charts** — interactive per-metric chart with finger-scrubbing to inspect individual values
-- **History** — full list of imported reports with edit and delete
-- **Customise** — pin metrics to the top, reorder, or hide them from the dashboard
-- **Spotlight search** — find any tracked metric from iOS system-wide search and jump straight to its trend detail; results show only metric names by default, with an opt-in (Settings → Search) to display the latest reading
-- **iCloud sync (opt-in)** — optionally roam your dashboard layout (card order, pins, hidden metrics, custom names, and reference ranges) across your devices; your lab values always stay in Apple Health and never sync
+- **History** — full list of imported reports with edit and delete, one at a time or several at once
+- **Customise** — Sort & Visibility pins metrics to the top, reorders or hides them; give any metric your own name and reference range
+- **Health Connect** *(Android)* — reports are saved as FHIR R4 laboratory results in Health Connect's medical records (Android 16 and later). On older Android versions they are kept privately in the app; after the update to Android 16 the dashboard offers to move them into Health Connect
+- **System search** — find any tracked metric from system search and jump straight to its trend: *iPhone* through Spotlight, *Android* through launcher shortcuts (also shown in the launcher's search). Results show only metric names by default, with an opt-in (Settings → Search) to display the latest reading
+- **Siri & Shortcuts** *(iPhone, opt-in)* — "Scan a lab report in LabImporter", search your values, or ask for a value's latest reading — only for the values you allow, one by one or all at once. Off until you turn it on (onboarding or Settings → Siri & Shortcuts)
+- **iCloud sync** *(iPhone, opt-in)* — optionally roam your dashboard layout (card order, pins, hidden metrics, custom names, and reference ranges) across your devices; your lab values always stay in Apple Health and never sync
 - **Share** — export any report as a CDA file to send to a doctor or another app
 - **Move between iPhone and Android** — Settings → Transfer exports every report as one file (a standard FHIR Bundle) and imports it on the other platform; reports already there are skipped
 - **PDF export** — generate an information-rich PDF report (cover summary, latest-results table, and trend charts), choosing which values and time range to include, in color or black & white, on A4, US Letter, or Legal paper (defaulting to your region's size)
-- **25 languages** — fully localized in 🇧🇬 Bulgarian · 🏴󠁥󠁳󠁣󠁴󠁿 Catalan · 🇭🇷 Croatian · 🇨🇿 Czech · 🇩🇰 Danish · 🇳🇱 Dutch · 🇬🇧 English · 🇫🇮 Finnish · 🇫🇷 French · 🇩🇪 German · 🇬🇷 Greek · 🇭🇺 Hungarian · 🇮🇹 Italian · 🇯🇵 Japanese · 🇵🇱 Polish · 🇧🇷 Portuguese (Brazil) · 🇵🇹 Portuguese (Portugal) · 🇷🇴 Romanian · 🇷🇺 Russian · 🇨🇳 Simplified Chinese · 🇸🇰 Slovak · 🇪🇸 Spanish · 🇸🇪 Swedish · 🇹🇷 Turkish · 🇺🇦 Ukrainian
-- **Privacy-first** — all data lives in Apple Health on your device; no account or server required
+- **Fits every screen** — a sidebar layout on iPad; a navigation rail on Android tablets and unfolded foldables. In Android freeform windows (ChromeOS, Samsung DeX, desktop mode, Waydroid) the content stays clear of the window's caption bar
+- **25 languages** — both apps are fully localized in 🇧🇬 Bulgarian · 🏴󠁥󠁳󠁣󠁴󠁿 Catalan · 🇭🇷 Croatian · 🇨🇿 Czech · 🇩🇰 Danish · 🇳🇱 Dutch · 🇬🇧 English · 🇫🇮 Finnish · 🇫🇷 French · 🇩🇪 German · 🇬🇷 Greek · 🇭🇺 Hungarian · 🇮🇹 Italian · 🇯🇵 Japanese · 🇵🇱 Polish · 🇧🇷 Portuguese (Brazil) · 🇵🇹 Portuguese (Portugal) · 🇷🇴 Romanian · 🇷🇺 Russian · 🇨🇳 Simplified Chinese · 🇸🇰 Slovak · 🇪🇸 Spanish · 🇸🇪 Swedish · 🇹🇷 Turkish · 🇺🇦 Ukrainian
+- **Privacy-first** — your reports stay on your device, in Apple Health, Health Connect, or the Android app's private storage; no account or server required
 
 ---
 
 ## Requirements
+
+### iPhone and iPad
 
 - iOS or iPadOS 26.0 or later
 - An Apple Intelligence–capable device:
@@ -96,11 +106,20 @@ Every screenshot shows made-up sample data (patient "Max Mustermann", four repor
 - An Apple Developer account (free tier is sufficient for personal use via Xcode)
 - For GitHub Actions builds: an Apple Developer Program membership (paid, required for TestFlight)
 
+### Android
+
+- Android 8.0 (API 26) or later; saving to Health Connect needs Android 16 (on older versions reports are kept in the app)
+- An on-device model, one of:
+  - **Gemini Nano**, on phones whose system offers it to apps (ML Kit GenAI Prompt API, through AICore), or
+  - **Gemma 4 E2B**, downloaded once: a 64-bit phone that isn't a low-RAM device, with about 3.1 GB of free storage
+- Without either, the app shows **Device Not Supported** — like the iPhone app without Apple Intelligence
+- Text recognition reads Latin script; reports in other scripts (Cyrillic, Greek, Japanese, Chinese) can be pasted as text instead of scanned
+
 ---
 
 ## Building with GitHub Actions (no Mac required)
 
-This repository uses Fastlane + Fastlane Match for fully automated, Mac-free builds.
+This repository uses Fastlane + Fastlane Match for fully automated, Mac-free builds of the iPhone app. The steps below are only for it. The Android app needs no secrets: on every pull request (or when run manually), **Build Android** (`build_android.yml`) checks the translations, runs the tests and lint, builds the APKs and uploads them as the `labimporter-android` artifact. See [Building the Android app](#building-the-android-app) to build them yourself.
 
 ### Required secrets
 
@@ -162,35 +181,6 @@ After the first manual run succeeds, builds are triggered automatically on the *
 
 ---
 
-## Android (preview)
-
-The Android app (`androidApp/`) is a native Jetpack Compose app with **Material 3 Expressive** and Material You dynamic colour: category-coloured gradient backgrounds, expressive shape badges, a FAB menu for importing, predictive back and a layered adaptive icon (with dark and themed variants). It shares its business logic with iOS through a **Kotlin Multiplatform** module (`shared/`): LOINC catalog and search (the same `loinc.db`), LOINC resolution, the AI prompt and post-processing, categories, UCUM units, C-CDA export and read-back with schema migrations, the FHIR codec, the dashboard rules and the cross-platform transfer file. The iOS app stays SwiftUI and links the same module as the static `LabImporterCore` framework — the business logic exists once, for both apps.
-
-| Step | Android technology |
-|---|---|
-| Document input | ML Kit document scanner, system file picker (PDF/images), paste, manual entry, "Open with"/share |
-| Text extraction | ML Kit Text Recognition (bundled, Latin script) — PDFs are rendered with `PdfRenderer` |
-| Lab value parsing | **Gemini Nano** via the ML Kit GenAI Prompt API (on device, AICore). If the model still needs downloading, Android fetches it and the import waits, showing progress. On phones that don't offer Gemini Nano to apps (e.g. Galaxy S25), LabImporter offers to download Google's open **Gemma 4 E2B** model once (2.6 GB, Apache 2.0, from Hugging Face; Wi-Fi only unless you allow mobile data) and runs it on the phone with **LiteRT-LM** — the download continues in the background and a notification says when it's ready. Where neither can run, the app shows **Device Not Supported**, like the iOS app without Apple Intelligence — values are never guessed |
-| Storage | **Health Connect Medical Records** — FHIR R4 laboratory `Observation`s (Android 16+). Elsewhere, reports are kept privately in app storage (excluded from backup) and can be moved to Health Connect later |
-
-### Building the Android app
-
-Requires JDK 17+ and the Android SDK (platform 37). From the repo root:
-
-```bash
-./gradlew :androidApp:assembleRelease
-```
-
-The APKs land in `androidApp/build/outputs/apk/release/` (`arm64-v8a` for phones and Apple-silicon emulators). Release test builds are signed with the debug key.
-
-The app version (both apps) is set once, as `MARKETING_VERSION` in `Config.xcconfig`.
-
-**Emulators have no Gemini Nano**, so the release APK offers the Gemma download there, just as on a phone without it (2.6 GB; it then reads reports on the emulator's CPU, about a minute each). For a quicker look, install a **debug** build (`./gradlew :androidApp:assembleDebug`) and tap **Use Development Stand-in** on that screen: imports then return clearly labelled *sample* values (not read from your document) so review, saving and the dashboard can be exercised. The stand-in exists only in debug builds.
-
-Tests: `./gradlew :shared:jvmTest :androidApp:testDebugUnitTest` (shared logic, plus Android unit and Compose UI tests against the real LOINC catalog); iOS: `tools/ios_test.sh`.
-
----
-
 ## Building locally with Xcode
 
 1. Clone the repository:
@@ -198,7 +188,7 @@ Tests: `./gradlew :shared:jvmTest :androidApp:testDebugUnitTest` (shared logic, 
    git clone https://github.com/idoodler-s-Diabetes-Management/LabImporter.git
    ```
 
-2. Open `LabImporter.xcodeproj` in Xcode 17 or later (requires the iOS 26 SDK).
+2. Open `LabImporter.xcodeproj` in Xcode 26 or later (requires the iOS 26 SDK).
 
 3. Configure code signing by creating a `Local.xcconfig` file next to `Config.xcconfig` at the repo root:
 
@@ -213,24 +203,50 @@ Tests: `./gradlew :shared:jvmTest :androidApp:testDebugUnitTest` (shared logic, 
 
 > **Note:** The on-device Foundation Models framework requires a physical device with Apple Intelligence support. On unsupported hardware the app shows a "Device Not Supported" screen, since lab value parsing depends entirely on the on-device model.
 
+Tests: `tools/ios_test.sh`.
+
+---
+
+## Building the Android app
+
+Requires JDK 17+ and the Android SDK (platform 37); no Mac needed. From the repo root:
+
+```bash
+./gradlew :androidApp:assembleRelease
+```
+
+The APKs land in `androidApp/build/outputs/apk/release/`: `arm64-v8a` for phones and Apple-silicon emulators, `x86_64` for Intel/AMD PCs and emulators (e.g. Waydroid), and a universal APK with both. Release test builds are signed with the debug key.
+
+**Emulators have no Gemini Nano**, so the release APK offers the Gemma download there, just as on a phone without it (2.6 GB; it then reads reports on the emulator's CPU, about a minute each). For a quicker look, install a **debug** build (`./gradlew :androidApp:assembleDebug`) and tap **Use Development Stand-in** on that screen: imports then return clearly labelled *sample* values (not read from your document) so review, saving and the dashboard can be exercised. The stand-in exists only in debug builds.
+
+Tests: `./gradlew :shared:jvmTest :androidApp:testDebugUnitTest` (shared logic, plus Android unit and Compose UI tests against the real LOINC catalog).
+
+The version of both apps is set once, as `MARKETING_VERSION` in `Config.xcconfig`; Android's version code follows from it.
+
 ---
 
 ## How it works
 
-| Step | Technology |
-|---|---|
-| Document input | `VisionKit` document scanner (multi-page), `UIDocumentPicker` for PDFs / images, Clipboard, or files opened from other apps (`CFBundleDocumentTypes` + `onOpenURL`) |
-| PDF rendering | `PDFKit` — extracts embedded text or renders pages for OCR |
-| Text extraction | `Vision` — `VNRecognizeTextRequest` (app's current language + English fallback) |
-| Lab value parsing | `FoundationModels` — `@Generable` structured output via `LanguageModelSession` |
-| Health import | `HealthKit` — `HKCDADocumentSample` (CDA R2 clinical document) |
-| Spotlight search | `CoreSpotlight` — on-device index of tracked metrics; results deep-link into the metric's trend detail via the `labimporter://` URL scheme |
+Both apps are native — SwiftUI on iPhone and iPad; Jetpack Compose with **Material 3 Expressive** and Material You dynamic colour on Android (`androidApp/`) — and share their business logic through a **Kotlin Multiplatform** module (`shared/`): the LOINC catalog and search (the same `loinc.db`), LOINC resolution, the AI prompt and the checks on its reply, categories, UCUM units, C-CDA export and read-back with schema migrations, the FHIR codec, the dashboard rules, PDF pagination and the iPhone ⇄ Android transfer file. The iOS app links it as the static `LabImporterCore` framework, so this logic exists once, for both apps.
+
+| Step | iPhone and iPad | Android |
+|---|---|---|
+| Document input | `VisionKit` document scanner (multi-page), `UIDocumentPicker` for PDFs / images, clipboard, files opened from other apps (`CFBundleDocumentTypes` + `onOpenURL`), share extension for text | ML Kit document scanner, system file picker (PDFs / images), paste, "Open with" / Share for files and text |
+| PDF rendering | `PDFKit` — extracts embedded text or renders pages for OCR | `PdfRenderer` — renders pages for OCR |
+| Text extraction | `Vision` — `VNRecognizeTextRequest` (app's current language + English fallback) | ML Kit Text Recognition (bundled, Latin script) |
+| Lab value parsing | `FoundationModels` — `@Generable` structured output via `LanguageModelSession` | **Gemini Nano** via the ML Kit GenAI Prompt API (AICore), or **Gemma 4 E2B** via LiteRT-LM (GPU where it works, else CPU), its output constrained to the reply's JSON Schema |
+| LOINC matching and checks | Shared Kotlin core | Shared Kotlin core |
+| Saving | `HealthKit` — `HKCDADocumentSample` (C-CDA R2.1 clinical document) | **Health Connect** medical records — FHIR R4 laboratory `Observation`s (Android 16+); elsewhere the app's private storage (excluded from backup), movable to Health Connect later |
+| System search | `CoreSpotlight` — on-device index of tracked metrics; results deep-link into the metric's trend detail via the `labimporter://` URL scheme | Launcher shortcuts — one per tracked metric, opening its trend |
+| Voice | App Intents — Siri & Shortcuts | — |
+
+**Gemini Nano and Gemma on Android.** If Gemini Nano is offered but still needs downloading, Android fetches it and the import waits, showing progress. On phones whose system doesn't offer Gemini Nano to apps, LabImporter offers to download Google's open Gemma 4 E2B model once (2.6 GB, Apache 2.0, from Hugging Face at a pinned revision; Wi-Fi only unless you allow mobile data). Android's download manager fetches it, so it continues when you leave the app or close it; a background job then checks the file against its SHA-256 and installs it, and a notification says when it's ready (or why it failed). Settings shows the model and can delete it again. Where neither model can run, the app shows **Device Not Supported** — values are never guessed.
 
 ---
 
 ## iCloud sync
 
-iCloud sync is **opt-in** and **layout-only**. On first launch — after the welcome and Apple Health steps — onboarding asks you to make an explicit choice before you can add any reports; you can change it later under **Settings → iCloud Sync**.
+iCloud sync is part of the iPhone and iPad app; it is **opt-in** and **layout-only**. On first launch, the last onboarding step (after the welcome, disclaimer and Apple Health steps) offers it as a toggle, off by default; you can change it later under **Settings → iCloud Sync**. The Android app has no layout sync — use Settings → Transfer to bring your reports over.
 
 When enabled, only your **dashboard layout** roams across your devices through your private iCloud key-value store (`NSUbiquitousKeyValueStore`): the card order, which metrics are pinned, which are hidden, any custom names (nicknames) you've given metrics, and any custom reference ranges you've set. That's the entire payload.
 
@@ -240,7 +256,7 @@ When enabled, only your **dashboard layout** roams across your devices through y
 
 ## Privacy
 
-All processing happens entirely on-device. No lab data is sent to any server. The Foundation Models framework runs the language model locally without any network requests. On Android, the only network use is downloading an on-device model: Gemini Nano by the system, or — only on phones without Gemini Nano for apps, and only when you tap Download — the pinned Gemma model file from Hugging Face, fetched by Android's download manager and checked against its SHA-256. That request carries nothing about you or your reports; a build-time test (`NetworkGuardrailTest`) fails if any other code reaches for the network, and ML Kit's usage-statistics backend is removed so it can't send either. The optional [iCloud sync](#icloud-sync) carries only your dashboard layout — never lab values or patient metadata. The Spotlight search index also stays on-device and contains only metric names unless you explicitly opt in to showing the latest reading in results.
+All processing happens entirely on-device. No lab data is sent to any server. The Foundation Models framework runs the language model locally without any network requests. On Android, the only network use is downloading an on-device model: Gemini Nano by the system, or — only on phones without Gemini Nano for apps, and only when you tap Download — the pinned Gemma model file from Hugging Face, fetched by Android's download manager and checked against its SHA-256. That request carries nothing about you or your reports; a build-time test (`NetworkGuardrailTest`) fails if any other code reaches for the network, and ML Kit's usage-statistics backend is removed so it can't send either. Reports the Android app keeps itself (before Health Connect is available) are excluded from cloud backup and device transfer. The optional [iCloud sync](#icloud-sync) carries only your dashboard layout — never lab values or patient metadata. The Spotlight search index and Android's launcher shortcuts also stay on-device and contain only metric names unless you explicitly opt in to showing the latest reading in results. Siri reads back only the values you have allowed.
 
 ---
 
@@ -254,7 +270,7 @@ On Android, the same prompt runs on **Gemini Nano** (ML Kit GenAI Prompt API) or
 
 ### Built with AI assistance
 
-This app was designed and built with the assistance of [Claude Code](https://claude.ai/code) by Anthropic. AI-assisted development was used throughout: app architecture, Swift/SwiftUI implementation, HealthKit and CDA integration, on-device model prompting, and the dashboard, trends, and history features.
+This app was designed and built with the assistance of [Claude Code](https://claude.ai/code) by Anthropic. AI-assisted development was used throughout: app architecture, Swift/SwiftUI implementation, HealthKit and CDA integration, on-device model prompting, the dashboard, trends, and history features, the shared Kotlin Multiplatform core, and the Android app (Jetpack Compose, Health Connect, Gemini Nano and Gemma).
 
 ---
 
