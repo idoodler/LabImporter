@@ -62,6 +62,20 @@ struct HomeView: View {
         horizontalSizeClass == .regular && verticalSizeClass == .regular
     }
 
+    /// Keeps the Spotlight detail sheet's binding small enough for Swift to
+    /// type-check alongside HomeView's other presentation modifiers.
+    private var spotlightTrendRequest: Binding<MetricDetailRequest?> {
+        Binding<MetricDetailRequest?>(
+            get: {
+                guard let code = searchPresentation.presentedCode else { return nil }
+                return MetricDetailRequest(code: code)
+            },
+            set: { request in
+                searchPresentation.presentedCode = request?.code
+            }
+        )
+    }
+
     var body: some View {
         // The layout adapts to the size classes — a sidebar split view when
         // regular×regular and a stack otherwise — while the import overlay,
@@ -91,10 +105,7 @@ struct HomeView: View {
             .interactiveDismissDisabled()
         }
         // The trend detail from a Spotlight hit — the coordinator presents it only once the app is back at root with no editor in the way.
-        .sheet(item: Binding(
-            get: { searchPresentation.presentedCode.map(MetricDetailRequest.init) },
-            set: { if $0 == nil { searchPresentation.presentedCode = nil } }
-        )) { request in
+        .sheet(item: spotlightTrendRequest) { request in
             NavigationStack {
                 TrendsView(reports: reports, initialCode: request.code,
                            onDismiss: { searchPresentation.presentedCode = nil })
