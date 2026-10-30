@@ -26,9 +26,13 @@ struct DashboardView: View {
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
     @AppStorage("patientName") private var patientName: String = ""
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
     @State private var showSettings = false
     @State private var showHistorySheet = false
     @State private var trendSheet: TrendSheet?
+    /// Width the metric grid gets, measured so regular widths can pick an
+    /// even column count (see `gridColumns(count:)`).
+    @State private var gridWidth: CGFloat = 0
 
     private struct TrendSheet: Identifiable {
         var id: String { code }
@@ -51,6 +55,7 @@ struct DashboardView: View {
                 }
                 footer
             }
+            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { gridWidth = $0 }
             .padding(.horizontal, 16)
             .padding(.top, 8)
             .padding(.bottom, 24)
@@ -89,8 +94,7 @@ struct DashboardView: View {
             NavigationStack {
                 TrendsView(reports: reports, initialCode: sheet.code, onDismiss: { trendSheet = nil })
             }
-            .presentationDetents([.medium, .large])
-            .presentationDragIndicator(.visible)
+            .trendSheetPresentation(regular: horizontalSizeClass == .regular && verticalSizeClass == .regular)
         }
         .onAppear {
             guard ScreenshotMode.isActive else { return }
@@ -160,7 +164,7 @@ struct DashboardView: View {
     }
 
     private func grid(_ items: [MetricData], columns: [GridItem]) -> some View {
-        LazyVGrid(columns: columns, spacing: 14) {
+        LazyVGrid(columns: columns, spacing: Self.gridSpacing) {
             ForEach(items) { metric in
                 metricCard(for: metric)
             }
@@ -179,20 +183,29 @@ struct DashboardView: View {
         .padding(.horizontal, 2)
     }
 
-    /// Two fixed columns on compact widths (iPhone); on regular widths (iPad, unfolded Duo) the
-    /// cards flow to fill the wider canvas with a sensible minimum so they don't
-    /// stretch into a sparse two-up grid. With only one or two metrics the
-    /// two-up grid would strand a card in a half-empty row, so it collapses to a
+    /// Two fixed columns on compact widths (iPhone, folded Duo). On regular
+    /// widths (iPad, unfolded Duo) as many columns as fit cards of at least
+    /// `minimumCardWidth`, rounded down to an even count and never fewer than
+    /// two: an odd count puts a card's middle on an unfolded iPhone Duo's
+    /// hinge, and a half-open Duo's detail column (one half of the screen) is
+    /// too narrow for cards of the old fixed adaptive width, which left a lone,
+    /// capped column. With only one or two metrics on compact widths the two-up
+    /// grid would strand a card in a half-empty row, so it collapses to a
     /// single full-width column that reads as an intentional, larger card.
     private func gridColumns(count: Int) -> [GridItem] {
         if horizontalSizeClass == .regular {
-            return [GridItem(.adaptive(minimum: 200, maximum: 280), spacing: 14)]
+            let fitting = Int((gridWidth + Self.gridSpacing) / (Self.minimumCardWidth + Self.gridSpacing))
+            let even = max(2, fitting - fitting % 2)
+            return Array(repeating: GridItem(.flexible(), spacing: Self.gridSpacing), count: even)
         }
         if count <= 2 {
             return [GridItem(.flexible())]
         }
         return [GridItem(.flexible()), GridItem(.flexible())]
     }
+
+    private static let gridSpacing: CGFloat = 14
+    private static let minimumCardWidth: CGFloat = 200
 
     @ViewBuilder
     private func metricCard(for metric: MetricData) -> some View {
@@ -402,5 +415,43 @@ private extension DashboardView {
             isProcessing: false
         )
     }
+}
+// iPhone Duo sizes, in points: the full unfolded inner display, one half of it
+// (the detail column of a half-open Duo), and the folded outer display.
+#Preview("Duo · Open", traits: .fixedLayout(width: 951, height: 669)) {
+    NavigationStack {
+        DashboardView(
+            reports: LabReport.sampleHistory,
+            onScan: {}, onPickFile: {}, onPaste: {}, onManual: {},
+            scannerAvailable: true, clipboardAvailable: true, isProcessing: false
+        )
+    }
+    .environment(\.horizontalSizeClass, .regular)
+    .environment(\.verticalSizeClass, .regular)
+}
+
+#Preview("Duo · Half-Open Detail", traits: .fixedLayout(width: 405, height: 669)) {
+    NavigationStack {
+        DashboardView(
+            reports: LabReport.sampleHistory,
+            onScan: {}, onPickFile: {}, onPaste: {}, onManual: {},
+            scannerAvailable: true, clipboardAvailable: true, isProcessing: false
+        )
+    }
+    .environment(\.horizontalSizeClass, .regular)
+    .environment(\.verticalSizeClass, .regular)
+}
+
+#Preview("Duo · Folded, Dark", traits: .fixedLayout(width: 466, height: 678)) {
+    NavigationStack {
+        DashboardView(
+            reports: LabReport.sampleHistory,
+            onScan: {}, onPickFile: {}, onPaste: {}, onManual: {},
+            scannerAvailable: true, clipboardAvailable: true, isProcessing: false
+        )
+    }
+    .environment(\.horizontalSizeClass, .compact)
+    .environment(\.verticalSizeClass, .regular)
+    .preferredColorScheme(.dark)
 }
 #endif

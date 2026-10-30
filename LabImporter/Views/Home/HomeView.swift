@@ -99,8 +99,7 @@ struct HomeView: View {
                 TrendsView(reports: reports, initialCode: request.code,
                            onDismiss: { searchPresentation.presentedCode = nil })
             }
-            .presentationDetents([.medium, .large])
-            .presentationDragIndicator(.visible)
+            .trendSheetPresentation(regular: usesSidebarLayout)
             .onAppear { searchPresentation.didPresentDetail() }
         }
         .environment(searchPresentation).presentsSearchResults(reports: reports)
