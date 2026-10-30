@@ -30,9 +30,9 @@ struct DashboardView: View {
     @State private var showSettings = false
     @State private var showHistorySheet = false
     @State private var trendSheet: TrendSheet?
-    /// Width the metric grid gets, measured so regular widths can pick an
-    /// even column count (see `gridColumns(count:)`).
-    @State private var gridWidth: CGFloat = 0
+    /// The metric grid's width and any fold through it, measured to lay out
+    /// its columns (see `MetricGridLayout`).
+    @State private var gridLayout = MetricGridLayout()
 
     private struct TrendSheet: Identifiable {
         var id: String { code }
@@ -55,7 +55,9 @@ struct DashboardView: View {
                 }
                 footer
             }
-            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { gridWidth = $0 }
+            .onGeometryChange(for: MetricGridLayout.self) { proxy in
+                MetricGridLayout(width: proxy.size.width, fold: proxy.verticalFold)
+            } action: { gridLayout = $0 }
             .padding(.horizontal, 16)
             .padding(.top, 8)
             .padding(.bottom, 24)
@@ -164,7 +166,7 @@ struct DashboardView: View {
     }
 
     private func grid(_ items: [MetricData], columns: [GridItem]) -> some View {
-        LazyVGrid(columns: columns, spacing: Self.gridSpacing) {
+        LazyVGrid(columns: columns, spacing: MetricGridLayout.spacing) {
             ForEach(items) { metric in
                 metricCard(for: metric)
             }
@@ -183,29 +185,9 @@ struct DashboardView: View {
         .padding(.horizontal, 2)
     }
 
-    /// Two fixed columns on compact widths (iPhone, folded Duo). On regular
-    /// widths (iPad, unfolded Duo) as many columns as fit cards of at least
-    /// `minimumCardWidth`, rounded down to an even count and never fewer than
-    /// two: an odd count puts a card's middle on an unfolded iPhone Duo's
-    /// hinge, and a half-open Duo's detail column (one half of the screen) is
-    /// too narrow for cards of the old fixed adaptive width, which left a lone,
-    /// capped column. With only one or two metrics on compact widths the two-up
-    /// grid would strand a card in a half-empty row, so it collapses to a
-    /// single full-width column that reads as an intentional, larger card.
     private func gridColumns(count: Int) -> [GridItem] {
-        if horizontalSizeClass == .regular {
-            let fitting = Int((gridWidth + Self.gridSpacing) / (Self.minimumCardWidth + Self.gridSpacing))
-            let even = max(2, fitting - fitting % 2)
-            return Array(repeating: GridItem(.flexible(), spacing: Self.gridSpacing), count: even)
-        }
-        if count <= 2 {
-            return [GridItem(.flexible())]
-        }
-        return [GridItem(.flexible()), GridItem(.flexible())]
+        gridLayout.columns(isRegularWidth: horizontalSizeClass == .regular, metricCount: count)
     }
-
-    private static let gridSpacing: CGFloat = 14
-    private static let minimumCardWidth: CGFloat = 200
 
     @ViewBuilder
     private func metricCard(for metric: MetricData) -> some View {

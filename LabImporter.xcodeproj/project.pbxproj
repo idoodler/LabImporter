@@ -14,10 +14,12 @@
 		2429A57046AF0C407704B1D1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8697C8B69368D44D6635379B /* Foundation.framework */; };
 		402366324649FA7CCE9915EA /* CDAExportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D324A0B5E9721D89AFB660 /* CDAExportTests.swift */; };
 		496C508CF0C9E24DFCA3B773 /* FlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD24AABF9080FC1ABB8707AF /* FlowTests.swift */; };
+		49F7BFCE5950051D9255C7EA /* MetricGridLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3D8155A96425EDC36A74FD /* MetricGridLayoutTests.swift */; };
 		4A2398D082C09285D2C39F94 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B256B38BDF50DF9CBDFE493B /* ModelTests.swift */; };
 		55AD043FD51A83E346BFA65E /* ParseSchemaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AC48436CB533C97960A62A4 /* ParseSchemaTests.swift */; };
 		636BA85E2FCC52EE006E8E71 /* HealthPermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 636BA85D2FCC52EE006E8E71 /* HealthPermissionView.swift */; };
 		80396BC045B0FE1CEEFB9AAE /* LaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E285DF31AC9A5A11C742F9F /* LaunchTests.swift */; };
+		849D1937738CB997922A807B /* MetricGridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 080505D3CD8BB2B99BD6C4DC /* MetricGridLayout.swift */; };
 		8EDE12FEB078268601ECD96D /* ShareInbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D4C1275881023AFBBE0AC /* ShareInbox.swift */; };
 		90E17444A6DE71E71633BD10 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF39E6CDE0AAC7930FA57B0 /* ShareViewController.swift */; };
 		A7AB66CBD5805334A9273027 /* SharedCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 794A5456843DA760D334FE72 /* SharedCore.swift */; };
@@ -156,6 +158,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		080505D3CD8BB2B99BD6C4DC /* MetricGridLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MetricGridLayout.swift; sourceTree = "<group>"; };
 		1FFE290841848738CAADD9E0 /* ShareInboxTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareInboxTests.swift; sourceTree = "<group>"; };
 		347D4C1275881023AFBBE0AC /* ShareInbox.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareInbox.swift; sourceTree = "<group>"; };
 		3B41D7BB510B15B47C17F1B2 /* LabImporterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LabImporterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -283,6 +286,7 @@
 		C897701053C6666E95989E84 /* ScreenshotMode.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScreenshotMode.swift; sourceTree = "<group>"; };
 		D084E33B414D911400410893 /* ShareView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareView.swift; sourceTree = "<group>"; };
 		DE0509DCBAD0DE0B9B9BFDB9 /* LabImporterShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = LabImporterShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		ED3D8155A96425EDC36A74FD /* MetricGridLayoutTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MetricGridLayoutTests.swift; sourceTree = "<group>"; };
 		FD24AABF9080FC1ABB8707AF /* FlowTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FlowTests.swift; sourceTree = "<group>"; };
 		FD58767C7178A49BAB8FBE6B /* report.cda.xml */ = {isa = PBXFileReference; includeInIndex = 1; path = report.cda.xml; sourceTree = "<group>"; };
 		FE0D199B97E02563880F592E /* LabParserErrorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LabParserErrorTests.swift; sourceTree = "<group>"; };
@@ -357,6 +361,7 @@
 				9AC48436CB533C97960A62A4 /* ParseSchemaTests.swift */,
 				FE0D199B97E02563880F592E /* LabParserErrorTests.swift */,
 				1FFE290841848738CAADD9E0 /* ShareInboxTests.swift */,
+				ED3D8155A96425EDC36A74FD /* MetricGridLayoutTests.swift */,
 			);
 			name = LabImporterTests;
 			path = LabImporterTests;
@@ -531,6 +536,7 @@
 				AABB000000000000000069AA /* TrendsView.swift */,
 				AAEE000000000000000006AA /* TrendsView+Accessibility.swift */,
 				AAMS000000000000000002AA /* MetricSearchResultsView.swift */,
+				080505D3CD8BB2B99BD6C4DC /* MetricGridLayout.swift */,
 			);
 			path = Dashboard;
 			sourceTree = "<group>";
@@ -920,6 +926,7 @@
 				55AD043FD51A83E346BFA65E /* ParseSchemaTests.swift in Sources */,
 				D4991EEE3D0EAEDA34E1C0F5 /* LabParserErrorTests.swift in Sources */,
 				A964924DB8628B3BF19463FD /* ShareInboxTests.swift in Sources */,
+				49F7BFCE5950051D9255C7EA /* MetricGridLayoutTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1016,6 +1023,7 @@
 				A7AB66CBD5805334A9273027 /* SharedCore.swift in Sources */,
 				8EDE12FEB078268601ECD96D /* ShareInbox.swift in Sources */,
 				002FF15BE9F052637638C743 /* ReportTransferService.swift in Sources */,
+				849D1937738CB997922A807B /* MetricGridLayout.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
