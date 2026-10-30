@@ -143,7 +143,10 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   word "total" is dropped as a retry), the unit's kind of quantity (`UnitKind`)
   rules out terms that can't hold the value (mg/dl is never a urine-strip
   finding or a crystal count) and picks mass vs. moles, and a molar unit keeps
-  the name's usual specimen (µmol/l creatinine → serum, not blood). The winner is
+  the name's usual specimen (µmol/l creatinine → serum, not blood). The printed
+  result's shape (`ResultShape`) rules out terms that can't hold it — a result
+  in words ("negativ") or a strip grade is never a count or a concentration, a
+  titer only a titer — and panels/documents (scale `-`/`Doc`) never match. The winner is
   offered as a suggestion (`isSuggestedCode`); nothing fitting → the printed code
   stays for the user to map. A *second* suggestion for an already-claimed LOINC
   stays unmapped instead of replacing a value. There is no static abbreviation
