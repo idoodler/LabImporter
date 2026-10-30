@@ -449,9 +449,6 @@ extension TrendsView {
     }
 }
 
-// MARK: - Preview
-
-#if DEBUG
 extension View {
     /// Detents for a sheet showing `TrendsView`. Pass whether the *presenting*
     /// view is regular × regular (the sheet's own content can report a compact
@@ -464,6 +461,9 @@ extension View {
     }
 }
 
+// MARK: - Preview
+
+#if DEBUG
 #Preview("Trends") {
     NavigationStack {
         TrendsView(reports: LabReport.sampleHistory, initialCode: "4548-4")
