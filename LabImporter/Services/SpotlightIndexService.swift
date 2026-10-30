@@ -1,4 +1,5 @@
-import CoreSpotlight
+// CSSearchableIndex is thread-safe but not yet marked Sendable.
+@preconcurrency import CoreSpotlight
 import SwiftUI
 import UniformTypeIdentifiers
 

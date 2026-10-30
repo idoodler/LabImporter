@@ -353,11 +353,11 @@ extension TrendsView {
     /// VoiceOver content for one plotted point: value, unit, and (when
     /// out-of-range) the same "High"/"Low" word the on-screen badge shows —
     /// reusing `RangeStatus.label` so this never drifts from the visual badge.
-    private func accessibilityValue(for point: DataPoint) -> Text {
-        let unitSuffix = point.unit.isEmpty ? Text(verbatim: "") : Text(verbatim: " \(point.unit)")
-        let valueText = Text(verbatim: formatValue(point.value)) + unitSuffix
-        guard let status = referenceRange?.status(for: point.value), status.isOutOfRange else { return valueText }
-        return valueText + Text(verbatim: ", ") + Text(status.label)
+    private func accessibilityValue(for point: DataPoint) -> String {
+        var value = formatValue(point.value)
+        if !point.unit.isEmpty { value += " \(point.unit)" }
+        guard let status = referenceRange?.status(for: point.value), status.isOutOfRange else { return value }
+        return value + ", " + status.localizedLabel
     }
 
     private var selectedPointBubble: some View {
