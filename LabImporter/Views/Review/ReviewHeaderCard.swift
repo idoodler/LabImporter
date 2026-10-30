@@ -203,7 +203,12 @@ struct ReviewHeaderCard: View {
                 Spacer(minLength: 0)
 
                 if exportableCount > 0 {
-                    readyBadge
+                    // Narrow cards (an unfolded iPhone Duo's Review pane, the folded
+                    // Duo) keep just the checkmark rather than wrapping the label.
+                    ViewThatFits(in: .horizontal) {
+                        readyBadge(showsLabel: true)
+                        readyBadge(showsLabel: false)
+                    }
                 }
             }
 
@@ -233,17 +238,22 @@ struct ReviewHeaderCard: View {
         .cardSurface(cornerRadius: 22)
     }
 
-    private var readyBadge: some View {
+    private func readyBadge(showsLabel: Bool) -> some View {
         HStack(spacing: 5) {
             Image(systemName: "checkmark.circle.fill")
-            Text("Ready to save")
+            if showsLabel {
+                Text("Ready to save")
+                    .lineLimit(1)
+                    .fixedSize()
+            }
         }
         .font(.caption.weight(.semibold))
         .foregroundStyle(.green)
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
         .background(.green.opacity(0.12), in: Capsule())
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Ready to save")
     }
 }
 
@@ -373,6 +383,18 @@ struct CategorySectionHeader: View {
         exportableCount: 8,
         groups: CategoryCount.sampleGroups,
         dominantColor: LabCategory.lipids.color
+    )
+    .padding()
+    .background(Color(.systemGroupedBackground))
+}
+
+// The left pane of the Review screen on an unfolded iPhone Duo: the badge drops its label.
+#Preview("Header Card – Narrow (Duo pane)", traits: .fixedLayout(width: 290, height: 220)) {
+    ReviewHeaderCard(
+        supportedCount: 13,
+        exportableCount: 13,
+        groups: CategoryCount.sampleGroups,
+        dominantColor: LabCategory.glycemic.color
     )
     .padding()
     .background(Color(.systemGroupedBackground))

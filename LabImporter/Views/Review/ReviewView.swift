@@ -24,6 +24,7 @@ struct ReviewView: View {
     @State private var didSeedMetadata = false
     @AppStorage(SiriExposurePreferences.storageKey) private var siriPrefs = SiriExposurePreferences()
     @State private var siriPromptCodes: [CodeName] = []
+    @State var paneGeometry = ReviewPaneGeometry()
 
     // Snapshot the sheet opened with, to warn only about discarding real edits.
     // @State (not let): captured once and preserved across re-inits, unlike a re-derived `asLabValues`.
@@ -98,15 +99,7 @@ struct ReviewView: View {
     }
 
     var body: some View {
-        List {
-            headerSection
-            patientSection
-            authorSection
-            dateSection
-            valuesSection
-            addValueSection
-            unsupportedSection
-        }
+        reviewLists // One list, or two panes either side of an iPhone Duo's fold — see ReviewView+FoldLayout.
         .listStyle(.insetGrouped)
         .scrollDismissesKeyboard(.interactively)
         .scrollContentBackground(.hidden)
@@ -126,9 +119,6 @@ struct ReviewView: View {
             Button("Continue Editing", role: .cancel) { }
         } message: {
             Text("Any entered values will not be saved.")
-        }
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            bottomButtons.hiddenWhileKeyboardVisible()
         }
         .labImport(engine: importEngine)
         .task { await loadHKCharacteristics() }
@@ -159,13 +149,16 @@ struct ReviewView: View {
         } message: { Text(replaceWarning ?? "") }
     }
 
+    /// The Save/Share bar, for the layout in ReviewView+FoldLayout.
+    var actionBar: some View { bottomButtons.hiddenWhileKeyboardVisible() }
+
     // MARK: - Sections
 
     private var categoryCounts: [CategoryCount] {
         valueGroups.map { CategoryCount(category: $0.category, count: $0.indices.count) }
     }
 
-    private var headerSection: some View {
+    var headerSection: some View {
         Section {
             ReviewHeaderCard(
                 supportedCount: supportedCount,
@@ -180,7 +173,7 @@ struct ReviewView: View {
         }
     }
 
-    private var patientSection: some View {
+    var patientSection: some View {
         Section("Patient") {
             TextField("Full Name (optional)", text: $patientName)
                 .autocorrectionDisabled()
@@ -233,7 +226,7 @@ struct ReviewView: View {
         .listRowBackground(Rectangle().fill(.ultraThinMaterial))
     }
 
-    private var authorSection: some View {
+    var authorSection: some View {
         Section("Lab / Doctor") {
             TextField("Lab / Doctor (optional)", text: $authorName)
                 .autocorrectionDisabled()
@@ -251,7 +244,7 @@ struct ReviewView: View {
         .listRowBackground(Rectangle().fill(.ultraThinMaterial))
     }
 
-    private var dateSection: some View {
+    var dateSection: some View {
         Section {
             DatePicker(
                 "Report Date",
@@ -264,7 +257,7 @@ struct ReviewView: View {
     }
 
     @ViewBuilder
-    private var valuesSection: some View {
+    var valuesSection: some View {
         ForEach(valueGroups, id: \.category) { group in
             Section {
                 ForEach(group.indices, id: \.self) { idx in
@@ -299,7 +292,7 @@ struct ReviewView: View {
         }
     }
 
-    private var addValueSection: some View {
+    var addValueSection: some View {
         Section {
             addValueMenu
                 .listRowBackground(Rectangle().fill(.ultraThinMaterial))
@@ -307,7 +300,7 @@ struct ReviewView: View {
     }
 
     @ViewBuilder
-    private var unsupportedSection: some View {
+    var unsupportedSection: some View {
         if !unsupportedValues.isEmpty {
             UnsupportedValuesSection(values: unsupportedValues) { value in
                 labValues.removeAll { $0.id == value.id }
