@@ -13,6 +13,16 @@ extension LabReport {
     /// row in `HistoryView`.
     static var sample: LabReport { sampleHistory[0] }
 
+    /// `sample` plus results that aren't numbers (a finding, a titer, a threshold).
+    static var sampleWithQualitative: LabReport {
+        let base = sample
+        let qualitative = LabValue.sampleQualitative.map {
+            Entry(id: $0.id, code: $0.code, name: $0.name, displayValue: $0.displayValue, numericValue: nil, unit: $0.unit)
+        }
+        return LabReport(id: base.id, date: base.date, patientName: base.patientName,
+                         authorName: base.authorName, entries: base.entries + qualitative)
+    }
+
     /// Four reports spread across roughly a year (newest first) so trend charts
     /// and dashboard sparklines have a real series to draw.
     static var sampleHistory: [LabReport] {
@@ -117,6 +127,18 @@ extension LabValue {
                      numericValue: 0.91, unit: "mg/dL", isSuggestedCode: true),
             LabValue(code: "CRP-X", name: "C-Reactive Protein", displayValue: "3.1",
                      numericValue: 3.1, unit: "mg/L"),
+        ]
+    }
+
+    /// Results that aren't numbers, saved as text: a finding, a titer and a threshold.
+    static var sampleQualitative: [LabValue] {
+        [
+            LabValue(code: "5196-1", name: "HBsAg", displayValue: "Non-reactive",
+                     numericValue: nil, unit: ""),
+            LabValue(code: "5048-4", name: "ANA Titer", displayValue: "1:160",
+                     numericValue: nil, unit: ""),
+            LabValue(code: "1988-5", name: "C-Reactive Protein", displayValue: "<0.5",
+                     numericValue: nil, unit: "mg/L"),
         ]
     }
 }

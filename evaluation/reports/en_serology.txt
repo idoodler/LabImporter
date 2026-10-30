@@ -1,0 +1,22 @@
+Northside Diagnostics, Inc.
+Patient: Jane Roe     DOB: 02/11/1984     Sex: F
+Collected: 08/12/2026 08:05     Reported: 08/13/2026 16:40
+
+Test Name                         Result        Flag   Units      Reference Range
+HEPATITIS PANEL
+Hepatitis B Surface Antigen       NON-REACTIVE                    NON-REACTIVE
+Hepatitis C Antibody              NON-REACTIVE                    NON-REACTIVE
+AUTOIMMUNE
+ANA Screen, IFA                   POSITIVE      A                 NEGATIVE
+ANA Titer                         1:160         H                 <1:40
+ANA Pattern                       Speckled
+URINALYSIS, COMPLETE
+Specific Gravity                  1.018                           1.001-1.035
+pH                                6.0                             5.0-8.0
+Protein                           NEGATIVE                        NEGATIVE
+Glucose                           NEGATIVE                        NEGATIVE
+HEAVY METALS
+Lead, Blood (Venous)              <1.0                 mcg/dL     <3.5
+OTHER
+Vitamin B12                       512                  pg/mL      200-1100
+Ferritin                          86                   ng/mL      16-232

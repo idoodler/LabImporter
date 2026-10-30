@@ -159,8 +159,15 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
 ### CDA round-trip
 - **Export:** the shared `CdaExport.generate` (via `CDAExportService.generateCDA`)
   emits a C-CDA R2.1 Lab Report. Only values that are `isSelected`, have a
-  `numericValue`, and have a LOINC mapping are included. Units are normalized to
-  UCUM (`Ucum`). Its exact output is pinned by a golden file
+  result and have a LOINC mapping are included (`LabValue.isExportable`). A
+  number is a `PQ` with its unit normalized to UCUM (`Ucum`); a qualitative
+  result — words, a titer "1:160", a threshold "<0.5", a strip grade "2+"
+  (`QualitativeResult`) — is an `ST` (FHIR: `valueString`) with the printed unit
+  appended, split off again on read-back. A number with stray text ("6.5 %") is
+  neither: the user fixes it in review. This was additive, so no schema bump:
+  older builds skip `ST` observations and show a `valueString` as "-" (a FHIR
+  comparator quantity would have been read by them as the bare number). Its
+  exact output is pinned by a golden file
   (`shared/src/jvmTest/golden/report.cda.xml`) asserted by both the Kotlin and
   the Swift tests.
 - **Import-back:** `HealthKitService` reads `HKCDADocumentSample`s and the shared

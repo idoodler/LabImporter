@@ -339,4 +339,17 @@ private struct ShareSheet: UIViewControllerRepresentable {
         ReportDetailView(report: .sample, onDeleted: { _ in })
     }
 }
+
+#Preview("With Qualitative Results") {
+    NavigationStack {
+        ReportDetailView(report: .sampleWithQualitative, onDeleted: { _ in })
+    }
+}
+
+#Preview("With Qualitative Results – Dark") {
+    NavigationStack {
+        ReportDetailView(report: .sampleWithQualitative, onDeleted: { _ in })
+    }
+    .preferredColorScheme(.dark)
+}
 #endif

@@ -363,6 +363,8 @@ private fun ValueCard(
     val mapped = LabMapping.loincCode(value.code) != null
     val category = if (mapped) LabCategory.forCode(value.code) else null
     var valueText by remember(value.id) { mutableStateOf(value.numericValue?.let(::formatNumber) ?: value.displayValue) }
+    // A qualitative result ("Negativ", "1:160") or a new row may need letters; a number gets the number pad.
+    val keyboard = remember(value.id) { if (value.numericValue == null) KeyboardType.Text else KeyboardType.Decimal }
     val container = when {
         !value.isSelected -> MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.7f)
         category != null -> tintedSurface(category.color, 0.12f).copy(alpha = 0.94f)
@@ -408,9 +410,9 @@ private fun ValueCard(
                         onUpdate { it.copy(displayValue = text, numericValue = parseNumberInput(text)) }
                     },
                     label = { Text(stringResource(R.string.value)) },
-                    isError = value.isSelected && value.numericValue == null,
+                    isError = value.isSelected && !value.hasResult,
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    keyboardOptions = KeyboardOptions(keyboardType = keyboard),
                     shape = MaterialTheme.shapes.large, colors = fieldColors,
                     modifier = Modifier.weight(1f),
                 )
@@ -465,6 +467,22 @@ private fun ReviewGemmaPreview() {
 private fun ReviewStandInPreview() {
     LabImporterTheme(darkTheme = true, dynamicColor = false) {
         ReviewScreen(previewDraft.copy(engine = AiEngine.DEVELOPMENT_STAND_IN), {}, { _, _ -> }, { "" }, {}, {}, {})
+    }
+}
+
+@Preview(name = "Qualitative results", widthDp = 400, heightDp = 900)
+@Composable
+private fun ReviewQualitativePreview() {
+    LabImporterTheme(dynamicColor = false) {
+        ReviewScreen(previewDraft.copy(values = PreviewSamples.qualitativeValues), {}, { _, _ -> }, { "" }, {}, {}, {})
+    }
+}
+
+@Preview(name = "Qualitative results – dark", widthDp = 400, heightDp = 900, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun ReviewQualitativeDarkPreview() {
+    LabImporterTheme(darkTheme = true, dynamicColor = false) {
+        ReviewScreen(previewDraft.copy(values = PreviewSamples.qualitativeValues), {}, { _, _ -> }, { "" }, {}, {}, {})
     }
 }
 

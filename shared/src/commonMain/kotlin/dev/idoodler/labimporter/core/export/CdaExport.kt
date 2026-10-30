@@ -3,6 +3,7 @@ package dev.idoodler.labimporter.core.export
 import dev.idoodler.labimporter.core.LabCore
 import dev.idoodler.labimporter.core.model.LabMapping
 import dev.idoodler.labimporter.core.model.LabValue
+import dev.idoodler.labimporter.core.model.QualitativeResult
 import dev.idoodler.labimporter.core.model.deduplicatedByLoinc
 import dev.idoodler.labimporter.core.platform.NumberFormatting
 import kotlinx.datetime.LocalDate
@@ -11,7 +12,8 @@ import kotlin.uuid.Uuid
 /**
  * Builds a C-CDA R2.1 Lab Report — the document format the iOS app stores in
  * Apple Health, and the share/export format on both platforms. Only values
- * that are selected, numeric and LOINC-mapped are included.
+ * that are selected, have a result and are LOINC-mapped are included: a
+ * number as `PQ`, a qualitative result ("Negativ", "1:160", "<0.5") as `ST`.
  */
 object CdaExport {
 
@@ -130,10 +132,15 @@ object CdaExport {
     }
 
     private fun observationXml(value: LabValue, date: String): String? {
-        val num = value.numericValue ?: return null
         val (loinc, display) = LabMapping.loincCode(value.code) ?: return null
-        val unit = Ucum.fromPrinted(value.unit)
-        val valueStr = NumberFormatting.cdaValue(num)
+        val num = value.numericValue
+        val valueXml = if (num != null) {
+            """<value xsi:type="PQ" value="${NumberFormatting.cdaValue(num)}" unit="${esc(Ucum.fromPrinted(value.unit))}"/>"""
+        } else {
+            // ST has no unit: it travels in the text ("<0.5 mg/dl"); CdaParser splits it off again.
+            val result = value.qualitativeResult ?: return null
+            """<value xsi:type="ST">${esc(QualitativeResult.stored(result, value.unit))}</value>"""
+        }
         return """
 <component>
                 <observation classCode="OBS" moodCode="EVN">
@@ -145,7 +152,7 @@ object CdaExport {
                         codeSystemName="LOINC"/>
                   <statusCode code="completed"/>
                   <effectiveTime value="$date"/>
-                  <value xsi:type="PQ" value="$valueStr" unit="${esc(unit)}"/>
+                  $valueXml
                 </observation>
               </component>
 """.trim('\n')

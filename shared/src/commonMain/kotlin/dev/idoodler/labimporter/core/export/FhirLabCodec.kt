@@ -2,6 +2,7 @@ package dev.idoodler.labimporter.core.export
 
 import dev.idoodler.labimporter.core.model.LabMapping
 import dev.idoodler.labimporter.core.model.LabReport
+import dev.idoodler.labimporter.core.model.QualitativeResult
 import dev.idoodler.labimporter.core.platform.NumberFormatting
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.Json
@@ -30,6 +31,11 @@ data class FhirResource(val resourceType: String, val id: String, val json: Stri
  * regroups by that tag. A second tag stamps [ReportSchema.VERSION], like the
  * CDA `softwareName`: resources without a supported version are ignored on
  * read-back, and [ReportSchema] chains upgrades.
+ *
+ * A number is a `valueQuantity`; a qualitative result ("Negativ", "1:160",
+ * "<0.5") is a `valueString` with its unit in the text (see
+ * [QualitativeResult]) — not a comparator quantity, which older builds would
+ * read as the bare number.
  */
 object FhirLabCodec {
     const val FHIR_VERSION = "4.0.1"
@@ -43,7 +49,8 @@ object FhirLabCodec {
 
     fun encode(report: LabReport, softwareIdentity: String): List<FhirResource> =
         report.entries.mapNotNull { entry ->
-            val value = entry.numericValue ?: return@mapNotNull null
+            val value = entry.numericValue
+            val qualitative = if (value == null) QualitativeResult.of(entry.displayValue) ?: return@mapNotNull null else null
             val loinc = LabMapping.loincCode(entry.code) ?: return@mapNotNull null
             val body = buildJsonObject {
                 put("resourceType", "Observation")
@@ -72,14 +79,18 @@ object FhirLabCodec {
                 if (report.authorName.isNotBlank()) {
                     put("performer", buildJsonArray { add(buildJsonObject { put("display", report.authorName) }) })
                 }
-                put("valueQuantity", buildJsonObject {
-                    put("value", value)
-                    if (entry.unit.isNotBlank()) {
-                        put("unit", entry.unit)
-                        put("system", UCUM_SYSTEM)
-                        put("code", Ucum.fromPrinted(entry.unit))
-                    }
-                })
+                if (value != null) {
+                    put("valueQuantity", buildJsonObject {
+                        put("value", value)
+                        if (entry.unit.isNotBlank()) {
+                            put("unit", entry.unit)
+                            put("system", UCUM_SYSTEM)
+                            put("code", Ucum.fromPrinted(entry.unit))
+                        }
+                    })
+                } else if (qualitative != null) {
+                    put("valueString", QualitativeResult.stored(qualitative, entry.unit))
+                }
             }
             FhirResource("Observation", entry.id, body.toString())
         }
@@ -102,6 +113,7 @@ object FhirLabCodec {
                     .firstOrNull { it.string("system") == LOINC_SYSTEM } ?: return@runCatching null
                 val quantity = obj["valueQuantity"]?.jsonObject
                 val value = quantity?.get("value")?.jsonPrimitive?.doubleOrNull
+                val text = if (value == null) obj.string("valueString")?.takeIf { it.isNotBlank() }?.let(QualitativeResult::split) else null
                 val date = obj.string("effectiveDateTime")?.take(10)?.let(LocalDate::parse) ?: return@runCatching null
                 Row(
                     reportId = reportId,
@@ -113,9 +125,9 @@ object FhirLabCodec {
                         id = obj.string("id") ?: reportId,
                         code = coding.string("code").orEmpty(),
                         name = obj["code"]?.jsonObject?.string("text") ?: coding.string("display").orEmpty(),
-                        displayValue = value?.let(NumberFormatting::cdaValue) ?: "-",
+                        displayValue = value?.let(NumberFormatting::cdaValue) ?: text?.first ?: "-",
                         numericValue = value,
-                        unit = quantity?.string("unit").orEmpty(),
+                        unit = text?.second ?: quantity?.string("unit").orEmpty(),
                     ),
                 )
             }.getOrNull()

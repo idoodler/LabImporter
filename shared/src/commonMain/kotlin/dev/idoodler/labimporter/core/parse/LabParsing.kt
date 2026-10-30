@@ -63,7 +63,8 @@ object LabParseSchema {
         "HB-A1C→HbA1c, HB-A1→HbA1c (IFCC), C-PEPT→C-Peptid, GADAAK→Glutamatdecarboxylase-Antikörper, " +
         "ICEA→Inselzell-Antikörper, ICEA2→IA-2-Antikörper, NONHDL→Non-HDL-Cholesterin, TSH-0→Thyreotropin. " +
         "For names already spelled out (e.g. 'Ferritin', 'Vitamin D 25-Hydroxy'), keep them as printed."
-    const val RAW_VALUE = "Value exactly as printed — use '-' for negative/not-detected results"
+    const val RAW_VALUE = "Result exactly as printed, also when it isn't a number (e.g. 0,80, Negativ, not detected, 1:160, <0.5). " +
+        "Use '-' only when no result is printed"
     const val UNIT = "Unit of measurement as printed (e.g. mg/dl, %, mmol/mol, U/l, ml/min/1,73m2KOF). Empty string if none."
 }
 
@@ -81,7 +82,8 @@ object LabParsePrompt {
         Do NOT emit specimen, material, or annotation labels as entries — a "value" of 'Serum', 'EDTA-Plasma',
         'Vollblut' or a standalone method tag (e.g. 'JDF-E.') is not a measured test and must be skipped.
         Detect the language of the report and return it as a BCP-47 code (e.g. 'de', 'en') in reportLanguage.
-        Use '-' as rawValue when the result is negative or not detected.
+        Copy every result into rawValue exactly as printed, including results that are not numbers
+        (e.g. 'Negativ', 'positive', 'not detected', 'reactive', '1:160', '<0.5', '2+'); use '-' only when no result is printed.
         If you can see a report date or blood draw date, return it in yyyy-MM-dd format; otherwise return an empty string.
         Extract the patient's full name if visible; otherwise return an empty string for patientName.
         Extract the lab or doctor name if visible; otherwise return an empty string for authorName.

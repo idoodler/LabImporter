@@ -4,6 +4,7 @@ import dev.idoodler.labimporter.core.export.CdaParser
 import dev.idoodler.labimporter.core.export.FhirLabCodec
 import dev.idoodler.labimporter.core.export.Ucum
 import dev.idoodler.labimporter.core.model.LabReport
+import dev.idoodler.labimporter.core.model.QualitativeResult
 import dev.idoodler.labimporter.core.platform.NumberFormatting
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.Json
@@ -91,13 +92,15 @@ object ReportTransfer {
 
     /**
      * Content identity of a report: its date plus every reading (LOINC code,
-     * value at export precision, UCUM unit). Independent of storage ids,
-     * patient/lab names and of how either platform spells units.
+     * value at export precision or qualitative result, UCUM unit). Independent
+     * of storage ids, patient/lab names and of how either platform spells units.
      */
     fun fingerprint(report: LabReport): String =
         report.date.toString() + "|" + report.entries
             .mapNotNull { entry ->
-                entry.numericValue?.let { "${entry.code}=${NumberFormatting.cdaValue(it)}${Ucum.fromPrinted(entry.unit)}" }
+                val value = entry.numericValue?.let(NumberFormatting::cdaValue)
+                    ?: QualitativeResult.of(entry.displayValue)?.let { QualitativeResult.stored(it, entry.unit).lowercase() }
+                value?.let { "${entry.code}=$it${if (entry.numericValue != null) Ucum.fromPrinted(entry.unit) else ""}" }
             }
             .sorted()
             .joinToString(";")

@@ -23,22 +23,30 @@ data class LabValue(
     val resolvedName: String
         get() = LabMapping.displayName(code).let { if (it == code) name else it }
 
-    /** Whether this row will be written to an export (selected, numeric, LOINC-mapped). */
+    /** The result as printed when it isn't a number ("Negativ", "1:160", "<0.5"); see [QualitativeResult]. */
+    val qualitativeResult: String?
+        get() = if (numericValue != null) null else QualitativeResult.of(displayValue)
+
+    /** Whether there is a result to save: a number or a qualitative result. */
+    val hasResult: Boolean
+        get() = numericValue != null || qualitativeResult != null
+
+    /** Whether this row will be written to an export (selected, with a result, LOINC-mapped). */
     val isExportable: Boolean
-        get() = isSelected && numericValue != null && LabMapping.loincCode(code) != null
+        get() = isSelected && hasResult && LabMapping.loincCode(code) != null
 
     /** Whether this row collides with another exportable row on the same LOINC. */
     fun isDuplicate(duplicateLoincCodes: Set<String>): Boolean {
-        if (!isSelected || numericValue == null) return false
+        if (!isSelected || !hasResult) return false
         val loinc = LabMapping.loincCode(code)?.loinc ?: return false
         return loinc in duplicateLoincCodes
     }
 
-    /** Selected + numeric beats numeric beats neither when collapsing duplicates. */
+    /** Selected with a result beats a result beats neither when collapsing duplicates. */
     internal val dedupRank: Int
         get() = when {
-            isSelected && numericValue != null -> 2
-            numericValue != null -> 1
+            isSelected && hasResult -> 2
+            hasResult -> 1
             else -> 0
         }
 }
@@ -47,7 +55,7 @@ data class LabValue(
 fun List<LabValue>.duplicateLoincCodes(): Set<String> {
     val counts = mutableMapOf<String, Int>()
     for (value in this) {
-        if (!value.isSelected || value.numericValue == null) continue
+        if (!value.isSelected || !value.hasResult) continue
         val loinc = LabMapping.loincCode(value.code)?.loinc ?: continue
         counts[loinc] = (counts[loinc] ?: 0) + 1
     }
