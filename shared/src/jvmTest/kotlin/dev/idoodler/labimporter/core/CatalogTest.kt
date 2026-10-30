@@ -179,6 +179,40 @@ class CatalogTest {
     }
 
     @Test
+    fun aResultInWordsNeverLandsOnACountOrAConcentration() {
+        val loinc = LabCore.loinc!!
+        // "Eiweiß: negativ" once became egg white IgE, "Leukozyten: negativ" a blood count.
+        for ((name, language) in listOf("Eiweiß" to "de", "Leukozyten" to "de", "Nitrit" to "de", "Proteínas" to "es")) {
+            val (code, _) = LabParsePipeline.resolveLoinc("", name, language, "", "negativ")
+            val scale = loinc.detail(code)?.scale
+            assertTrue(scale == null || scale in setOf("Ord", "Nom", "OrdQn", "Nar"), "$name → $code ($scale)")
+        }
+        val (titer, _) = LabParsePipeline.resolveLoinc("", "ANA Titer", "en", "", "1:160")
+        assertEquals("Titr", loinc.detail(titer)?.property, titer)
+        // A section heading with a result is never a panel.
+        val (panel, _) = LabParsePipeline.resolveLoinc("HEPATITIS PANEL", "Hepatitis Panel", "en", "", "NON-REACTIVE")
+        assertTrue(loinc.detail(panel)?.scale != "-", panel)
+        // A threshold is a quantity: the unit still decides.
+        val (crp, _) = LabParsePipeline.resolveLoinc("CRP", "CRP", "de", "mg/dl", "< 0,5")
+        assertEquals("MCnc", loinc.detail(crp)?.property, crp)
+    }
+
+    @Test
+    fun flagsCopiedIntoAValueOrUnitAreDropped() {
+        assertEquals("231", LabParsePipeline.valueWithoutFlag("231 *"))
+        assertEquals("1:160", LabParsePipeline.valueWithoutFlag("1:160 H"))
+        assertEquals("positiv (+)", LabParsePipeline.valueWithoutFlag("positiv (+)"))
+        assertEquals("2 +", LabParsePipeline.valueWithoutFlag("2 +"))
+        assertEquals("", LabParsePipeline.unitWithoutFlag("H"))
+        assertEquals("", LabParsePipeline.unitWithoutFlag("A"))
+        assertEquals("mg/dl", LabParsePipeline.unitWithoutFlag("H mg/dl"))
+        val report = AiLabReport(listOf(AiLabEntry("COL", "Colesterolo totale", "231 *", "mg/dL")), reportLanguage = "it")
+        val value = LabParsePipeline.postProcess(report, "").values.single()
+        assertEquals(231.0, value.numericValue)
+        assertEquals("231", value.displayValue)
+    }
+
+    @Test
     fun duplicatesAreDetectedAndCollapsed() {
         val a = LabValue(code = "2160-0", name = "Creatinin", displayValue = "0.8", numericValue = 0.8, unit = "mg/dl")
         val b = a.copy(id = "b", displayValue = "0.9", numericValue = 0.9)

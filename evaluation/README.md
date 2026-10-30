@@ -5,6 +5,7 @@ exact instructions, prompt, JSON schema and shared post-processing — and score
 the values against each report's `.expected.json`: a value counts when its
 number and unit were read (the read test name is replaced by the catalog's in
 post-processing), then its resolved LOINC code, numbers made up from text,
+results that aren't numbers kept as text (`notNumeric`),
 extra numbers, the report date and the patient.
 
 The reports are synthetic, written to look like real OCR output in several
@@ -28,12 +29,17 @@ model the app downloads.
 ## Last result
 
 Gemma 4 E2B (`gemma-4-E2B-it.litertlm`, revision `a790a85`) on an M-series Mac
-GPU, constrained JSON, no thinking (2026-10-23):
+GPU, constrained JSON, no thinking (2026-10-31), after results that aren't
+numbers became savable (#99):
 
 ```
-TOTAL  correct 72/73 (recall 98%), extra numbers 1, precision 98%, invalid replies 0, LOINC 60/62, median time 16.3 s
+TOTAL  correct 76/77 (recall 98%), extra numbers 1, precision 98%, invalid replies 0, LOINC 62/64, text results 13/16, median time 17.7 s
 ```
 
-The one miss is a misread digit (ALT 22 → 222); the two LOINC misses are
-"GPT"/"ALT (GPT)", which no catalog label names and which stay unmapped for
-the user to place.
+The previous prompt scored the same on numbers and LOINC (76/77, 62/64) but
+kept 11/16 text results. The one miss is ALT 22 in `de_table` (read as 222,
+or with the unit "/l"), which shows up with either prompt; the two LOINC
+misses are "GPT"/"ALT (GPT)", which no catalog label names and which stay
+unmapped for the user to place. Text results the model leaves out entirely
+("Orina: Proteínas … Negativo") or names ambiguously ("Eiweiß", which the
+catalog also uses for egg white) are the misses there.

@@ -87,7 +87,9 @@ class LoincRankingTest {
         assertEquals("mmol/l", LabParsePipeline.unitWithoutFlag("H mmol/l"))
         assertEquals("mg/dl", LabParsePipeline.unitWithoutFlag(" L  mg/dl "))
         assertEquals("U/l", LabParsePipeline.unitWithoutFlag("U/l"))
-        assertEquals("H", LabParsePipeline.unitWithoutFlag("H"))
+        // A flag alone is no unit (hours are "h"); it would otherwise end up in a saved "1:160 H".
+        assertEquals("", LabParsePipeline.unitWithoutFlag("H"))
+        assertEquals("h", LabParsePipeline.unitWithoutFlag("h"))
         assertEquals("ml/min/1,73 m²", LabParsePipeline.unitWithoutFlag("ml/min/1,73 m²"))
     }
 }

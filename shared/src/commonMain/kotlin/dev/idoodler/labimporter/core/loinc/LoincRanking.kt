@@ -1,5 +1,7 @@
 package dev.idoodler.labimporter.core.loinc
 
+import dev.idoodler.labimporter.core.model.QualitativeResult
+
 /**
  * A catalog term found for a printed test name and how well it fits. Lower
  * is better, field by field in declaration order (see [compareTo]).
@@ -74,23 +76,64 @@ enum class UnitKind(private val pattern: Regex, val preferred: Set<String>, val 
     }
 }
 
+/**
+ * The shape of a printed result, which rules out terms that can't hold it:
+ * a finding in words ("negativ") or a strip grade ("2+") is never a count or
+ * a concentration — "Eiweiß: negativ" once became egg white IgE — and a titer
+ * is only a titer. A number or a threshold ("<0.5") is a quantity, left to
+ * the unit ([UnitKind]).
+ */
+enum class ResultShape {
+    QUANTITY, WORDS, GRADE, TITER;
+
+    fun accepts(scale: String, property: String): Boolean = when (this) {
+        QUANTITY -> true
+        WORDS -> scale in WORD_SCALES
+        GRADE -> scale in GRADE_SCALES
+        TITER -> property == "Titr"
+    }
+
+    companion object {
+        private val WORD_SCALES = setOf("Ord", "Nom", "OrdQn", "Nar")
+        private val GRADE_SCALES = setOf("Ord", "OrdQn", "SemiQn")
+        private val TITER_TEXT = Regex("^\\d+\\s*:\\s*\\d+$")
+        private val GRADE_TEXT = Regex("^[1-4]?\\+{1,4}$")
+
+        /** The shape of [result] as printed (flag already removed); anything that isn't a qualitative result is a quantity. */
+        fun of(result: String): ResultShape {
+            val text = QualitativeResult.of(result) ?: return QUANTITY
+            return when {
+                TITER_TEXT.matches(text) -> TITER
+                GRADE_TEXT.matches(text) -> GRADE
+                text.any { it.isDigit() } -> QUANTITY
+                else -> WORDS
+            }
+        }
+    }
+}
+
 /** Picks the term that fits a printed test name best — pure, so it's testable without the catalog. */
 object LoincRanking {
 
     /**
-     * The best fit for [query] among [candidates], or null. A term whose
-     * kind of quantity can't hold a value in [unit] is never a fit: an
-     * unmapped value the user places by hand beats a wrong suggestion.
+     * The best fit for [query] among [candidates], or null. A term that can't
+     * hold the printed [result] (its [ResultShape]) or, for a quantity, a value
+     * in [unit] is never a fit, and neither is a panel or a document, which
+     * hold no single result: an unmapped value the user places by hand beats
+     * a wrong suggestion.
      */
-    fun best(query: String, candidates: List<LoincCandidate>, unit: String = ""): LoincMatch? {
+    fun best(query: String, allCandidates: List<LoincCandidate>, unit: String = "", result: String = ""): LoincMatch? {
+        val shape = ResultShape.of(result)
+        val candidates = allCandidates.filter { it.scale !in NO_SINGLE_RESULT }
         if (candidates.isEmpty()) return null
         val words = foldedTokens(query).toSet()
         val fits = candidates.map { it to labelFit(words, it.labels) }
         // The name's best fit regardless of unit tells its usual specimen: "Kreatinin" in µmol/l is
         // still serum creatinine, not the rarer blood creatinine that also comes in moles.
         val specimen = fits.minWith(compareBy({ it.second.first }, { it.second.second }, { it.first.rank })).first.system
-        val kind = UnitKind.of(unit)
+        val kind = if (shape == ResultShape.QUANTITY) UnitKind.of(unit) else null
         return fits.mapNotNull { (candidate, fit) ->
+            if (!shape.accepts(candidate.scale, candidate.property)) return@mapNotNull null
             val unitPenalty = when {
                 kind == null -> 0
                 candidate.scale != "Qn" -> return@mapNotNull null
@@ -135,6 +178,9 @@ object LoincRanking {
     private val PARENTHESES = Regex("\\([^)]*\\)")
     private const val ACCENTED = "àáâãäåāăąçćčďđèéêëēėęěìíîïīįıłñńňòóôõöøōőŕřśšşșťţțùúûüūůűųýÿžźżæœ"
     private const val PLAIN = "aaaaaaaaacccddeeeeeeeeiiiiiiilnnnoooooooorrsssstttuuuuuuuuyyzzzao"
+
+    /** Panels and documents: a term with these scales groups results, it holds none itself. */
+    private val NO_SINGLE_RESULT = setOf("-", "Doc")
 
     /** Method abbreviations of the English labels ("WBC Auto", "LDL Calc"), which say how, not what. */
     private val METHOD_WORDS = setOf("auto", "calc", "manual", "qn", "cnt", "ia", "lm", "strip", "est")

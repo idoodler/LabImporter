@@ -7,10 +7,10 @@
     {"names": ["Quotient", "Albumin/Kreatinin", "ACR"], "value": 40.9, "unit": "mg/g"}
   ],
   "notNumeric": [
-    {"names": ["Leukozyten"]},
+    {"names": ["Leukozyten", "Leukocytes", "WBC"]},
     {"names": ["Nitrit"]},
     {"names": ["Eiweiß", "Eiweiss", "Protein"]},
     {"names": ["Glucose"]},
-    {"names": ["Blut"]}
+    {"names": ["Blut", "Blood", "Hemoglobin", "Erythrocytes"]}
   ]
 }

@@ -63,8 +63,8 @@ object LabParseSchema {
         "HB-A1C→HbA1c, HB-A1→HbA1c (IFCC), C-PEPT→C-Peptid, GADAAK→Glutamatdecarboxylase-Antikörper, " +
         "ICEA→Inselzell-Antikörper, ICEA2→IA-2-Antikörper, NONHDL→Non-HDL-Cholesterin, TSH-0→Thyreotropin. " +
         "For names already spelled out (e.g. 'Ferritin', 'Vitamin D 25-Hydroxy'), keep them as printed."
-    const val RAW_VALUE = "Result exactly as printed, also when it isn't a number (e.g. 0,80, Negativ, not detected, 1:160, <0.5). " +
-        "Use '-' only when no result is printed"
+    const val RAW_VALUE = "Result as printed, without a high/low flag (H, L, *), also when it isn't a number " +
+        "(e.g. 0,80, Negativ, not detected, 1:160, <0.5). Use '-' only when no result is printed"
     const val UNIT = "Unit of measurement as printed (e.g. mg/dl, %, mmol/mol, U/l, ml/min/1,73m2KOF). Empty string if none."
 }
 
@@ -82,8 +82,10 @@ object LabParsePrompt {
         Do NOT emit specimen, material, or annotation labels as entries — a "value" of 'Serum', 'EDTA-Plasma',
         'Vollblut' or a standalone method tag (e.g. 'JDF-E.') is not a measured test and must be skipped.
         Detect the language of the report and return it as a BCP-47 code (e.g. 'de', 'en') in reportLanguage.
-        Copy every result into rawValue exactly as printed, including results that are not numbers
-        (e.g. 'Negativ', 'positive', 'not detected', 'reactive', '1:160', '<0.5', '2+'); use '-' only when no result is printed.
+        Copy every result into rawValue as printed but without a high/low flag such as H, L or *, including results
+        that are not numbers (e.g. 'Negativ', 'positive', 'not detected', 'reactive', '1:160', '<0.5', '2+');
+        use '-' only when no result is printed.
+        Section headings and column titles (e.g. 'LIPID PANEL', 'Urinstatus', 'Test', 'Result') are not tests: never emit them as entries.
         If you can see a report date or blood draw date, return it in yyyy-MM-dd format; otherwise return an empty string.
         Extract the patient's full name if visible; otherwise return an empty string for patientName.
         Extract the lab or doctor name if visible; otherwise return an empty string for authorName.
@@ -161,7 +163,10 @@ object LabParsePipeline {
     fun postProcess(report: AiLabReport, sourceText: String): ParseResult {
         val entries = report.entries.filter { it.code.isNotBlank() || it.name.isNotBlank() }
         val units = entries.map { unitWithoutFlag(it.unit) }
-        val resolved = entries.mapIndexed { index, entry -> resolveLoinc(entry.code, entry.name, report.reportLanguage, units[index]) }
+        val results = entries.map { valueWithoutFlag(it.rawValue) }
+        val resolved = entries.mapIndexed { index, entry ->
+            resolveLoinc(entry.code, entry.name, report.reportLanguage, units[index], results[index])
+        }
         // Two names can land on one LOINC ("Erythrozyten" and "Hämoglobin" once both found MCHC):
         // a printed code keeps it and so does the first suggestion; a later suggestion stays unmapped
         // for the user to place, instead of one value silently replacing the other.
@@ -171,13 +176,13 @@ object LabParsePipeline {
             val collides = resolvedSuggested && !claimed.add(resolvedCode)
             val code = if (collides) entry.code.trim().ifEmpty { entry.name.trim() } else resolvedCode
             val suggested = resolvedSuggested && !collides
-            val numeric = if (entry.rawValue == "-") null else NumberFormatting.parse(entry.rawValue)
+            val numeric = if (results[index] == "-") null else NumberFormatting.parse(results[index])
             val display = LabMapping.displayName(code)
             LabValue(
                 code = code,
                 // An unmapped value shows the model's expanded name ("Kreatinin"), not the mnemonic.
                 name = if (display == code) entry.name.trim().ifEmpty { entry.code } else display,
-                displayValue = entry.rawValue,
+                displayValue = results[index],
                 numericValue = numeric,
                 unit = units[index],
                 isSuggestedCode = suggested,
@@ -202,11 +207,12 @@ object LabParsePipeline {
      * "Cholesterol") — and finally the printed code, as a whole word only
      * ("TSH"; "KREA" must not prefix-match "Kreatinkinase"). The term that
      * fits best ([LoincRanking]: its label names the test and no more, of the
-     * kind of quantity [unit] measures) is offered as a *suggestion* the user
-     * confirms in review. Unresolved entries keep the printed code so they can
-     * be mapped by hand.
+     * kind of quantity [unit] measures, that can hold the printed [result] —
+     * see [dev.idoodler.labimporter.core.loinc.ResultShape]) is offered as a
+     * *suggestion* the user confirms in review. Unresolved entries keep the
+     * printed code so they can be mapped by hand.
      */
-    fun resolveLoinc(printed: String, name: String, language: String, unit: String = ""): Pair<String, Boolean> {
+    fun resolveLoinc(printed: String, name: String, language: String, unit: String = "", result: String = ""): Pair<String, Boolean> {
         val directory = LabCore.loinc ?: return printed to false
         val trimmedPrinted = printed.trim()
         if (directory.isKnownLoinc(trimmedPrinted)) return trimmedPrinted to false
@@ -222,11 +228,13 @@ object LabParsePipeline {
         }
         var best: LoincMatch? = null
         for ((query, anyLanguage) in steps) {
-            val match = directory.bestMatch(query, lang, anyLanguage = anyLanguage, unit = unit) ?: continue
+            val match = directory.bestMatch(query, lang, anyLanguage = anyLanguage, unit = unit, result = result) ?: continue
             if (best == null || match < best) best = match
             if (match.isExact) break
         }
-        if (best == null && trimmedPrinted.isNotEmpty()) best = directory.bestMatch(trimmedPrinted, lang, prefix = false, unit = unit)
+        if (best == null && trimmedPrinted.isNotEmpty()) {
+            best = directory.bestMatch(trimmedPrinted, lang, prefix = false, unit = unit, result = result)
+        }
         return best?.let { it.code to true } ?: (printed to false)
     }
 
@@ -236,11 +244,26 @@ object LabParsePipeline {
      */
     fun unitWithoutFlag(unit: String): String {
         val trimmed = unit.trim()
+        // A flag alone ("H", "A" for abnormal) is no unit at all.
+        if (trimmed in FLAGS) return ""
         val first = trimmed.substringBefore(' ')
         return if (first != trimmed && first in FLAGS) trimmed.substringAfter(' ').trim() else trimmed
     }
 
-    private val FLAGS = setOf("H", "L", "HH", "LL", "+", "-", "*", "↑", "↓", "!")
+    /**
+     * [value] without a high/low flag the model copied from the next column
+     * ("231 *" → "231", "1:160 H" → "1:160"); anything else unchanged.
+     */
+    fun valueWithoutFlag(value: String): String {
+        val trimmed = value.trim()
+        val last = trimmed.substringAfterLast(' ')
+        return if (last != trimmed && last in VALUE_FLAGS) trimmed.substringBeforeLast(' ').trim() else trimmed
+    }
+
+    private val FLAGS = setOf("H", "L", "HH", "LL", "A", "+", "-", "*", "↑", "↓", "!")
+
+    /** Flags after a value — not "+" or "-", which can belong to the result ("2 +"). */
+    private val VALUE_FLAGS = setOf("H", "L", "HH", "LL", "A", "*", "**", "↑", "↓", "!")
 
     /**
      * The model's date if the report prints it. Models mis-copy digits —

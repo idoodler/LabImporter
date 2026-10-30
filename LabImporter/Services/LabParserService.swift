@@ -32,7 +32,7 @@ struct AILabEntry {
     var name: String
 
     // swiftlint:disable:next line_length
-    @Guide(description: "Result exactly as printed, also when it isn't a number (e.g. 0,80, Negativ, not detected, 1:160, <0.5). Use '-' only when no result is printed")
+    @Guide(description: "Result as printed, without a high/low flag (H, L, *), also when it isn't a number (e.g. 0,80, Negativ, not detected, 1:160, <0.5). Use '-' only when no result is printed")
     var rawValue: String
 
     @Guide(description: "Unit of measurement as printed (e.g. mg/dl, %, mmol/mol, U/l, ml/min/1,73m2KOF). Empty string if none.")

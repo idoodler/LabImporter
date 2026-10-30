@@ -209,6 +209,7 @@ private fun score(name: String, expected: Expected, result: ParseResult?, millis
         }
         if (v != null) used += v
     }
+    if (verbose) values.filter { it !in used && it.numericValue == null }.forEach { problems += "unscored ${it.name} (${it.code}) = '${it.displayValue}'" }
     val extras = values.filter { it !in used && it.numericValue != null }
     extras.forEach { problems += "EXTRA ${it.name} (${it.code}) = ${it.displayValue} ${it.unit}" }
     if (expected.reportDate != null && result?.reportDate?.toString() != expected.reportDate) {
