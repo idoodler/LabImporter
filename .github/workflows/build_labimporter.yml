@@ -18,12 +18,14 @@ jobs:
   build:
     name: Build
     needs: [check_certs]
-    runs-on: macos-26
+    # Xcode 27.1 (iOS 27.1 SDK): built with an older SDK the app runs in
+    # compatibility mode on iPhone Duo. Only the xcode-27 image has it.
+    runs-on: xcode-27
     permissions:
       contents: write
     steps:
       - name: Select Xcode version
-        run: sudo xcode-select --switch /Applications/Xcode_26.2.app/Contents/Developer
+        run: sudo xcode-select --switch /Applications/Xcode_27.1.app/Contents/Developer
 
       - name: Checkout Repo
         uses: actions/checkout@v5

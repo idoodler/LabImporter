@@ -177,7 +177,7 @@ The workflow carries on even if creating the profiles fails (`fastlane certs || 
 
 Go to **Actions → 4. Build LabImporter → Run workflow**.
 
-This runs on a GitHub-hosted `macos-26` runner with Xcode 26.2, builds and archives the app, increments the build number automatically from the latest TestFlight build, and uploads the IPA to TestFlight.
+This runs on a GitHub-hosted `xcode-27` runner with Xcode 27.1 (needed to build for iPhone Duo), builds and archives the app, increments the build number automatically from the latest TestFlight build, and uploads the IPA to TestFlight.
 
 After the first manual run succeeds, builds are triggered automatically on the **first Sunday of each month**.
 
@@ -208,7 +208,7 @@ Don't set `FORCE_NUKE_CERTS` for this: it revokes the Distribution certificate, 
    git clone https://github.com/idoodler-s-Diabetes-Management/LabImporter.git
    ```
 
-2. Open `LabImporter.xcodeproj` in Xcode 26 or later (requires the iOS 26 SDK).
+2. Open `LabImporter.xcodeproj` in Xcode 27.1 or later (the iOS 27.1 SDK builds for iPhone Duo; the app still runs on iOS 26).
 
 3. Configure code signing by creating a `Local.xcconfig` file next to `Config.xcconfig` at the repo root:
 
