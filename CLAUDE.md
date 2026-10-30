@@ -114,8 +114,11 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
 - **`LoincDirectory`** wraps the full LOINC catalog. `tools/build_loinc_resource.py`
   (run by the "Generate LOINC resource" Xcode build phase) distills the official
   release zip under `Vendor/LOINC/*.zip` into a bundled SQLite database `loinc.db`
-  (FTS5) — the ~18.5k common laboratory terms, each with a name + description
-  localized into every language the app ships. The DB is a build product (not in
+  (FTS5) — the ~18.8k common laboratory terms, each with a name + description
+  localized into every language the app ships. That includes the ~300 common
+  DISCOURAGED terms labs still print (Quest's blood lead 5671-3): known when
+  printed or picked, ranked after every ACTIVE term, never suggested for a
+  name (`bestMatch` only considers ACTIVE terms). The DB is a build product (not in
   git); only the source zip is committed. `LabMapping` falls back to
   `LoincDirectory` for any code that is already a raw LOINC number (e.g. picked in
   `CodePickerSheet`).
