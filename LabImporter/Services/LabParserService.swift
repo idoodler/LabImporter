@@ -70,8 +70,8 @@ struct ParseProgress: Equatable, Sendable {
 
 /// Errors surfaced to the user when the on-device model can't parse a report.
 ///
-/// Foundation Models throws `LanguageModelSession.GenerationError`, whose
-/// `localizedDescription` is a terse, English-only system string (e.g. "An
+/// Foundation Models throws `LanguageModelSession.GenerationError` (iOS 27:
+/// `LanguageModelError`), whose `localizedDescription` is a terse, English-only system string (e.g. "An
 /// unsupported language or locale was used"). Leaking that verbatim into the
 /// UI is confusing — especially in a non-English app — so we translate the
 /// cases we care about into clear, localized, actionable messages.
@@ -136,6 +136,24 @@ enum LabParserError: LocalizedError, Equatable {
         }
     }
 
+    /// The user-facing error for anything a session throws: Foundation Models'
+    /// own errors become a `LabParserError`, anything else (cancellation)
+    /// passes through. iOS 27 throws `LanguageModelError` and friends instead
+    /// of `GenerationError` to apps built with its SDK.
+    static func from(_ error: Error) -> Error {
+        if let error = error as? LabParserError { return error }
+        if let error = error as? LanguageModelSession.GenerationError { return LabParserError(error) }
+        #if compiler(>=6.4)
+        if #available(iOS 27, *) {
+            if let error = error as? LanguageModelError { return LabParserError(error) }
+            if error is SystemLanguageModel.Error { return LabParserError.modelNotReady }
+            if error is LanguageModelSession.Error { return LabParserError.busy }
+            if error is GeneratedContent.ParsingError { return LabParserError.generationFailed }
+        }
+        #endif
+        return error
+    }
+
     /// Maps a Foundation Models generation error to a user-facing `LabParserError`.
     init(_ generationError: LanguageModelSession.GenerationError) {
         switch generationError {
@@ -153,6 +171,25 @@ enum LabParserError: LocalizedError, Equatable {
             self = .generationFailed
         }
     }
+
+    #if compiler(>=6.4)
+    /// Maps an iOS 27 language model error to a user-facing `LabParserError`.
+    @available(iOS 27, *)
+    init(_ error: LanguageModelError) {
+        switch error {
+        case .contextSizeExceeded:
+            self = .documentTooLong
+        case .unsupportedLanguageOrLocale:
+            self = .unsupportedLanguageOrLocale
+        case .guardrailViolation, .refusal:
+            self = .contentBlocked
+        case .rateLimited, .timeout:
+            self = .busy
+        default:
+            self = .generationFailed
+        }
+    }
+    #endif
 }
 
 // MARK: - Parser
@@ -177,12 +214,17 @@ actor LabParserService {
         from text: String,
         onProgress: (@Sendable (ParseProgress) -> Void)? = nil
     ) async throws -> ParseResult {
-        let report = try await parseWithFoundationModels(text: text, onProgress: onProgress)
+        // Say why the model can't be used (Apple Intelligence off, still
+        // downloading) instead of letting the session fail with an opaque error.
+        if let unavailable = LabParserError(SystemLanguageModel.default.availability) {
+            throw unavailable
+        }
+        let report = try await parseInParts(text: text, onProgress: onProgress)
         // Number parsing, LOINC resolution (in the report's own language), date
         // validation against the text and de-duplication are shared with Android so both apps turn
         // the same model output into the same values (LabImporterCore.LabParsePipeline).
         SharedCore.start()
-        let result = LabParsePipeline.shared.postProcess(report: report.shared, sourceText: text)
+        let result = LabParsePipeline.shared.postProcess(report: report, sourceText: text)
         return ParseResult(
             values: result.values.map(LabValue.init(shared:)),
             reportDate: result.reportDate.map(Date.init(shared:)),
@@ -200,22 +242,56 @@ actor LabParserService {
     }
 
     /// Consumes the prewarmed session if one is waiting, else creates a fresh
-    /// one. Sessions are single-use per parse so transcripts never accumulate
-    /// across imports.
+    /// one. Sessions are single-use per part so transcripts never accumulate
+    /// across parts or imports.
     private func takeSession() -> LanguageModelSession {
         defer { preparedSession = nil }
         return preparedSession ?? Self.makeSession()
+    }
+
+    /// Reads the report part by part (LabImporterCore `LabParseChunks`, shared
+    /// with Android): the model's context has to hold the instructions, the
+    /// schema, the text and every entry read from it, so a long report never
+    /// fits whole. A part the model still finds too long is read in halves.
+    /// Each part gets a fresh session; progress counts on across parts.
+    private func parseInParts(
+        text: String,
+        onProgress: (@Sendable (ParseProgress) -> Void)?
+    ) async throws -> LabImporterCore.AiLabReport {
+        SharedCore.start()
+        let chunks = LabParseChunks.shared
+        var pending = chunks.parts(text: text)
+        var replies: [LabImporterCore.AiLabReport] = []
+        var entriesBefore = 0
+        var latestName: String?
+        while !pending.isEmpty {
+            let part = pending.removeFirst()
+            let offset = entriesBefore
+            let previousName = latestName
+            let reply: AILabReport
+            do {
+                reply = try await parseWithFoundationModels(text: part) { progress in
+                    onProgress?(ParseProgress(
+                        entryCount: offset + progress.entryCount,
+                        latestName: progress.latestName ?? previousName
+                    ))
+                }
+            } catch LabParserError.documentTooLong {
+                guard let halves = chunks.smaller(part: part) else { throw LabParserError.documentTooLong }
+                pending.insert(contentsOf: halves, at: 0)
+                continue
+            }
+            replies.append(reply.shared)
+            entriesBefore += reply.entries.count
+            latestName = reply.entries.last?.name ?? latestName
+        }
+        return chunks.merge(reports: replies)
     }
 
     private func parseWithFoundationModels(
         text: String,
         onProgress: (@Sendable (ParseProgress) -> Void)?
     ) async throws -> AILabReport {
-        // Say why the model can't be used (Apple Intelligence off, still
-        // downloading) instead of letting the session fail with an opaque error.
-        if let unavailable = LabParserError(SystemLanguageModel.default.availability) {
-            throw unavailable
-        }
         let session = takeSession()
 
         // Foundation Models detects the language of the *prompt* and refuses
@@ -252,10 +328,10 @@ actor LabParserService {
                 }
             }
             return materialize(lastSnapshot)
-        } catch let error as LanguageModelSession.GenerationError {
+        } catch {
             // Translate the model's terse, English-only system error into a
             // clear, localized message before it reaches the UI alert.
-            throw LabParserError(error)
+            throw LabParserError.from(error)
         }
     }
 

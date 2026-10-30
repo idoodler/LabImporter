@@ -95,7 +95,9 @@ actor OCRService {
                     obs.topCandidates(1).first?.string
                 }
 
-                continuation.resume(returning: lines.joined(separator: " "))
+                // One row per line, as PDF text arrives: the model reads table rows
+                // as rows, and a long report is cut between them (LabParseChunks).
+                continuation.resume(returning: lines.joined(separator: "\n"))
             }
 
             request.recognitionLevel = .accurate

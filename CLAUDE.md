@@ -288,7 +288,8 @@ shared/        # Kotlin Multiplatform (android, iosArm64, iosSimulatorArm64, jvm
                          #   (one schema version + migration chain for CDA and FHIR)
     parse/               # LabParseSchema/LabParsePrompt (shared AI instructions, guide texts,
                          #   JSON contract/schema), LabParsePipeline (numbers, LOINC resolution,
-                         #   date check against the text, dedup)
+                         #   date check against the text, dedup), LabParseChunks (long reports
+                         #   read in overlapping parts, replies merged)
     transfer/            # ReportTransfer: iPhone ⇄ Android file (FHIR Bundle; also reads CDA)
     export/PdfReport.kt  # PDF content + pagination (PdfReport, PdfLayout) — both apps' PDFs
     model/               # … also ChartAxis (rounded chart ticks), SortEditorState (Sort & Visibility rules)
@@ -575,8 +576,18 @@ Required secrets: `GH_PAT`, `TEAMID`, `FASTLANE_ISSUER_ID`, `FASTLANE_KEY_ID`,
 - **When the on-device model can't be used, say so — never guess.** iOS shows
   `UnsupportedDeviceView` on ineligible hardware and maps every other Foundation
   Models state to a clear message (`LabParserError`: Apple Intelligence off,
-  still downloading, busy, too long…). Android mirrors this (see below). There
-  is no rule-based fallback on either platform.
+  still downloading, busy, too long…). iOS 27 throws `LanguageModelError` and
+  friends instead of `GenerationError` to apps built with its SDK —
+  `LabParserError.from(_:)` maps both (the iOS 27 part behind
+  `#if compiler(>=6.4)`, since CI builds with Xcode 26). Android mirrors this
+  (see below). There is no rule-based fallback on either platform.
+- **Long reports are read in parts.** The models' contexts (~4K tokens) hold
+  the instructions, the schema, the text and the reply, so the shared
+  `LabParseChunks` cuts a report over 2,000 characters between lines into
+  parts that overlap by two lines; each platform reads them in order (a fresh
+  session each), halves a part the model still finds too long, and merges the
+  replies before `LabParsePipeline`. A report that fits is read exactly as one
+  prompt. iOS OCR keeps one recognized line per line for that reason.
 - **Migrating the exported CDA:** the read-back is version-gated (see "CDA
   round-trip"). Whenever you change what the export *means* — remap a LOINC code,
   change a unit convention, restructure observations — do all of:
