@@ -452,6 +452,18 @@ extension TrendsView {
 // MARK: - Preview
 
 #if DEBUG
+extension View {
+    /// Detents for a sheet showing `TrendsView`. Pass whether the *presenting*
+    /// view is regular × regular (the sheet's own content can report a compact
+    /// width). There the sheet opens at full height: a medium detent on an
+    /// unfolded iPhone Duo's short, wide inner display leaves the chart cut off
+    /// below its first gridline. Elsewhere it starts at medium, as before.
+    func trendSheetPresentation(regular: Bool) -> some View {
+        presentationDetents(regular ? [.large] : [.medium, .large])
+            .presentationDragIndicator(regular ? .hidden : .visible)
+    }
+}
+
 #Preview("Trends") {
     NavigationStack {
         TrendsView(reports: LabReport.sampleHistory, initialCode: "4548-4")

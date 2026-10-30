@@ -10,12 +10,14 @@ on:
 jobs:
   build:
     name: Compile check — Simulator SDK, unsigned, no secrets, no artifacts
-    runs-on: macos-26
+    # Xcode 27.1 (iOS 27.1 SDK) — the first that builds for iPhone Duo; only
+    # the xcode-27 image has it (macos-26 stops at Xcode 26.x).
+    runs-on: xcode-27
     permissions:
       contents: read
     steps:
       - name: Select Xcode version
-        run: sudo xcode-select --switch /Applications/Xcode_26.2.app/Contents/Developer
+        run: sudo xcode-select --switch /Applications/Xcode_27.1.app/Contents/Developer
 
       - name: Checkout Repo
         uses: actions/checkout@v5
@@ -40,11 +42,16 @@ jobs:
       # credentials, which this repo doesn't have configured).
       - name: Unit and UI tests (Simulator SDK, unsigned)
         run: |
-          # The newest available iPhone simulator of the selected Xcode.
+          # The iPhone Duo simulator if the selected Xcode has one (the layouts
+          # that adapt to its fold), else the newest available iPhone.
           SIMULATOR=$(xcrun simctl list devices available --json | python3 -c '
           import json, sys
           runtimes = json.load(sys.stdin)["devices"]
           ios = sorted((k for k in runtimes if ".iOS-" in k), key=lambda k: [int(p) for p in k.rsplit("iOS-", 1)[1].split("-")])
-          phones = [d for d in runtimes[ios[-1]] if d["name"].startswith("iPhone")]
-          print(phones[-1]["udid"])')
+          phones = [d for k in ios for d in runtimes[k] if d["name"].startswith("iPhone")]
+          duos = [d for d in phones if d["name"] == "iPhone Duo"]
+          print((duos or phones)[-1]["udid"])')
+          # Boot it up front: left to xcodebuild, the Duo simulator's first boot
+          # can stall the test run indefinitely.
+          xcrun simctl bootstatus "$SIMULATOR" -b
           tools/ios_test.sh all "$SIMULATOR"

@@ -227,6 +227,18 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   from `PreviewSampleData` / the model `sample*` fixtures rather than ad-hoc data.
   New or edited views are not done until their previews cover every variation.
 
+- **iPhone Duo (foldable).** Layouts follow size classes, never the device:
+  regular × regular (unfolded inner display, full-screen iPad) gets the
+  sidebar; the folded outer display is a compact iPhone. Content that would lie
+  across the hinge reads the fold with `GeometryProxy.verticalFold`
+  (`Views/Shared/GeometryProxy+Fold.swift`, `reservedRegions(kind: .division,
+  options: .includeInactive)`, iOS 27.1) — honored even when the device lies
+  flat — and lays out around it: the dashboard grid fits columns to each side
+  (`MetricGridLayout`), the Review screen splits into two panes
+  (`ReviewView+FoldLayout`). Half-open, the system already places split views
+  and sheets beside the fold. Verify on the "iPhone Duo" simulator in each
+  pose (open / half-open / closed).
+
 ### Siri & App Intents
 - SiriKit is retired; **App Intents is the only path into Siri**. Everything
   lives in `Intents/` and stays feature-detectable/self-contained — no
@@ -484,7 +496,7 @@ becomes active (items expire after a day). The App Group
 
 ## Build, run & lint
 
-### Local (macOS, requires Xcode 26 / iOS 26 SDK)
+### Local (macOS, requires Xcode 27.1 / iOS 27.1 SDK — the first with iPhone Duo; deployment target stays iOS 26)
 ```
 open LabImporter.xcodeproj      # set your Development Team under Signing & Capabilities
 ```
@@ -524,7 +536,7 @@ and run in order on first setup:
    (the `Match-Secrets` repo is shared with Trio; see README "When the build
    can't find a provisioning profile"). It runs `fastlane certs || true`, so
    read its log rather than trusting a green run.
-4. **`build_labimporter.yml`** — on `macos-26` with Xcode 26.2: lints, bumps the
+4. **`build_labimporter.yml`** — on the `xcode-27` image with Xcode 27.1: lints, bumps the
    build number from the latest TestFlight build, builds, archives, uploads to
    TestFlight. Manual + scheduled (first Sunday monthly).
 5. **`lint.yml`** — SwiftLint on every PR to `main` (and manual dispatch).
@@ -535,7 +547,9 @@ no secrets needed.
 
 Not part of that numbered setup sequence, but also on every PR to `main` (and
 manual dispatch): **`build_pr.yml`** — SwiftLint plus the iOS unit and UI
-tests (`tools/ios_test.sh all`, which builds the app) on `macos-26` / Xcode 26.2
+tests (`tools/ios_test.sh all`, which builds the app) on the `xcode-27` image /
+Xcode 27.1, on the iPhone Duo simulator (booted up front — left to
+`xcodebuild`, its first boot can stall the run)
 against the **Simulator SDK** with `CODE_SIGNING_ALLOWED=NO`. It calls no
 Fastlane lane and needs **no secrets at all** — no App Store Connect API key,
 no Match, no signing identity — so it works even before this repo's release
