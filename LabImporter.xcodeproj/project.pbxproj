@@ -12,6 +12,7 @@
 		19F32D60576BCE5E4F027EBD /* LabImporterShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = DE0509DCBAD0DE0B9B9BFDB9 /* LabImporterShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		1F71BBFA86E343E8030D4772 /* report.cda.xml in Resources */ = {isa = PBXBuildFile; fileRef = FD58767C7178A49BAB8FBE6B /* report.cda.xml */; };
 		2429A57046AF0C407704B1D1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8697C8B69368D44D6635379B /* Foundation.framework */; };
+		24A05080FAC2FEBA56D17422 /* ResultHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA282ABA1F556272F6A5CD20 /* ResultHistoryView.swift */; };
 		402366324649FA7CCE9915EA /* CDAExportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D324A0B5E9721D89AFB660 /* CDAExportTests.swift */; };
 		496C508CF0C9E24DFCA3B773 /* FlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD24AABF9080FC1ABB8707AF /* FlowTests.swift */; };
 		4A2398D082C09285D2C39F94 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B256B38BDF50DF9CBDFE493B /* ModelTests.swift */; };
@@ -279,6 +280,7 @@
 		AASP000000000000000002AA /* SpotlightIndexService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightIndexService.swift; sourceTree = "<group>"; };
 		AASP000000000000000006AA /* SearchPresentationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchPresentationCoordinator.swift; sourceTree = "<group>"; };
 		B256B38BDF50DF9CBDFE493B /* ModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ModelTests.swift; sourceTree = "<group>"; };
+		BA282ABA1F556272F6A5CD20 /* ResultHistoryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ResultHistoryView.swift; sourceTree = "<group>"; };
 		C3D324A0B5E9721D89AFB660 /* CDAExportTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CDAExportTests.swift; sourceTree = "<group>"; };
 		C897701053C6666E95989E84 /* ScreenshotMode.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScreenshotMode.swift; sourceTree = "<group>"; };
 		D084E33B414D911400410893 /* ShareView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareView.swift; sourceTree = "<group>"; };
@@ -531,6 +533,7 @@
 				AABB000000000000000069AA /* TrendsView.swift */,
 				AAEE000000000000000006AA /* TrendsView+Accessibility.swift */,
 				AAMS000000000000000002AA /* MetricSearchResultsView.swift */,
+				BA282ABA1F556272F6A5CD20 /* ResultHistoryView.swift */,
 			);
 			path = Dashboard;
 			sourceTree = "<group>";
@@ -1016,6 +1019,7 @@
 				A7AB66CBD5805334A9273027 /* SharedCore.swift in Sources */,
 				8EDE12FEB078268601ECD96D /* ShareInbox.swift in Sources */,
 				002FF15BE9F052637638C743 /* ReportTransferService.swift in Sources */,
+				24A05080FAC2FEBA56D17422 /* ResultHistoryView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

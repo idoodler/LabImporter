@@ -37,6 +37,34 @@ class DashboardTest {
     }
 
     @Test
+    fun qualitativeResultsBecomeListedMetricsOnTheDashboardOnly() {
+        fun text(id: String, date: LocalDate, code: String, result: String, unit: String = "") =
+            LabReport(id, date, "", "", listOf(LabReport.Entry("$id-q", code, code, result, null, unit)))
+        val reports = listOf(
+            report("a", LocalDate(2026, 1, 1), "2160-0" to 1.0),
+            text("b", LocalDate(2026, 2, 1), "5196-1", "nicht reaktiv"),
+            text("c", LocalDate(2026, 5, 1), "5196-1", "reaktiv"),
+            text("d", LocalDate(2026, 3, 1), "1988-5", "<0,5", "mg/l"),
+            // A code with any number is charted; its text results don't make a second metric.
+            text("e", LocalDate(2026, 4, 1), "2160-0", "<0,3", "mg/dl"),
+            // "-" is no result.
+            text("f", LocalDate(2026, 4, 1), "8061-4", "-"),
+        )
+        assertEquals(listOf("2160-0"), Dashboard.metrics(reports).map { it.code })
+        val all = Dashboard.dashboardMetrics(reports)
+        assertEquals(listOf("2160-0", "5196-1", "1988-5"), all.map { it.code })
+        val hbs = all[1]
+        assertEquals(true, hbs.isQualitative)
+        assertEquals("reaktiv", hbs.entry.displayValue)
+        assertEquals(LocalDate(2026, 5, 1), hbs.date)
+        assertEquals(listOf("nicht reaktiv", "reaktiv"), hbs.results.map { it.text })
+        assertNull(hbs.trend)
+        assertNull(hbs.rangeStatus)
+        assertEquals("mg/l", all[2].results.single().unit)
+        assertEquals(false, all[0].isQualitative)
+    }
+
+    @Test
     fun sparklineCoversTwelveMonthsButKeepsTwoPoints() {
         val metric = Dashboard.metrics(
             listOf(

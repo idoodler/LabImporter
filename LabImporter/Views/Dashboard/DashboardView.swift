@@ -29,6 +29,7 @@ struct DashboardView: View {
     @State private var showSettings = false
     @State private var showHistorySheet = false
     @State private var trendSheet: TrendSheet?
+    @State private var resultsSheet: MetricData?
 
     private struct TrendSheet: Identifiable {
         var id: String { code }
@@ -84,6 +85,13 @@ struct DashboardView: View {
         }
         .sheet(isPresented: $showHistorySheet) {
             NavigationStack { HistoryView(initialReports: reports) }
+        }
+        .sheet(item: $resultsSheet) { metric in
+            NavigationStack {
+                ResultHistoryView(metric: metric, onDismiss: { resultsSheet = nil })
+            }
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
         }
         .sheet(item: $trendSheet) { sheet in
             NavigationStack {
@@ -198,7 +206,10 @@ struct DashboardView: View {
     private func metricCard(for metric: MetricData) -> some View {
         let code = metric.entry.code
         let pinned = prefs.pinnedSet.contains(code)
-        Button { trendSheet = TrendSheet(code: code) } label: {
+        Button {
+            // Results that aren't numbers have no chart: they open as a list.
+            if metric.isQualitative { resultsSheet = metric } else { trendSheet = TrendSheet(code: code) }
+        } label: {
             MetricCard(metric: metric, isPinned: pinned)
         }
         .buttonStyle(.plain)
@@ -270,7 +281,8 @@ struct DashboardView: View {
     /// `Dashboard`, identical on Android): every visible metric in dashboard
     /// order — pinned first, then the user's custom order, then by name; hidden
     /// codes removed — each with a sparkline over the 12 months before its own
-    /// latest reading (never fewer than two points when two exist).
+    /// latest reading (never fewer than two points when two exist), or, for
+    /// results that aren't numbers, the latest ones.
     struct Content {
         let metrics: [MetricData]
         /// Up to three distinct category colors of the visible metrics, for
@@ -280,7 +292,7 @@ struct DashboardView: View {
         init(reports: [LabReport], prefs: LabDisplayPreferences) {
             SharedCore.start()
             let dashboard = LabImporterCore.Dashboard.shared
-            let sorted = dashboard.sorted(metrics: dashboard.metrics(reports: reports.map(\.shared)), preferences: prefs.shared)
+            let sorted = dashboard.sorted(metrics: dashboard.dashboardMetrics(reports: reports.map(\.shared)), preferences: prefs.shared)
             metrics = sorted.map(MetricData.init(shared:))
             backgroundColors = dashboard.backgroundCategories(sorted: sorted, limit: 3)
                 .map { LabCategory(sharedName: $0.name).color }
@@ -289,7 +301,8 @@ struct DashboardView: View {
         /// The dashboard's single metric, when that's all the user has. Rather
         /// than stranding one small grid card above a generic "import more"
         /// filler, the dashboard leads with a large featured card instead.
-        var soleMetric: MetricData? { metrics.count == 1 ? metrics.first : nil }
+        /// The hero card charts, so a lone result that isn't a number stays a grid card.
+        var soleMetric: MetricData? { metrics.count == 1 && metrics.first?.isQualitative == false ? metrics.first : nil }
 
         /// A single metric gets the dedicated hero card instead (see
         /// `soleMetric`), so this hint only fires for exactly two metrics: still
@@ -354,6 +367,31 @@ private extension DashboardView {
             isProcessing: false
         )
     }
+}
+
+#Preview("Results That Aren't Numbers") {
+    NavigationStack {
+        DashboardView(
+            reports: LabReport.sampleHistoryWithQualitative,
+            onScan: {}, onPickFile: {}, onPaste: {}, onManual: {},
+            scannerAvailable: true,
+            clipboardAvailable: true,
+            isProcessing: false
+        )
+    }
+}
+
+#Preview("Results That Aren't Numbers · Dark") {
+    NavigationStack {
+        DashboardView(
+            reports: LabReport.sampleHistoryWithQualitative,
+            onScan: {}, onPickFile: {}, onPaste: {}, onManual: {},
+            scannerAvailable: true,
+            clipboardAvailable: true,
+            isProcessing: false
+        )
+    }
+    .preferredColorScheme(.dark)
 }
 
 #Preview("Few values") {
