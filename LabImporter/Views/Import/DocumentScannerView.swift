@@ -20,7 +20,10 @@ struct DocumentScannerView: UIViewControllerRepresentable {
 
     func updateUIViewController(_ uiViewController: VNDocumentCameraViewController, context: Context) {}
 
-    final class Coordinator: NSObject, VNDocumentCameraViewControllerDelegate {
+    // VisionKit calls its delegate on the main thread but doesn't declare it
+    // main-actor isolated; the conformance says so for the calls into SwiftUI.
+    @MainActor
+    final class Coordinator: NSObject, @preconcurrency VNDocumentCameraViewControllerDelegate {
         let parent: DocumentScannerView
 
         init(parent: DocumentScannerView) {

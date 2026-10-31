@@ -30,6 +30,15 @@ extension RangeStatus {
         case .normal: return "In range"
         }
     }
+
+    /// `label` as a string, for text built from several parts (VoiceOver values).
+    var localizedLabel: String {
+        switch self {
+        case .high: return String(localized: "High")
+        case .low: return String(localized: "Low")
+        case .normal: return String(localized: "In range")
+        }
+    }
 }
 
 // MARK: - RangeStatusBadge
@@ -55,14 +64,15 @@ struct RangeStatusBadge: View {
                 .background(status.color.opacity(0.15), in: Capsule())
                 .foregroundStyle(status.color)
                 .accessibilityElement(children: .ignore)
-                .accessibilityLabel(accessibilityText)
+                .accessibilityLabel(Text(status.label))
+                .accessibilityValue(rangeText)
         }
     }
 
-    private var accessibilityText: Text {
-        let prefix = Text(status.label)
-        guard let range, !range.isEmpty else { return prefix }
-        return prefix + Text(verbatim: ", ") + Text("Reference range \(range.formatted(unit: unit))")
+    /// The range behind the flag, read after the status: "High, Reference range 3.5–5.3".
+    private var rangeText: Text {
+        guard let range, !range.isEmpty else { return Text(verbatim: "") }
+        return Text("Reference range \(range.formatted(unit: unit))")
     }
 }
 
