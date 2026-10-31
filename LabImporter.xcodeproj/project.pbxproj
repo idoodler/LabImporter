@@ -12,6 +12,7 @@
 		19F32D60576BCE5E4F027EBD /* LabImporterShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = DE0509DCBAD0DE0B9B9BFDB9 /* LabImporterShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		1F71BBFA86E343E8030D4772 /* report.cda.xml in Resources */ = {isa = PBXBuildFile; fileRef = FD58767C7178A49BAB8FBE6B /* report.cda.xml */; };
 		2429A57046AF0C407704B1D1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8697C8B69368D44D6635379B /* Foundation.framework */; };
+		3FCE84C3C02472A177583529 /* OCRServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF6109F139005B280A9DDC17 /* OCRServiceTests.swift */; };
 		402366324649FA7CCE9915EA /* CDAExportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D324A0B5E9721D89AFB660 /* CDAExportTests.swift */; };
 		496C508CF0C9E24DFCA3B773 /* FlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD24AABF9080FC1ABB8707AF /* FlowTests.swift */; };
 		49F7BFCE5950051D9255C7EA /* MetricGridLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3D8155A96425EDC36A74FD /* MetricGridLayoutTests.swift */; };
@@ -291,6 +292,7 @@
 		D084E33B414D911400410893 /* ShareView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareView.swift; sourceTree = "<group>"; };
 		DE0509DCBAD0DE0B9B9BFDB9 /* LabImporterShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = LabImporterShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED3D8155A96425EDC36A74FD /* MetricGridLayoutTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MetricGridLayoutTests.swift; sourceTree = "<group>"; };
+		EF6109F139005B280A9DDC17 /* OCRServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OCRServiceTests.swift; sourceTree = "<group>"; };
 		FD24AABF9080FC1ABB8707AF /* FlowTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FlowTests.swift; sourceTree = "<group>"; };
 		FD58767C7178A49BAB8FBE6B /* report.cda.xml */ = {isa = PBXFileReference; includeInIndex = 1; path = report.cda.xml; sourceTree = "<group>"; };
 		FE0D199B97E02563880F592E /* LabParserErrorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LabParserErrorTests.swift; sourceTree = "<group>"; };
@@ -366,6 +368,7 @@
 				FE0D199B97E02563880F592E /* LabParserErrorTests.swift */,
 				1FFE290841848738CAADD9E0 /* ShareInboxTests.swift */,
 				ED3D8155A96425EDC36A74FD /* MetricGridLayoutTests.swift */,
+				EF6109F139005B280A9DDC17 /* OCRServiceTests.swift */,
 			);
 			name = LabImporterTests;
 			path = LabImporterTests;
@@ -933,6 +936,7 @@
 				D4991EEE3D0EAEDA34E1C0F5 /* LabParserErrorTests.swift in Sources */,
 				A964924DB8628B3BF19463FD /* ShareInboxTests.swift in Sources */,
 				49F7BFCE5950051D9255C7EA /* MetricGridLayoutTests.swift in Sources */,
+				3FCE84C3C02472A177583529 /* OCRServiceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

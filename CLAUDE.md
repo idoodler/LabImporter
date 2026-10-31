@@ -220,6 +220,10 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
 - OCR recognizes the app's current language plus English —
   `OCRService.recognitionLanguages(for:)` uses `Bundle.main.preferredLocalizations`
   first, then English, filtered to Vision's `supportedRecognitionLanguages()`.
+  A PDF page's embedded text is used as is, unless it has none or uses
+  Unicode private-use characters (`OCRService.hasPrivateUseCharacters`: some
+  fonts draw "<" or "(" that way, so "<1.0" would read as an exact 1.0) —
+  those pages are OCR'd from their render; pages keep their order.
   Narrative CDA labels are German.
 - Preferences (`labDisplayPrefs`, `patientName`, `hasSeenWelcome`, etc.) are read
   via `@AppStorage`. `LabDisplayPreferences` is `RawRepresentable` over the shared
