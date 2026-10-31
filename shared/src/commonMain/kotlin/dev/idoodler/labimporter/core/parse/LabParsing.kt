@@ -220,21 +220,25 @@ object LabParsePipeline {
         if (directory.isKnownLoinc(trimmedPrinted)) return trimmedPrinted to false
         val lang = directory.resolvedLanguage(language)
         val term = name.trim()
-        // (query, any catalog language) — earlier steps win a tie.
+        // Earlier steps win a tie.
         val steps = if (term.isEmpty()) emptyList() else buildList {
-            add(term to false)
-            add(term to true)
-            LoincDirectory.withoutStopWords(term)?.let { add(it to false) }
-            LoincDirectory.withoutTotal(term)?.let { add(it to false); add(it to true) }
+            add(Step(term))
+            add(Step(term, anyLanguage = true))
+            LoincDirectory.withoutStopWords(term)?.let { add(Step(it)) }
+            LoincDirectory.withoutTotal(term)?.let { add(Step(it)); add(Step(it, anyLanguage = true)) }
             LoincDirectory.withLoincSpellings(term)?.let { spelled ->
-                add(spelled to false)
-                LoincDirectory.withoutTotal(spelled)?.let { add(it to false) }
+                add(Step(spelled))
+                LoincDirectory.withoutTotal(spelled)?.let { add(Step(it)) }
             }
-            LoincDirectory.stemmedQueries(term).forEach { add(it to true) }
+            // A stem is a cut-off word: never matched against related names ("cholest" is not
+            // cholesterol esterase's "Cholest").
+            LoincDirectory.stemmedQueries(term).forEach { add(Step(it, anyLanguage = true, synonyms = false)) }
         }
         var best: LoincMatch? = null
-        for ((query, anyLanguage) in steps) {
-            val match = directory.bestMatch(query, lang, anyLanguage = anyLanguage, unit = unit, result = result) ?: continue
+        for (step in steps) {
+            val match = directory.bestMatch(
+                step.query, lang, anyLanguage = step.anyLanguage, unit = unit, result = result, synonyms = step.synonyms,
+            ) ?: continue
             if (best == null || match < best) best = match
             if (match.isExact) break
         }
@@ -245,6 +249,9 @@ object LabParsePipeline {
         }
         return best?.let { it.code to true } ?: (printed to false)
     }
+
+    /** One lookup of [resolveLoinc]: a query, in every catalog language or the report's, with related names or not. */
+    private data class Step(val query: String, val anyLanguage: Boolean = false, val synonyms: Boolean = true)
 
     /**
      * [unit] without a high/low flag the model read into it from the next
