@@ -197,13 +197,32 @@ enum LabParserError: LocalizedError, Equatable {
 
 actor LabParserService {
 
+    /// Reads one part of a report into the model's structured reply, reporting
+    /// streamed progress. Foundation Models in the app; tests (and the DEBUG
+    /// screenshot mode) hand in a stand-in, since a simulator has no model.
+    typealias PartReader = @Sendable (
+        _ part: String,
+        _ onProgress: @escaping @Sendable (ParseProgress) -> Void
+    ) async throws -> AILabReport
+
+    /// The stand-in, when there is one; nil reads with Foundation Models.
+    private let partReader: PartReader?
+
+    init(partReader: PartReader? = nil) {
+        #if DEBUG
+        self.partReader = partReader ?? ScreenshotMode.partReader
+        #else
+        self.partReader = partReader
+        #endif
+    }
+
     /// A session created (and prewarmed) ahead of the next parse so the model
     /// loads while the user is still scanning or while OCR runs, instead of
     /// paying that startup cost serialized after it.
     private var preparedSession: LanguageModelSession?
 
     func prewarm() {
-        guard preparedSession == nil else { return }
+        guard partReader == nil, preparedSession == nil else { return }
         let session = Self.makeSession()
         session.prewarm()
         preparedSession = session
@@ -217,7 +236,7 @@ actor LabParserService {
     ) async throws -> ParseResult {
         // Say why the model can't be used (Apple Intelligence off, still
         // downloading) instead of letting the session fail with an opaque error.
-        if let unavailable = LabParserError(SystemLanguageModel.default.availability) {
+        if partReader == nil, let unavailable = LabParserError(SystemLanguageModel.default.availability) {
             throw unavailable
         }
         let report = try await parseInParts(text: text, onProgress: onProgress)
@@ -271,11 +290,16 @@ actor LabParserService {
             let previousName = latestName
             let reply: AILabReport
             do {
-                reply = try await parseWithFoundationModels(text: part) { progress in
+                let report: @Sendable (ParseProgress) -> Void = { progress in
                     onProgress?(ParseProgress(
                         entryCount: offset + progress.entryCount,
                         latestName: progress.latestName ?? previousName
                     ))
+                }
+                if let partReader {
+                    reply = try await partReader(part, report)
+                } else {
+                    reply = try await parseWithFoundationModels(text: part, onProgress: report)
                 }
             } catch LabParserError.documentTooLong {
                 guard let halves = chunks.smaller(part: part) else { throw LabParserError.documentTooLong }

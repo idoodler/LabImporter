@@ -435,8 +435,13 @@ private extension HomeView {
         hasChosenICloudSync = true
         hasChosenSpotlightSearch = true
         hasChosenSiriIntelligence = true
-        reports = LabReport.sampleHistory
+        reports = ScreenshotMode.showsQualitativeSamples ? LabReport.sampleHistoryWithQualitative : LabReport.sampleHistory
         isLoaded = true
+        if ScreenshotMode.importsStandInReport {
+            configureImportEngine()
+            importEngine.processText(StandInReport.text)
+            return
+        }
         if ScreenshotMode.initialScreen == "review" {
             labValues = LabReport.sampleHistory[0].asLabValues
             parsedPatientName = LabReport.sampleHistory[0].patientName

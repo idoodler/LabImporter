@@ -31,6 +31,7 @@ struct ResultHistoryView: View {
             }
         }
         .scrollContentBackground(.hidden)
+        .accessibilityIdentifier("result-history")
         .background { CategoryBackground(colors: [categoryColor]) }
         .navigationTitle(metric.entry.resolvedName)
         .navigationBarTitleDisplayMode(.inline)
