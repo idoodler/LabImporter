@@ -98,7 +98,8 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
     )
     /**
      * Every matching label with its term's attributes, for [bestMatch] to rank (one row per label).
-     * Only ACTIVE terms: a DISCOURAGED one is known when printed, never suggested for a name.
+     * Only `suggested` terms (ranked ACTIVE): a DISCOURAGED or unranked one is known when
+     * printed or picked, never suggested for a name.
      */
     private val candidateStatement = prepare(
         """
@@ -106,7 +107,7 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
         FROM label_fts f
         JOIN label l ON l.rowid = f.rowid
         JOIN term t ON t.code = l.code
-        WHERE label_fts MATCH ?1 AND l.lang IN (?2, 'en', 'long', 'syn') AND t.status = 'ACTIVE'
+        WHERE label_fts MATCH ?1 AND l.lang IN (?2, 'en', 'long', 'syn') AND t.suggested = 1
         ORDER BY t.rank
         LIMIT ?3
         """,
@@ -118,7 +119,7 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
         FROM label_fts f
         JOIN label l ON l.rowid = f.rowid
         JOIN term t ON t.code = l.code
-        WHERE label_fts MATCH ?1 AND t.status = 'ACTIVE'
+        WHERE label_fts MATCH ?1 AND t.suggested = 1
         ORDER BY t.rank
         LIMIT ?3
         """,

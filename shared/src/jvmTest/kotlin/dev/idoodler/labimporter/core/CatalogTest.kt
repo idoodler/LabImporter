@@ -280,6 +280,26 @@ class CatalogTest {
     }
 
     @Test
+    fun unrankedChemistryTermsAreKnownButNeverSuggested() {
+        val loinc = LabCore.loinc!!
+        // OmegaCheck (Quest/Function Health), LDL subparticles, eGFR CKD-EPI 2021: no common-test rank in LOINC.
+        for (code in listOf("90909-3", "90910-1", "90911-9", "90914-3", "90915-0", "96735-6", "98979-8")) {
+            assertTrue(loinc.isKnownLoinc(code), code)
+            assertEquals(code, LabMapping.loincCode(code)!!.loinc)
+        }
+        // Named by their readable long name, in English.
+        assertTrue("Omega 6 fatty acids" in loinc.term("90910-1")!!.name, loinc.term("90910-1")!!.name)
+        // A printed code passes through; a name never resolves to them.
+        assertEquals("98979-8" to false, LabParsePipeline.resolveLoinc("98979-8", "eGFR", "de", "ml/min/1,73m2"))
+        val (gfr, _) = LabParsePipeline.resolveLoinc("", "glomeruläre Filtrationsrate", "de", "ml/min/1,73m2")
+        assertTrue(gfr != "98979-8")
+        // The code picker finds them — after every ranked term.
+        val omega = loinc.search("omega fatty acids", language = "en", limit = 200)
+        assertTrue(omega.any { it.code == "90910-1" }, omega.map { it.code }.toString())
+        assertTrue(omega.dropWhile { it.rank < 2_000_000 }.all { it.rank >= 2_000_000 })
+    }
+
+    @Test
     fun duplicatesAreDetectedAndCollapsed() {
         val a = LabValue(code = "2160-0", name = "Creatinin", displayValue = "0.8", numericValue = 0.8, unit = "mg/dl")
         val b = a.copy(id = "b", displayValue = "0.9", numericValue = 0.9)

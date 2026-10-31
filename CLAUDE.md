@@ -123,7 +123,12 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   search-only labels: its English long name (lang `long`) and the related names
   that tell it apart (lang `syn`: "Uric acid", "BUN", "Thyroid stimulating
   hormone"; phrases listed for more than 100 terms — "Serum", "Antibody" — are
-  dropped). They're matched and searched, never displayed. The DB is a build product (not in
+  dropped). They're matched and searched, never displayed.
+  Plus the ~6.4k ACTIVE CHEM terms without a common-test rank that
+  consumer panels print (OmegaCheck 90909-3…, LDL subparticles 96735-6, eGFR
+  CKD-EPI 2021 98979-8): English only, named by their long name, ranked last,
+  also never suggested. Only `term.suggested = 1` terms (ranked ACTIVE) take
+  part in `bestMatch`. The DB is a build product (not in
   git); only the source zip is committed. `LabMapping` falls back to
   `LoincDirectory` for any code that is already a raw LOINC number (e.g. picked in
   `CodePickerSheet`).
