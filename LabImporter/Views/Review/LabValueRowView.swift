@@ -160,6 +160,7 @@ struct LabValueRowView: View {
     }
 }
 
+#if DEBUG
 #Preview("Qualitative") {
     @Previewable @State var negative = LabValue.sampleQualitative[0]
     @Previewable @State var titer = LabValue.sampleQualitative[1]
@@ -180,3 +181,4 @@ struct LabValueRowView: View {
     }
     .preferredColorScheme(.dark)
 }
+#endif
