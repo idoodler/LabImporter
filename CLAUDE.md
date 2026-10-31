@@ -115,7 +115,12 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   (run by the "Generate LOINC resource" Xcode build phase) distills the official
   release zip under `Vendor/LOINC/*.zip` into a bundled SQLite database `loinc.db`
   (FTS5) — the ~18.5k common laboratory terms, each with a name + description
-  localized into every language the app ships. The DB is a build product (not in
+  localized into every language the app ships. The English name is LOINC's terse
+  DisplayName ("ALP [Catalytic activity/Vol]"), so every term also has
+  search-only labels: its English long name (lang `long`) and the related names
+  that tell it apart (lang `syn`: "Uric acid", "BUN", "Thyroid stimulating
+  hormone"; phrases listed for more than 100 terms — "Serum", "Antibody" — are
+  dropped). They're matched and searched, never displayed (~43 MB in all). The DB is a build product (not in
   git); only the source zip is committed. `LabMapping` falls back to
   `LoincDirectory` for any code that is already a raw LOINC number (e.g. picked in
   `CodePickerSheet`).
@@ -146,7 +151,16 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   the name's usual specimen (µmol/l creatinine → serum, not blood). The printed
   result's shape (`ResultShape`) rules out terms that can't hold it — a result
   in words ("negativ") or a strip grade is never a count or a concentration, a
-  titer only a titer — and panels/documents (scale `-`/`Doc`) never match. The winner is
+  titer only a titer — and panels/documents (scale `-`/`Doc`) never match. A
+  term the name *names* beats one matched only by a related name
+  (`bySynonym`: "HGB" is hemoglobin, not "DO-Hgb"), "total" is no extra word
+  ("Carbon dioxide, total" is plain CO₂), and a specimen or population the name
+  doesn't mention loses a tie (capillary/arterial/cord blood, "among black
+  population": plain "Lead" is venous, plain "GFR" no race-based formula).
+  Names are also tried in LOINC's spelling (Ab, Ag) and, when no single label
+  has all their words, over all of a term's names together
+  (`bestSpreadMatch`: "Celiac – Deamidated Gliadin IgA"); a printed code never
+  matches a related name ("AU" is no gold). The winner is
   offered as a suggestion (`isSuggestedCode`); nothing fitting → the printed code
   stays for the user to map. A *second* suggestion for an already-claimed LOINC
   stays unmapped instead of replacing a value. There is no static abbreviation

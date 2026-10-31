@@ -204,7 +204,9 @@ object LabParsePipeline {
      * (everyday spellings often differ from the LOINC translation: "Kreatinin"
      * vs. "Creatinin"), then without little words ("Albumin im Urin") or the
      * word "total" ("Colesterolo totale"), then by word stem ("Cholesterin" →
-     * "Cholesterol") — and finally the printed code, as a whole word only
+     * "Cholesterol"), then over all of a term's names together ("Celiac –
+     * Deamidated Gliadin IgA", see [LoincDirectory.bestSpreadMatch]) — and
+     * finally the printed code, as a whole word only
      * ("TSH"; "KREA" must not prefix-match "Kreatinkinase"). The term that
      * fits best ([LoincRanking]: its label names the test and no more, of the
      * kind of quantity [unit] measures, that can hold the printed [result] —
@@ -224,6 +226,10 @@ object LabParsePipeline {
             add(term to true)
             LoincDirectory.withoutStopWords(term)?.let { add(it to false) }
             LoincDirectory.withoutTotal(term)?.let { add(it to false); add(it to true) }
+            LoincDirectory.withLoincSpellings(term)?.let { spelled ->
+                add(spelled to false)
+                LoincDirectory.withoutTotal(spelled)?.let { add(it to false) }
+            }
             LoincDirectory.stemmedQueries(term).forEach { add(it to true) }
         }
         var best: LoincMatch? = null
@@ -232,8 +238,10 @@ object LabParsePipeline {
             if (best == null || match < best) best = match
             if (match.isExact) break
         }
+        if (best == null && term.isNotEmpty()) best = directory.bestSpreadMatch(term, lang, unit, result)
         if (best == null && trimmedPrinted.isNotEmpty()) {
-            best = directory.bestMatch(trimmedPrinted, lang, prefix = false, unit = unit, result = result)
+            // Related names hold symbols and short forms of other tests ("Au" is gold): not for a printed code.
+            best = directory.bestMatch(trimmedPrinted, lang, prefix = false, unit = unit, result = result, synonyms = false)
         }
         return best?.let { it.code to true } ?: (printed to false)
     }
@@ -251,14 +259,25 @@ object LabParsePipeline {
     }
 
     /**
-     * [value] without a high/low flag the model copied from the next column
-     * ("231 *" → "231", "1:160 H" → "1:160"); anything else unchanged.
+     * [value] without a high/low flag or status label the model copied from
+     * the next column — after it ("231 *" → "231", "1:160 H" → "1:160") or
+     * before it ("H 231", and Function Health's "In Range· 42" / "Above
+     * Range· 6.1", a label ending in a middle dot); anything else unchanged.
      */
     fun valueWithoutFlag(value: String): String {
-        val trimmed = value.trim()
+        var trimmed = value.trim()
+        val dot = trimmed.lastIndexOfAny(LABEL_ENDS)
+        if (dot >= 0 && trimmed.substring(0, dot).any { it.isLetter() }) trimmed = trimmed.substring(dot + 1).trim()
+        // A leading flag only before a number: "A positive" is a blood group, not a flag.
+        val first = trimmed.substringBefore(' ')
+        val rest = trimmed.substringAfter(' ').trim()
+        if (first != trimmed && first in VALUE_FLAGS && (NumberFormatting.parse(rest) != null || rest.first() in "<>≤≥")) trimmed = rest
         val last = trimmed.substringAfterLast(' ')
         return if (last != trimmed && last in VALUE_FLAGS) trimmed.substringBeforeLast(' ').trim() else trimmed
     }
+
+    /** What ends a status label in front of a value: "In Range· 42", "High • 6.1". */
+    private val LABEL_ENDS = charArrayOf('·', '•', '∙')
 
     private val FLAGS = setOf("H", "L", "HH", "LL", "A", "+", "-", "*", "↑", "↓", "!")
 

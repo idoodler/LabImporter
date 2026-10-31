@@ -17,6 +17,17 @@ Selection criteria ("common lab tests only"):
   * STATUS    == ACTIVE       -> not deprecated/trial
   * COMMON_TEST_RANK > 0      -> appears in LOINC's common-test ordering
 
+Search names:
+  The English label is LOINC's terse DisplayName ("ALP [Catalytic activity/Vol]",
+  "Urate [Mass/Vol]"), which a report's everyday name ("Alkaline phosphatase",
+  "Uric acid") never matches. So every term also gets search-only labels: its
+  English LONG_COMMON_NAME under LONG_NAME ("long"), and each phrase of its
+  RELATEDNAMES2 ("Uric acid", "BUN", "Thyroid stimulating hormone") under
+  SYNONYMS ("syn") — except phrases listed for more than SYNONYM_MAX_TERMS
+  terms ("Serum", "Chemistry", "Antibody"), which name a kind of test, not a
+  test. They are matched and searched, never displayed; a synonym counts for
+  less than a name (LoincRanking).
+
 Languages:
   LANGS maps an app language code (as used in Localizable.xcstrings) to the
   LOINC linguistic-variant file that provides its translations. `None` means no
@@ -61,6 +72,13 @@ LANGS: dict[str, str | None] = {
     "uk": "ukUA30LinguisticVariant.csv",
     "zh-Hans": "zhCN5LinguisticVariant.csv",
 }
+
+
+# Search-only labels (see "Search names" above) and how common a related name
+# may be before it stops telling tests apart.
+LONG_NAME = "long"
+SYNONYMS = "syn"
+SYNONYM_MAX_TERMS = 100
 
 
 def find_zip(arg: str) -> str:
@@ -136,8 +154,34 @@ def read_base(zf: zipfile.ZipFile) -> dict[str, dict]:
                 "n": names,
                 "d": descs,
                 "a": _attributes(row),
+                "l": (row.get("LONG_COMMON_NAME") or "").strip(),
+                "s": _related_names(row),
             }
+    _drop_common_synonyms(entries)
     return entries
+
+
+def _related_names(row: dict) -> list[str]:
+    """The related names, each once (case-insensitively)."""
+    seen: set[str] = set()
+    out: list[str] = []
+    for phrase in (p.strip() for p in (row.get("RELATEDNAMES2") or "").split(";")):
+        key = phrase.lower()
+        if len(phrase) >= 2 and key not in seen:
+            seen.add(key)
+            out.append(phrase)
+    return out
+
+
+def _drop_common_synonyms(entries: dict[str, dict]) -> None:
+    """Keeps the related names that tell a test apart, and none that repeats a name."""
+    counts: dict[str, int] = {}
+    for entry in entries.values():
+        for phrase in entry["s"]:
+            counts[phrase.lower()] = counts.get(phrase.lower(), 0) + 1
+    for entry in entries.values():
+        names = {entry["n"].get("en", "").lower(), entry["l"].lower()}
+        entry["s"] = [p for p in entry["s"] if counts[p.lower()] <= SYNONYM_MAX_TERMS and p.lower() not in names]
 
 
 def _attributes(row: dict) -> dict:
@@ -259,6 +303,13 @@ def write_db(ordered: list[dict], version: str, license_text: str, out_path: str
                     descr = ""
                 con.execute("INSERT INTO label VALUES(?,?,?,?,?)",
                             (rowid, entry["c"], lang, name, descr))
+            searched = [(LONG_NAME, entry["l"])] if entry["l"] and entry["l"] != names.get("en") else []
+            searched += [(SYNONYMS, phrase) for phrase in entry["s"]]
+            for lang, phrase in searched:
+                rowid += 1
+                labels += 1
+                con.execute("INSERT INTO label VALUES(?,?,?,?,?)",
+                            (rowid, entry["c"], lang, phrase, ""))
         # Build the external-content FTS index from the populated label table.
         con.execute("INSERT INTO label_fts(label_fts) VALUES('rebuild')")
         con.commit()

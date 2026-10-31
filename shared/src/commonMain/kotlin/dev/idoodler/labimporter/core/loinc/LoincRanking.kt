@@ -12,23 +12,38 @@ data class LoincMatch(
     val missingWords: Int,
     /** 0 = a term for the unit's own kind of quantity, 1 = a related kind (MCHC for g/dl). See [UnitKind]. */
     val unitPenalty: Int,
+    /**
+     * Only one of the term's related names fits ("Uric acid" for urate), none
+     * of its names: a term the printed name *names* wins ("HGB" is hemoglobin,
+     * not the deoxyhemoglobin also called "Deoxy Hgb").
+     */
+    val bySynonym: Boolean,
     /** Words the best label names beyond the printed name — MCHC's "korpuskuläre … Erythrozyten" for "Hämoglobin". */
     val extraWords: Int,
+    /**
+     * The term is for a specimen a report names when it means it — capillary,
+     * arterial or cord blood, a dried blood spot, a newborn — or for one
+     * population ("among black population"), while the printed name doesn't:
+     * plain "Lead" is venous blood, not the capillary screen, and plain "GFR"
+     * no race-based formula.
+     */
+    val unusualSpecimen: Boolean,
     /** The term's specimen differs from that of the name's best fit regardless of unit (blood vs. serum creatinine). */
     val otherSpecimen: Boolean,
     /** COMMON_TEST_RANK — lower is more commonly ordered. */
     val rank: Int,
 ) : Comparable<LoincMatch> {
 
-    /** The label matches the printed name word for word, for a term of the unit's own kind. */
-    val isExact: Boolean get() = missingWords == 0 && unitPenalty == 0 && extraWords == 0
+    /** A name of the term matches the printed name word for word, for the unit's own kind (a related name never ends the search). */
+    val isExact: Boolean get() = missingWords == 0 && unitPenalty == 0 && !bySynonym && extraWords == 0
 
     override fun compareTo(other: LoincMatch): Int = compareValuesBy(
-        this, other, { it.missingWords }, { it.unitPenalty }, { it.extraWords }, { it.otherSpecimen }, { it.rank },
+        this, other, { it.missingWords }, { it.unitPenalty }, { it.bySynonym }, { it.extraWords }, { it.unusualSpecimen },
+        { it.otherSpecimen }, { it.rank },
     )
 }
 
-/** A term the catalog search returned, with every label of it that matched. */
+/** A term the catalog search returned, with every name ([labels]) and related name ([synonyms]) of it that matched. */
 data class LoincCandidate(
     val code: String,
     val rank: Int,
@@ -36,6 +51,9 @@ data class LoincCandidate(
     val scale: String,
     val system: String,
     val labels: List<String>,
+    val synonyms: List<String> = emptyList(),
+    /** LOINC's method ("Creatinine-based formula (MDRD)/1.73 sq M among black population"). */
+    val method: String = "",
 )
 
 /**
@@ -48,11 +66,11 @@ enum class UnitKind(private val pattern: Regex, val preferred: Set<String>, val 
     SUBSTANCE_CONCENTRATION(Regex("^[mµunpf]?mol/[dmc]?l$"), setOf("SCnc"), setOf("EntSCnc")),
     MASS_CONCENTRATION(Regex("^[kmµunp]?g/[dmcµu]?l$|^mg%$"), setOf("MCnc"), setOf("EntMCnc")),
     NUMBER_CONCENTRATION(
-        Regex("^(/|1/|k/|m/|x?10\\^?\\*?e?\\d+/|\\[g]/|\\[t]/|gpt/|tpt/|tsd\\.?/|mio\\.?/)[npµumd]?l$|^/mm3$"),
+        Regex("^(/|1/|k/|m/|x?10\\^?\\*?e?\\d+/|\\[g]/|\\[t]/|gpt/|tpt/|tsd\\.?/|mio\\.?/|thousand/|million/)[npµumd]?l$|^/mm3$"),
         setOf("NCnc"),
     ),
     CATALYTIC_CONCENTRATION(Regex("^[mµun]?(u|kat)/[md]?l$|^[mµu]?(iu|ui)/[md]?l$"), setOf("CCnc", "ACnc")),
-    FRACTION(Regex("^%$|^l/l$"), setOf("MFr", "NFr", "VFr", "SFr", "CFr", "AFr", "MFr.DF", "NFr.DF", "VFr.DF", "CFr.DF")),
+    FRACTION(Regex("^%(by)?(wt|weight|vol|volume)?\\.?$|^l/l$"), setOf("MFr", "NFr", "VFr", "SFr", "CFr", "AFr", "MFr.DF", "NFr.DF", "VFr.DF", "CFr.DF")),
     MOLAR_FRACTION(Regex("^mmol/mol$"), setOf("SFr", "SRto")),
     CELL_VOLUME(Regex("^[fµu]l$|^[µu]m3$"), setOf("EntVol", "EntMeanVol")),
     CELL_MASS(Regex("^pg$"), setOf("EntMass")),
@@ -127,12 +145,25 @@ object LoincRanking {
         val candidates = allCandidates.filter { it.scale !in NO_SINGLE_RESULT }
         if (candidates.isEmpty()) return null
         val words = foldedTokens(query).toSet()
-        val fits = candidates.map { it to labelFit(words, it.labels) }
+        // Fit by the term's names, or by a related name when that one has fewer words missing.
+        val fits = candidates.map { candidate ->
+            val byName = candidate.labels.takeIf { it.isNotEmpty() }?.let { labelFit(words, it) }
+            val bySynonym = candidate.synonyms.takeIf { it.isNotEmpty() }?.let { labelFit(words, it) }
+            if (bySynonym != null && (byName == null || bySynonym.first < byName.first)) {
+                Fit(candidate, bySynonym.first, bySynonym.second, bySynonym = true)
+            } else {
+                val (missing, extra) = byName ?: (words.size to 0)
+                Fit(candidate, missing, extra, bySynonym = false)
+            }
+        }
         // The name's best fit regardless of unit tells its usual specimen: "Kreatinin" in µmol/l is
         // still serum creatinine, not the rarer blood creatinine that also comes in moles.
-        val specimen = fits.minWith(compareBy({ it.second.first }, { it.second.second }, { it.first.rank })).first.system
+        val specimen = fits.minWith(
+            compareBy({ it.missing }, { it.bySynonym }, { it.extra }, { isUnusual(it.candidate) }, { it.candidate.rank }),
+        ).candidate.system
         val kind = if (shape == ResultShape.QUANTITY) UnitKind.of(unit) else null
-        return fits.mapNotNull { (candidate, fit) ->
+        return fits.mapNotNull { fit ->
+            val candidate = fit.candidate
             if (!shape.accepts(candidate.scale, candidate.property)) return@mapNotNull null
             val unitPenalty = when {
                 kind == null -> 0
@@ -141,14 +172,22 @@ object LoincRanking {
                 candidate.property in kind.accepted -> 1
                 else -> return@mapNotNull null
             }
-            LoincMatch(candidate.code, fit.first, unitPenalty, fit.second, candidate.system != specimen, candidate.rank)
+            LoincMatch(
+                candidate.code, fit.missing, unitPenalty, fit.bySynonym, fit.extra, isUnusual(candidate),
+                candidate.system != specimen, candidate.rank,
+            )
         }.minOrNull()
     }
 
-    /** (missing words, extra words) of the term's best-fitting label. */
+    private class Fit(val candidate: LoincCandidate, val missing: Int, val extra: Int, val bySynonym: Boolean)
+
+    /**
+     * (missing words, extra words) of the term's best-fitting label. "Total"
+     * is no extra word: "Carbon dioxide, total" is what a plain "Carbon dioxide" means.
+     */
     private fun labelFit(query: Set<String>, labels: List<String>): Pair<Int, Int> = labels.map { label ->
         val words = foldedTokens(label).toSet()
-        val core = foldedTokens(labelCore(label)).toSet() - METHOD_WORDS - LoincDirectory.STOP_WORDS
+        val core = foldedTokens(labelCore(label)).toSet() - METHOD_WORDS - LoincDirectory.STOP_WORDS - LoincDirectory.TOTAL_WORDS
         query.count { it !in words } to (core - query).size
     }.minWith(compareBy({ it.first }, { it.second }))
 
@@ -178,6 +217,14 @@ object LoincRanking {
     private val PARENTHESES = Regex("\\([^)]*\\)")
     private const val ACCENTED = "àáâãäåāăąçćčďđèéêëēėęěìíîïīįıłñńňòóôõöøōőŕřśšşșťţțùúûüūůűųýÿžźżæœ"
     private const val PLAIN = "aaaaaaaaacccddeeeeeeeeiiiiiiilnnnoooooooorrsssstttuuuuuuuuyyzzzao"
+
+    private fun isUnusual(candidate: LoincCandidate): Boolean =
+        candidate.system in UNUSUAL_SPECIMENS || '^' in candidate.system || POPULATION.containsMatchIn(candidate.method)
+
+    private val POPULATION = Regex("\\bamong .* population\\b", RegexOption.IGNORE_CASE)
+
+    /** Capillary, arterial, cord and mixed venous blood, dried blood spots (plus any "Bld^Newborn"-style subject). */
+    private val UNUSUAL_SPECIMENS = setOf("BldC", "BldA", "BldCo", "BldCoA", "BldCoV", "BldMV", "Bld.dot")
 
     /** Panels and documents: a term with these scales groups results, it holds none itself. */
     private val NO_SINGLE_RESULT = setOf("-", "Doc")
