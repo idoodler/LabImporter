@@ -231,6 +231,55 @@ class CatalogTest {
     }
 
     @Test
+    fun everydayEnglishNamesResolveThroughLoincsLongNamesAndRelatedNames() {
+        // The English label is LOINC's terse display name ("ALP [Catalytic activity/Vol]", "Urate…");
+        // a US report's names (Quest, Function Health) match the long name or a related name instead.
+        startCatalog("en-US")
+        val cases = listOf(
+            Triple("Alkaline Phosphatase", "U/L", "6768-6"), Triple("Uric Acid", "mg/dL", "3084-1"),
+            Triple("Urea Nitrogen (BUN)", "mg/dL", "3094-0"), Triple("Platelet Count", "Thousand/uL", "777-3"),
+            Triple("Thyroid-Stimulating Hormone (TSH)", "mIU/L", "3016-3"), Triple("DHEA Sulfate", "mcg/dL", "2191-5"),
+            Triple("Methylmalonic Acid", "nmol/L", "13964-2"), Triple("Prostate Specific Antigen (PSA), Total", "ng/mL", "2857-1"),
+            Triple("Thyroglobulin Antibodies", "IU/mL", "8098-6"), Triple("Thyroid Peroxidase Antibodies (TPO)", "IU/mL", "8099-4"),
+            Triple("Tissue Transglutaminase Ab, IgG", "U/mL", "32998-7"), Triple("Deamidated Gliadin Ab (IgG)", "U/mL", "63459-2"),
+            // #115: the right variant, not just the right analyte.
+            Triple("Carbon Dioxide", "mmol/L", "2028-9"), Triple("Lead", "mcg/dL", "77307-7"),
+            Triple("Celiac - Deamidated Gliadin IgA", "U/mL", "58709-7"), Triple("LDL Cholesterol", "mg/dL (calc)", "13457-7"),
+            Triple("Lymphocytes", "%", "736-9"), Triple("Calcium", "mg/dL", "17861-6"),
+        )
+        for ((name, unit, expected) in cases) {
+            assertEquals(expected to true, LabParsePipeline.resolveLoinc("", name, "en", unit), name)
+        }
+        // A related name is weaker than a name: "HGB" is hemoglobin, never the "DO-Hgb" deoxyhemoglobin.
+        assertEquals("718-7" to true, LabParsePipeline.resolveLoinc("HGB", "HGB", "pl", "g/dl"))
+        // A printed code never matches a related name: "AU" (ácido úrico) is no gold ("Au").
+        assertEquals("AU" to false, LabParsePipeline.resolveLoinc("AU", "Ácido úrico", "es", "mg/dl"))
+        // Total IgA still comes from its printed code — a single letter never spreads a name.
+        assertEquals("2458-8" to true, LabParsePipeline.resolveLoinc("IgA", "Immunoglobulin A (IgA)", "en", "mg/dL"))
+        // "% by wt" is a fraction: never the omega-3 concentration in moles.
+        val (omega, _) = LabParsePipeline.resolveLoinc("", "Omega-3 Total", "en", "% by wt")
+        assertTrue(LabCore.loinc!!.detail(omega)?.property != "SCnc", omega)
+        // A formula for one population ("among black population") only when the report says so.
+        val (gfr, _) = LabParsePipeline.resolveLoinc("", "Glomerular Filtration Rate", "en", "mL/min/1.73m2")
+        assertFalse("population" in LabCore.loinc!!.detail(gfr)!!.method, LabCore.loinc!!.detail(gfr)!!.method)
+        // The code picker finds a test by its everyday name too.
+        assertTrue(LabCore.loinc!!.search("uric acid", language = "en", limit = 10).any { it.code == "3084-1" })
+    }
+
+    @Test
+    fun aStatusLabelInFrontOfAValueIsDropped() {
+        assertEquals("42", LabParsePipeline.valueWithoutFlag("In Range· 42"))
+        assertEquals("6.1", LabParsePipeline.valueWithoutFlag("Above Range· 6.1"))
+        assertEquals("<1.0", LabParsePipeline.valueWithoutFlag("In Range· <1.0"))
+        assertEquals("231", LabParsePipeline.valueWithoutFlag("H 231"))
+        // Not a flag: a blood group, or a result in words.
+        assertEquals("A positive", LabParsePipeline.valueWithoutFlag("A positive"))
+        assertEquals("Negative", LabParsePipeline.valueWithoutFlag("In Range· Negative"))
+        val report = AiLabReport(listOf(AiLabEntry("DHEA-S", "DHEA Sulfate", "In Range· 211", "mcg/dL")), reportLanguage = "en")
+        assertEquals(211.0, LabParsePipeline.postProcess(report, "").values.single().numericValue)
+    }
+
+    @Test
     fun duplicatesAreDetectedAndCollapsed() {
         val a = LabValue(code = "2160-0", name = "Creatinin", displayValue = "0.8", numericValue = 0.8, unit = "mg/dl")
         val b = a.copy(id = "b", displayValue = "0.9", numericValue = 0.9)
