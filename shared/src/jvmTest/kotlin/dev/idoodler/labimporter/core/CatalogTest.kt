@@ -179,6 +179,24 @@ class CatalogTest {
     }
 
     @Test
+    fun discouragedCodesLabsStillPrintAreKnownButNeverSuggested() {
+        // Quest's blood lead: DISCOURAGED in favour of 77307-7 (venous blood), still printed on reports.
+        assertTrue(LabCore.loinc!!.isKnownLoinc("5671-3"))
+        assertEquals("DISCOURAGED", LabCore.loinc!!.detail("5671-3")!!.status)
+        assertEquals("5671-3" to false, LabParsePipeline.resolveLoinc("5671-3", "Lead, Blood", "en", "mcg/dL"))
+        assertEquals("5671-3", LabMapping.loincCode("5671-3")!!.loinc)
+        // A name alone still finds the recommended ACTIVE term, and a search lists the discouraged one last.
+        val (byName, _) = LabParsePipeline.resolveLoinc("PB", "Lead", "en", "mcg/dL")
+        assertEquals("ACTIVE", LabCore.loinc!!.detail(byName)!!.status)
+        val lead = LabCore.loinc!!.search("Lead Bld", language = "en", limit = 200).map { it.code }
+        assertTrue("5671-3" in lead && lead.indexOf("77307-7") < lead.indexOf("5671-3"), lead.toString())
+        // LDH: 2532-0 is DISCOURAGED, the enzymatic reactions are the ACTIVE terms.
+        assertTrue(LabCore.loinc!!.isKnownLoinc("2532-0"))
+        val (ldh, _) = LabParsePipeline.resolveLoinc("LDH", "Lactate dehydrogenase", "en", "U/L")
+        assertEquals("ACTIVE", LabCore.loinc!!.detail(ldh)!!.status)
+    }
+
+    @Test
     fun duplicatesAreDetectedAndCollapsed() {
         val a = LabValue(code = "2160-0", name = "Creatinin", displayValue = "0.8", numericValue = 0.8, unit = "mg/dl")
         val b = a.copy(id = "b", displayValue = "0.9", numericValue = 0.9)

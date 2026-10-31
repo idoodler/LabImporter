@@ -96,14 +96,17 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
         LIMIT ?3 OFFSET ?4
         """,
     )
-    /** Every matching label with its term's attributes, for [bestMatch] to rank (one row per label). */
+    /**
+     * Every matching label with its term's attributes, for [bestMatch] to rank (one row per label).
+     * Only ACTIVE terms: a DISCOURAGED one is known when printed, never suggested for a name.
+     */
     private val candidateStatement = prepare(
         """
         SELECT l.code, l.name, t.rank, t.property, t.scale, t.system
         FROM label_fts f
         JOIN label l ON l.rowid = f.rowid
         JOIN term t ON t.code = l.code
-        WHERE label_fts MATCH ?1 AND l.lang IN (?2, 'en')
+        WHERE label_fts MATCH ?1 AND l.lang IN (?2, 'en') AND t.status = 'ACTIVE'
         ORDER BY t.rank
         LIMIT ?3
         """,
@@ -115,7 +118,7 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
         FROM label_fts f
         JOIN label l ON l.rowid = f.rowid
         JOIN term t ON t.code = l.code
-        WHERE label_fts MATCH ?1
+        WHERE label_fts MATCH ?1 AND t.status = 'ACTIVE'
         ORDER BY t.rank
         LIMIT ?3
         """,

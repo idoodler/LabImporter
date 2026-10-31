@@ -15,6 +15,9 @@ is not duplicated. See LoincDirectory.swift for the queries.
 Selection criteria ("common lab tests only"):
   * CLASSTYPE == 1            -> Laboratory class
   * STATUS    == ACTIVE       -> not deprecated/trial
+    or DISCOURAGED            -> still printed by labs (Quest's blood lead 5671-3), so a
+                                 printed code stays known; ranked after every ACTIVE term
+                                 and never suggested by name (LoincDirectory.bestMatch)
   * COMMON_TEST_RANK > 0      -> appears in LOINC's common-test ordering
 
 Languages:
@@ -61,6 +64,12 @@ LANGS: dict[str, str | None] = {
     "uk": "ukUA30LinguisticVariant.csv",
     "zh-Hans": "zhCN5LinguisticVariant.csv",
 }
+
+
+# Rank added to DISCOURAGED terms so every ordering by rank (search, browsing)
+# lists the recommended ACTIVE term first. Above any COMMON_TEST_RANK.
+DISCOURAGED_RANK_OFFSET = 1_000_000
+STATUS_RANK_OFFSET = {"ACTIVE": 0, "DISCOURAGED": DISCOURAGED_RANK_OFFSET}
 
 
 def find_zip(arg: str) -> str:
@@ -115,7 +124,8 @@ def read_base(zf: zipfile.ZipFile) -> dict[str, dict]:
     entries: dict[str, dict] = {}
     with zf.open(member) as fh:
         for row in csv.DictReader(io.TextIOWrapper(fh, encoding="utf-8")):
-            if row["CLASSTYPE"] != "1" or row["STATUS"] != "ACTIVE":
+            offset = STATUS_RANK_OFFSET.get(row["STATUS"])
+            if row["CLASSTYPE"] != "1" or offset is None:
                 continue
             try:
                 rank = int(row["COMMON_TEST_RANK"])
@@ -123,6 +133,7 @@ def read_base(zf: zipfile.ZipFile) -> dict[str, dict]:
                 rank = 0
             if rank <= 0:
                 continue
+            rank += offset
             num = row["LOINC_NUM"]
             names = {"en": _name_from(row, "DisplayName")}
             descs = {}
