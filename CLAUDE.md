@@ -118,7 +118,11 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   localized into every language the app ships. That includes the ~300 common
   DISCOURAGED terms labs still print (Quest's blood lead 5671-3): known when
   printed or picked, ranked after every ACTIVE term, never suggested for a
-  name (`bestMatch` only considers ACTIVE terms). The DB is a build product (not in
+  name. Plus the ~6.4k ACTIVE CHEM terms without a common-test rank that
+  consumer panels print (OmegaCheck 90909-3…, LDL subparticles 96735-6, eGFR
+  CKD-EPI 2021 98979-8): English only, named by their long name, ranked last,
+  also never suggested. Only `term.suggested = 1` terms (ranked ACTIVE) take
+  part in `bestMatch`. The DB is a build product (not in
   git); only the source zip is committed. `LabMapping` falls back to
   `LoincDirectory` for any code that is already a raw LOINC number (e.g. picked in
   `CodePickerSheet`).
