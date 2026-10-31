@@ -74,6 +74,47 @@ class LabParserServiceTest {
         }
     }
 
+    /** A model that reads every "CODE: value unit" row of the part it's given. */
+    private fun readRows(): String {
+        val part = ai.requests.last().second
+        val rows = Regex("(TEST\\d+): (\\S+) (\\S+)").findAll(part).map { it.destructured.toList() }.toList()
+        return FakeAi.replyJson(*rows.map { (code, value, unit) -> listOf(code, code, value, unit) }.toTypedArray())
+    }
+
+    private val longReport = (1..80).joinToString("\n") { "TEST$it: ${it}5 mg/dl  (Referenz 10 - 900)" }
+
+    @Test
+    fun aLongReportIsReadInPartsAndEveryValueOnce() = runTest {
+        ai.reply = { readRows() }
+        val progress = mutableListOf<ParseProgress>()
+        val result = parser.parse(longReport) { progress += it }
+
+        assertTrue(ai.requests.size > 1)
+        assertEquals((1..80).map { "TEST$it" }, result.values.map { it.code })
+        assertEquals(LocalDate(2026, 5, 6), result.reportDate)
+        // The count keeps rising across parts (the overlap rows aside) instead of starting over.
+        assertTrue(progress.last().entryCount >= 80)
+        assertEquals(progress.map { it.entryCount }.sorted(), progress.map { it.entryCount })
+    }
+
+    @Test
+    fun aPartTheModelStillFindsTooLongIsReadInHalves() = runTest {
+        ai.reply = {
+            if (ai.requests.last().second.length > 1_500) throw AiException(AiProblem.DOCUMENT_TOO_LONG)
+            readRows()
+        }
+        val result = parser.parse(longReport) {}
+        assertEquals((1..80).map { "TEST$it" }, result.values.map { it.code })
+        // Halving stops at a minimum: a model that takes nothing is "too long", not a loop.
+        ai.reply = { throw AiException(AiProblem.DOCUMENT_TOO_LONG) }
+        try {
+            parser.parse(longReport) {}
+            fail("Expected DOCUMENT_TOO_LONG")
+        } catch (e: AiException) {
+            assertEquals(AiProblem.DOCUMENT_TOO_LONG, e.problem)
+        }
+    }
+
     @Test
     fun aReportWithoutADateLeavesItToTheReview() = runTest {
         ai.reply = { FakeAi.replyJson(listOf("TSH", "Thyreotropin", "1,9", "mU/l"), reportDate = "06.05.2026") }
