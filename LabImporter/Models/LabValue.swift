@@ -60,8 +60,21 @@ struct LabValue: Identifiable, Equatable, @unchecked Sendable {
             && code == other.code
             && name == other.name
             && numericValue == other.numericValue
+            && qualitativeResult == other.qualitativeResult
             && unit == other.unit
             && isSelected == other.isSelected
+    }
+
+    /// The result as printed when it isn't a number ("Negativ", "1:160",
+    /// "<0.5"), or nil. Shared rule (LabImporterCore `QualitativeResult`).
+    var qualitativeResult: String? {
+        numericValue == nil ? QualitativeResult.shared.of(text: displayValue) : nil
+    }
+
+    /// Whether this row will be saved: selected, with a number or a
+    /// qualitative result, and LOINC-mapped. Shared rule.
+    var isExportable: Bool {
+        shared.isExportable
     }
 
     /// Whether this row would collide with another exportable row on the same

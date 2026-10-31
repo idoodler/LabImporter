@@ -39,7 +39,7 @@ data class Expected(
     val reportDate: String? = null,
     val patientName: String? = null,
     val values: List<ExpectedValue>,
-    /** Results that aren't numbers (negative, "< 0,5", ">60") — they must not become numbers. */
+    /** Results that aren't numbers (negative, "< 0,5", ">60") — kept as text, never turned into numbers. */
     val notNumeric: List<ExpectedText> = emptyList(),
 )
 
@@ -138,6 +138,7 @@ private fun printTotal(scores: List<Score>) {
     println("\nTOTAL  correct ${correct}/$expectedCount (recall ${pct(correct, expectedCount)}), " +
         "extra numbers ${scores.sumOf { it.extra }}, precision ${pct(correct, read)}, " +
         "invalid replies ${scores.count { !it.valid }}, LOINC ${scores.sumOf { it.loincRight }}/${scores.sumOf { it.loincExpected }}, " +
+        "text results ${scores.sumOf { it.textKept }}/${scores.sumOf { it.textExpected }}, " +
         "median time ${scores.map { it.millis }.sorted()[scores.size / 2] / 1000.0} s")
 }
 
@@ -153,6 +154,9 @@ data class Score(
     val loincExpected: Int,
     val loincRight: Int,
     val millis: Long,
+    /** Results that aren't numbers, and how many of them were kept as a qualitative result to save. */
+    val textExpected: Int = 0,
+    val textKept: Int = 0,
 )
 
 private fun pct(a: Int, b: Int) = if (b == 0) "—" else "${(100.0 * a / b).toInt()}%"
@@ -193,13 +197,19 @@ private fun score(name: String, expected: Expected, result: ParseResult?, millis
             problems += "MISSED ${e.names.first()} ${e.value} ${e.unit}"
         }
     }
-    // Non-numeric results must never have been turned into numbers.
+    // Non-numeric results must never have been turned into numbers, and are saved as text.
+    var textKept = 0
     for (t in expected.notNumeric) {
-        values.firstOrNull { it !in used && it.matchesName(t.names) }?.let { v ->
-            used += v
-            if (v.numericValue != null) problems += "NUMBER FROM TEXT ${t.names.first()}: ${v.displayValue}"
+        val v = values.firstOrNull { it !in used && it.matchesName(t.names) }
+        when {
+            v == null -> problems += "MISSED TEXT ${t.names.first()}"
+            v.numericValue != null -> problems += "NUMBER FROM TEXT ${t.names.first()}: ${v.displayValue}"
+            v.qualitativeResult != null -> textKept++
+            else -> problems += "TEXT NOT KEPT ${t.names.first()}: '${v.displayValue}'"
         }
+        if (v != null) used += v
     }
+    if (verbose) values.filter { it !in used && it.numericValue == null }.forEach { problems += "unscored ${it.name} (${it.code}) = '${it.displayValue}'" }
     val extras = values.filter { it !in used && it.numericValue != null }
     extras.forEach { problems += "EXTRA ${it.name} (${it.code}) = ${it.displayValue} ${it.unit}" }
     if (expected.reportDate != null && result?.reportDate?.toString() != expected.reportDate) {
@@ -216,5 +226,6 @@ private fun score(name: String, expected: Expected, result: ParseResult?, millis
     return Score(
         name, result != null, expected.values.size, correct,
         values.count { it.numericValue != null }, extras.size, loincExpected, loincRight, millis,
+        expected.notNumeric.size, textKept,
     )
 }

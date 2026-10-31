@@ -111,11 +111,13 @@ struct LabValueRowView: View {
                 .font(.body)
                 .foregroundStyle(.secondary)
         } else {
+            // A qualitative result ("Negativ", "1:160") is edited as text.
+            let isQualitative = value.qualitativeResult != nil
             TextField("Value", text: valueText)
                 .multilineTextAlignment(.trailing)
-                .keyboardType(.decimalPad)
+                .keyboardType(isQualitative ? .default : .decimalPad)
                 .focused($isFocused)
-                .frame(minWidth: 44, maxWidth: 80)
+                .frame(minWidth: 44, maxWidth: isQualitative ? 130 : 80)
         }
     }
 
@@ -156,4 +158,25 @@ struct LabValueRowView: View {
     List {
         LabValueRowView(value: $value)
     }
+}
+
+#Preview("Qualitative") {
+    @Previewable @State var negative = LabValue.sampleQualitative[0]
+    @Previewable @State var titer = LabValue.sampleQualitative[1]
+    @Previewable @State var threshold = LabValue.sampleQualitative[2]
+    List {
+        LabValueRowView(value: $negative)
+        LabValueRowView(value: $titer)
+        LabValueRowView(value: $threshold)
+    }
+}
+
+#Preview("Qualitative – Dark") {
+    @Previewable @State var negative = LabValue.sampleQualitative[0]
+    @Previewable @State var threshold = LabValue.sampleQualitative[2]
+    List {
+        LabValueRowView(value: $negative)
+        LabValueRowView(value: $threshold)
+    }
+    .preferredColorScheme(.dark)
 }

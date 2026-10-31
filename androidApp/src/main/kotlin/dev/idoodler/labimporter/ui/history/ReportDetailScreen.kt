@@ -224,6 +224,12 @@ private fun ReportDetailPreview() {
     LabImporterTheme(dynamicColor = false) { ReportDetailScreen(PreviewSamples.reports.first(), {}, {}, {}, { Uri.EMPTY }) }
 }
 
+@Preview(name = "Detail with qualitative results", widthDp = 400, heightDp = 1100)
+@Composable
+private fun ReportDetailQualitativePreview() {
+    LabImporterTheme(dynamicColor = false) { ReportDetailScreen(PreviewSamples.reportWithQualitative, {}, {}, {}, { Uri.EMPTY }) }
+}
+
 @Preview(name = "Detail – dark", widthDp = 400, heightDp = 900, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun ReportDetailDarkPreview() {

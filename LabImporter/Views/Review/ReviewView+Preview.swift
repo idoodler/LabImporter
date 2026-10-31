@@ -29,6 +29,15 @@ import SwiftUI
     .preferredColorScheme(.dark)
 }
 
+#Preview("With Qualitative Results") {
+    NavigationStack {
+        ReviewView(
+            labValues: LabValue.sampleValues + LabValue.sampleQualitative,
+            extractedPatientName: "Max Mustermann"
+        )
+    }
+}
+
 #Preview("Editing Saved Report") {
     NavigationStack {
         ReviewView(

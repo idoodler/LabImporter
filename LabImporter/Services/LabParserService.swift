@@ -31,7 +31,8 @@ struct AILabEntry {
     @Guide(description: "The test's full standard name in the report's own language — do NOT translate it, but DO expand terse lab-software mnemonics into the complete clinical term so it can be matched to a coding system. German practice software (e.g. PatMed) prints cryptic codes; expand them, never echo the raw mnemonic: KREA→Kreatinin, HARNS→Harnsäure, MALB-U→Albumin im Urin, MDRD→glomeruläre Filtrationsrate (eGFR), HB-A1C→HbA1c, HB-A1→HbA1c (IFCC), C-PEPT→C-Peptid, GADAAK→Glutamatdecarboxylase-Antikörper, ICEA→Inselzell-Antikörper, ICEA2→IA-2-Antikörper, NONHDL→Non-HDL-Cholesterin, TSH-0→Thyreotropin. For names already spelled out (e.g. 'Ferritin', 'Vitamin D 25-Hydroxy'), keep them as printed.")
     var name: String
 
-    @Guide(description: "Value exactly as printed — use '-' for negative/not-detected results")
+    // swiftlint:disable:next line_length
+    @Guide(description: "Result as printed, without a high/low flag (H, L, *), also when it isn't a number (e.g. 0,80, Negativ, not detected, 1:160, <0.5). Use '-' only when no result is printed")
     var rawValue: String
 
     @Guide(description: "Unit of measurement as printed (e.g. mg/dl, %, mmol/mol, U/l, ml/min/1,73m2KOF). Empty string if none.")

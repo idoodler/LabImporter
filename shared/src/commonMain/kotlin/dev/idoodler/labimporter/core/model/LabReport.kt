@@ -57,7 +57,7 @@ data class LabReport(
                 val loinc = LabMapping.loincCode(it.code)!!.loinc
                 Entry(
                     id = it.id, code = loinc, name = it.name,
-                    displayValue = NumberFormatting.cdaValue(it.numericValue!!),
+                    displayValue = it.numericValue?.let(NumberFormatting::cdaValue) ?: it.qualitativeResult!!,
                     numericValue = it.numericValue, unit = it.unit.trim(),
                 )
             },

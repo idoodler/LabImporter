@@ -1,0 +1,20 @@
+{
+  "reportDate": "2026-08-12",
+  "patientName": "Jane Roe",
+  "values": [
+    {"names": ["Specific Gravity"], "value": 1.018, "unit": ""},
+    {"names": ["pH"], "value": 6.0, "unit": ""},
+    {"names": ["Vitamin B12", "Cobalamin"], "value": 512, "unit": "pg/mL", "loinc": "2132-9"},
+    {"names": ["Ferritin"], "value": 86, "unit": "ng/mL", "loinc": "2276-4"}
+  ],
+  "notNumeric": [
+    {"names": ["Hepatitis B", "HBV", "HBs"]},
+    {"names": ["Hepatitis C", "HCV"]},
+    {"names": ["ANA Screen", "Nuclear Ab", "ANA"]},
+    {"names": ["ANA Titer", "Nuclear Ab", "ANA"]},
+    {"names": ["ANA Pattern", "Nuclear Ab", "ANA"]},
+    {"names": ["Protein"]},
+    {"names": ["Glucose"]},
+    {"names": ["Lead"]}
+  ]
+}

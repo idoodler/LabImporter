@@ -252,8 +252,8 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
     /**
      * The term whose label fits [query] best (see [LoincRanking]) — its
      * words, or word prefixes when [prefix] — in [language] plus English, or
-     * in every catalog language when [anyLanguage]. A term that can't hold a
-     * value in [unit] never fits. Null when nothing does.
+     * in every catalog language when [anyLanguage]. A term that can't hold the
+     * printed [result] or a value in [unit] never fits. Null when nothing does.
      */
     fun bestMatch(
         query: String,
@@ -261,6 +261,7 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
         prefix: Boolean = true,
         anyLanguage: Boolean = false,
         unit: String = "",
+        result: String = "",
     ): LoincMatch? {
         val match = ftsQuery(query, prefix) ?: return null
         val candidates = lock.withLock {
@@ -286,7 +287,7 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
                 statement.reset(); statement.clearBindings()
             }
         }
-        return LoincRanking.best(query, candidates, unit)
+        return LoincRanking.best(query, candidates, unit, result)
     }
 
     // endregion

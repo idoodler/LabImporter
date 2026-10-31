@@ -146,7 +146,10 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   word "total" is dropped as a retry), the unit's kind of quantity (`UnitKind`)
   rules out terms that can't hold the value (mg/dl is never a urine-strip
   finding or a crystal count) and picks mass vs. moles, and a molar unit keeps
-  the name's usual specimen (µmol/l creatinine → serum, not blood). The winner is
+  the name's usual specimen (µmol/l creatinine → serum, not blood). The printed
+  result's shape (`ResultShape`) rules out terms that can't hold it — a result
+  in words ("negativ") or a strip grade is never a count or a concentration, a
+  titer only a titer — and panels/documents (scale `-`/`Doc`) never match. The winner is
   offered as a suggestion (`isSuggestedCode`); nothing fitting → the printed code
   stays for the user to map. A *second* suggestion for an already-claimed LOINC
   stays unmapped instead of replacing a value. There is no static abbreviation
@@ -162,8 +165,15 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
 ### CDA round-trip
 - **Export:** the shared `CdaExport.generate` (via `CDAExportService.generateCDA`)
   emits a C-CDA R2.1 Lab Report. Only values that are `isSelected`, have a
-  `numericValue`, and have a LOINC mapping are included. Units are normalized to
-  UCUM (`Ucum`). Its exact output is pinned by a golden file
+  result and have a LOINC mapping are included (`LabValue.isExportable`). A
+  number is a `PQ` with its unit normalized to UCUM (`Ucum`); a qualitative
+  result — words, a titer "1:160", a threshold "<0.5", a strip grade "2+"
+  (`QualitativeResult`) — is an `ST` (FHIR: `valueString`) with the printed unit
+  appended, split off again on read-back. A number with stray text ("6.5 %") is
+  neither: the user fixes it in review. This was additive, so no schema bump:
+  older builds skip `ST` observations and show a `valueString` as "-" (a FHIR
+  comparator quantity would have been read by them as the bare number). Its
+  exact output is pinned by a golden file
   (`shared/src/jvmTest/golden/report.cda.xml`) asserted by both the Kotlin and
   the Swift tests.
 - **Import-back:** `HealthKitService` reads `HKCDADocumentSample`s and the shared
