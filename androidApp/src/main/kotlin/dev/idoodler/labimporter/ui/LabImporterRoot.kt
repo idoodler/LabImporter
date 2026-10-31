@@ -55,6 +55,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.idoodler.labimporter.R
+import dev.idoodler.labimporter.core.model.QualitativeResult
 import dev.idoodler.labimporter.core.model.Dashboard
 import dev.idoodler.labimporter.ai.AiAvailability
 import dev.idoodler.labimporter.ai.DevelopmentStandIn
@@ -263,7 +264,11 @@ private fun Navigator(
     LaunchedEffect(reports, current, isLoading) {
         if (isLoading) return@LaunchedEffect
         if (current is Destination.Report && reports.none { it.id == current.id }) pop()
-        if (current is Destination.Trend && reports.none { r -> r.entries.any { it.code == current.code && it.numericValue != null } }) {
+        // A result that isn't a number ("Non-reactive") is a reading too: its trend screen lists them.
+        val hasReadings = { code: String ->
+            reports.any { r -> r.entries.any { it.code == code && (it.numericValue != null || QualitativeResult.of(it.displayValue) != null) } }
+        }
+        if (current is Destination.Trend && !hasReadings(current.code)) {
             stack = stack.dropLast(1).ifEmpty { listOf(Destination.Home.encode()) }
         }
     }
