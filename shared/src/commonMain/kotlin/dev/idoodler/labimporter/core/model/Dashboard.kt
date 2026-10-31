@@ -7,6 +7,9 @@ import kotlinx.datetime.minus
 /** One reading of a metric. */
 data class MetricPoint(val date: LocalDate, val value: Double, val unit: String, val reportId: String)
 
+/** One result that isn't a number ("Negativ", "1:160", "<0.5" in [unit]) — listed, never charted. */
+data class MetricResult(val date: LocalDate, val text: String, val unit: String, val reportId: String)
+
 /** A tracked code and its display name. */
 data class CodeName(val code: String, val name: String)
 
@@ -36,15 +39,22 @@ enum class MetricTrend { RISING, FALLING, STEADY;
  *   metric's own latest reading (never fewer than two when two exist) — what a
  *   dashboard card charts.
  * @property points every reading, oldest first — what the trend screen charts.
+ * @property results for a metric whose readings are all qualitative results
+ *   ([isQualitative]): every one of them, oldest first — listed instead of
+ *   charted. Empty for a metric with numbers.
  */
 data class Metric(
     val entry: LabReport.Entry,
     val date: LocalDate,
     val history: List<MetricPoint>,
     val points: List<MetricPoint>,
+    val results: List<MetricResult>,
 ) {
     val code: String get() = entry.code
     val name: String get() = entry.resolvedName
+
+    /** Readings are results that aren't numbers ("Negativ", "1:160"): no chart, no trend, no range. */
+    val isQualitative: Boolean get() = entry.numericValue == null
 
     /** The latest reading's value (metrics exist only for numeric readings). */
     val value: Double get() = checkNotNull(entry.numericValue) { "Metric $code has no numeric reading" }
@@ -80,7 +90,33 @@ object Dashboard {
             var history = all.filter { it.date >= cutoff }
             // Never let the window collapse a real trend to a single point.
             if (history.size < 2 && all.size >= 2) history = all.takeLast(2)
-            Metric(entry, date, history, all)
+            Metric(entry, date, history, all, emptyList())
+        }
+    }
+
+    /**
+     * What the dashboard shows: [metrics], plus one metric per code whose
+     * readings are all qualitative results ("Negativ", "1:160", "<0.5") —
+     * its latest result, and every result in [Metric.results] instead of a
+     * chart. A code with any number is charted, and stays in [metrics] alone
+     * (what Spotlight, shortcuts and the PDF use).
+     */
+    fun dashboardMetrics(reports: List<LabReport>): List<Metric> {
+        val numeric = metrics(reports)
+        val charted = numeric.mapTo(mutableSetOf()) { it.code }
+        val latest = linkedMapOf<String, Pair<LabReport.Entry, LocalDate>>()
+        val results = mutableMapOf<String, MutableList<MetricResult>>()
+        for (report in reports) {
+            for (entry in report.entries) {
+                if (entry.code in charted || entry.numericValue != null) continue
+                val text = QualitativeResult.of(entry.displayValue) ?: continue
+                results.getOrPut(entry.code) { mutableListOf() } += MetricResult(report.date, text, entry.unit, report.id)
+                val existing = latest[entry.code]
+                if (existing == null || report.date > existing.second) latest[entry.code] = entry to report.date
+            }
+        }
+        return numeric + latest.values.map { (entry, date) ->
+            Metric(entry, date, emptyList(), emptyList(), results.getValue(entry.code).sortedBy { it.date })
         }
     }
 

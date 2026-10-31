@@ -12,6 +12,7 @@ import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onLast
@@ -33,6 +34,9 @@ import dev.idoodler.labimporter.ai.DevelopmentStandIn
 import dev.idoodler.labimporter.core.loinc.LoincTerm
 import dev.idoodler.labimporter.core.model.CodeName
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
+import dev.idoodler.labimporter.ui.dashboard.DashboardScreen
+import dev.idoodler.labimporter.ui.dashboard.TrendScreen
+import dev.idoodler.labimporter.ui.importflow.ImportActions
 import dev.idoodler.labimporter.core.model.LabValue
 import dev.idoodler.labimporter.data.PatientDetails
 import dev.idoodler.labimporter.data.PatientSex
@@ -265,6 +269,34 @@ class ScreensTest {
         compose.onNodeWithText(app.resources.getQuantityString(R.plurals.delete_reports_message, 3, 3)).assertIsDisplayed()
         compose.onAllNodesWithText(string(R.string.delete)).onLast().performClick()
         assertEquals(setOf("r1", "r2", "r3"), deleted.last())
+    }
+
+    @Test
+    fun resultsThatArentNumbersAreListedOnTheDashboardAndTheTrendScreen() {
+        var opened by mutableStateOf<String?>(null)
+        compose.setContent {
+            LabImporterTheme {
+                val code = opened
+                if (code == null) {
+                    DashboardScreen(PreviewSamples.reportsWithQualitative, LabDisplayPreferences(), { opened = it }, ImportActions({}, {}, {}, {}, {}))
+                } else {
+                    TrendScreen(code, PreviewSamples.reportsWithQualitative, LabDisplayPreferences(), {}, {})
+                }
+            }
+        }
+        // The CRP card shows its latest result; the hepatitis B card its latest and the ones before.
+        val grid = compose.onAllNodes(hasScrollAction()).onFirst()
+        grid.performScrollToNode(hasText("<0,5", substring = true))
+        compose.onAllNodesWithText("<0,5", substring = true).onFirst().assertIsDisplayed()
+        grid.performScrollToNode(hasText("reaktiv"))
+        compose.onAllNodesWithText("reaktiv").onFirst().performClick()
+        assertEquals("5196-1", opened)
+
+        // The trend screen lists every result, and there's no reference range to set for words.
+        compose.onNodeWithText(string(R.string.readings)).assertExists()
+        compose.onAllNodesWithText("nicht reaktiv").assertCountEquals(2)
+        compose.onNodeWithContentDescription(string(R.string.more)).performClick()
+        compose.onNodeWithText(string(R.string.reference_range)).assertDoesNotExist()
     }
 
     @Test

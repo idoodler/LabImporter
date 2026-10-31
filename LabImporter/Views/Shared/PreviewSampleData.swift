@@ -1,5 +1,6 @@
 #if DEBUG
 import Foundation
+import LabImporterCore
 
 // Shared sample data for SwiftUI previews. The codes are real LOINC numbers so
 // the previews read realistically, but the names and units are supplied inline:
@@ -12,6 +13,23 @@ extension LabReport {
     /// The most recent multi-panel report — used by `ReportDetailView` and as a
     /// row in `HistoryView`.
     static var sample: LabReport { sampleHistory[0] }
+
+    /// `sampleHistory` with results that aren't numbers over time: hepatitis B
+    /// surface antigen and an ANA titer in every report, CRP below the limit.
+    static var sampleHistoryWithQualitative: [LabReport] {
+        sampleHistory.enumerated().map { index, report in
+            let qualitative = [
+                Entry(id: UUID(), code: "5196-1", name: "HBsAg",
+                      displayValue: index == 0 ? "Reactive" : "Non-reactive", numericValue: nil, unit: ""),
+                Entry(id: UUID(), code: "5048-4", name: "ANA Titer",
+                      displayValue: index < 2 ? "1:160" : "1:80", numericValue: nil, unit: ""),
+                Entry(id: UUID(), code: "1988-5", name: "C-Reactive Protein",
+                      displayValue: "<0.5", numericValue: nil, unit: "mg/L"),
+            ]
+            return LabReport(id: report.id, date: report.date, patientName: report.patientName,
+                             authorName: report.authorName, entries: report.entries + qualitative)
+        }
+    }
 
     /// `sample` plus results that aren't numbers (a finding, a titer, a threshold).
     static var sampleWithQualitative: LabReport {
@@ -140,6 +158,16 @@ extension LabValue {
             LabValue(code: "1988-5", name: "C-Reactive Protein", displayValue: "<0.5",
                      numericValue: nil, unit: "mg/L"),
         ]
+    }
+}
+
+extension MetricData {
+    /// Dashboard metrics of results that aren't numbers, from `sampleHistoryWithQualitative`.
+    static var sampleQualitative: [MetricData] {
+        SharedCore.start()
+        return LabImporterCore.Dashboard.shared.dashboardMetrics(reports: LabReport.sampleHistoryWithQualitative.map(\.shared))
+            .filter(\.isQualitative)
+            .map(MetricData.init(shared:))
     }
 }
 

@@ -10,17 +10,35 @@ struct SparkPoint: Identifiable {
     let value: Double
 }
 
+/// One result that isn't a number ("Negativ", "1:160") of a metric — listed, never charted.
+struct ResultPoint: Identifiable {
+    let id = UUID()
+    let date: Date
+    let text: String
+    let unit: String
+
+    /// The result with its unit, as a row shows it ("<0.5 mg/L").
+    var formatted: String { unit.isEmpty ? text : "\(text) \(unit)" }
+}
+
 struct MetricData: Identifiable {
     var id: String { entry.code }
     let entry: LabReport.Entry
     let history: [SparkPoint]
+    /// For a metric whose readings are all results that aren't numbers: every
+    /// one of them, oldest first (shared `Metric.results`). Empty otherwise.
+    var results: [ResultPoint] = []
+
+    /// Readings are results that aren't numbers: no sparkline, trend or range.
+    var isQualitative: Bool { entry.numericValue == nil }
 }
 
 extension MetricData {
     init(shared metric: LabImporterCore.Metric) {
         self.init(
             entry: LabReport.Entry(shared: metric.entry),
-            history: metric.history.map { SparkPoint(date: Date(shared: $0.date), value: $0.value) }
+            history: metric.history.map { SparkPoint(date: Date(shared: $0.date), value: $0.value) },
+            results: metric.results.map { ResultPoint(date: Date(shared: $0.date), text: $0.text, unit: $0.unit) }
         )
     }
 }
@@ -149,7 +167,10 @@ struct MetricCard: View {
                 }
             }
 
-            if metric.history.count > 1 {
+            if metric.isQualitative {
+                RecentResultsList(results: metric.results, limit: 3)
+                    .frame(maxHeight: .infinity, alignment: .bottom)
+            } else if metric.history.count > 1 {
                 MetricSparklineChart(history: metric.history, categoryColor: categoryColor, referenceRange: referenceRange)
                     // Grow to absorb the card's remaining vertical space instead of
                     // leaving a fixed-height chart with blank padding beneath it.
@@ -162,6 +183,32 @@ struct MetricCard: View {
         .padding(14)
         .frame(maxWidth: .infinity, minHeight: 158, alignment: .topLeading)
         .cardSurface()
+    }
+}
+
+// MARK: - RecentResultsList
+
+/// The latest results that aren't numbers, newest first — what a qualitative
+/// metric's card shows in place of a sparkline: there's nothing to plot.
+struct RecentResultsList: View {
+    let results: [ResultPoint]
+    let limit: Int
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            ForEach(results.suffix(limit).reversed()) { result in
+                HStack(spacing: 6) {
+                    Text(result.date.formatted(date: .abbreviated, time: .omitted))
+                        .foregroundStyle(.secondary)
+                    Spacer(minLength: 4)
+                    Text(result.formatted)
+                        .fontWeight(.medium)
+                        .lineLimit(1)
+                }
+                .font(.caption2)
+                .accessibilityElement(children: .combine)
+            }
+        }
     }
 }
 
@@ -232,6 +279,25 @@ struct MetricSparklineChart: View {
 // MARK: - Previews
 
 #if DEBUG
+#Preview("Results That Aren't Numbers") {
+    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 14) {
+        ForEach(MetricData.sampleQualitative) { metric in
+            MetricCard(metric: metric, isPinned: false)
+        }
+    }
+    .padding()
+}
+
+#Preview("Results That Aren't Numbers · Dark") {
+    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 14) {
+        ForEach(MetricData.sampleQualitative) { metric in
+            MetricCard(metric: metric, isPinned: true)
+        }
+    }
+    .padding()
+    .preferredColorScheme(.dark)
+}
+
 #Preview("Sparkline") {
     MetricSparklineChart(
         history: [

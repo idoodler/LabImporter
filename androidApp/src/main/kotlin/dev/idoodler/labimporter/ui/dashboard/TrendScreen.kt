@@ -58,6 +58,7 @@ import dev.idoodler.labimporter.core.LabCore
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.core.model.LabMapping
 import dev.idoodler.labimporter.core.model.LabReport
+import dev.idoodler.labimporter.core.model.Metric
 import dev.idoodler.labimporter.core.model.MetricPoint
 import dev.idoodler.labimporter.core.model.ReferenceRange
 import dev.idoodler.labimporter.core.model.Dashboard
@@ -95,7 +96,11 @@ private val TrendWindow.label: Int
         TrendWindow.ALL -> R.string.window_all
     }
 
-/** One metric over time: a scrubbable chart, statistics and every reading. */
+/**
+ * One metric over time: a scrubbable chart, statistics and every reading — or,
+ * for results that aren't numbers ("Negativ", "1:160"), the latest one and the
+ * list of every result.
+ */
 @Composable
 fun TrendScreen(
     code: String,
@@ -108,6 +113,7 @@ fun TrendScreen(
     // Hidden metrics stay reachable here (shared rule, as on iOS).
     val metric = remember(reports, preferences, code) {
         Dashboard.trendMetrics(reports, preferences).firstOrNull { it.code == code }
+            ?: Dashboard.dashboardMetrics(reports).firstOrNull { it.code == code }
     } ?: return
     val context = LocalContext.current
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -122,8 +128,6 @@ fun TrendScreen(
     val term = remember(code) { LabCore.loinc?.term(code) }
 
     val points: List<MetricPoint> = remember(metric, window) { window.visible(metric.points) }
-    val shown = selected?.let { points.getOrNull(it) } ?: points.last()
-    val values = points.map { it.value }
 
     Box(Modifier.fillMaxSize()) {
         CategoryWash(listOf(color, accentFor(color), color), intensity = 1.2f)
@@ -151,11 +155,13 @@ fun TrendScreen(
                                 leadingIcon = { Icon(Icons.Rounded.Edit, null) },
                                 onClick = { menu = false; renaming = true },
                             )
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.reference_range)) },
-                                leadingIcon = { Icon(Icons.Rounded.Straighten, null) },
-                                onClick = { menu = false; editingRange = true },
-                            )
+                            if (!metric.isQualitative) {
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.reference_range)) },
+                                    leadingIcon = { Icon(Icons.Rounded.Straighten, null) },
+                                    onClick = { menu = false; editingRange = true },
+                                )
+                            }
                             DropdownMenuItem(
                                 text = {
                                     Text(stringResource(if (code in preferences.hiddenSet) R.string.show_on_dashboard else R.string.hide_from_dashboard))
@@ -186,6 +192,12 @@ fun TrendScreen(
                         colors = CardDefaults.cardColors(containerColor = tintedSurface(color, 0.16f).copy(alpha = 0.94f)),
                         shape = MaterialTheme.shapes.extraLarge,
                     ) {
+                        if (metric.isQualitative) {
+                            QualitativeHero(metric)
+                            return@Card
+                        }
+                        val shown = selected?.let { points.getOrNull(it) } ?: points.last()
+                        val values = points.map { it.value }
                         Column(Modifier.padding(20.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 CategoryBadge(metric.category, size = 40.dp)
@@ -262,6 +274,22 @@ fun TrendScreen(
                     }
                 }
                 item(key = "readings-title") { SectionTitle(stringResource(R.string.readings)) }
+                if (metric.isQualitative) {
+                    val results = metric.results.reversed()
+                    itemsIndexed(results, key = { _, r -> r.reportId + r.date }) { index, result ->
+                        GroupedListItem(
+                            index, results.size,
+                            headline = {
+                                Text(
+                                    "${result.text} ${result.unit}".trim(),
+                                    style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold,
+                                )
+                            },
+                            supporting = { Text(formatDate(result.date, FormatStyle.LONG)) },
+                        )
+                    }
+                    return@LazyColumn
+                }
                 val readings = metric.points.reversed()
                 itemsIndexed(readings, key = { _, p -> p.reportId + p.date }) { index, point ->
                     GroupedListItem(
@@ -282,6 +310,33 @@ fun TrendScreen(
 
     if (renaming) RenameValueDialog(code, preferences, onUpdatePreferences) { renaming = false }
     if (editingRange) ReferenceRangeDialog(code, preferences, onUpdatePreferences) { editingRange = false }
+}
+
+/** The latest result that isn't a number, in place of the chart: there's nothing to plot. */
+@Composable
+private fun QualitativeHero(metric: Metric) {
+    Column(Modifier.padding(20.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            CategoryBadge(metric.category, size = 40.dp)
+            Spacer(Modifier.width(12.dp))
+            Text(
+                formatDate(metric.date, FormatStyle.LONG), style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f),
+            )
+        }
+        Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.padding(top = 12.dp)) {
+            Text(
+                metric.entry.displayValue,
+                style = MaterialTheme.typography.displaySmallEmphasized.copy(fontSize = 40.sp, lineHeight = 44.sp),
+                fontWeight = FontWeight.Bold,
+            )
+            Spacer(Modifier.width(6.dp))
+            Text(
+                metric.entry.unit, style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 6.dp),
+            )
+        }
+    }
 }
 
 /** TalkBack's summary of the chart: how many readings over which dates, the extremes and the latest. */
@@ -315,6 +370,22 @@ private fun TrendPreview() {
             "4548-4", PreviewSamples.reports,
             LabDisplayPreferences(referenceRanges = mapOf("4548-4" to ReferenceRange(4.0, 6.0))), {}, {},
         )
+    }
+}
+
+@Preview(name = "Results that aren't numbers", widthDp = 400, heightDp = 900)
+@Composable
+private fun QualitativeTrendPreview() {
+    LabImporterTheme(dynamicColor = false) {
+        TrendScreen("5196-1", PreviewSamples.reportsWithQualitative, LabDisplayPreferences(), {}, {})
+    }
+}
+
+@Preview(name = "Results that aren't numbers – dark", widthDp = 400, heightDp = 900, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun QualitativeTrendDarkPreview() {
+    LabImporterTheme(darkTheme = true, dynamicColor = false) {
+        TrendScreen("5196-1", PreviewSamples.reportsWithQualitative, LabDisplayPreferences(), {}, {})
     }
 }
 

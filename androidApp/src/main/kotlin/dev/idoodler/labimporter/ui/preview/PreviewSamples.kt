@@ -56,6 +56,16 @@ object PreviewSamples {
         report.copy(entries = report.entries + qualitativeValues.map { LabReport.Entry(it.id, it.code, it.name, it.displayValue, null, it.unit) })
     }
 
+    /** [reports] with results that aren't numbers over time: hepatitis B surface antigen, and CRP below the limit. */
+    val reportsWithQualitative: List<LabReport> = reports.mapIndexed { index, report ->
+        report.copy(
+            entries = report.entries + listOf(
+                LabReport.Entry("q${index}1", "5196-1", "HBsAg", if (index == 0) "reaktiv" else "nicht reaktiv", null, ""),
+                LabReport.Entry("q${index}2", "1988-5", "CRP", "<0,5", null, "mg/l"),
+            ),
+        )
+    }
+
     /** A terse PatMed-style report for trying the import flow on an emulator. */
     const val SAMPLE_REPORT_TEXT = """Labor Dr. Muster · Befund vom 06.05.2026
 Patient: Max Mustermann
