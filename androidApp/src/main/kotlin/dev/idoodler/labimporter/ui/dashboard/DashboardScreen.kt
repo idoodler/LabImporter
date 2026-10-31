@@ -121,7 +121,7 @@ fun DashboardScreen(
     notices: (@Composable () -> Unit)? = null,
 ) {
     // Shared rules (LabImporterCore `Dashboard`), identical on iOS.
-    val metrics = remember(reports, preferences) { Dashboard.sorted(Dashboard.metrics(reports), preferences) }
+    val metrics = remember(reports, preferences) { Dashboard.sorted(Dashboard.dashboardMetrics(reports), preferences) }
     if (metrics.isEmpty() && isLoading) {
         Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CategoryWash(welcomePalette, intensity = 0.6f)
@@ -242,7 +242,7 @@ private fun CategoryFilterRow(categories: List<Pair<LabCategory, Int>>, selected
     }
 }
 
-/** Grid card: badge + name, the latest value, its trend and a gradient sparkline. */
+/** Grid card: badge + name, the latest value, its trend and a gradient sparkline (or the latest results that aren't numbers). */
 @Composable
 fun MetricCard(metric: Metric, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val color = metric.category.color
@@ -273,11 +273,15 @@ fun MetricCard(metric: Metric, onClick: () -> Unit, modifier: Modifier = Modifie
                 metric.trend?.let { TrendBadge(it, color, Modifier.padding(start = 6.dp)) }
             }
             Spacer(Modifier.height(10.dp))
-            // Like iOS: the sparkline covers the year before the latest reading.
-            AreaChart(
-                metric.history.map { it.value }, color, Modifier.fillMaxWidth().height(64.dp),
-                range = metric.range, strokeWidth = 2.5.dp, showPoints = metric.history.size <= 8,
-            )
+            if (metric.isQualitative) {
+                RecentResults(metric, count = 3, Modifier.fillMaxWidth().height(64.dp))
+            } else {
+                // Like iOS: the sparkline covers the year before the latest reading.
+                AreaChart(
+                    metric.history.map { it.value }, color, Modifier.fillMaxWidth().height(64.dp),
+                    range = metric.range, strokeWidth = 2.5.dp, showPoints = metric.history.size <= 8,
+                )
+            }
         }
     }
 }
@@ -316,10 +320,14 @@ fun HeroMetricCard(metric: Metric, pinned: Boolean, onClick: () -> Unit, modifie
                 RangeBadge(metric.rangeStatus)
                 metric.trend?.let { TrendBadge(it, color, Modifier.padding(start = 6.dp), size = 26.dp) }
             }
-            AreaChart(
-                values, color, Modifier.fillMaxWidth().height(132.dp).padding(top = 12.dp),
-                range = metric.range, showPoints = values.size <= 12,
-            )
+            if (metric.isQualitative) {
+                RecentResults(metric, count = 6, Modifier.fillMaxWidth().padding(top = 12.dp))
+            } else {
+                AreaChart(
+                    values, color, Modifier.fillMaxWidth().height(132.dp).padding(top = 12.dp),
+                    range = metric.range, showPoints = values.size <= 12,
+                )
+            }
             if (values.size > 1) {
                 Row(Modifier.fillMaxWidth().padding(top = 12.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
                     StatTile(formatNumber(values.min()), stringResource(R.string.stat_min))
@@ -333,18 +341,40 @@ fun HeroMetricCard(metric: Metric, pinned: Boolean, onClick: () -> Unit, modifie
 
 @Composable
 private fun ValueLine(metric: Metric, valueSize: Int) {
+    // A result in words ("nicht reaktiv") is set smaller than a number so it fits the card.
+    val size = if (metric.isQualitative) valueSize * 2 / 3 else valueSize
     Row(verticalAlignment = Alignment.Bottom) {
         Text(
-            formatNumber(metric.value),
-            style = MaterialTheme.typography.displaySmallEmphasized.tabular().copy(fontSize = valueSize.sp, lineHeight = (valueSize + 4).sp),
-            fontWeight = FontWeight.Bold,
+            if (metric.isQualitative) metric.entry.displayValue else formatNumber(metric.value),
+            style = MaterialTheme.typography.displaySmallEmphasized.tabular().copy(fontSize = size.sp, lineHeight = (size + 4).sp),
+            fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f, fill = false),
             color = if (metric.rangeStatus?.isOutOfRange == true) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
         )
         Spacer(Modifier.width(5.dp))
         Text(
             metric.entry.unit, style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = (valueSize / 7).dp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = (size / 7).dp),
         )
+    }
+}
+
+/** The latest results that aren't numbers, newest first — what such a metric shows in place of a chart. */
+@Composable
+private fun RecentResults(metric: Metric, count: Int, modifier: Modifier = Modifier) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        metric.results.asReversed().take(count).forEach { result ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    formatDate(result.date, FormatStyle.MEDIUM), style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f),
+                )
+                Text(
+                    "${result.text} ${result.unit}".trim(), style = MaterialTheme.typography.labelLarge,
+                    maxLines = 1, overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
     }
 }
 
@@ -413,6 +443,22 @@ private fun DashboardPopulatedPreview() {
 private fun DashboardDarkPreview() {
     LabImporterTheme(darkTheme = true, dynamicColor = false) {
         DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, previewActions)
+    }
+}
+
+@Preview(name = "Results that aren't numbers", widthDp = 400, heightDp = 1100)
+@Composable
+private fun DashboardQualitativePreview() {
+    LabImporterTheme(dynamicColor = false) {
+        DashboardScreen(PreviewSamples.reportsWithQualitative, LabDisplayPreferences(), {}, previewActions)
+    }
+}
+
+@Preview(name = "Results that aren't numbers – pinned, dark", widthDp = 400, heightDp = 1100, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun DashboardQualitativePinnedDarkPreview() {
+    LabImporterTheme(darkTheme = true, dynamicColor = false) {
+        DashboardScreen(PreviewSamples.reportsWithQualitative, LabDisplayPreferences(pinnedCodes = listOf("5196-1")), {}, previewActions)
     }
 }
 

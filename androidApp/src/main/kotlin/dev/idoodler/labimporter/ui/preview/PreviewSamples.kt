@@ -43,6 +43,29 @@ object PreviewSamples {
         LabValue("v4", "2093-3", "Cholesterin", "198", 198.0, "mg/dl", isSelected = false),
     )
 
+    /** Results that aren't numbers, saved as text: a finding, a titer, a threshold, a strip grade. */
+    val qualitativeValues: List<LabValue> = listOf(
+        LabValue("q1", "5196-1", "HBsAg", "nicht reaktiv", null, ""),
+        LabValue("q2", "5048-4", "ANA-Titer", "1:160", null, ""),
+        LabValue("q3", "1988-5", "CRP", "<0,5", null, "mg/l"),
+        LabValue("q4", "20454-5", "Eiweiß (Urin)", "2+", null, ""),
+    )
+
+    /** The latest report with qualitative results added. */
+    val reportWithQualitative: LabReport = reports.first().let { report ->
+        report.copy(entries = report.entries + qualitativeValues.map { LabReport.Entry(it.id, it.code, it.name, it.displayValue, null, it.unit) })
+    }
+
+    /** [reports] with results that aren't numbers over time: hepatitis B surface antigen, and CRP below the limit. */
+    val reportsWithQualitative: List<LabReport> = reports.mapIndexed { index, report ->
+        report.copy(
+            entries = report.entries + listOf(
+                LabReport.Entry("q${index}1", "5196-1", "HBsAg", if (index == 0) "reaktiv" else "nicht reaktiv", null, ""),
+                LabReport.Entry("q${index}2", "1988-5", "CRP", "<0,5", null, "mg/l"),
+            ),
+        )
+    }
+
     /** A terse PatMed-style report for trying the import flow on an emulator. */
     const val SAMPLE_REPORT_TEXT = """Labor Dr. Muster · Befund vom 06.05.2026
 Patient: Max Mustermann

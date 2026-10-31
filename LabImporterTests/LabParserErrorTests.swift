@@ -23,6 +23,30 @@ struct LabParserErrorTests {
         #expect(LabParserError(.decodingFailure(context)) == .generationFailed)
     }
 
+    @Test func otherErrorsPassThroughUnchanged() {
+        #expect(LabParserError.from(LabParserError.busy) as? LabParserError == .busy)
+        #expect(LabParserError.from(LanguageModelSession.GenerationError.exceededContextWindowSize(context))
+            as? LabParserError == .documentTooLong)
+        #expect(LabParserError.from(CancellationError()) is CancellationError)
+    }
+
+    #if compiler(>=6.4)
+    /// iOS 27 throws these instead of `GenerationError` to apps built with its SDK.
+    @Test func languageModelErrorsMapToTheUsersSituation() throws {
+        guard #available(iOS 27, *) else { return }
+        let tooLong = LanguageModelError.contextSizeExceeded(.init(contextSize: 4096, tokenCount: 5000, debugDescription: "test"))
+        #expect(LabParserError.from(tooLong) as? LabParserError == .documentTooLong)
+        #expect(LabParserError(.rateLimited(.init(resetDate: nil, debugDescription: "test"))) == .busy)
+        #expect(LabParserError(.timeout(.init(debugDescription: "test"))) == .busy)
+        #expect(LabParserError(.guardrailViolation(.init(debugDescription: "test"))) == .contentBlocked)
+        #expect(LabParserError(.unsupportedLanguageOrLocale(.init(languageCode: "xx", debugDescription: "test")))
+            == .unsupportedLanguageOrLocale)
+        #expect(LabParserError.from(SystemLanguageModel.Error.assetsUnavailable(.init(debugDescription: "test")))
+            as? LabParserError == .modelNotReady)
+        #expect(LabParserError.from(LanguageModelSession.Error.concurrentRequests) as? LabParserError == .busy)
+    }
+    #endif
+
     @Test func everyCaseHasAReadableMessage() {
         let all: [LabParserError] = [
             .appleIntelligenceOff, .modelNotReady, .busy, .unsupportedLanguageOrLocale,

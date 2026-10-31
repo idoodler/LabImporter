@@ -63,7 +63,8 @@ object LabParseSchema {
         "HB-A1C→HbA1c, HB-A1→HbA1c (IFCC), C-PEPT→C-Peptid, GADAAK→Glutamatdecarboxylase-Antikörper, " +
         "ICEA→Inselzell-Antikörper, ICEA2→IA-2-Antikörper, NONHDL→Non-HDL-Cholesterin, TSH-0→Thyreotropin. " +
         "For names already spelled out (e.g. 'Ferritin', 'Vitamin D 25-Hydroxy'), keep them as printed."
-    const val RAW_VALUE = "Value exactly as printed — use '-' for negative/not-detected results"
+    const val RAW_VALUE = "Result as printed, without a high/low flag (H, L, *), also when it isn't a number " +
+        "(e.g. 0,80, Negativ, not detected, 1:160, <0.5). Use '-' only when no result is printed"
     const val UNIT = "Unit of measurement as printed (e.g. mg/dl, %, mmol/mol, U/l, ml/min/1,73m2KOF). Empty string if none."
 }
 
@@ -81,7 +82,10 @@ object LabParsePrompt {
         Do NOT emit specimen, material, or annotation labels as entries — a "value" of 'Serum', 'EDTA-Plasma',
         'Vollblut' or a standalone method tag (e.g. 'JDF-E.') is not a measured test and must be skipped.
         Detect the language of the report and return it as a BCP-47 code (e.g. 'de', 'en') in reportLanguage.
-        Use '-' as rawValue when the result is negative or not detected.
+        Copy every result into rawValue as printed but without a high/low flag such as H, L or *, including results
+        that are not numbers (e.g. 'Negativ', 'positive', 'not detected', 'reactive', '1:160', '<0.5', '2+');
+        use '-' only when no result is printed.
+        Section headings and column titles (e.g. 'LIPID PANEL', 'Urinstatus', 'Test', 'Result') are not tests: never emit them as entries.
         If you can see a report date or blood draw date, return it in yyyy-MM-dd format; otherwise return an empty string.
         Extract the patient's full name if visible; otherwise return an empty string for patientName.
         Extract the lab or doctor name if visible; otherwise return an empty string for authorName.
@@ -159,7 +163,10 @@ object LabParsePipeline {
     fun postProcess(report: AiLabReport, sourceText: String): ParseResult {
         val entries = report.entries.filter { it.code.isNotBlank() || it.name.isNotBlank() }
         val units = entries.map { unitWithoutFlag(it.unit) }
-        val resolved = entries.mapIndexed { index, entry -> resolveLoinc(entry.code, entry.name, report.reportLanguage, units[index]) }
+        val results = entries.map { valueWithoutFlag(it.rawValue) }
+        val resolved = entries.mapIndexed { index, entry ->
+            resolveLoinc(entry.code, entry.name, report.reportLanguage, units[index], results[index])
+        }
         // Two names can land on one LOINC ("Erythrozyten" and "Hämoglobin" once both found MCHC):
         // a printed code keeps it and so does the first suggestion; a later suggestion stays unmapped
         // for the user to place, instead of one value silently replacing the other.
@@ -169,13 +176,13 @@ object LabParsePipeline {
             val collides = resolvedSuggested && !claimed.add(resolvedCode)
             val code = if (collides) entry.code.trim().ifEmpty { entry.name.trim() } else resolvedCode
             val suggested = resolvedSuggested && !collides
-            val numeric = if (entry.rawValue == "-") null else NumberFormatting.parse(entry.rawValue)
+            val numeric = if (results[index] == "-") null else NumberFormatting.parse(results[index])
             val display = LabMapping.displayName(code)
             LabValue(
                 code = code,
                 // An unmapped value shows the model's expanded name ("Kreatinin"), not the mnemonic.
                 name = if (display == code) entry.name.trim().ifEmpty { entry.code } else display,
-                displayValue = entry.rawValue,
+                displayValue = results[index],
                 numericValue = numeric,
                 unit = units[index],
                 isSuggestedCode = suggested,
@@ -197,36 +204,54 @@ object LabParsePipeline {
      * (everyday spellings often differ from the LOINC translation: "Kreatinin"
      * vs. "Creatinin"), then without little words ("Albumin im Urin") or the
      * word "total" ("Colesterolo totale"), then by word stem ("Cholesterin" →
-     * "Cholesterol") — and finally the printed code, as a whole word only
+     * "Cholesterol"), then over all of a term's names together ("Celiac –
+     * Deamidated Gliadin IgA", see [LoincDirectory.bestSpreadMatch]) — and
+     * finally the printed code, as a whole word only
      * ("TSH"; "KREA" must not prefix-match "Kreatinkinase"). The term that
      * fits best ([LoincRanking]: its label names the test and no more, of the
-     * kind of quantity [unit] measures) is offered as a *suggestion* the user
-     * confirms in review. Unresolved entries keep the printed code so they can
-     * be mapped by hand.
+     * kind of quantity [unit] measures, that can hold the printed [result] —
+     * see [dev.idoodler.labimporter.core.loinc.ResultShape]) is offered as a
+     * *suggestion* the user confirms in review. Unresolved entries keep the
+     * printed code so they can be mapped by hand.
      */
-    fun resolveLoinc(printed: String, name: String, language: String, unit: String = ""): Pair<String, Boolean> {
+    fun resolveLoinc(printed: String, name: String, language: String, unit: String = "", result: String = ""): Pair<String, Boolean> {
         val directory = LabCore.loinc ?: return printed to false
         val trimmedPrinted = printed.trim()
         if (directory.isKnownLoinc(trimmedPrinted)) return trimmedPrinted to false
         val lang = directory.resolvedLanguage(language)
         val term = name.trim()
-        // (query, any catalog language) — earlier steps win a tie.
+        // Earlier steps win a tie.
         val steps = if (term.isEmpty()) emptyList() else buildList {
-            add(term to false)
-            add(term to true)
-            LoincDirectory.withoutStopWords(term)?.let { add(it to false) }
-            LoincDirectory.withoutTotal(term)?.let { add(it to false); add(it to true) }
-            LoincDirectory.stemmedQueries(term).forEach { add(it to true) }
+            add(Step(term))
+            add(Step(term, anyLanguage = true))
+            LoincDirectory.withoutStopWords(term)?.let { add(Step(it)) }
+            LoincDirectory.withoutTotal(term)?.let { add(Step(it)); add(Step(it, anyLanguage = true)) }
+            LoincDirectory.withLoincSpellings(term)?.let { spelled ->
+                add(Step(spelled))
+                LoincDirectory.withoutTotal(spelled)?.let { add(Step(it)) }
+            }
+            // A stem is a cut-off word: never matched against related names ("cholest" is not
+            // cholesterol esterase's "Cholest").
+            LoincDirectory.stemmedQueries(term).forEach { add(Step(it, anyLanguage = true, synonyms = false)) }
         }
         var best: LoincMatch? = null
-        for ((query, anyLanguage) in steps) {
-            val match = directory.bestMatch(query, lang, anyLanguage = anyLanguage, unit = unit) ?: continue
+        for (step in steps) {
+            val match = directory.bestMatch(
+                step.query, lang, anyLanguage = step.anyLanguage, unit = unit, result = result, synonyms = step.synonyms,
+            ) ?: continue
             if (best == null || match < best) best = match
             if (match.isExact) break
         }
-        if (best == null && trimmedPrinted.isNotEmpty()) best = directory.bestMatch(trimmedPrinted, lang, prefix = false, unit = unit)
+        if (best == null && term.isNotEmpty()) best = directory.bestSpreadMatch(term, lang, unit, result)
+        if (best == null && trimmedPrinted.isNotEmpty()) {
+            // Related names hold symbols and short forms of other tests ("Au" is gold): not for a printed code.
+            best = directory.bestMatch(trimmedPrinted, lang, prefix = false, unit = unit, result = result, synonyms = false)
+        }
         return best?.let { it.code to true } ?: (printed to false)
     }
+
+    /** One lookup of [resolveLoinc]: a query, in every catalog language or the report's, with related names or not. */
+    private data class Step(val query: String, val anyLanguage: Boolean = false, val synonyms: Boolean = true)
 
     /**
      * [unit] without a high/low flag the model read into it from the next
@@ -234,11 +259,37 @@ object LabParsePipeline {
      */
     fun unitWithoutFlag(unit: String): String {
         val trimmed = unit.trim()
+        // A flag alone ("H", "A" for abnormal) is no unit at all.
+        if (trimmed in FLAGS) return ""
         val first = trimmed.substringBefore(' ')
         return if (first != trimmed && first in FLAGS) trimmed.substringAfter(' ').trim() else trimmed
     }
 
-    private val FLAGS = setOf("H", "L", "HH", "LL", "+", "-", "*", "↑", "↓", "!")
+    /**
+     * [value] without a high/low flag or status label the model copied from
+     * the next column — after it ("231 *" → "231", "1:160 H" → "1:160") or
+     * before it ("H 231", and Function Health's "In Range· 42" / "Above
+     * Range· 6.1", a label ending in a middle dot); anything else unchanged.
+     */
+    fun valueWithoutFlag(value: String): String {
+        var trimmed = value.trim()
+        val dot = trimmed.lastIndexOfAny(LABEL_ENDS)
+        if (dot >= 0 && trimmed.substring(0, dot).any { it.isLetter() }) trimmed = trimmed.substring(dot + 1).trim()
+        // A leading flag only before a number: "A positive" is a blood group, not a flag.
+        val first = trimmed.substringBefore(' ')
+        val rest = trimmed.substringAfter(' ').trim()
+        if (first != trimmed && first in VALUE_FLAGS && (NumberFormatting.parse(rest) != null || rest.first() in "<>≤≥")) trimmed = rest
+        val last = trimmed.substringAfterLast(' ')
+        return if (last != trimmed && last in VALUE_FLAGS) trimmed.substringBeforeLast(' ').trim() else trimmed
+    }
+
+    /** What ends a status label in front of a value: "In Range· 42", "High • 6.1". */
+    private val LABEL_ENDS = charArrayOf('·', '•', '∙')
+
+    private val FLAGS = setOf("H", "L", "HH", "LL", "A", "+", "-", "*", "↑", "↓", "!")
+
+    /** Flags after a value — not "+" or "-", which can belong to the result ("2 +"). */
+    private val VALUE_FLAGS = setOf("H", "L", "HH", "LL", "A", "*", "**", "↑", "↓", "!")
 
     /**
      * The model's date if the report prints it. Models mis-copy digits —

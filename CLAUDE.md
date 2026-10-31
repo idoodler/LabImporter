@@ -114,8 +114,21 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
 - **`LoincDirectory`** wraps the full LOINC catalog. `tools/build_loinc_resource.py`
   (run by the "Generate LOINC resource" Xcode build phase) distills the official
   release zip under `Vendor/LOINC/*.zip` into a bundled SQLite database `loinc.db`
-  (FTS5) — the ~18.5k common laboratory terms, each with a name + description
-  localized into every language the app ships. The DB is a build product (not in
+  (FTS5) — the ~18.8k common laboratory terms, each with a name + description
+  localized into every language the app ships. That includes the ~300 common
+  DISCOURAGED terms labs still print (Quest's blood lead 5671-3): known when
+  printed or picked, ranked after every ACTIVE term, never suggested for a
+  name (`bestMatch` only considers ACTIVE terms). The English name is LOINC's terse
+  DisplayName ("ALP [Catalytic activity/Vol]"), so every term also has
+  search-only labels: its English long name (lang `long`) and the related names
+  that tell it apart (lang `syn`: "Uric acid", "BUN", "Thyroid stimulating
+  hormone"; phrases listed for more than 100 terms — "Serum", "Antibody" — are
+  dropped). They're matched and searched, never displayed.
+  Plus the ~6.4k ACTIVE CHEM terms without a common-test rank that
+  consumer panels print (OmegaCheck 90909-3…, LDL subparticles 96735-6, eGFR
+  CKD-EPI 2021 98979-8): English only, named by their long name, ranked last,
+  also never suggested. Only `term.suggested = 1` terms (ranked ACTIVE) take
+  part in `bestMatch`. The DB is a build product (not in
   git); only the source zip is committed. `LabMapping` falls back to
   `LoincDirectory` for any code that is already a raw LOINC number (e.g. picked in
   `CodePickerSheet`).
@@ -143,7 +156,19 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   word "total" is dropped as a retry), the unit's kind of quantity (`UnitKind`)
   rules out terms that can't hold the value (mg/dl is never a urine-strip
   finding or a crystal count) and picks mass vs. moles, and a molar unit keeps
-  the name's usual specimen (µmol/l creatinine → serum, not blood). The winner is
+  the name's usual specimen (µmol/l creatinine → serum, not blood). The printed
+  result's shape (`ResultShape`) rules out terms that can't hold it — a result
+  in words ("negativ") or a strip grade is never a count or a concentration, a
+  titer only a titer — and panels/documents (scale `-`/`Doc`) never match. A
+  term the name *names* beats one matched only by a related name
+  (`bySynonym`: "HGB" is hemoglobin, not "DO-Hgb"), "total" is no extra word
+  ("Carbon dioxide, total" is plain CO₂), and a specimen or population the name
+  doesn't mention loses a tie (capillary/arterial/cord blood, "among black
+  population": plain "Lead" is venous, plain "GFR" no race-based formula).
+  Names are also tried in LOINC's spelling (Ab, Ag) and, when no single label
+  has all their words, over all of a term's names together
+  (`bestSpreadMatch`: "Celiac – Deamidated Gliadin IgA"); a printed code never
+  matches a related name ("AU" is no gold). The winner is
   offered as a suggestion (`isSuggestedCode`); nothing fitting → the printed code
   stays for the user to map. A *second* suggestion for an already-claimed LOINC
   stays unmapped instead of replacing a value. There is no static abbreviation
@@ -159,8 +184,15 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
 ### CDA round-trip
 - **Export:** the shared `CdaExport.generate` (via `CDAExportService.generateCDA`)
   emits a C-CDA R2.1 Lab Report. Only values that are `isSelected`, have a
-  `numericValue`, and have a LOINC mapping are included. Units are normalized to
-  UCUM (`Ucum`). Its exact output is pinned by a golden file
+  result and have a LOINC mapping are included (`LabValue.isExportable`). A
+  number is a `PQ` with its unit normalized to UCUM (`Ucum`); a qualitative
+  result — words, a titer "1:160", a threshold "<0.5", a strip grade "2+"
+  (`QualitativeResult`) — is an `ST` (FHIR: `valueString`) with the printed unit
+  appended, split off again on read-back. A number with stray text ("6.5 %") is
+  neither: the user fixes it in review. This was additive, so no schema bump:
+  older builds skip `ST` observations and show a `valueString` as "-" (a FHIR
+  comparator quantity would have been read by them as the bare number). Its
+  exact output is pinned by a golden file
   (`shared/src/jvmTest/golden/report.cda.xml`) asserted by both the Kotlin and
   the Swift tests.
 - **Import-back:** `HealthKitService` reads `HKCDADocumentSample`s and the shared
@@ -207,6 +239,10 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
 - OCR recognizes the app's current language plus English —
   `OCRService.recognitionLanguages(for:)` uses `Bundle.main.preferredLocalizations`
   first, then English, filtered to Vision's `supportedRecognitionLanguages()`.
+  A PDF page's embedded text is used as is, unless it has none or uses
+  Unicode private-use characters (`OCRService.hasPrivateUseCharacters`: some
+  fonts draw "<" or "(" that way, so "<1.0" would read as an exact 1.0) —
+  those pages are OCR'd from their render; pages keep their order.
   Narrative CDA labels are German.
 - Preferences (`labDisplayPrefs`, `patientName`, `hasSeenWelcome`, etc.) are read
   via `@AppStorage`. `LabDisplayPreferences` is `RawRepresentable` over the shared
@@ -300,7 +336,8 @@ shared/        # Kotlin Multiplatform (android, iosArm64, iosSimulatorArm64, jvm
                          #   (one schema version + migration chain for CDA and FHIR)
     parse/               # LabParseSchema/LabParsePrompt (shared AI instructions, guide texts,
                          #   JSON contract/schema), LabParsePipeline (numbers, LOINC resolution,
-                         #   date check against the text, dedup)
+                         #   date check against the text, dedup), LabParseChunks (long reports
+                         #   read in overlapping parts, replies merged)
     transfer/            # ReportTransfer: iPhone ⇄ Android file (FHIR Bundle; also reads CDA)
     export/PdfReport.kt  # PDF content + pagination (PdfReport, PdfLayout) — both apps' PDFs
     model/               # … also ChartAxis (rounded chart ticks), SortEditorState (Sort & Visibility rules)
@@ -589,8 +626,18 @@ Required secrets: `GH_PAT`, `TEAMID`, `FASTLANE_ISSUER_ID`, `FASTLANE_KEY_ID`,
 - **When the on-device model can't be used, say so — never guess.** iOS shows
   `UnsupportedDeviceView` on ineligible hardware and maps every other Foundation
   Models state to a clear message (`LabParserError`: Apple Intelligence off,
-  still downloading, busy, too long…). Android mirrors this (see below). There
-  is no rule-based fallback on either platform.
+  still downloading, busy, too long…). iOS 27 throws `LanguageModelError` and
+  friends instead of `GenerationError` to apps built with its SDK —
+  `LabParserError.from(_:)` maps both (the iOS 27 part behind
+  `#if compiler(>=6.4)`, since CI builds with Xcode 26). Android mirrors this
+  (see below). There is no rule-based fallback on either platform.
+- **Long reports are read in parts.** The models' contexts (~4K tokens) hold
+  the instructions, the schema, the text and the reply, so the shared
+  `LabParseChunks` cuts a report over 2,000 characters between lines into
+  parts that overlap by two lines; each platform reads them in order (a fresh
+  session each), halves a part the model still finds too long, and merges the
+  replies before `LabParsePipeline`. A report that fits is read exactly as one
+  prompt. iOS OCR keeps one recognized line per line for that reason.
 - **Migrating the exported CDA:** the read-back is version-gated (see "CDA
   round-trip"). Whenever you change what the export *means* — remap a LOINC code,
   change a unit convention, restructure observations — do all of:

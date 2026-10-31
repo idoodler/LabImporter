@@ -179,6 +179,127 @@ class CatalogTest {
     }
 
     @Test
+    fun discouragedCodesLabsStillPrintAreKnownButNeverSuggested() {
+        // Quest's blood lead: DISCOURAGED in favour of 77307-7 (venous blood), still printed on reports.
+        assertTrue(LabCore.loinc!!.isKnownLoinc("5671-3"))
+        assertEquals("DISCOURAGED", LabCore.loinc!!.detail("5671-3")!!.status)
+        assertEquals("5671-3" to false, LabParsePipeline.resolveLoinc("5671-3", "Lead, Blood", "en", "mcg/dL"))
+        assertEquals("5671-3", LabMapping.loincCode("5671-3")!!.loinc)
+        // A name alone still finds the recommended ACTIVE term, and a search lists the discouraged one last.
+        val (byName, _) = LabParsePipeline.resolveLoinc("PB", "Lead", "en", "mcg/dL")
+        assertEquals("ACTIVE", LabCore.loinc!!.detail(byName)!!.status)
+        val lead = LabCore.loinc!!.search("Lead Bld", language = "en", limit = 200).map { it.code }
+        assertTrue("5671-3" in lead && lead.indexOf("77307-7") < lead.indexOf("5671-3"), lead.toString())
+        // LDH: 2532-0 is DISCOURAGED, the enzymatic reactions are the ACTIVE terms.
+        assertTrue(LabCore.loinc!!.isKnownLoinc("2532-0"))
+        val (ldh, _) = LabParsePipeline.resolveLoinc("LDH", "Lactate dehydrogenase", "en", "U/L")
+        assertEquals("ACTIVE", LabCore.loinc!!.detail(ldh)!!.status)
+    }
+
+    @Test
+    fun aResultInWordsNeverLandsOnACountOrAConcentration() {
+        val loinc = LabCore.loinc!!
+        // "Eiweiß: negativ" once became egg white IgE, "Leukozyten: negativ" a blood count.
+        for ((name, language) in listOf("Eiweiß" to "de", "Leukozyten" to "de", "Nitrit" to "de", "Proteínas" to "es")) {
+            val (code, _) = LabParsePipeline.resolveLoinc("", name, language, "", "negativ")
+            val scale = loinc.detail(code)?.scale
+            assertTrue(scale == null || scale in setOf("Ord", "Nom", "OrdQn", "Nar"), "$name → $code ($scale)")
+        }
+        val (titer, _) = LabParsePipeline.resolveLoinc("", "ANA Titer", "en", "", "1:160")
+        assertEquals("Titr", loinc.detail(titer)?.property, titer)
+        // A section heading with a result is never a panel.
+        val (panel, _) = LabParsePipeline.resolveLoinc("HEPATITIS PANEL", "Hepatitis Panel", "en", "", "NON-REACTIVE")
+        assertTrue(loinc.detail(panel)?.scale != "-", panel)
+        // A threshold is a quantity: the unit still decides.
+        val (crp, _) = LabParsePipeline.resolveLoinc("CRP", "CRP", "de", "mg/dl", "< 0,5")
+        assertEquals("MCnc", loinc.detail(crp)?.property, crp)
+    }
+
+    @Test
+    fun flagsCopiedIntoAValueOrUnitAreDropped() {
+        assertEquals("231", LabParsePipeline.valueWithoutFlag("231 *"))
+        assertEquals("1:160", LabParsePipeline.valueWithoutFlag("1:160 H"))
+        assertEquals("positiv (+)", LabParsePipeline.valueWithoutFlag("positiv (+)"))
+        assertEquals("2 +", LabParsePipeline.valueWithoutFlag("2 +"))
+        assertEquals("", LabParsePipeline.unitWithoutFlag("H"))
+        assertEquals("", LabParsePipeline.unitWithoutFlag("A"))
+        assertEquals("mg/dl", LabParsePipeline.unitWithoutFlag("H mg/dl"))
+        val report = AiLabReport(listOf(AiLabEntry("COL", "Colesterolo totale", "231 *", "mg/dL")), reportLanguage = "it")
+        val value = LabParsePipeline.postProcess(report, "").values.single()
+        assertEquals(231.0, value.numericValue)
+        assertEquals("231", value.displayValue)
+    }
+
+    @Test
+    fun everydayEnglishNamesResolveThroughLoincsLongNamesAndRelatedNames() {
+        // The English label is LOINC's terse display name ("ALP [Catalytic activity/Vol]", "Urate…");
+        // a US report's names (Quest, Function Health) match the long name or a related name instead.
+        startCatalog("en-US")
+        val cases = listOf(
+            Triple("Alkaline Phosphatase", "U/L", "6768-6"), Triple("Uric Acid", "mg/dL", "3084-1"),
+            Triple("Urea Nitrogen (BUN)", "mg/dL", "3094-0"), Triple("Platelet Count", "Thousand/uL", "777-3"),
+            Triple("Thyroid-Stimulating Hormone (TSH)", "mIU/L", "3016-3"), Triple("DHEA Sulfate", "mcg/dL", "2191-5"),
+            Triple("Methylmalonic Acid", "nmol/L", "13964-2"), Triple("Prostate Specific Antigen (PSA), Total", "ng/mL", "2857-1"),
+            Triple("Thyroglobulin Antibodies", "IU/mL", "8098-6"), Triple("Thyroid Peroxidase Antibodies (TPO)", "IU/mL", "8099-4"),
+            Triple("Tissue Transglutaminase Ab, IgG", "U/mL", "32998-7"), Triple("Deamidated Gliadin Ab (IgG)", "U/mL", "63459-2"),
+            // #115: the right variant, not just the right analyte.
+            Triple("Carbon Dioxide", "mmol/L", "2028-9"), Triple("Lead", "mcg/dL", "77307-7"),
+            Triple("Celiac - Deamidated Gliadin IgA", "U/mL", "58709-7"), Triple("LDL Cholesterol", "mg/dL (calc)", "13457-7"),
+            Triple("Lymphocytes", "%", "736-9"), Triple("Calcium", "mg/dL", "17861-6"),
+        )
+        for ((name, unit, expected) in cases) {
+            assertEquals(expected to true, LabParsePipeline.resolveLoinc("", name, "en", unit), name)
+        }
+        // A related name is weaker than a name: "HGB" is hemoglobin, never the "DO-Hgb" deoxyhemoglobin.
+        assertEquals("718-7" to true, LabParsePipeline.resolveLoinc("HGB", "HGB", "pl", "g/dl"))
+        // A printed code never matches a related name: "AU" (ácido úrico) is no gold ("Au").
+        assertEquals("AU" to false, LabParsePipeline.resolveLoinc("AU", "Ácido úrico", "es", "mg/dl"))
+        // Total IgA still comes from its printed code — a single letter never spreads a name.
+        assertEquals("2458-8" to true, LabParsePipeline.resolveLoinc("IgA", "Immunoglobulin A (IgA)", "en", "mg/dL"))
+        // "% by wt" is a fraction: never the omega-3 concentration in moles.
+        val (omega, _) = LabParsePipeline.resolveLoinc("", "Omega-3 Total", "en", "% by wt")
+        assertTrue(LabCore.loinc!!.detail(omega)?.property != "SCnc", omega)
+        // A formula for one population ("among black population") only when the report says so.
+        val (gfr, _) = LabParsePipeline.resolveLoinc("", "Glomerular Filtration Rate", "en", "mL/min/1.73m2")
+        assertFalse("population" in LabCore.loinc!!.detail(gfr)!!.method, LabCore.loinc!!.detail(gfr)!!.method)
+        // The code picker finds a test by its everyday name too.
+        assertTrue(LabCore.loinc!!.search("uric acid", language = "en", limit = 10).any { it.code == "3084-1" })
+    }
+
+    @Test
+    fun aStatusLabelInFrontOfAValueIsDropped() {
+        assertEquals("42", LabParsePipeline.valueWithoutFlag("In Range· 42"))
+        assertEquals("6.1", LabParsePipeline.valueWithoutFlag("Above Range· 6.1"))
+        assertEquals("<1.0", LabParsePipeline.valueWithoutFlag("In Range· <1.0"))
+        assertEquals("231", LabParsePipeline.valueWithoutFlag("H 231"))
+        // Not a flag: a blood group, or a result in words.
+        assertEquals("A positive", LabParsePipeline.valueWithoutFlag("A positive"))
+        assertEquals("Negative", LabParsePipeline.valueWithoutFlag("In Range· Negative"))
+        val report = AiLabReport(listOf(AiLabEntry("DHEA-S", "DHEA Sulfate", "In Range· 211", "mcg/dL")), reportLanguage = "en")
+        assertEquals(211.0, LabParsePipeline.postProcess(report, "").values.single().numericValue)
+    }
+
+    @Test
+    fun unrankedChemistryTermsAreKnownButNeverSuggested() {
+        val loinc = LabCore.loinc!!
+        // OmegaCheck (Quest/Function Health), LDL subparticles, eGFR CKD-EPI 2021: no common-test rank in LOINC.
+        for (code in listOf("90909-3", "90910-1", "90911-9", "90914-3", "90915-0", "96735-6", "98979-8")) {
+            assertTrue(loinc.isKnownLoinc(code), code)
+            assertEquals(code, LabMapping.loincCode(code)!!.loinc)
+        }
+        // Named by their readable long name, in English.
+        assertTrue("Omega 6 fatty acids" in loinc.term("90910-1")!!.name, loinc.term("90910-1")!!.name)
+        // A printed code passes through; a name never resolves to them.
+        assertEquals("98979-8" to false, LabParsePipeline.resolveLoinc("98979-8", "eGFR", "de", "ml/min/1,73m2"))
+        val (gfr, _) = LabParsePipeline.resolveLoinc("", "glomeruläre Filtrationsrate", "de", "ml/min/1,73m2")
+        assertTrue(gfr != "98979-8")
+        // The code picker finds them — after every ranked term.
+        val omega = loinc.search("omega fatty acids", language = "en", limit = 200)
+        assertTrue(omega.any { it.code == "90910-1" }, omega.map { it.code }.toString())
+        assertTrue(omega.dropWhile { it.rank < 2_000_000 }.all { it.rank >= 2_000_000 })
+    }
+
+    @Test
     fun duplicatesAreDetectedAndCollapsed() {
         val a = LabValue(code = "2160-0", name = "Creatinin", displayValue = "0.8", numericValue = 0.8, unit = "mg/dl")
         val b = a.copy(id = "b", displayValue = "0.9", numericValue = 0.9)

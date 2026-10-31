@@ -15,7 +15,29 @@ is not duplicated. See LoincDirectory.swift for the queries.
 Selection criteria ("common lab tests only"):
   * CLASSTYPE == 1            -> Laboratory class
   * STATUS    == ACTIVE       -> not deprecated/trial
+    or DISCOURAGED            -> still printed by labs (Quest's blood lead 5671-3), so a
+                                 printed code stays known; ranked after every ACTIVE term
+                                 and never suggested by name (LoincDirectory.bestMatch)
   * COMMON_TEST_RANK > 0      -> appears in LOINC's common-test ordering
+    or CLASS in UNRANKED_CLASSES -> ACTIVE chemistry terms without a rank that
+                                 consumer panels print (OmegaCheck fatty acids
+                                 90909-3…, LDL subparticles 96735-6, eGFR
+                                 CKD-EPI 2021 98979-8): English only, named by
+                                 their long name, ranked after everything else
+  Only ranked ACTIVE terms are `suggested` for a printed name; the others are
+  known (a printed code passes through, the code picker finds them) but a
+  name never resolves to them (LoincDirectory.bestMatch).
+
+Search names:
+  The English label is LOINC's terse DisplayName ("ALP [Catalytic activity/Vol]",
+  "Urate [Mass/Vol]"), which a report's everyday name ("Alkaline phosphatase",
+  "Uric acid") never matches. So every term also gets search-only labels: its
+  English LONG_COMMON_NAME under LONG_NAME ("long"), and each phrase of its
+  RELATEDNAMES2 ("Uric acid", "BUN", "Thyroid stimulating hormone") under
+  SYNONYMS ("syn") — except phrases listed for more than SYNONYM_MAX_TERMS
+  terms ("Serum", "Chemistry", "Antibody"), which name a kind of test, not a
+  test. They are matched and searched, never displayed; a synonym counts for
+  less than a name (LoincRanking).
 
 Languages:
   LANGS maps an app language code (as used in Localizable.xcstrings) to the
@@ -61,6 +83,24 @@ LANGS: dict[str, str | None] = {
     "uk": "ukUA30LinguisticVariant.csv",
     "zh-Hans": "zhCN5LinguisticVariant.csv",
 }
+
+
+# Rank added to DISCOURAGED terms so every ordering by rank (search, browsing)
+# lists the recommended ACTIVE term first. Above any COMMON_TEST_RANK.
+DISCOURAGED_RANK_OFFSET = 1_000_000
+STATUS_RANK_OFFSET = {"ACTIVE": 0, "DISCOURAGED": DISCOURAGED_RANK_OFFSET}
+
+# Search-only labels (see "Search names" above) and how common a related name
+# may be before it stops telling tests apart.
+LONG_NAME = "long"
+SYNONYMS = "syn"
+SYNONYM_MAX_TERMS = 100
+
+# ACTIVE terms of these classes are kept even without a COMMON_TEST_RANK, at
+# this rank. LOINC 2.82 has 6,363 such CHEM terms; all 41k unranked lab terms
+# would triple the database and add nothing a name should resolve to.
+UNRANKED_CLASSES = {"CHEM"}
+UNRANKED_RANK = 2_000_000
 
 
 def find_zip(arg: str) -> str:
@@ -115,16 +155,21 @@ def read_base(zf: zipfile.ZipFile) -> dict[str, dict]:
     entries: dict[str, dict] = {}
     with zf.open(member) as fh:
         for row in csv.DictReader(io.TextIOWrapper(fh, encoding="utf-8")):
-            if row["CLASSTYPE"] != "1" or row["STATUS"] != "ACTIVE":
+            offset = STATUS_RANK_OFFSET.get(row["STATUS"])
+            if row["CLASSTYPE"] != "1" or offset is None:
                 continue
             try:
                 rank = int(row["COMMON_TEST_RANK"])
             except (KeyError, ValueError):
                 rank = 0
-            if rank <= 0:
+            unranked = rank <= 0
+            if unranked and not (row["STATUS"] == "ACTIVE" and row["CLASS"] in UNRANKED_CLASSES):
                 continue
+            rank = UNRANKED_RANK if unranked else rank + offset
             num = row["LOINC_NUM"]
-            names = {"en": _name_from(row, "DisplayName")}
+            # An unranked term's DisplayName is often just as terse ("EPA+DPA+DHA/FA.C14-C22"),
+            # and it has no translations: its long name is what a user searches for.
+            names = {"en": _name_from(row, "LONG_COMMON_NAME" if unranked else "DisplayName")}
             descs = {}
             en_desc = _description_from(row, allow_definition=True)
             if en_desc:
@@ -136,8 +181,36 @@ def read_base(zf: zipfile.ZipFile) -> dict[str, dict]:
                 "n": names,
                 "d": descs,
                 "a": _attributes(row),
+                "l": (row.get("LONG_COMMON_NAME") or "").strip(),
+                "s": _related_names(row),
+                "suggested": offset == 0 and not unranked,
+                "english_only": unranked,
             }
+    _drop_common_synonyms(entries)
     return entries
+
+
+def _related_names(row: dict) -> list[str]:
+    """The related names, each once (case-insensitively)."""
+    seen: set[str] = set()
+    out: list[str] = []
+    for phrase in (p.strip() for p in (row.get("RELATEDNAMES2") or "").split(";")):
+        key = phrase.lower()
+        if len(phrase) >= 2 and key not in seen:
+            seen.add(key)
+            out.append(phrase)
+    return out
+
+
+def _drop_common_synonyms(entries: dict[str, dict]) -> None:
+    """Keeps the related names that tell a test apart, and none that repeats a name."""
+    counts: dict[str, int] = {}
+    for entry in entries.values():
+        for phrase in entry["s"]:
+            counts[phrase.lower()] = counts.get(phrase.lower(), 0) + 1
+    for entry in entries.values():
+        names = {entry["n"].get("en", "").lower(), entry["l"].lower()}
+        entry["s"] = [p for p in entry["s"] if counts[p.lower()] <= SYNONYM_MAX_TERMS and p.lower() not in names]
 
 
 def _attributes(row: dict) -> dict:
@@ -168,7 +241,7 @@ def merge_variant(zf: zipfile.ZipFile, lang: str, filename: str, entries: dict[s
     with zf.open(member) as fh:
         for row in csv.DictReader(io.TextIOWrapper(fh, encoding="utf-8")):
             entry = entries.get(row.get("LOINC_NUM", ""))
-            if entry is None:
+            if entry is None or entry["english_only"]:
                 continue
             desc = _description_from(row, allow_definition=False)
             # Several variants translate the parts but leave the assembled name
@@ -189,7 +262,8 @@ CREATE TABLE term(
     code TEXT PRIMARY KEY, ucum TEXT, rank INTEGER, english TEXT,
     component TEXT, property TEXT, timing TEXT, system TEXT,
     scale TEXT, method TEXT, loinc_class TEXT, status TEXT,
-    long_name TEXT, short_name TEXT
+    long_name TEXT, short_name TEXT,
+    suggested INTEGER  -- 1: a printed name may resolve to it (ranked ACTIVE)
 ) WITHOUT ROWID;
 CREATE TABLE label(rowid INTEGER PRIMARY KEY, code TEXT, lang TEXT, name TEXT, descr TEXT);
 CREATE INDEX idx_label ON label(code, lang);
@@ -245,11 +319,11 @@ def write_db(ordered: list[dict], version: str, license_text: str, out_path: str
             names = entry["n"]
             descs = entry["d"]
             attr = entry["a"]
-            con.execute("INSERT INTO term VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            con.execute("INSERT INTO term VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                         (entry["c"], entry["u"], entry["r"], names.get("en", ""),
                          attr["component"], attr["property"], attr["timing"], attr["system"],
                          attr["scale"], attr["method"], attr["class"], attr["status"],
-                         attr["long"], attr["short"]))
+                         attr["long"], attr["short"], 1 if entry["suggested"] else 0))
             for lang, name in names.items():
                 rowid += 1
                 labels += 1
@@ -259,6 +333,13 @@ def write_db(ordered: list[dict], version: str, license_text: str, out_path: str
                     descr = ""
                 con.execute("INSERT INTO label VALUES(?,?,?,?,?)",
                             (rowid, entry["c"], lang, name, descr))
+            searched = [(LONG_NAME, entry["l"])] if entry["l"] and entry["l"] != names.get("en") else []
+            searched += [(SYNONYMS, phrase) for phrase in entry["s"]]
+            for lang, phrase in searched:
+                rowid += 1
+                labels += 1
+                con.execute("INSERT INTO label VALUES(?,?,?,?,?)",
+                            (rowid, entry["c"], lang, phrase, ""))
         # Build the external-content FTS index from the populated label table.
         con.execute("INSERT INTO label_fts(label_fts) VALUES('rebuild')")
         con.commit()

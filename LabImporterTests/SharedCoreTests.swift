@@ -68,6 +68,27 @@ struct SharedCoreTests {
         #expect(pair.showsFewValuesHint)
     }
 
+    @Test func resultsThatAreNotNumbersAreListedOnTheDashboard() {
+        func text(_ date: Date, _ result: String) -> LabReport {
+            LabReport(id: UUID(), date: date, patientName: "", authorName: "", entries: [
+                LabReport.Entry(id: UUID(), code: "5196-1", name: "HBsAg", displayValue: result, numericValue: nil, unit: "")
+            ])
+        }
+        let reports = [
+            report(Fixtures.date(2026, 1, 1), [("2160-0", 1.0)]),
+            text(Fixtures.date(2026, 2, 1), "Non-reactive"),
+            text(Fixtures.date(2026, 3, 1), "Reactive"),
+        ]
+        let content = DashboardView.Content(reports: reports, prefs: .init())
+        let results = content.metrics.first { $0.entry.code == "5196-1" }
+        #expect(results?.isQualitative == true)
+        #expect(results?.entry.displayValue == "Reactive")
+        #expect(results?.results.map(\.text) == ["Non-reactive", "Reactive"])
+        #expect(results?.history.isEmpty == true)
+        // The hero card charts: a lone qualitative metric stays a grid card.
+        #expect(DashboardView.Content(reports: [text(Fixtures.date(2026, 2, 1), "Reactive")], prefs: .init()).soleMetric == nil)
+    }
+
     @Test func trendFollowsTheLastTwoReadings() {
         let day = Fixtures.date(2026, 1, 1)
         #expect(MetricTrend(history: [SparkPoint(date: day, value: 1), SparkPoint(date: day, value: 2)]) == .rising)

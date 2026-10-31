@@ -34,8 +34,9 @@ struct AddValueSheet: View {
                             .font(.body.weight(.semibold))
                             .foregroundStyle(accent)
                             .frame(width: 24)
+                        // Digits first, letters a tap away for "Negativ" or "<0.5".
                         TextField("Value", text: $displayValue)
-                            .keyboardType(.decimalPad)
+                            .keyboardType(.numbersAndPunctuation)
                     }
                     HStack(spacing: 12) {
                         Image(systemName: "ruler")

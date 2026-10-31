@@ -90,20 +90,24 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
         FROM label_fts f
         JOIN label l ON l.rowid = f.rowid
         JOIN term t ON t.code = l.code
-        WHERE label_fts MATCH ?1 AND l.lang IN (?2, 'en')
+        WHERE label_fts MATCH ?1 AND l.lang IN (?2, 'en', 'long', 'syn')
         GROUP BY l.code
         ORDER BY t.rank
         LIMIT ?3 OFFSET ?4
         """,
     )
-    /** Every matching label with its term's attributes, for [bestMatch] to rank (one row per label). */
+    /**
+     * Every matching label with its term's attributes, for [bestMatch] to rank (one row per label).
+     * Only `suggested` terms (ranked ACTIVE): a DISCOURAGED or unranked one is known when
+     * printed or picked, never suggested for a name.
+     */
     private val candidateStatement = prepare(
         """
-        SELECT l.code, l.name, t.rank, t.property, t.scale, t.system
+        SELECT l.code, l.name, t.rank, t.property, t.scale, t.system, l.lang, t.method
         FROM label_fts f
         JOIN label l ON l.rowid = f.rowid
         JOIN term t ON t.code = l.code
-        WHERE label_fts MATCH ?1 AND l.lang IN (?2, 'en')
+        WHERE label_fts MATCH ?1 AND l.lang IN (?2, 'en', 'long', 'syn') AND t.suggested = 1
         ORDER BY t.rank
         LIMIT ?3
         """,
@@ -111,11 +115,11 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
     /** [candidateStatement] across every catalog language (the import resolver's fallback). */
     private val anyLanguageCandidateStatement = prepare(
         """
-        SELECT l.code, l.name, t.rank, t.property, t.scale, t.system
+        SELECT l.code, l.name, t.rank, t.property, t.scale, t.system, l.lang, t.method
         FROM label_fts f
         JOIN label l ON l.rowid = f.rowid
         JOIN term t ON t.code = l.code
-        WHERE label_fts MATCH ?1
+        WHERE label_fts MATCH ?1 AND t.suggested = 1
         ORDER BY t.rank
         LIMIT ?3
         """,
@@ -139,6 +143,8 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
         """,
     )
     private val classificationStatement = prepare("SELECT loinc_class, component FROM term WHERE code = ?1")
+    /** Every name of a term the matching sees: in a language, in English, and its synonyms. */
+    private val namesStatement = prepare("SELECT name FROM label WHERE code = ?1 AND lang IN (?2, 'en', 'long', 'syn')")
 
     init {
         version = scalar("SELECT value FROM meta WHERE key = 'version'").orEmpty()
@@ -249,8 +255,8 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
     /**
      * The term whose label fits [query] best (see [LoincRanking]) — its
      * words, or word prefixes when [prefix] — in [language] plus English, or
-     * in every catalog language when [anyLanguage]. A term that can't hold a
-     * value in [unit] never fits. Null when nothing does.
+     * in every catalog language when [anyLanguage]. A term that can't hold the
+     * printed [result] or a value in [unit] never fits. Null when nothing does.
      */
     fun bestMatch(
         query: String,
@@ -258,32 +264,90 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
         prefix: Boolean = true,
         anyLanguage: Boolean = false,
         unit: String = "",
-    ): LoincMatch? {
-        val match = ftsQuery(query, prefix) ?: return null
-        val candidates = lock.withLock {
+        result: String = "",
+        synonyms: Boolean = true,
+    ): LoincMatch? = LoincRanking.best(query, candidates(query, language, prefix, anyLanguage, synonyms), unit, result)
+
+    /**
+     * The term whose names *together* hold the words of [name] when no
+     * single label does: "Celiac – Deamidated Gliadin IgA" is the gliadin
+     * peptide IgA antibody, whose names are "Celiac disease", "Deamidated
+     * gliadin peptide" and "Gliadin peptide IgA Ab". Candidates are found by
+     * ever fewer of the name's words (never one alone); a term fits only if
+     * its names have every word, so the bare IgA that "IgA" alone would find
+     * never does. Among those, [LoincRanking] decides.
+     */
+    fun bestSpreadMatch(name: String, language: String, unit: String = "", result: String = ""): LoincMatch? {
+        val words = (withLoincSpellings(name) ?: name).let(LoincRanking::foldedTokens)
+            // A single letter ("Immunoglobulin A") prefix-matches nearly every name.
+            .filterNot { it.length < 2 || it in STOP_WORDS || it in TOTAL_WORDS }.distinct()
+        if (words.size !in 3..MAX_SPREAD_WORDS) return null
+        val namesByCode = mutableMapOf<String, Set<String>>()
+        for (size in words.size - 1 downTo 2) {
+            val fits = linkedMapOf<String, LoincCandidate>()
+            for (subset in combinations(words, size)) {
+                for (candidate in candidates(subset.joinToString(" "), language, prefix = true, anyLanguage = false)) {
+                    if (candidate.code in fits) continue
+                    val names = namesByCode.getOrPut(candidate.code) {
+                        names(candidate.code, language).flatMap { LoincRanking.foldedTokens(it) }.toSet()
+                    }
+                    if (words.all { word -> names.any { it.startsWith(word) } }) fits[candidate.code] = candidate
+                }
+            }
+            if (fits.isEmpty()) continue
+            return LoincRanking.best(words.joinToString(" "), fits.values.toList(), unit, result)
+        }
+        return null
+    }
+
+    private fun <T> combinations(items: List<T>, size: Int): List<List<T>> =
+        if (size == 0) listOf(emptyList())
+        else items.indices.flatMap { i -> combinations(items.drop(i + 1), size - 1).map { listOf(items[i]) + it } }
+
+    private fun names(code: String, language: String): List<String> = lock.withLock {
+        val statement = namesStatement ?: return@withLock emptyList()
+        statement.use(code, language) {
+            buildList { while (statement.step()) add(statement.text(0).orEmpty()) }
+        }
+    }
+
+    /** Matching terms with their matched names; [synonyms] false leaves related names out (a printed code "AU" is no gold). */
+    private fun candidates(
+        query: String,
+        language: String,
+        prefix: Boolean,
+        anyLanguage: Boolean,
+        synonyms: Boolean = true,
+    ): List<LoincCandidate> {
+        val match = ftsQuery(query, prefix) ?: return emptyList()
+        return lock.withLock {
             val statement = (if (anyLanguage) anyLanguageCandidateStatement else candidateStatement) ?: return@withLock emptyList()
             try {
                 statement.bindText(1, match)
                 if (!anyLanguage) statement.bindText(2, language)
                 statement.bindLong(3, CANDIDATE_LABELS)
-                val byCode = linkedMapOf<String, MutableList<String>>()
+                val names = linkedMapOf<String, MutableList<String>>()
+                val related = mutableMapOf<String, MutableList<String>>()
                 val terms = mutableMapOf<String, LoincCandidate>()
                 while (statement.step()) {
                     val code = statement.text(0).orEmpty()
-                    byCode.getOrPut(code) { mutableListOf() } += statement.text(1).orEmpty()
+                    val isSynonym = statement.text(6) == SYNONYMS
+                    if (isSynonym && !synonyms) continue
+                    (if (isSynonym) related else names).getOrPut(code) { mutableListOf() } += statement.text(1).orEmpty()
+                    names.getOrPut(code) { mutableListOf() }
                     if (code !in terms) {
                         terms[code] = LoincCandidate(
                             code, statement.getLong(2).toInt(), statement.text(3).orEmpty(),
                             statement.text(4).orEmpty(), statement.text(5).orEmpty(), emptyList(),
+                            method = statement.text(7).orEmpty(),
                         )
                     }
                 }
-                byCode.map { (code, labels) -> terms.getValue(code).copy(labels = labels) }
+                names.map { (code, labels) -> terms.getValue(code).copy(labels = labels, synonyms = related[code].orEmpty()) }
             } finally {
                 statement.reset(); statement.clearBindings()
             }
         }
-        return LoincRanking.best(query, candidates, unit)
     }
 
     // endregion
@@ -292,7 +356,7 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
         lock.withLock {
             listOf(
                 termStatement, searchStatement, candidateStatement, anyLanguageCandidateStatement, topStatement, detailStatement,
-                classificationStatement,
+                classificationStatement, namesStatement,
             )
                 .forEach { it?.close() }
             connection?.close()
@@ -380,6 +444,27 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
         }
 
         /**
+         * [name] in LOINC's own spelling — "Thyroglobulin Antibodies" →
+         * "thyroglobulin ab", "Prostate Specific Antigen" → "… ag" — or null
+         * when nothing changed: LOINC writes Ab and Ag.
+         */
+        fun withLoincSpellings(name: String): String? {
+            val all = tokens(name)
+            val spelled = all.map { LOINC_SPELLINGS[it] ?: it }
+            return spelled.takeIf { it != all }?.joinToString(" ")
+        }
+
+        private val LOINC_SPELLINGS = mapOf(
+            "antibody" to "ab", "antibodies" to "ab", "antigen" to "ag", "antigens" to "ag",
+        )
+
+        /** The label language of LOINC's related names (search-only, weaker than a name). */
+        private const val SYNONYMS = "syn"
+
+        /** Longer names are sentences, not test names. */
+        private const val MAX_SPREAD_WORDS = 6
+
+        /**
          * Queries for spelling variants across languages: [name] with its
          * longest word cut back to ever shorter stems — "Cholesterin" →
          * "cholester…" finds "Cholesterol", "Triglyzeride" → "trigly…" finds
@@ -413,7 +498,7 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
         private fun tokens(text: String): List<String> =
             text.lowercase().split(Regex("[^\\p{L}\\p{N}]+")).filter { it.isNotEmpty() }
 
-        private val TOTAL_WORDS = setOf(
+        internal val TOTAL_WORDS = setOf(
             "total", "totale", "totaal", "totalt", "gesamt", "całkowity", "całkowita", "całkowite", "celkový", "celková",
             "celkové", "ukupni", "ukupna", "ukupno", "összes", "totală", "toplam", "ολική", "ολικό", "общий", "загальний", "общ",
         )

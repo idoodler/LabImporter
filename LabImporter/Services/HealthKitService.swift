@@ -6,7 +6,7 @@ actor HealthKitService {
 
     static let shared = HealthKitService()
 
-    nonisolated(unsafe) private let store = HKHealthStore()
+    private let store = HKHealthStore()
 
     static var isHealthDataAvailable: Bool {
         HKHealthStore.isHealthDataAvailable()
@@ -77,8 +77,7 @@ actor HealthKitService {
         let predicate = HKQuery.predicateForObjects(from: sources)
 
         return try await withCheckedThrowingContinuation { continuation in
-            var results: [LabReport] = []
-            var finished = false
+            let state = QueryState<[LabReport]>([])
             let query = HKDocumentQuery(
                 documentType: documentType,
                 predicate: predicate,
@@ -87,10 +86,8 @@ actor HealthKitService {
                                                    ascending: false)],
                 includeDocumentData: true
             ) { _, samples, done, error in
-                guard !finished else { return }
                 if let error {
-                    finished = true
-                    continuation.resume(throwing: error)
+                    if state.finish() != nil { continuation.resume(throwing: error) }
                     return
                 }
                 if let cdaSamples = samples as? [HKCDADocumentSample] {
@@ -99,10 +96,9 @@ actor HealthKitService {
                               let xml = String(data: xmlData, encoding: .utf8) else { return nil }
                         return Self.report(fromCDA: xml, id: sample.uuid)
                     }
-                    results.append(contentsOf: parsed)
+                    state.update { $0.append(contentsOf: parsed) }
                 }
-                if done {
-                    finished = true
+                if done, let results = state.finish() {
                     continuation.resume(returning: results)
                 }
             }
@@ -167,12 +163,11 @@ actor HealthKitService {
         let predicate = HKQuery.predicateForObject(with: id)
 
         let sample: HKDocumentSample? = try await withCheckedThrowingContinuation { continuation in
-            var finished = false
             // HKDocumentQuery may deliver results across several handler
             // invocations, with `done` only set on the last one. Capture the
             // match as it arrives instead of relying on the final callback's
             // `samples` (which can be nil once everything was already delivered).
-            var match: HKDocumentSample?
+            let state = QueryState<HKDocumentSample?>(nil)
             let query = HKDocumentQuery(
                 documentType: documentType,
                 predicate: predicate,
@@ -180,15 +175,12 @@ actor HealthKitService {
                 sortDescriptors: nil,
                 includeDocumentData: false
             ) { _, samples, done, error in
-                guard !finished else { return }
                 if let error {
-                    finished = true
-                    continuation.resume(throwing: error)
+                    if state.finish() != nil { continuation.resume(throwing: error) }
                     return
                 }
-                if let first = samples?.first { match = first }
-                if done {
-                    finished = true
+                if let first = samples?.first { state.update { $0 = first } }
+                if done, let match = state.finish() {
                     continuation.resume(returning: match)
                 }
             }
@@ -215,4 +207,35 @@ actor HealthKitService {
 extension Notification.Name {
     /// Posted after a lab report is saved, replaced, or deleted in Apple Health.
     static let labReportsDidChange = Notification.Name("dev.idoodler.labimporter.labReportsDidChange")
+}
+
+/// What a HealthKit query has delivered so far. Its handler runs on
+/// HealthKit's own queue, possibly several times, so the value lives behind a
+/// lock, and `finish()` hands it out exactly once: the first caller (the
+/// final batch or an error) resumes the continuation, any later one doesn't.
+private final class QueryState<Value>: @unchecked Sendable {
+    private let lock = NSLock()
+    private var value: Value
+    private var finished = false
+
+    init(_ value: Value) {
+        self.value = value
+    }
+
+    /// Changes the value, unless the query has already finished.
+    func update(_ change: (inout Value) -> Void) {
+        lock.withLock {
+            guard !finished else { return }
+            change(&value)
+        }
+    }
+
+    /// The value, the first time it's asked for; nil once the query had finished.
+    func finish() -> Value? {
+        lock.withLock {
+            guard !finished else { return nil }
+            finished = true
+            return .some(value)
+        }
+    }
 }

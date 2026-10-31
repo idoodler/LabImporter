@@ -2,6 +2,7 @@ package dev.idoodler.labimporter.core.export
 
 import dev.idoodler.labimporter.core.model.LabMapping
 import dev.idoodler.labimporter.core.model.LabReport
+import dev.idoodler.labimporter.core.model.QualitativeResult
 import dev.idoodler.labimporter.core.platform.NumberFormatting
 import kotlinx.datetime.LocalDate
 import nl.adaptivity.xmlutil.EventType
@@ -18,7 +19,9 @@ import kotlin.uuid.Uuid
  * older versions are upgraded through [ReportSchema]. The rules mirror what
  * the iOS app has always applied when reading Apple Health back:
  *  - the report date is the first `effectiveTime` in the document;
- *  - an observation needs a LOINC code, a display name, a `PQ` value and a unit;
+ *  - an observation needs a LOINC code, a display name and either a `PQ`
+ *    value with a unit or an `ST` qualitative result (whose text carries the
+ *    unit, see [QualitativeResult]) — older builds skip `ST` observations;
  *  - the `Unknown` patient / `LabImporter` organisation placeholders are ignored.
  */
 object CdaParser {
@@ -41,13 +44,14 @@ object CdaParser {
             // The stored code is the LOINC code; prefer our localized name and
             // fall back to the display name carried in the document.
             val mapped = LabMapping.displayName(obs.loinc)
+            val (text, unit) = obs.value?.let { NumberFormatting.cdaValue(it) to obs.unit } ?: QualitativeResult.split(obs.text!!)
             LabReport.Entry(
                 id = Uuid.random().toString(),
                 code = obs.loinc,
                 name = if (mapped == obs.loinc) obs.display else mapped,
-                displayValue = NumberFormatting.cdaValue(obs.value),
+                displayValue = text,
                 numericValue = obs.value,
-                unit = obs.unit,
+                unit = unit,
             )
         }
         val report = LabReport(id, date, state.patientFamily, state.authorOrg, entries)
@@ -58,7 +62,8 @@ object CdaParser {
     fun looksLikeCda(content: String): Boolean =
         content.trimStart().startsWith("<") && content.contains("ClinicalDocument")
 
-    private class Observation(val loinc: String, val display: String, val value: Double, val unit: String)
+    /** A `PQ` [value] in [unit], or an `ST` [text]. */
+    private class Observation(val loinc: String, val display: String, val value: Double?, val unit: String, val text: String?)
 
     private class ParserState {
         var reportDate: LocalDate? = null
@@ -74,6 +79,8 @@ object CdaParser {
         var obsDisplay: String? = null
         var obsValue: Double? = null
         var obsUnit: String? = null
+        var obsTextValue = false
+        var obsText: String? = null
     }
 
     private fun read(reader: XmlReader, s: ParserState) {
@@ -110,6 +117,7 @@ object CdaParser {
             element == "observation" && reader.attribute("classCode") == "OBS" -> {
                 s.inObservation = true
                 s.obsLoinc = null; s.obsDisplay = null; s.obsValue = null; s.obsUnit = null
+                s.obsTextValue = false; s.obsText = null
             }
             element == "code" && s.inObservation -> {
                 if (reader.attribute("codeSystem") == LOINC_OID) {
@@ -118,9 +126,12 @@ object CdaParser {
                 }
             }
             element == "value" && s.inObservation -> {
-                if (reader.xsiType() == "PQ") {
-                    reader.attribute("value")?.let { raw -> NumberFormatting.parse(raw)?.let { s.obsValue = it } }
-                    s.obsUnit = reader.attribute("unit") ?: ""
+                when (reader.xsiType()) {
+                    "PQ" -> {
+                        reader.attribute("value")?.let { raw -> NumberFormatting.parse(raw)?.let { s.obsValue = it } }
+                        s.obsUnit = reader.attribute("unit") ?: ""
+                    }
+                    "ST" -> s.obsTextValue = true
                 }
             }
         }
@@ -137,13 +148,20 @@ object CdaParser {
                 if (text.isNotEmpty() && text != "LabImporter") s.authorOrg = text
             }
             element == "softwareName" -> s.schemaVersion = schemaVersion(s.text.toString())
+            element == "value" && s.inObservation && s.obsTextValue -> {
+                s.obsText = text.ifEmpty { null }
+                s.obsTextValue = false
+            }
             element == "observation" && s.inObservation -> {
                 val loinc = s.obsLoinc
                 val display = s.obsDisplay
                 val value = s.obsValue
                 val unit = s.obsUnit
+                val text = s.obsText
                 if (loinc != null && display != null && value != null && unit != null) {
-                    s.observations += Observation(loinc, display, value, unit)
+                    s.observations += Observation(loinc, display, value, unit, null)
+                } else if (loinc != null && display != null && text != null) {
+                    s.observations += Observation(loinc, display, null, "", text)
                 }
                 s.inObservation = false
             }

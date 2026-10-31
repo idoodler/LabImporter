@@ -40,7 +40,7 @@ struct ReviewView: View {
     private let cdaService = CDAExportService()
 
     private var exportableCount: Int {
-        labValues.filter { $0.isSelected && $0.numericValue != nil && LabMapping.loincCode(for: $0.code) != nil }.count
+        labValues.filter(\.isExportable).count
     }
 
     private var unsupportedValues: [LabValue] {
