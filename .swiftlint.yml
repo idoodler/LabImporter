@@ -28,6 +28,7 @@ file_length:
   error: 800
 
 excluded:
+  - .claude            # worktrees of other branches, with their own build output
   - build              # Gradle/Xcode build output at the repo root
   - shared/build       # SKIE-generated Swift for the shared Kotlin module
   - androidApp
