@@ -109,6 +109,9 @@ fun DashboardScreen(
     importActions: ImportActions,
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
+    /** The reports couldn't be read: what's here may be out of date, and none doesn't mean there are none. */
+    loadFailed: Boolean = false,
+    onTryLoadingAgain: () -> Unit = {},
     // Null where a navigation rail already offers Reports and Settings (wide windows).
     onOpenReports: (() -> Unit)? = {},
     onOpenSettings: (() -> Unit)? = {},
@@ -127,6 +130,10 @@ fun DashboardScreen(
             CategoryWash(welcomePalette, intensity = 0.6f)
             LoadingIndicator(Modifier.size(64.dp))
         }
+        return
+    }
+    if (metrics.isEmpty() && loadFailed) {
+        DashboardLoadFailed(onTryLoadingAgain, onOpenSettings, notices, modifier)
         return
     }
     if (metrics.isEmpty()) {
@@ -171,6 +178,9 @@ fun DashboardScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxSize(),
             ) {
+                if (loadFailed) {
+                    item(span = { GridItemSpan(maxLineSpan) }, key = "loadFailed") { ReportsLoadFailedCard(onTryLoadingAgain) }
+                }
                 notices?.let { content ->
                     item(span = { GridItemSpan(maxLineSpan) }, key = "notices") { content() }
                 }
@@ -428,6 +438,34 @@ private fun DashboardEmpty(
     }
 }
 
+/** The reports couldn't be read: not a first run, so no invitation to import as if there were none. */
+@Composable
+private fun DashboardLoadFailed(
+    onTryAgain: () -> Unit,
+    onOpenSettings: (() -> Unit)?,
+    notices: (@Composable () -> Unit)?,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier.fillMaxSize()) {
+        CategoryWash(welcomePalette, intensity = 0.6f)
+        Column(
+            Modifier.fillMaxSize().verticalScroll(rememberScrollState()).safeDrawingPadding()
+                .padding(horizontal = 20.dp, vertical = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            ReportsLoadFailedCard(onTryAgain, Modifier.widthIn(max = 520.dp))
+            notices?.let { content -> Box(Modifier.widthIn(max = 520.dp)) { content() } }
+        }
+        onOpenSettings?.let {
+            IconButton(
+                onClick = it,
+                modifier = Modifier.align(Alignment.TopEnd).windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.End)).padding(4.dp),
+            ) { Icon(Icons.Rounded.Settings, stringResource(R.string.tab_settings)) }
+        }
+    }
+}
+
 private val previewActions = ImportActions({}, {}, {}, {}, {})
 
 @Preview(name = "Populated", widthDp = 400, heightDp = 900)
@@ -500,6 +538,40 @@ private fun DashboardHealthConnectOfferPreview() {
 @Composable
 private fun DashboardEmptyDarkPreview() {
     LabImporterTheme(darkTheme = true, dynamicColor = false) { DashboardScreen(emptyList(), LabDisplayPreferences(), {}, previewActions) }
+}
+
+@Preview(name = "Load failed", widthDp = 400, heightDp = 900)
+@Composable
+private fun DashboardLoadFailedPreview() {
+    LabImporterTheme(dynamicColor = false) { DashboardScreen(emptyList(), LabDisplayPreferences(), {}, previewActions, loadFailed = true) }
+}
+
+@Preview(name = "Load failed – dark", widthDp = 400, heightDp = 900, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun DashboardLoadFailedDarkPreview() {
+    LabImporterTheme(darkTheme = true, dynamicColor = false) { DashboardScreen(emptyList(), LabDisplayPreferences(), {}, previewActions, loadFailed = true) }
+}
+
+@Preview(name = "Load failed – unreadable reports", widthDp = 400, heightDp = 900)
+@Composable
+private fun DashboardLoadFailedUnreadablePreview() {
+    LabImporterTheme(dynamicColor = false) {
+        DashboardScreen(emptyList(), LabDisplayPreferences(), {}, previewActions, loadFailed = true, notices = { UnreadableReportsCard(2) })
+    }
+}
+
+@Preview(name = "Populated – load failed", widthDp = 400, heightDp = 900)
+@Composable
+private fun DashboardStaleReportsPreview() {
+    LabImporterTheme(dynamicColor = false) { DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, previewActions, loadFailed = true) }
+}
+
+@Preview(name = "Populated – unreadable reports", widthDp = 400, heightDp = 900)
+@Composable
+private fun DashboardUnreadablePreview() {
+    LabImporterTheme(dynamicColor = false) {
+        DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, previewActions, notices = { UnreadableReportsCard(1) })
+    }
 }
 
 @Preview(name = "Tablet", widthDp = 900, heightDp = 640)

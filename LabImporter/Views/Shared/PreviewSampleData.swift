@@ -149,6 +149,24 @@ extension LabValue {
     }
 
     /// Results that aren't numbers, saved as text: a finding, a titer and a threshold.
+    /// What an import looks like when the report text doesn't print a value:
+    /// a misread number, a suggested code, and a misread result in words.
+    static var sampleToCheck: [LabValue] {
+        [
+            LabValue(code: "1742-6", name: "ALT", displayValue: "222", numericValue: 222, unit: "U/L",
+                     needsSourceCheck: true),
+            LabValue(code: "2160-0", name: "Creatinine", displayValue: "0.91", numericValue: 0.91, unit: "mg/dL",
+                     isSuggestedCode: true),
+            LabValue(code: "5196-1", name: "HBsAg", displayValue: "Reactive", numericValue: nil, unit: "",
+                     needsSourceCheck: true),
+        ]
+    }
+
+    /// Text no number can be read from: it can't be saved until it's corrected or deselected.
+    static var sampleToCorrect: LabValue {
+        LabValue(code: "1742-6", name: "ALT", displayValue: "neg 1", numericValue: nil, unit: "U/L")
+    }
+
     static var sampleQualitative: [LabValue] {
         [
             LabValue(code: "5196-1", name: "HBsAg", displayValue: "Non-reactive",

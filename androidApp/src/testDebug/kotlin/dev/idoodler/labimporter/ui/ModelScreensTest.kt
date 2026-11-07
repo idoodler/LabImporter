@@ -144,11 +144,11 @@ class ModelScreensTest {
     }
 
     @Test
-    fun reviewSaysGemmaReadTheReport() {
+    fun reviewDoesNotNameTheModel() {
         val value = LabValue(id = "a", code = "2160-0", name = "Creatinine", displayValue = "0.8", numericValue = 0.8, unit = "mg/dl")
         val draft = ReviewDraft(listOf(value), LocalDate(2026, 5, 6), "", "", AiEngine.GEMMA)
         compose.setContent { LabImporterTheme { ReviewScreen(draft, {}, { _, _ -> }, { "" }, {}, {}, {}) } }
-        compose.onNodeWithText(GemmaModel.NAME).assertIsDisplayed()
+        compose.onNodeWithText(GemmaModel.NAME).assertDoesNotExist()
         compose.onNodeWithText(string(R.string.engine_gemini)).assertDoesNotExist()
     }
 }

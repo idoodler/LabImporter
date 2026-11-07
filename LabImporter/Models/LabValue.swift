@@ -15,6 +15,10 @@ struct LabValue: Identifiable, Equatable, @unchecked Sendable {
     /// normalized name) rather than a confident curated/manual mapping — the
     /// user should confirm it before saving. Cleared once they review it.
     var isSuggestedCode: Bool
+    /// True when the model returned this result but the report text doesn't
+    /// print it — the user should compare it with the report. Doesn't block
+    /// saving. Set only by an import (shared rule); editing the result clears it.
+    var needsSourceCheck: Bool
 
     init(
         id: UUID = UUID(),
@@ -24,7 +28,8 @@ struct LabValue: Identifiable, Equatable, @unchecked Sendable {
         numericValue: Double?,
         unit: String,
         isSelected: Bool = true,
-        isSuggestedCode: Bool = false
+        isSuggestedCode: Bool = false,
+        needsSourceCheck: Bool = false
     ) {
         self.id = id
         self.code = code
@@ -34,6 +39,7 @@ struct LabValue: Identifiable, Equatable, @unchecked Sendable {
         self.unit = unit
         self.isSelected = isSelected
         self.isSuggestedCode = isSuggestedCode
+        self.needsSourceCheck = needsSourceCheck
     }
 
     var resolvedName: String {
@@ -47,6 +53,18 @@ struct LabValue: Identifiable, Equatable, @unchecked Sendable {
             && lhs.displayValue == rhs.displayValue
             && lhs.numericValue == rhs.numericValue
             && lhs.isSuggestedCode == rhs.isSuggestedCode
+            && lhs.needsSourceCheck == rhs.needsSourceCheck
+    }
+
+    /// A typed result as a number, by the shared rule: "inf" and "NaN" aren't numbers.
+    static func number(from text: String) -> Double? {
+        NumberFormatting.shared.parse(raw: text)?.doubleValue
+    }
+
+    /// The result as the user just typed it: the user has now looked at it, so
+    /// what the model read no longer needs comparing. Shared rule.
+    mutating func applyEditedResult(_ text: String) {
+        self = LabValue(shared: shared.withEditedResult(text: text))
     }
 
     /// Whether two values are identical in every *saved* field. Unlike `==` it
@@ -77,6 +95,12 @@ struct LabValue: Identifiable, Equatable, @unchecked Sendable {
         shared.isExportable
     }
 
+    /// Selected and mapped, with text that can't be saved as written ("neg 1"):
+    /// Review holds back saving until it's corrected or deselected. Shared rule.
+    var needsCorrection: Bool {
+        shared.needsCorrection
+    }
+
     /// Whether this row would collide with another exportable row on the same
     /// LOINC, given the report's set of duplicated codes (`duplicateLoincCodes`).
     /// Only selected, numeric, LOINC-mapped rows can collide. Drives the
@@ -103,6 +127,16 @@ extension Array where Element == LabValue {
     /// real, exportable data wins and keeps the first-seen slot. Shared rule.
     func deduplicatedByLoinc() -> [LabValue] {
         LabValueKt.deduplicatedByLoinc(map(\.shared)).map(LabValue.init(shared:))
+    }
+
+    /// How many values about to be saved the report text doesn't print. Shared rule.
+    func valuesToCheckCount() -> Int {
+        Int(LabValueKt.valuesToCheckCount(map(\.shared)))
+    }
+
+    /// How many values can't be saved as written. Shared rule.
+    func valuesToCorrectCount() -> Int {
+        Int(LabValueKt.valuesToCorrectCount(map(\.shared)))
     }
 
     /// Exportable codes (selected, numeric, LOINC-mapped) this save is about to

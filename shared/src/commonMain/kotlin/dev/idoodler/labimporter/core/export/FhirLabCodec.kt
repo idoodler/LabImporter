@@ -21,6 +21,10 @@ import kotlinx.serialization.json.put
 /** One FHIR resource ready to store: its type/id and the JSON body. */
 data class FhirResource(val resourceType: String, val id: String, val json: String)
 
+/** A report with results that can't be stored (see [FhirLabCodec.encodeForSaving]). Counts only: it gets logged. */
+class ReportEncodingException(val unencoded: Int, val results: Int) :
+    Exception("$unencoded of $results results couldn't be encoded")
+
 /**
  * Encodes reports as FHIR R4 laboratory `Observation`s — the format Android's
  * Health Connect *Medical Records* API stores and the cross-platform transfer
@@ -46,6 +50,21 @@ object FhirLabCodec {
     private const val CATEGORY_SYSTEM = "http://terminology.hl7.org/CodeSystem/observation-category"
 
     private val json = Json { ignoreUnknownKeys = true }
+
+    /**
+     * [encode] for saving: every result must make it into the resources. An entry
+     * [encode] can't map (the catalog isn't open yet, a code it doesn't know) would
+     * otherwise vanish, and with nothing left a store would "save" the report by
+     * writing nothing. Entries without a result have nothing to lose.
+     *
+     * @throws ReportEncodingException
+     */
+    fun encodeForSaving(report: LabReport, softwareIdentity: String): List<FhirResource> {
+        val resources = encode(report, softwareIdentity)
+        val results = report.entries.count { it.hasResult }
+        if (resources.size < results || resources.isEmpty()) throw ReportEncodingException(results - resources.size, results)
+        return resources
+    }
 
     fun encode(report: LabReport, softwareIdentity: String): List<FhirResource> =
         report.entries.mapNotNull { entry ->
@@ -125,7 +144,7 @@ object FhirLabCodec {
                         id = obj.string("id") ?: reportId,
                         code = coding.string("code").orEmpty(),
                         name = obj["code"]?.jsonObject?.string("text") ?: coding.string("display").orEmpty(),
-                        displayValue = value?.let(NumberFormatting::cdaValue) ?: text?.first ?: "-",
+                        displayValue = value?.let(NumberFormatting::exactValue) ?: text?.first ?: "-",
                         numericValue = value,
                         unit = text?.second ?: quantity?.string("unit").orEmpty(),
                     ),

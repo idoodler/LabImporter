@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
@@ -64,6 +65,7 @@ import dev.idoodler.labimporter.R
 import dev.idoodler.labimporter.core.model.LabCategory
 import dev.idoodler.labimporter.core.model.LabReport
 import dev.idoodler.labimporter.ui.components.formatDate
+import dev.idoodler.labimporter.ui.dashboard.ReportsLoadFailedCard
 import dev.idoodler.labimporter.ui.design.CategoryWash
 import dev.idoodler.labimporter.ui.design.GroupedListItem
 import dev.idoodler.labimporter.ui.design.MorphingShape
@@ -90,6 +92,9 @@ fun HistoryScreen(
     onExportPdf: () -> Unit = {},
     onDeleteReports: (Set<String>) -> Unit = {},
     onSelectionModeChange: (Boolean) -> Unit = {},
+    /** The last load failed, so an empty list doesn't mean there are no reports. */
+    loadFailed: Boolean = false,
+    onTryLoadingAgain: () -> Unit = {},
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     // Selecting several reports to delete (iOS edit mode); Delete All is one tap away.
@@ -165,6 +170,12 @@ fun HistoryScreen(
                 }
             },
         ) { padding ->
+            if (reports.isEmpty() && loadFailed) {
+                Box(Modifier.fillMaxSize().padding(padding).padding(20.dp), contentAlignment = Alignment.Center) {
+                    ReportsLoadFailedCard(onTryLoadingAgain, Modifier.widthIn(max = 520.dp))
+                }
+                return@Scaffold
+            }
             if (reports.isEmpty()) {
                 Column(
                     Modifier.fillMaxSize().padding(padding).padding(32.dp),
@@ -186,6 +197,9 @@ fun HistoryScreen(
                 contentPadding = readableListPadding(top = padding.calculateTopPadding(), bottom = 112.dp),
                 modifier = Modifier.fillMaxSize(),
             ) {
+                if (loadFailed) {
+                    item(key = "loadFailed") { ReportsLoadFailedCard(onTryLoadingAgain, Modifier.padding(bottom = 12.dp)) }
+                }
                 item(key = "summary") { SummaryCard(reports, allCategories.distinct().size) }
                 byYear.forEach { (year, items) ->
                     item(key = "y$year") { SectionTitle(year.toString()) }
@@ -330,6 +344,24 @@ private fun HistorySinglePreview() {
 @Composable
 private fun HistoryEmptyPreview() {
     LabImporterTheme(dynamicColor = false) { HistoryScreen(emptyList(), {}, onBack = {}) }
+}
+
+@Preview(name = "Load failed", widthDp = 400, heightDp = 800)
+@Composable
+private fun HistoryLoadFailedPreview() {
+    LabImporterTheme(dynamicColor = false) { HistoryScreen(emptyList(), {}, onBack = {}, loadFailed = true) }
+}
+
+@Preview(name = "Load failed – dark", widthDp = 400, heightDp = 800, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun HistoryLoadFailedDarkPreview() {
+    LabImporterTheme(darkTheme = true, dynamicColor = false) { HistoryScreen(emptyList(), {}, onBack = {}, loadFailed = true) }
+}
+
+@Preview(name = "Populated – load failed", widthDp = 400, heightDp = 800)
+@Composable
+private fun HistoryStaleReportsPreview() {
+    LabImporterTheme(dynamicColor = false) { HistoryScreen(PreviewSamples.reports, {}, onBack = {}, loadFailed = true) }
 }
 
 @Preview(name = "Rail section root (tablet)", widthDp = 840, heightDp = 800)

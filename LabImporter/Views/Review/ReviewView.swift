@@ -4,14 +4,19 @@ import VisionKit
 struct ReviewView: View {
     @State var labValues: [LabValue]
     @State private var reportDate: Date
-    @AppStorage("patientName") private var patientName: String = ""
-    @AppStorage("authorName") private var authorName: String = ""
-    @AppStorage("patientBirthdateInterval") private var birthdateInterval: Double = 0
-    @AppStorage("patientSexRaw") private var patientSexRaw: Int = 0
-    @State private var extractedPatientName: String?
-    @State private var extractedAuthorName: String?
-    @State private var hkBirthdate: Date?
-    @State private var hkSex: Int?
+    /// The import found no date the report prints, so `reportDate` is only a
+    /// starting point; the date row says so until the user changes it.
+    @State private var isDateMissing: Bool
+    /// This report's names. Only saving a new report remembers them for the next one.
+    @State var names: ReviewNames
+    @AppStorage("patientBirthdateInterval") var birthdateInterval: Double = 0
+    @AppStorage("patientSexRaw") var patientSexRaw: Int = 0
+    @State var extractedPatientName: String?
+    @State var extractedAuthorName: String?
+    @State var hkBirthdate: Date?
+    @State var hkSex: Int?
+    /// Patient and lab come after the values, folded away: comparing values with the report is the job here.
+    @State var showsDetails = false
 
     @State private var cdaShareURL: URL?
     @State private var cdaError: String?
@@ -21,7 +26,6 @@ struct ReviewView: View {
 
     @State private var showAddValue = false
     @State private var importEngine = LabImportEngine()
-    @State private var didSeedMetadata = false
     @AppStorage(SiriExposurePreferences.storageKey) private var siriPrefs = SiriExposurePreferences()
     @State private var siriPromptCodes: [CodeName] = []
     @State var paneGeometry = ReviewPaneGeometry()
@@ -30,11 +34,12 @@ struct ReviewView: View {
     // @State (not let): captured once and preserved across re-inits, unlike a re-derived `asLabValues`.
     @State private var initialLabValues: [LabValue]
     @State private var initialReportDate: Date
+    @State private var initialNames: ReviewNames
 
     /// Called after a successful save (before dismiss) so a presenter can react.
     private let onSaved: (() -> Void)?
 
-    @FocusState private var anyFieldFocused: Bool
+    @FocusState var anyFieldFocused: Bool
     @Environment(\.dismiss) private var dismiss
 
     private let cdaService = CDAExportService()
@@ -83,6 +88,7 @@ struct ReviewView: View {
     init(
         labValues: [LabValue],
         reportDate: Date = Date(),
+        isDateMissing: Bool = false,
         extractedPatientName: String? = nil,
         extractedAuthorName: String? = nil,
         replacingReport: LabReport? = nil,
@@ -90,6 +96,10 @@ struct ReviewView: View {
     ) {
         _labValues = State(initialValue: labValues)
         _reportDate = State(initialValue: reportDate)
+        _isDateMissing = State(initialValue: isDateMissing)
+        let names = ReviewNames(replacing: replacingReport)
+        _names = State(initialValue: names)
+        _initialNames = State(initialValue: names)
         _extractedPatientName = State(initialValue: extractedPatientName)
         _extractedAuthorName = State(initialValue: extractedAuthorName)
         _replacingReport = State(initialValue: replacingReport)
@@ -102,11 +112,12 @@ struct ReviewView: View {
         reviewLists // One list, or two panes either side of an iPhone Duo's fold — see ReviewView+FoldLayout.
         .listStyle(.insetGrouped)
         .scrollDismissesKeyboard(.interactively)
+        .listSectionSpacing(.compact)
         .scrollContentBackground(.hidden)
         .background { CategoryBackground(colors: backgroundColors) }
         .interactiveDismissDisabled(hasEdits) // Avoids a swipe bypassing the discard confirmation below.
         .navigationTitle("Lab Report")
-        .navigationBarTitleDisplayMode(.large)
+        .navigationBarTitleDisplayMode(.inline) // A large title would push the first value off a small iPhone.
         .toolbar {
             keyboardDoneButton
             ToolbarItem(placement: .topBarLeading) {
@@ -122,10 +133,7 @@ struct ReviewView: View {
         }
         .labImport(engine: importEngine)
         .task { await loadHKCharacteristics() }
-        .onAppear {
-            configureImportEngine()
-            seedMetadataFromReport()
-        }
+        .onAppear { configureImportEngine() }
         .reportsToSiriOnScreenContext(labValues)
         .registersAsSearchEditor(onClose: attemptClose)
         .sheet(isPresented: Binding(
@@ -164,6 +172,8 @@ struct ReviewView: View {
                 supportedCount: supportedCount,
                 exportableCount: exportableCount,
                 duplicateCount: duplicateLoincCodes.count,
+                valuesToCorrect: labValues.valuesToCorrectCount(),
+                valuesToCheck: labValues.valuesToCheckCount(),
                 groups: categoryCounts,
                 dominantColor: dominantColor
             )
@@ -173,85 +183,33 @@ struct ReviewView: View {
         }
     }
 
-    var patientSection: some View {
-        Section("Patient") {
-            TextField("Full Name (optional)", text: $patientName)
-                .autocorrectionDisabled()
-                .textContentType(.name)
-                .focused($anyFieldFocused)
-
-            if let extracted = extractedPatientName,
-               !extracted.isEmpty,
-               extracted != patientName {
-                SuggestionRow(label: "Detected in report: \"\(extracted)\"") {
-                    patientName = extracted
-                }
-            }
-
-            if birthdateInterval != 0 {
-                HStack {
-                    DatePicker(
-                        "Birthday",
-                        selection: birthdateBinding,
-                        in: ...Date.now,
-                        displayedComponents: .date
-                    )
-                    Button { birthdateInterval = 0 } label: {
-                        Image(systemName: "xmark.circle.fill")
-                    }
-                    .foregroundStyle(Color.secondary)
-                    .buttonStyle(.plain).accessibilityLabel("Clear Birthday")
-                }
-            }
-
-            if let hkDob = hkBirthdate, hkBirthdateDiffers {
-                SuggestionRow(label: "Detected in Health: \"\(hkDob.formatted(date: .abbreviated, time: .omitted))\"") {
-                    birthdateInterval = hkDob.timeIntervalSinceReferenceDate
-                }
-            }
-
-            Picker("Gender", selection: $patientSexRaw) {
-                Text("–").tag(0)
-                Text("Female").tag(1)
-                Text("Male").tag(2)
-                Text("Other").tag(3)
-            }
-
-            if let hkSexRaw = hkSex, hkSexRaw != 0, hkSexRaw != patientSexRaw {
-                SuggestionRow(label: "Detected in Health: \"\(hkSexName(hkSexRaw))\"") {
-                    patientSexRaw = hkSexRaw
-                }
-            }
-        }
-        .listRowBackground(Rectangle().fill(.ultraThinMaterial))
-    }
-
-    var authorSection: some View {
-        Section("Lab / Doctor") {
-            TextField("Lab / Doctor (optional)", text: $authorName)
-                .autocorrectionDisabled()
-                .textContentType(.organizationName)
-                .focused($anyFieldFocused)
-
-            if let extracted = extractedAuthorName,
-               !extracted.isEmpty,
-               extracted != authorName {
-                SuggestionRow(label: "Detected in report: \"\(extracted)\"") {
-                    authorName = extracted
-                }
-            }
-        }
-        .listRowBackground(Rectangle().fill(.ultraThinMaterial))
-    }
-
     var dateSection: some View {
         Section {
-            DatePicker(
-                "Report Date",
-                selection: $reportDate,
-                in: ...Date.now,
-                displayedComponents: .date
-            )
+            VStack(alignment: .leading, spacing: 6) {
+                DatePicker(
+                    "Report Date",
+                    selection: Binding(
+                        get: { reportDate },
+                        set: {
+                            reportDate = $0
+                            isDateMissing = false
+                        }
+                    ),
+                    in: ...Date.now,
+                    displayedComponents: .date
+                )
+                if isDateMissing {
+                    HStack(alignment: .firstTextBaseline, spacing: 6) {
+                        Image(systemName: "exclamationmark.magnifyingglass")
+                            .accessibilityHidden(true)
+                        Text("No date found in the report. Check that this date is right.")
+                    }
+                    .font(.footnote)
+                    .foregroundStyle(.orange)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityIdentifier("review-date-missing")
+                }
+            }
         }
         .listRowBackground(Rectangle().fill(.ultraThinMaterial))
     }
@@ -352,8 +310,9 @@ private extension ReviewView {
 
     var bottomButtons: some View {
         ReviewActionBar(
-            isEnabled: exportableCount > 0 && duplicateLoincCodes.isEmpty,
+            isEnabled: exportableCount > 0 && duplicateLoincCodes.isEmpty && labValues.valuesToCorrectCount() == 0,
             hasDuplicates: !duplicateLoincCodes.isEmpty,
+            valuesToCorrect: labValues.valuesToCorrectCount(),
             onSave: { Task { await performCDAImport() } },
             onShare: { shareCDA() }
         )
@@ -385,10 +344,11 @@ private extension ReviewView {
 
     func attemptClose() { if hasEdits { showDiscardAlert = true } else { dismiss() } }
 
-    /// Whether the report date or any lab value differs from what the sheet opened with — drives the discard
-    /// confirmation. Patient/author/biometrics live in `@AppStorage` and persist, so they aren't discardable edits.
+    /// Whether the report date, its names or any lab value differs from what the sheet opened with — drives the
+    /// discard confirmation. Birthday and gender live in `@AppStorage` and persist, so they aren't discardable edits.
     var hasEdits: Bool {
         guard reportDate == initialReportDate,
+              names == initialNames,
               labValues.count == initialLabValues.count else { return true }
         return zip(labValues, initialLabValues).contains { !$0.matchesSavedData(of: $1) }
     }
@@ -397,39 +357,6 @@ private extension ReviewView {
     func configureImportEngine() {
         importEngine.onParsed = { result in
             labValues.append(contentsOf: result.values)
-        }
-    }
-
-    /// When editing a saved report, populate the patient/author fields from that report (they otherwise default to
-    /// the global `@AppStorage` values, hiding/overwriting the report's own). Runs once; new reports keep the defaults.
-    func seedMetadataFromReport() {
-        guard !didSeedMetadata else { return }
-        didSeedMetadata = true
-        guard let report = replacingReport else { return }
-        if !report.patientName.isEmpty { patientName = report.patientName }
-        if !report.authorName.isEmpty { authorName = report.authorName }
-    }
-
-    var birthdateBinding: Binding<Date> {
-        Binding(
-            get: { Date(timeIntervalSinceReferenceDate: birthdateInterval) },
-            set: { birthdateInterval = $0.timeIntervalSinceReferenceDate }
-        )
-    }
-
-    var hkBirthdateDiffers: Bool {
-        guard let hkDob = hkBirthdate else { return false }
-        guard birthdateInterval != 0 else { return true }
-        let stored = Date(timeIntervalSinceReferenceDate: birthdateInterval)
-        return !Calendar.current.isDate(stored, inSameDayAs: hkDob)
-    }
-
-    func hkSexName(_ raw: Int) -> String {
-        switch raw {
-        case 1: return String(localized: "Female")
-        case 2: return String(localized: "Male")
-        case 3: return String(localized: "Other")
-        default: return "–"
         }
     }
 
@@ -445,8 +372,8 @@ private extension ReviewView {
             cdaShareURL = try cdaService.exportToTempFile(
                 labValues: labValues,
                 date: reportDate,
-                patientName: patientName,
-                authorName: authorName
+                patientName: names.patient,
+                authorName: names.author
             )
         } catch {
             cdaError = error.localizedDescription
@@ -461,8 +388,8 @@ private extension ReviewView {
         let xml = cdaService.generateCDA(
             labValues: labValues,
             date: reportDate,
-            patientName: patientName,
-            authorName: authorName
+            patientName: names.patient,
+            authorName: names.author
         )
         // Save first so a failure here never loses data (the old version stays intact).
         do {
@@ -471,6 +398,7 @@ private extension ReviewView {
             cdaError = error.localizedDescription
             return
         }
+        names.rememberForNextReport(replacing: replacingReport)
         // Then remove the replaced document; a failed delete would leave a duplicate.
         if let old = replacingReport {
             do {

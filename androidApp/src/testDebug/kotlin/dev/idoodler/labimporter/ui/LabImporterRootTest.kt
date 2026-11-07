@@ -140,7 +140,7 @@ class LabImporterRootTest {
         waitFor { viewModel.importState.value.let { it is ImportState.Reviewing || it is ImportState.Failed } }
         assertEquals(ImportState.Reviewing::class, viewModel.importState.value::class)
         compose.onNodeWithText(string(R.string.review_title)).assertIsDisplayed()
-        compose.onNodeWithText(string(R.string.engine_gemini)).assertIsDisplayed()
+        compose.onNodeWithText(string(R.string.ready_to_save)).assertIsDisplayed()
     }
 
     @Test

@@ -139,7 +139,10 @@
     <string name="model_ready_text">Вече LabImporter може да чете лабораторните ви отчети изцяло на този телефон.</string>
     <string name="model_failed_title">Моделът на ИИ не е изтеглен</string>
     <string name="error_scanner">Сканирането на документи не е достъпно на това устройство.</string>
-    <string name="error_save">Запазването не бе успешно: %1$s</string>
+    <string name="error_save_health_connect">Health Connect не успя да запази отчета, затова нищо не е променено. Опитайте отново след малко.</string>
+    <string name="error_save_storage">Отчетът не можа да се запази на това устройство, затова нищо не е променено. Проверете свободното място и опитайте отново.</string>
+    <string name="error_save_values">Някои стойности не можаха да се подготвят за запазване, затова нищо не е променено. Опитайте отново след малко.</string>
+    <string name="save_leftovers_warning">Актуализираният отчет е запазен, но премахнатите от вас стойности още не могат да се изтрият. Редактирайте отчета, за да ги премахнете отново.</string>
     <string name="review_title">Прегледай стойностите</string>
     <string name="edit_report">Редактирай отчета</string>
     <string name="lab_or_doctor">Лаборатория / Лекар</string>
@@ -152,6 +155,20 @@
     <string name="search_loinc">Търсене на лабораторни изследвания</string>
     <string name="loinc_suggested">Предложение: %1$s</string>
     <string name="loinc_duplicate">Дублиране: %1$s</string>
+    <string name="compare_with_report">Сравнете с отчета</string>
+    <string name="compare_with_report_detail">Тази стойност не е открита в текста на отчета. Сравнете я с вашия отчет.</string>
+    <plurals name="values_to_check">
+        <item quantity="one">%d стойност за проверка</item>
+        <item quantity="other">%d стойности за проверка</item>
+    </plurals>
+    <plurals name="values_to_correct">
+        <item quantity="one">%d стойност за коригиране</item>
+        <item quantity="other">%d стойности за коригиране</item>
+    </plurals>
+    <string name="correct_or_deselect">Не може да се запази в този вид. Коригирайте го или премахнете отметката.</string>
+    <string name="no_date_found">В отчета не е открита дата. Проверете дали тази дата е правилна.</string>
+    <string name="patient_and_lab">Пациент и лаборатория</string>
+    <string name="not_filled_in">Не е попълнено</string>
     <plurals name="exportable_count">
         <item quantity="other">Готови за запазване: %1$d от %2$d</item>
         <item quantity="one">Готови за запазване: %1$d от %2$d</item>
@@ -193,6 +210,11 @@
     <string name="ai_available">Готово. Отчетите се четат от Gemini Nano изцяло на това устройство.</string>
     <string name="ai_checking">Проверка…</string>
     <string name="try_again">Опитай отново</string>
+    <string name="reports_load_failed_title">Отчетите не можаха да се заредят</string>
+    <string name="reports_load_failed_message">Запазените отчети не са променени, но в момента не могат да се прочетат.</string>
+    <string name="reports_unreadable_title">Някои отчети не могат да се прочетат</string>
+    <string name="reports_unreadable_message">Отчети, които не могат да се прочетат: %1$d. Те остават на това устройство и не са изтрити.</string>
+    <string name="hc_connect_failed">Неуспешно свързване с Health Connect. Отчетите остават в LabImporter. Опитайте отново в Настройки.</string>
     <string name="transfer_title">Прехвърляне</string>
     <string name="transfer_export">Експортирай всички отчети</string>
     <string name="transfer_export_detail">Запазете всички отчети в един файл, например за да ги преместите на друг телефон.</string>
@@ -200,6 +222,8 @@
     <string name="transfer_import_detail">От файл на LabImporter, експортиран на iPhone или Android. Отчетите, които вече са тук, се пропускат.</string>
     <string name="transfer_unsupported">Този файл не съдържа отчети от LabImporter.</string>
     <string name="transfer_summary">Нови отчети: %1$d · Вече налични: %2$d</string>
+    <string name="transfer_summary_failed">Нови отчети: %1$d · Вече налични: %2$d · Незапазени: %3$d</string>
+    <string name="transfer_reports_unreadable">Запазените отчети не могат да се прочетат в момента, затова нищо не е импортирано. Опитайте отново след малко.</string>
     <string name="privacy_title">Поверителност по замисъл</string>
     <string name="privacy_message">Всичко работи на устройството. LabImporter никога не предава лабораторните ви данни.</string>
     <string name="loinc_catalog">Каталог LOINC</string>

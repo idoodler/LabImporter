@@ -23,6 +23,19 @@ class NumberFormattingTest {
     }
 
     @Test
+    fun exactValueIsTheOldNotationUntilThatWouldChangeTheNumber() {
+        for (value in listOf(80.0, 0.8, 6.53, 0.125, -12.75, 1e20, 1e-05)) {
+            assertEquals(NumberFormatting.cdaValue(value), NumberFormatting.exactValue(value), "for $value")
+        }
+        assertEquals("12345.6", NumberFormatting.exactValue(12345.6))
+        assertEquals("123.45", NumberFormatting.exactValue(123.45))
+        assertEquals("1.23456e-05", NumberFormatting.exactValue(1.23456e-05))
+        for (value in listOf(12345.6, 1234.5, 0.1 + 0.2, 3.14159265358979, 1.0 / 3.0, 123456789.5, 9.99996)) {
+            assertEquals(value, NumberFormatting.parse(NumberFormatting.exactValue(value)), "for $value")
+        }
+    }
+
+    @Test
     fun parseAcceptsPlainNumbersOnly() {
         assertEquals(0.8, NumberFormatting.parse("0,80"))
         assertEquals(6.5, NumberFormatting.parse(" 6.5 "))

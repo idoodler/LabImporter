@@ -142,7 +142,10 @@
     <string name="model_ready_text">Agora o LabImporter pode ler seus relatórios de exames, inteiramente neste celular.</string>
     <string name="model_failed_title">Modelo de IA não baixado</string>
     <string name="error_scanner">A digitalização de documentos não está disponível neste dispositivo.</string>
-    <string name="error_save">Falha ao salvar: %1$s</string>
+    <string name="error_save_health_connect">O Health Connect não conseguiu salvar o relatório, então nada foi alterado. Tente novamente em instantes.</string>
+    <string name="error_save_storage">Não foi possível salvar o relatório neste dispositivo, então nada foi alterado. Verifique o espaço livre e tente novamente.</string>
+    <string name="error_save_values">Não foi possível preparar alguns valores para salvar, então nada foi alterado. Tente novamente em instantes.</string>
+    <string name="save_leftovers_warning">O relatório atualizado foi salvo, mas os valores removidos ainda não puderam ser apagados. Edite o relatório para removê-los novamente.</string>
     <string name="review_title">Revisar valores</string>
     <string name="edit_report">Editar relatório</string>
     <string name="lab_or_doctor">Lab / Médico</string>
@@ -155,6 +158,22 @@
     <string name="search_loinc">Buscar exames laboratoriais</string>
     <string name="loinc_suggested">Sugestão: %1$s</string>
     <string name="loinc_duplicate">Duplicado: %1$s</string>
+    <string name="compare_with_report">Compare com o laudo</string>
+    <string name="compare_with_report_detail">Este valor não foi encontrado no texto do laudo. Compare-o com o seu laudo.</string>
+    <plurals name="values_to_check">
+        <item quantity="one">%d valor para conferir</item>
+        <item quantity="other">%d valores para conferir</item>
+        <item quantity="many">%d valores para conferir</item>
+    </plurals>
+    <plurals name="values_to_correct">
+        <item quantity="one">%d valor para corrigir</item>
+        <item quantity="other">%d valores para corrigir</item>
+        <item quantity="many">%d valores para corrigir</item>
+    </plurals>
+    <string name="correct_or_deselect">Não é possível salvar como está escrito. Corrija ou desmarque.</string>
+    <string name="no_date_found">Nenhuma data encontrada no laudo. Verifique se esta data está correta.</string>
+    <string name="patient_and_lab">Paciente e laboratório</string>
+    <string name="not_filled_in">Não preenchido</string>
     <plurals name="exportable_count">
         <item quantity="other">Prontos para salvar: %1$d de %2$d</item>
         <item quantity="one">Prontos para salvar: %1$d de %2$d</item>
@@ -199,6 +218,11 @@
     <string name="ai_available">Pronto. Os relatórios são lidos pelo Gemini Nano, inteiramente neste dispositivo.</string>
     <string name="ai_checking">Verificando…</string>
     <string name="try_again">Tentar de novo</string>
+    <string name="reports_load_failed_title">Não foi possível carregar seus relatórios</string>
+    <string name="reports_load_failed_message">Seus relatórios salvos não foram alterados, mas não podem ser lidos agora.</string>
+    <string name="reports_unreadable_title">Alguns relatórios não podem ser lidos</string>
+    <string name="reports_unreadable_message">Relatórios que não podem ser lidos: %1$d. Eles continuam neste dispositivo e não foram apagados.</string>
+    <string name="hc_connect_failed">Não foi possível conectar ao Health Connect. Seus relatórios continuam no LabImporter. Tente novamente em Ajustes.</string>
     <string name="transfer_title">Transferência</string>
     <string name="transfer_export">Exportar todos os relatórios</string>
     <string name="transfer_export_detail">Salve todos os relatórios em um único arquivo, por exemplo, para transferi-los para outro celular.</string>
@@ -206,6 +230,8 @@
     <string name="transfer_import_detail">De um arquivo do LabImporter exportado no iPhone ou Android. Relatórios que já estiverem aqui serão ignorados.</string>
     <string name="transfer_unsupported">Este arquivo não contém relatórios do LabImporter.</string>
     <string name="transfer_summary">Novos relatórios: %1$d · Já existentes: %2$d</string>
+    <string name="transfer_summary_failed">Relatórios novos: %1$d · Já presentes: %2$d · Não salvos: %3$d</string>
+    <string name="transfer_reports_unreadable">Seus relatórios salvos não podem ser lidos agora, então nada foi importado. Tente novamente em instantes.</string>
     <string name="privacy_title">Privado por design</string>
     <string name="privacy_message">Tudo é processado no dispositivo. O LabImporter nunca transmite seus dados laboratoriais.</string>
     <string name="loinc_catalog">Catálogo LOINC</string>

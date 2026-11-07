@@ -308,7 +308,7 @@ struct HistoryView: View {
     private func loadReports() async {
         #if DEBUG
         if ScreenshotMode.isActive {
-            reports = LabReport.sampleHistory
+            reports = ScreenshotMode.showsNoReportsInHistory ? [] : LabReport.sampleHistory
             return
         }
         #endif

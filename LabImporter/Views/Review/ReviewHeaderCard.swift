@@ -34,6 +34,8 @@ struct ReviewActionBar: View {
     /// We show a warning and keep save/share dimmed until the user resolves them,
     /// so the disabled state isn't a mystery.
     var hasDuplicates: Bool = false
+    /// Selected values that can't be saved as written; save/share stay dimmed until they're dealt with.
+    var valuesToCorrect: Int = 0
     let onSave: () -> Void
     let onShare: () -> Void
 
@@ -61,6 +63,13 @@ struct ReviewActionBar: View {
                 .font(.footnote)
                 .foregroundStyle(.orange)
                 .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
+            if valuesToCorrect > 0 {
+                Label("\(valuesToCorrect) values to correct", systemImage: "exclamationmark.triangle.fill")
+                    .font(.footnote)
+                    .foregroundStyle(.red)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             buttonLayout {
@@ -165,17 +174,22 @@ struct CategoryCount: Identifiable {
 
 /// Summary card shown at the top of the review screen, mirroring the look of the
 /// header cards in `HistoryView` / `ReportDetailView`: a gradient icon, the value
-/// count, a "ready to save" badge, and a row of category chips.
+/// count, what's left to do, and a row of category chips. Kept short so the
+/// values themselves start on the first screen.
 struct ReviewHeaderCard: View {
     let supportedCount: Int
     let exportableCount: Int
     var duplicateCount: Int = 0
+    /// Selected values that can't be saved as written.
+    var valuesToCorrect: Int = 0
+    /// Values about to be saved that the report text doesn't print.
+    var valuesToCheck: Int = 0
     let groups: [CategoryCount]
     let dominantColor: Color
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 14) {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 12) {
                 ZStack {
                     Circle()
                         .fill(
@@ -186,30 +200,20 @@ struct ReviewHeaderCard: View {
                             )
                         )
                     Image(systemName: "checklist")
-                        .font(.system(size: 22, weight: .semibold))
+                        .font(.system(size: 18, weight: .semibold))
                         .foregroundStyle(.white)
                 }
-                .frame(width: 54, height: 54)
+                .frame(width: 44, height: 44)
                 .shadow(color: dominantColor.opacity(0.35), radius: 5, x: 0, y: 2)
 
-                VStack(alignment: .leading, spacing: 3) {
-                    Text("Lab Report")
-                        .font(.headline)
+                // The status has its own line and may wrap: some languages' words don't fit beside the count.
+                VStack(alignment: .leading, spacing: 4) {
                     Text("\(supportedCount) values")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(.headline)
+                    statusBadge
                 }
 
                 Spacer(minLength: 0)
-
-                if exportableCount > 0 {
-                    // Narrow cards (an unfolded iPhone Duo's Review pane, the folded
-                    // Duo) keep just the checkmark rather than wrapping the label.
-                    ViewThatFits(in: .horizontal) {
-                        readyBadge(showsLabel: true)
-                        readyBadge(showsLabel: false)
-                    }
-                }
             }
 
             if groups.count > 1 {
@@ -233,27 +237,37 @@ struct ReviewHeaderCard: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
-        .padding(18)
+        .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .cardSurface(cornerRadius: 22)
     }
 
-    private func readyBadge(showsLabel: Bool) -> some View {
-        HStack(spacing: 5) {
-            Image(systemName: "checkmark.circle.fill")
-            if showsLabel {
-                Text("Ready to save")
-                    .lineLimit(1)
-                    .fixedSize()
-            }
+    @ViewBuilder
+    private var statusBadge: some View {
+        if valuesToCorrect > 0 {
+            badge("\(valuesToCorrect) values to correct", systemImage: "exclamationmark.triangle.fill", color: .red)
+                .accessibilityIdentifier("review-values-to-correct")
+        } else if valuesToCheck > 0 {
+            badge("\(valuesToCheck) values to check", systemImage: "exclamationmark.magnifyingglass", color: .orange)
+                .accessibilityIdentifier("review-values-to-check")
+        } else if exportableCount > 0 {
+            badge("Ready to save", systemImage: "checkmark.circle.fill", color: .green)
         }
-        .font(.caption.weight(.semibold))
-        .foregroundStyle(.green)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .background(.green.opacity(0.12), in: Capsule())
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Ready to save")
+    }
+
+    private func badge(_ title: LocalizedStringKey, systemImage: String, color: Color) -> some View {
+        HStack(spacing: 4) {
+            Image(systemName: systemImage)
+                .accessibilityHidden(true)
+            Text(title)
+        }
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(color)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 3)
+            .background(color.opacity(0.12), in: Capsule())
+            .fixedSize(horizontal: false, vertical: true)
+            .accessibilityElement(children: .combine)
     }
 }
 
@@ -388,7 +402,45 @@ struct CategorySectionHeader: View {
     .background(Color(.systemGroupedBackground))
 }
 
-// The left pane of the Review screen on an unfolded iPhone Duo: the badge drops its label.
+#Preview("Header Card – To Check") {
+    ReviewHeaderCard(
+        supportedCount: 10,
+        exportableCount: 8,
+        valuesToCheck: 2,
+        groups: CategoryCount.sampleGroups,
+        dominantColor: LabCategory.lipids.color
+    )
+    .padding()
+    .background(Color(.systemGroupedBackground))
+}
+
+#Preview("Header Card – To Check, Dark") {
+    ReviewHeaderCard(
+        supportedCount: 10,
+        exportableCount: 8,
+        valuesToCheck: 1,
+        groups: CategoryCount.sampleGroups,
+        dominantColor: LabCategory.lipids.color
+    )
+    .padding()
+    .background(Color(.systemGroupedBackground))
+    .preferredColorScheme(.dark)
+}
+
+// A long translation of the status on the narrow left pane of an unfolded iPhone Duo: it wraps.
+#Preview("Header Card – Narrow, Long Status", traits: .fixedLayout(width: 290, height: 220)) {
+    ReviewHeaderCard(
+        supportedCount: 13,
+        exportableCount: 13,
+        groups: CategoryCount.sampleGroups,
+        dominantColor: LabCategory.glycemic.color
+    )
+    .padding()
+    .background(Color(.systemGroupedBackground))
+    .environment(\.locale, Locale(identifier: "el"))
+}
+
+// The left pane of the Review screen on an unfolded iPhone Duo.
 #Preview("Header Card – Narrow (Duo pane)", traits: .fixedLayout(width: 290, height: 220)) {
     ReviewHeaderCard(
         supportedCount: 13,
@@ -400,35 +452,6 @@ struct CategorySectionHeader: View {
     .background(Color(.systemGroupedBackground))
 }
 #endif
-
-#Preview("Action Bar") {
-    VStack {
-        Spacer()
-        ReviewActionBar(isEnabled: true, onSave: {}, onShare: {})
-    }
-}
-
-#Preview("Action Bar – Landscape", traits: .landscapeLeft) {
-    VStack {
-        Spacer()
-        ReviewActionBar(isEnabled: true, onSave: {}, onShare: {})
-    }
-}
-
-#Preview("Action Bar – Dark") {
-    VStack {
-        Spacer()
-        ReviewActionBar(isEnabled: true, onSave: {}, onShare: {})
-    }
-    .preferredColorScheme(.dark)
-}
-
-#Preview("Action Bar – Duplicates") {
-    VStack {
-        Spacer()
-        ReviewActionBar(isEnabled: false, hasDuplicates: true, onSave: {}, onShare: {})
-    }
-}
 
 #Preview("Unsupported Values") {
     List {

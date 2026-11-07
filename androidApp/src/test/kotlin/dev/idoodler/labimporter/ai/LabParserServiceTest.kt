@@ -97,6 +97,31 @@ class LabParserServiceTest {
         assertEquals(progress.map { it.entryCount }.sorted(), progress.map { it.entryCount })
     }
 
+    /**
+     * Each part sees only its own lines, but the check must see them all: a value
+     * read from an early part is printed in the report, and passing only the last
+     * part (or any one) would flag every other value in the report.
+     */
+    @Test
+    fun aLongReportsValuesAreComparedWithItsWholeText() = runTest {
+        ai.reply = { readRows() }
+        val result = parser.parse(longReport) {}
+        assertTrue(ai.requests.size > 1)
+        assertEquals(emptyList<String>(), result.values.filter { it.needsSourceCheck }.map { it.code })
+
+        // A misread in the first part is still caught.
+        ai.reply = {
+            val prompt = ai.requests.last().second
+            if ("TEST1:" in prompt) {
+                FakeAi.replyJson(listOf("TEST1", "TEST1", "999", "mg/dl"))
+            } else {
+                readRows()
+            }
+        }
+        val misread = parser.parse(longReport) {}
+        assertEquals(listOf("TEST1"), misread.values.filter { it.needsSourceCheck }.map { it.code })
+    }
+
     @Test
     fun aPartTheModelStillFindsTooLongIsReadInHalves() = runTest {
         ai.reply = {

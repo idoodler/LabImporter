@@ -140,6 +140,9 @@ private fun printTotal(scores: List<Score>) {
         "invalid replies ${scores.count { !it.valid }}, LOINC ${scores.sumOf { it.loincRight }}/${scores.sumOf { it.loincExpected }}, " +
         "text results ${scores.sumOf { it.textKept }}/${scores.sumOf { it.textExpected }}, " +
         "median time ${scores.map { it.millis }.sorted()[scores.size / 2] / 1000.0} s")
+    println("SOURCE CHECK  wrong values flagged ${scores.sumOf { it.wrongFlagged }}, " +
+        "wrong values NOT flagged ${scores.sumOf { it.wrongNotFlagged }}, " +
+        "right values falsely flagged ${scores.sumOf { it.rightFlagged }}/${scores.sumOf { it.rightValues }}")
 }
 
 private const val MAX_TOKENS = 4096
@@ -157,6 +160,11 @@ data class Score(
     /** Results that aren't numbers, and how many of them were kept as a qualitative result to save. */
     val textExpected: Int = 0,
     val textKept: Int = 0,
+    /** Review's "compare with the report" badge: did it land on the values that are wrong? */
+    val rightValues: Int = 0,
+    val rightFlagged: Int = 0,
+    val wrongFlagged: Int = 0,
+    val wrongNotFlagged: Int = 0,
 )
 
 private fun pct(a: Int, b: Int) = if (b == 0) "—" else "${(100.0 * a / b).toInt()}%"
@@ -179,6 +187,8 @@ private fun LabValue.matchesValue(value: Double, unit: String) =
 private fun score(name: String, expected: Expected, result: ParseResult?, millis: Long, replyLength: Int): Score {
     val values = result?.values.orEmpty()
     val used = mutableSetOf<LabValue>()
+    // What the expected values match is right; a number or text result that matches nothing is wrong.
+    val right = mutableListOf<LabValue>()
     var correct = 0
     var loincRight = 0
     val problems = mutableListOf<String>()
@@ -189,6 +199,7 @@ private fun score(name: String, expected: Expected, result: ParseResult?, millis
         val hit = values.firstOrNull { v -> v !in used && options.any { v.matchesValue(it.value, it.unit) } }
         if (hit != null) {
             used += hit
+            right += hit
             correct++
             if (e.loinc != null && hit.code == e.loinc) loincRight++
             if (e.loinc != null && hit.code != e.loinc) problems += "LOINC ${e.names.first()}: ${hit.code} ${hit.name} (expected ${e.loinc})"
@@ -204,7 +215,10 @@ private fun score(name: String, expected: Expected, result: ParseResult?, millis
         when {
             v == null -> problems += "MISSED TEXT ${t.names.first()}"
             v.numericValue != null -> problems += "NUMBER FROM TEXT ${t.names.first()}: ${v.displayValue}"
-            v.qualitativeResult != null -> textKept++
+            v.qualitativeResult != null -> {
+                textKept++
+                right += v
+            }
             else -> problems += "TEXT NOT KEPT ${t.names.first()}: '${v.displayValue}'"
         }
         if (v != null) used += v
@@ -218,6 +232,9 @@ private fun score(name: String, expected: Expected, result: ParseResult?, millis
     if (expected.patientName != null && result?.patientName?.contains(expected.patientName, ignoreCase = true) != true) {
         problems += "PATIENT '${result?.patientName}' (expected ${expected.patientName})"
     }
+    val wrong = values.filter { it !in used && it.hasResult }
+    right.filter { it.needsSourceCheck }.forEach { problems += "FALSE ALARM ${it.name} = ${it.displayValue} ${it.unit}" }
+    wrong.forEach { problems += "WRONG, ${if (it.needsSourceCheck) "flagged" else "NOT flagged"}: ${it.name} = ${it.displayValue} ${it.unit}" }
     val loincExpected = expected.values.count { it.loinc != null }
     println("%-18s %s  %2d/%2d correct, %d extra, %.1f s, %d chars".format(
         name, if (result == null) "INVALID REPLY" else "ok", correct, expected.values.size, extras.size, millis / 1000.0, replyLength,
@@ -227,5 +244,6 @@ private fun score(name: String, expected: Expected, result: ParseResult?, millis
         name, result != null, expected.values.size, correct,
         values.count { it.numericValue != null }, extras.size, loincExpected, loincRight, millis,
         expected.notNumeric.size, textKept,
+        right.size, right.count { it.needsSourceCheck }, wrong.count { it.needsSourceCheck }, wrong.count { !it.needsSourceCheck },
     )
 }

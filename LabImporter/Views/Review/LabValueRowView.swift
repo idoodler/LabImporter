@@ -70,21 +70,43 @@ struct LabValueRowView: View {
                     }
                 }
 
-                Button { showCodePicker = true } label: {
-                    HStack(spacing: 3) {
-                        Text(value.code)
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
-                            .textCase(.uppercase)
-                        Image(systemName: "chevron.up.chevron.down")
-                            .font(.system(size: 7))
-                            .foregroundStyle(.quaternary)
+                HStack(spacing: 10) {
+                    Button { showCodePicker = true } label: {
+                        HStack(spacing: 3) {
+                            Text(value.code)
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                                .textCase(.uppercase)
+                            Image(systemName: "chevron.up.chevron.down")
+                                .font(.system(size: 7))
+                                .foregroundStyle(.quaternary)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("review-code-button")
+
+                    // Like Android's row: a suggestion stands until it's confirmed or another test is chosen.
+                    if value.isSuggestedCode {
+                        Button("Confirm") { value.isSuggestedCode = false }
+                            .buttonStyle(.plain)
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(Color.accentColor)
+                            .accessibilityIdentifier("review-confirm-\(value.code)")
                     }
                 }
-                .buttonStyle(.plain)
-            }
 
-            Spacer()
+                if value.needsSourceCheck {
+                    compareBadge
+                        .padding(.top, 3)
+                }
+
+                if value.needsCorrection {
+                    correctBadge
+                        .padding(.top, 3)
+                }
+            }
+            // The name gets all the width the value doesn't need: long catalog names otherwise run to six lines.
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             HStack(spacing: 6) {
                 valueField
@@ -97,12 +119,51 @@ struct LabValueRowView: View {
                         .fixedSize()
                 }
             }
+            .layoutPriority(1)
         }
         .padding(.vertical, 2)
-        .sheet(isPresented: $showCodePicker, onDismiss: { value.isSuggestedCode = false }, content: {
-            CodePickerSheet(code: $value.code, name: $value.name)
-        })
+        .sheet(isPresented: $showCodePicker) {
+            CodePickerSheet(code: $value.code, name: $value.name, onChoose: { value.isSuggestedCode = false })
+        }
     }
+
+    /// The result isn't in the report text. Said in full to VoiceOver, here and on the value itself.
+    private var compareBadge: some View {
+        HStack(spacing: 3) {
+            Image(systemName: "exclamationmark.magnifyingglass")
+            Text("Compare with report")
+        }
+            .font(.caption2.weight(.medium))
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(Color.orange.opacity(0.15), in: Capsule())
+            .foregroundStyle(.orange)
+            .fixedSize(horizontal: false, vertical: true)
+            .help(Self.compareExplanation)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(Self.compareExplanation)
+            .accessibilityIdentifier("review-compare-badge")
+    }
+
+    /// Saving would leave this result out, and it can look fine: the field shows text a number can't be read from.
+    private var correctBadge: some View {
+        HStack(spacing: 3) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .accessibilityHidden(true)
+            Text("Can't be saved as written. Correct or deselect it.")
+        }
+            .font(.caption2.weight(.medium))
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(Color.red.opacity(0.15), in: Capsule())
+            .foregroundStyle(.red)
+            .fixedSize(horizontal: false, vertical: true)
+            .accessibilityElement(children: .combine)
+            .accessibilityIdentifier("review-correct-badge")
+    }
+
+    private static let compareExplanation: LocalizedStringKey =
+        "This value wasn't found in the report text. Compare it with your report."
 
     @ViewBuilder
     private var valueField: some View {
@@ -118,6 +179,8 @@ struct LabValueRowView: View {
                 .keyboardType(isQualitative ? .default : .decimalPad)
                 .focused($isFocused)
                 .frame(minWidth: 44, maxWidth: isQualitative ? 130 : 80)
+                .accessibilityIdentifier("review-value-field")
+                .accessibilityHint(value.needsSourceCheck ? Text(Self.compareExplanation) : Text(verbatim: ""))
         }
     }
 
@@ -129,9 +192,9 @@ struct LabValueRowView: View {
         Binding(
             get: { strippedValue(value.displayValue) },
             set: { newRaw in
-                value.displayValue = newRaw
-                let normalized = newRaw.replacingOccurrences(of: ",", with: ".")
-                value.numericValue = Double(normalized)
+                // A set with the text it already holds is no edit: the value stays to be compared.
+                guard newRaw != strippedValue(value.displayValue) else { return }
+                value.applyEditedResult(newRaw)
             }
         )
     }
@@ -161,6 +224,40 @@ struct LabValueRowView: View {
 }
 
 #if DEBUG
+#Preview("Compare with Report") {
+    @Previewable @State var misread = LabValue.sampleToCheck[0]
+    @Previewable @State var suggested = LabValue.sampleToCheck[1]
+    List {
+        LabValueRowView(value: $misread)
+        LabValueRowView(value: $suggested)
+    }
+}
+
+#Preview("Compare with Report – Dark") {
+    @Previewable @State var misread = LabValue.sampleToCheck[0]
+    @Previewable @State var suggested = LabValue.sampleToCheck[1]
+    List {
+        LabValueRowView(value: $misread)
+        LabValueRowView(value: $suggested)
+    }
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Can't Be Saved") {
+    @Previewable @State var misread = LabValue.sampleToCorrect
+    List {
+        LabValueRowView(value: $misread)
+    }
+}
+
+#Preview("Can't Be Saved – Dark") {
+    @Previewable @State var misread = LabValue.sampleToCorrect
+    List {
+        LabValueRowView(value: $misread)
+    }
+    .preferredColorScheme(.dark)
+}
+
 #Preview("Qualitative") {
     @Previewable @State var negative = LabValue.sampleQualitative[0]
     @Previewable @State var titer = LabValue.sampleQualitative[1]

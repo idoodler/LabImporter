@@ -139,7 +139,10 @@
     <string name="model_ready_text">LabImporter kan nu läsa dina labbrapporter, helt på den här telefonen.</string>
     <string name="model_failed_title">AI-modellen hämtades inte</string>
     <string name="error_scanner">Dokumentskanning är inte tillgänglig på den här enheten.</string>
-    <string name="error_save">Det gick inte att spara: %1$s</string>
+    <string name="error_save_health_connect">Health Connect kunde inte spara rapporten, så inget har ändrats. Försök igen om en stund.</string>
+    <string name="error_save_storage">Rapporten kunde inte sparas på den här enheten, så inget har ändrats. Kontrollera det lediga utrymmet och försök igen.</string>
+    <string name="error_save_values">Vissa värden kunde inte förberedas för att sparas, så inget har ändrats. Försök igen om en stund.</string>
+    <string name="save_leftovers_warning">Den uppdaterade rapporten har sparats, men värdena du tog bort kunde inte raderas ännu. Redigera rapporten för att ta bort dem igen.</string>
     <string name="review_title">Granska värden</string>
     <string name="edit_report">Redigera rapport</string>
     <string name="lab_or_doctor">Labb / Läkare</string>
@@ -152,6 +155,20 @@
     <string name="search_loinc">Sök labbtester</string>
     <string name="loinc_suggested">Förslag: %1$s</string>
     <string name="loinc_duplicate">Dubblett: %1$s</string>
+    <string name="compare_with_report">Jämför med rapporten</string>
+    <string name="compare_with_report_detail">Det här värdet hittades inte i rapportens text. Jämför det med din rapport.</string>
+    <plurals name="values_to_check">
+        <item quantity="one">%d värde att kontrollera</item>
+        <item quantity="other">%d värden att kontrollera</item>
+    </plurals>
+    <plurals name="values_to_correct">
+        <item quantity="one">%d värde att korrigera</item>
+        <item quantity="other">%d värden att korrigera</item>
+    </plurals>
+    <string name="correct_or_deselect">Kan inte sparas som det är skrivet. Korrigera värdet eller avmarkera det.</string>
+    <string name="no_date_found">Inget datum hittades i rapporten. Kontrollera att det här datumet stämmer.</string>
+    <string name="patient_and_lab">Patient och labb</string>
+    <string name="not_filled_in">Inte ifyllt</string>
     <plurals name="exportable_count">
         <item quantity="other">Klara att spara: %1$d av %2$d</item>
         <item quantity="one">Klara att spara: %1$d av %2$d</item>
@@ -193,6 +210,11 @@
     <string name="ai_available">Klart. Rapporterna läses av Gemini Nano, helt på den här enheten.</string>
     <string name="ai_checking">Kontrollerar …</string>
     <string name="try_again">Försök igen</string>
+    <string name="reports_load_failed_title">Det gick inte att läsa in dina rapporter</string>
+    <string name="reports_load_failed_message">Dina sparade rapporter har inte ändrats, men de kan inte läsas just nu.</string>
+    <string name="reports_unreadable_title">Vissa rapporter kan inte läsas</string>
+    <string name="reports_unreadable_message">Rapporter som inte kan läsas: %1$d. De finns kvar på den här enheten och har inte raderats.</string>
+    <string name="hc_connect_failed">Det gick inte att ansluta till Health Connect. Dina rapporter finns kvar i LabImporter. Försök igen i Inställningar.</string>
     <string name="transfer_title">Överföring</string>
     <string name="transfer_export">Exportera alla rapporter</string>
     <string name="transfer_export_detail">Spara alla rapporter i en fil, till exempel för att flytta dem till en annan telefon.</string>
@@ -200,6 +222,8 @@
     <string name="transfer_import_detail">Från en LabImporter-fil som exporterats på iPhone eller Android. Rapporter som redan finns här hoppas över.</string>
     <string name="transfer_unsupported">Den här filen innehåller inga LabImporter-rapporter.</string>
     <string name="transfer_summary">Nya rapporter: %1$d · Fanns redan: %2$d</string>
+    <string name="transfer_summary_failed">Nya rapporter: %1$d · Finns redan: %2$d · Inte sparade: %3$d</string>
+    <string name="transfer_reports_unreadable">Dina sparade rapporter kan inte läsas just nu, så inget har importerats. Försök igen om en stund.</string>
     <string name="privacy_title">Privat från grunden</string>
     <string name="privacy_message">Allt körs på enheten. LabImporter överför aldrig dina labbdata.</string>
     <string name="loinc_catalog">LOINC-katalog</string>

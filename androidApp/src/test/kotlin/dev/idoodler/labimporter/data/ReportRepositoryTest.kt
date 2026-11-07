@@ -34,6 +34,8 @@ open class MemoryStore : LabReportStore {
         if (report.id in failingDeletes) error("delete failed")
         reports.remove(report.id)
     }
+
+    override suspend fun removeDropped(old: LabReport, updated: LabReport) = Unit // A save replaced the whole report.
 }
 
 class FakeHealthConnect : MemoryStore(), HealthConnectStore {
@@ -119,6 +121,40 @@ class ReportRepositoryTest {
         repository.reload()
         assertTrue(local.reports.isEmpty())
         assertEquals(4, repository.reports.value.size)
+    }
+
+    @Test
+    fun healthConnectOutOfReachIsAFailedLoadNotAnEmptyList() = runTest {
+        val repository = repository()
+        repository.enableHealthConnect()
+        assertFalse(repository.loadFailed.value)
+
+        // Whichever way it went away, its reports are missing from what's listed now.
+        healthConnect.granted = false
+        repository.reload()
+        assertTrue(repository.reports.value.isEmpty())
+        assertTrue(repository.loadFailed.value)
+
+        healthConnect.granted = true
+        healthConnect.available = HealthConnectAvailability.UPDATE_REQUIRED
+        repository.reload()
+        assertTrue(repository.loadFailed.value)
+
+        healthConnect.available = HealthConnectAvailability.AVAILABLE
+        repository.reload()
+        assertFalse(repository.loadFailed.value)
+        assertEquals(3, repository.reports.value.size)
+    }
+
+    @Test
+    fun choosingAppStorageIsNotAFailedLoad() = runTest {
+        val repository = repository()
+        repository.enableHealthConnect()
+        healthConnect.granted = false
+
+        repository.useLocalStorage()
+
+        assertFalse(repository.loadFailed.value)
     }
 
     @Test

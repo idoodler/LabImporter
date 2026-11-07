@@ -16,6 +16,8 @@ struct NewReportImportButton: View {
     @State private var engine = LabImportEngine()
     @State private var labValues: [LabValue] = []
     @State private var reportDate: Date?
+    /// An import that found no date, unlike a manual report, which has none to find.
+    @State private var isDateMissing = false
     @State private var patientName: String?
     @State private var authorName: String?
     @State private var showReview = false
@@ -45,6 +47,7 @@ struct NewReportImportButton: View {
             Button {
                 labValues = []
                 reportDate = nil
+                isDateMissing = false
                 patientName = nil
                 authorName = nil
                 showReview = true
@@ -60,6 +63,7 @@ struct NewReportImportButton: View {
             engine.onParsed = { result in
                 labValues = result.values
                 reportDate = result.reportDate
+                isDateMissing = result.reportDate == nil
                 patientName = result.patientName
                 authorName = result.authorName
                 showReview = true
@@ -70,6 +74,7 @@ struct NewReportImportButton: View {
                 ReviewView(
                     labValues: labValues,
                     reportDate: reportDate ?? Date(),
+                    isDateMissing: isDateMissing,
                     extractedPatientName: patientName,
                     extractedAuthorName: authorName,
                     onSaved: onSaved

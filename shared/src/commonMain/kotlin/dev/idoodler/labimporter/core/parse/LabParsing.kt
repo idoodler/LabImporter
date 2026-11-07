@@ -159,11 +159,15 @@ object LabParsePrompt {
 /** Turns the model's raw extraction into reviewable, LOINC-resolved values. */
 object LabParsePipeline {
 
-    /** @param sourceText the report text the model read, to check its date against. */
+    /**
+     * @param sourceText the whole report text the model read — every part of a
+     *   long one ([LabParseChunks]) — to check its date and results against.
+     */
     fun postProcess(report: AiLabReport, sourceText: String): ParseResult {
+        val source = ReportSourceText(sourceText)
         val entries = report.entries.filter { it.code.isNotBlank() || it.name.isNotBlank() }
         val units = entries.map { unitWithoutFlag(it.unit) }
-        val results = entries.map { valueWithoutFlag(it.rawValue) }
+        val results = entries.mapIndexed { index, entry -> valueWithoutUnit(valueWithoutFlag(entry.rawValue), units[index]) }
         val resolved = entries.mapIndexed { index, entry ->
             resolveLoinc(entry.code, entry.name, report.reportLanguage, units[index], results[index])
         }
@@ -176,16 +180,18 @@ object LabParsePipeline {
             val collides = resolvedSuggested && !claimed.add(resolvedCode)
             val code = if (collides) entry.code.trim().ifEmpty { entry.name.trim() } else resolvedCode
             val suggested = resolvedSuggested && !collides
-            val numeric = if (results[index] == "-") null else NumberFormatting.parse(results[index])
+            val numeric = if (results[index] == "-") null else source.numberFrom(results[index])
             val display = LabMapping.displayName(code)
             LabValue(
                 code = code,
                 // An unmapped value shows the model's expanded name ("Kreatinin"), not the mnemonic.
                 name = if (display == code) entry.name.trim().ifEmpty { entry.code } else display,
-                displayValue = results[index],
+                // What's shown is what's saved: "263,000" that is 263000 no longer reads as 263 once edited.
+                displayValue = if (numeric != null && numeric != NumberFormatting.parse(results[index])) NumberFormatting.exactValue(numeric) else results[index],
                 numericValue = numeric,
                 unit = units[index],
                 isSuggestedCode = suggested,
+                needsSourceCheck = !source.prints(results[index]),
             )
         }
         // A report can list a test twice: keep one entry per LOINC, the app's canonical identity.
@@ -283,6 +289,18 @@ object LabParsePipeline {
         return if (last != trimmed && last in VALUE_FLAGS) trimmed.substringBeforeLast(' ').trim() else trimmed
     }
 
+    /**
+     * [value] without [unit] when it was copied along behind a number or
+     * threshold ("5.6 mmol/l"); anything else unchanged. Saying the same unit
+     * twice is no misread for the user to fix.
+     */
+    fun valueWithoutUnit(value: String, unit: String): String {
+        val trimmedUnit = unit.trim()
+        if (trimmedUnit.isEmpty() || !value.endsWith(trimmedUnit, ignoreCase = true)) return value
+        val rest = value.dropLast(trimmedUnit.length).trim()
+        return if (rest.lastOrNull()?.isDigit() == true) rest else value
+    }
+
     /** What ends a status label in front of a value: "In Range· 42", "High • 6.1". */
     private val LABEL_ENDS = charArrayOf('·', '•', '∙')
 
@@ -327,8 +345,8 @@ object LabParsePipeline {
     private fun date(year: Int, month: Int, day: Int): LocalDate? =
         if (month in 1..12 && day in 1..31) runCatching { LocalDate(year, month, day) }.getOrNull() else null
 
-    private val ISO_DATE = Regex("(?<!\\d)(\\d{4})-(\\d{1,2})-(\\d{1,2})(?!\\d)")
-    private val NUMERIC_DATE = Regex("(?<![\\d.,/-])(\\d{1,2})([./-])(\\d{1,2})\\2(\\d{4}|\\d{2})(?![\\d.,/-])")
+    internal val ISO_DATE = Regex("(?<!\\d)(\\d{4})-(\\d{1,2})-(\\d{1,2})(?!\\d)")
+    internal val NUMERIC_DATE = Regex("(?<![\\d.,/-])(\\d{1,2})([./-])(\\d{1,2})\\2(\\d{4}|\\d{2})(?![\\d.,/-])")
 
     /** The model's `yyyy-MM-dd` date; anything else is no date (the user sets it in review). */
     fun parseDate(raw: String): LocalDate? {

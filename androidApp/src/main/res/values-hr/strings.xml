@@ -142,7 +142,10 @@
     <string name="model_ready_text">LabImporter sada može čitati vaša laboratorijska izvješća, u potpunosti na ovom telefonu.</string>
     <string name="model_failed_title">Model umjetne inteligencije nije preuzet</string>
     <string name="error_scanner">Skeniranje dokumenata nije dostupno na ovom uređaju.</string>
-    <string name="error_save">Spremanje nije uspjelo: %1$s</string>
+    <string name="error_save_health_connect">Health Connect nije mogao spremiti izvješće pa ništa nije promijenjeno. Pokušajte ponovno za trenutak.</string>
+    <string name="error_save_storage">Izvješće nije moguće spremiti na ovaj uređaj pa ništa nije promijenjeno. Provjerite slobodan prostor i pokušajte ponovno.</string>
+    <string name="error_save_values">Neke vrijednosti nije moguće pripremiti za spremanje pa ništa nije promijenjeno. Pokušajte ponovno za trenutak.</string>
+    <string name="save_leftovers_warning">Ažurirano izvješće je spremljeno, ali uklonjene vrijednosti još nije moguće izbrisati. Uredite izvješće kako biste ih ponovno uklonili.</string>
     <string name="review_title">Pregledaj vrijednosti</string>
     <string name="edit_report">Uredi izvješće</string>
     <string name="lab_or_doctor">Laboratorij / liječnik</string>
@@ -155,6 +158,22 @@
     <string name="search_loinc">Pretraži laboratorijske pretrage</string>
     <string name="loinc_suggested">Prijedlog: %1$s</string>
     <string name="loinc_duplicate">Duplikat: %1$s</string>
+    <string name="compare_with_report">Usporedite s nalazom</string>
+    <string name="compare_with_report_detail">Ova vrijednost nije pronađena u tekstu nalaza. Usporedite je sa svojim nalazom.</string>
+    <plurals name="values_to_check">
+        <item quantity="one">%d vrijednost za provjeru</item>
+        <item quantity="few">%d vrijednosti za provjeru</item>
+        <item quantity="other">%d vrijednosti za provjeru</item>
+    </plurals>
+    <plurals name="values_to_correct">
+        <item quantity="one">%d vrijednost za ispravak</item>
+        <item quantity="few">%d vrijednosti za ispravak</item>
+        <item quantity="other">%d vrijednosti za ispravak</item>
+    </plurals>
+    <string name="correct_or_deselect">Ne može se spremiti ovako napisano. Ispravite ili poništite odabir.</string>
+    <string name="no_date_found">U nalazu nije pronađen datum. Provjerite je li ovaj datum točan.</string>
+    <string name="patient_and_lab">Pacijent i laboratorij</string>
+    <string name="not_filled_in">Nije ispunjeno</string>
     <plurals name="exportable_count">
         <item quantity="other">Spremno za spremanje: %1$d od %2$d</item>
         <item quantity="one">Spremno za spremanje: %1$d od %2$d</item>
@@ -199,6 +218,11 @@
     <string name="ai_available">Spremno. Gemini Nano čita izvješća u potpunosti na ovom uređaju.</string>
     <string name="ai_checking">Provjera…</string>
     <string name="try_again">Pokušaj ponovno</string>
+    <string name="reports_load_failed_title">Izvješća nije moguće učitati</string>
+    <string name="reports_load_failed_message">Spremljena izvješća nisu promijenjena, ali se trenutačno ne mogu pročitati.</string>
+    <string name="reports_unreadable_title">Neka se izvješća ne mogu pročitati</string>
+    <string name="reports_unreadable_message">Izvješća koja se ne mogu pročitati: %1$d. Ostaju na ovom uređaju i nisu izbrisana.</string>
+    <string name="hc_connect_failed">Povezivanje s Health Connectom nije uspjelo. Izvješća ostaju u LabImporteru. Pokušajte ponovno u Postavkama.</string>
     <string name="transfer_title">Prijenos</string>
     <string name="transfer_export">Izvezi sva izvješća</string>
     <string name="transfer_export_detail">Spremite sva izvješća u jednu datoteku, primjerice da ih premjestite na drugi telefon.</string>
@@ -206,6 +230,8 @@
     <string name="transfer_import_detail">Iz LabImporter datoteke izvezene na iPhoneu ili Androidu. Izvješća koja su već ovdje preskaču se.</string>
     <string name="transfer_unsupported">Ova datoteka ne sadrži LabImporter izvješća.</string>
     <string name="transfer_summary">Nova izvješća: %1$d · Već postoje: %2$d</string>
+    <string name="transfer_summary_failed">Nova izvješća: %1$d · Već postoje: %2$d · Nije spremljeno: %3$d</string>
+    <string name="transfer_reports_unreadable">Spremljena izvješća trenutačno se ne mogu pročitati pa ništa nije uvezeno. Pokušajte ponovno za trenutak.</string>
     <string name="privacy_title">Privatnost u temelju</string>
     <string name="privacy_message">Sve se odvija na uređaju. LabImporter nikada ne prenosi vaše laboratorijske podatke.</string>
     <string name="loinc_catalog">LOINC katalog</string>

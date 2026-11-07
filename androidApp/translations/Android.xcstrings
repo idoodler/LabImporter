@@ -149,154 +149,6 @@
         }
       }
     },
-    "Confirm" : {
-      "localizations" : {
-        "bg" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Потвърди"
-          }
-        },
-        "ca" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confirma"
-          }
-        },
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Potvrdit"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bekræft"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bestätigen"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Επιβεβαίωση"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confirmar"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vahvista"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confirmer"
-          }
-        },
-        "hr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Potvrdi"
-          }
-        },
-        "hu" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Megerősítés"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Conferma"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "確認"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bevestigen"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Potwierdź"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confirmar"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confirmar"
-          }
-        },
-        "ro" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confirmă"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Подтвердить"
-          }
-        },
-        "sk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Potvrdiť"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bekräfta"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Onayla"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Підтвердити"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "确认"
-          }
-        }
-      }
-    },
     "Scan or import your lab report and save it directly to Health Connect." : {
       "localizations" : {
         "bg" : {
@@ -4733,154 +4585,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "设备端 AI 当前不可用。请确保你的设备已更新到最新版本，然后重试。"
-          }
-        }
-      }
-    },
-    "Saving failed: %1$@" : {
-      "localizations" : {
-        "bg" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Запазването не бе успешно: %1$@"
-          }
-        },
-        "ca" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No s'ha pogut desar: %1$@"
-          }
-        },
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Uložení se nezdařilo: %1$@"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kunne ikke gemme: %1$@"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Speichern fehlgeschlagen: %1$@"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Η αποθήκευση απέτυχε: %1$@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Error al guardar: %1$@"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tallennus epäonnistui: %1$@"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Échec de l’enregistrement : %1$@"
-          }
-        },
-        "hr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Spremanje nije uspjelo: %1$@"
-          }
-        },
-        "hu" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sikertelen mentés: %1$@"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Salvataggio non riuscito: %1$@"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "保存に失敗しました：%1$@"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bewaren mislukt: %1$@"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nie udało się zapisać: %1$@"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Falha ao salvar: %1$@"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Falha ao guardar: %1$@"
-          }
-        },
-        "ro" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Salvarea a eșuat: %1$@"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Не удалось сохранить: %1$@"
-          }
-        },
-        "sk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Uloženie zlyhalo: %1$@"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Det gick inte att spara: %1$@"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kaydetme başarısız: %1$@"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Не вдалося зберегти: %1$@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "保存失败：%1$@"
           }
         }
       }
@@ -19905,6 +19609,1634 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你的报告目前只保存在 LabImporter 中。连接后可将它们移至 Health Connect，与你的其他健康数据存放在一起。"
+          }
+        }
+      }
+    },
+    "Couldn't Load Your Reports" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отчетите не можаха да се заредят"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No s'han pogut carregar els informes"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protokoly se nepodařilo načíst"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dine rapporter kunne ikke indlæses"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Berichte konnten nicht geladen werden"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Δεν ήταν δυνατή η φόρτωση των αναφορών σας"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se han podido cargar tus informes"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raportteja ei voitu ladata"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de charger vos rapports"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Izvješća nije moguće učitati"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nem sikerült betölteni a jelentéseket"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossibile caricare i referti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レポートを読み込めませんでした"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je rapporten konden niet worden geladen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie udało się wczytać raportów"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível carregar seus relatórios"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível carregar os relatórios"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapoartele nu au putut fi încărcate"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось загрузить отчёты"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Správy sa nepodarilo načítať"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Det gick inte att läsa in dina rapporter"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raporlarınız yüklenemedi"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не вдалося завантажити звіти"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法载入报告"
+          }
+        }
+      }
+    },
+    "Your saved reports weren't changed, but they can't be read right now." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запазените отчети не са променени, но в момента не могат да се прочетат."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Els informes desats no han canviat, però ara mateix no es poden llegir."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uložené protokoly se nezměnily, ale momentálně je nelze přečíst."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dine gemte rapporter er ikke ændret, men de kan ikke læses lige nu."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine gespeicherten Berichte wurden nicht verändert, können aber gerade nicht gelesen werden."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Οι αποθηκευμένες αναφορές σας δεν άλλαξαν, αλλά δεν είναι δυνατή η ανάγνωσή τους αυτή τη στιγμή."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tus informes guardados no han cambiado, pero ahora mismo no se pueden leer."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tallennetut raporttisi eivät muuttuneet, mutta niitä ei voi lukea juuri nyt."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vos rapports enregistrés n'ont pas été modifiés, mais ils ne peuvent pas être lus pour le moment."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spremljena izvješća nisu promijenjena, ali se trenutačno ne mogu pročitati."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A mentett jelentéseid nem változtak, de most nem olvashatók."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I referti salvati non sono stati modificati, ma al momento non possono essere letti."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存済みのレポートは変更されていませんが、現在は読み取れません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je bewaarde rapporten zijn niet gewijzigd, maar kunnen nu niet worden gelezen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zapisane raporty nie zostały zmienione, ale w tej chwili nie można ich odczytać."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seus relatórios salvos não foram alterados, mas não podem ser lidos agora."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os relatórios guardados não foram alterados, mas não podem ser lidos neste momento."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapoartele salvate nu au fost modificate, dar nu pot fi citite acum."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранённые отчёты не изменились, но сейчас их не удаётся прочитать."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uložené správy sa nezmenili, ale momentálne ich nemožno prečítať."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dina sparade rapporter har inte ändrats, men de kan inte läsas just nu."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kayıtlı raporlarınız değişmedi ancak şu anda okunamıyor."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Збережені звіти не змінилися, але зараз їх не вдається прочитати."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已保存的报告没有更改，但目前无法读取。"
+          }
+        }
+      }
+    },
+    "Some Reports Can't Be Read" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Някои отчети не могат да се прочетат"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alguns informes no es poden llegir"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Některé protokoly nelze přečíst"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nogle rapporter kan ikke læses"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einige Berichte können nicht gelesen werden"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ορισμένες αναφορές δεν είναι δυνατό να διαβαστούν"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Algunos informes no se pueden leer"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Joitakin raportteja ei voi lukea"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Certains rapports sont illisibles"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neka se izvješća ne mogu pročitati"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Néhány jelentés nem olvasható"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alcuni referti non possono essere letti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "読み取れないレポートがあります"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sommige rapporten kunnen niet worden gelezen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niektórych raportów nie można odczytać"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alguns relatórios não podem ser lidos"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alguns relatórios não podem ser lidos"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unele rapoarte nu pot fi citite"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Некоторые отчёты не удаётся прочитать"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niektoré správy nemožno prečítať"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vissa rapporter kan inte läsas"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bazı raporlar okunamıyor"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Деякі звіти не вдається прочитати"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分报告无法读取"
+          }
+        }
+      }
+    },
+    "Reports that can't be read: %1$lld. They stay on this device and weren't deleted." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отчети, които не могат да се прочетат: %1$lld. Те остават на това устройство и не са изтрити."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informes que no es poden llegir: %1$lld. Es queden en aquest dispositiu i no s'han eliminat."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protokoly, které nelze přečíst: %1$lld. Zůstávají v tomto zařízení a nebyly smazány."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapporter, der ikke kan læses: %1$lld. De bliver på denne enhed og er ikke slettet."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Berichte, die nicht gelesen werden können: %1$lld. Sie bleiben auf diesem Gerät und wurden nicht gelöscht."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αναφορές που δεν είναι δυνατό να διαβαστούν: %1$lld. Παραμένουν σε αυτή τη συσκευή και δεν διαγράφηκαν."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informes que no se pueden leer: %1$lld. Siguen en este dispositivo y no se han eliminado."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raportit, joita ei voi lukea: %1$lld. Ne säilyvät tällä laitteella, eikä niitä poistettu."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapports illisibles : %1$lld. Ils restent sur cet appareil et n'ont pas été supprimés."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Izvješća koja se ne mogu pročitati: %1$lld. Ostaju na ovom uređaju i nisu izbrisana."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nem olvasható jelentések: %1$lld. Ezen az eszközön maradnak, és nem törlődtek."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Referti che non possono essere letti: %1$lld. Restano su questo dispositivo e non sono stati eliminati."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "読み取れないレポート：%1$lld件。このデバイスに残っており、削除されていません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapporten die niet kunnen worden gelezen: %1$lld. Ze blijven op dit apparaat en zijn niet verwijderd."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raporty, których nie można odczytać: %1$lld. Pozostają na tym urządzeniu i nie zostały usunięte."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relatórios que não podem ser lidos: %1$lld. Eles continuam neste dispositivo e não foram apagados."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relatórios que não podem ser lidos: %1$lld. Permanecem neste dispositivo e não foram apagados."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapoarte care nu pot fi citite: %1$lld. Rămân pe acest dispozitiv și nu au fost șterse."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отчёты, которые не удаётся прочитать: %1$lld. Они остаются на этом устройстве и не удалены."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Správy, ktoré nemožno prečítať: %1$lld. Zostávajú v tomto zariadení a neboli vymazané."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapporter som inte kan läsas: %1$lld. De finns kvar på den här enheten och har inte raderats."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Okunamayan raporlar: %1$lld. Bu cihazda kalır ve silinmedi."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Звіти, які не вдається прочитати: %1$lld. Вони залишаються на цьому пристрої й не видалені."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法读取的报告：%1$lld 份。它们仍保留在此设备上，并未删除。"
+          }
+        }
+      }
+    },
+    "Health Connect couldn't save the report, so nothing was changed. Try again in a moment." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect не успя да запази отчета, затова нищо не е променено. Опитайте отново след малко."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect no ha pogut desar l'informe, de manera que no s'ha canviat res. Torna-ho a provar d'aquí a una estona."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect nemohl protokol uložit, takže se nic nezměnilo. Zkuste to za chvíli znovu."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect kunne ikke gemme rapporten, så intet er ændret. Prøv igen om lidt."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect konnte den Bericht nicht speichern, daher wurde nichts geändert. Versuche es gleich noch einmal."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Το Health Connect δεν μπόρεσε να αποθηκεύσει την αναφορά, οπότε δεν άλλαξε τίποτα. Δοκιμάστε ξανά σε λίγο."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect no ha podido guardar el informe, así que no ha cambiado nada. Inténtalo de nuevo en un momento."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect ei voinut tallentaa raporttia, joten mitään ei muutettu. Yritä hetken kuluttua uudelleen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect n'a pas pu enregistrer le rapport : rien n'a été modifié. Réessayez dans un instant."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect nije mogao spremiti izvješće pa ništa nije promijenjeno. Pokušajte ponovno za trenutak."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A Health Connect nem tudta menteni a jelentést, ezért semmi sem változott. Próbáld újra egy kis idő múlva."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect non ha potuto salvare il referto, quindi non è stato modificato nulla. Riprova tra poco."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ヘルスコネクトがレポートを保存できなかったため、何も変更されていません。しばらくしてからもう一度お試しください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect kon het rapport niet bewaren, dus er is niets gewijzigd. Probeer het zo meteen opnieuw."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect nie mógł zapisać raportu, więc nic nie zostało zmienione. Spróbuj ponownie za chwilę."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Health Connect não conseguiu salvar o relatório, então nada foi alterado. Tente novamente em instantes."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Health Connect não conseguiu guardar o relatório, por isso nada foi alterado. Tente novamente daqui a pouco."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect nu a putut salva raportul, așa că nu s-a schimbat nimic. Încearcă din nou peste puțin timp."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect не смог сохранить отчёт, поэтому ничего не изменилось. Повторите попытку чуть позже."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect nemohol správu uložiť, takže sa nič nezmenilo. Skúste to o chvíľu znova."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect kunde inte spara rapporten, så inget har ändrats. Försök igen om en stund."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect raporu kaydedemedi, bu yüzden hiçbir şey değişmedi. Birazdan tekrar deneyin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect не зміг зберегти звіт, тому нічого не змінилося. Спробуйте ще раз трохи згодом."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect 无法保存报告，因此未作任何更改。请稍后重试。"
+          }
+        }
+      }
+    },
+    "The report couldn't be saved on this device, so nothing was changed. Check the free storage and try again." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отчетът не можа да се запази на това устройство, затова нищо не е променено. Проверете свободното място и опитайте отново."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'informe no s'ha pogut desar en aquest dispositiu, de manera que no s'ha canviat res. Comprova l'espai lliure i torna-ho a provar."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protokol se nepodařilo uložit do tohoto zařízení, takže se nic nezměnilo. Zkontrolujte volné místo a zkuste to znovu."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapporten kunne ikke gemmes på denne enhed, så intet er ændret. Tjek den ledige plads, og prøv igen."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Bericht konnte auf diesem Gerät nicht gespeichert werden, daher wurde nichts geändert. Prüfe den freien Speicher und versuche es noch einmal."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Δεν ήταν δυνατή η αποθήκευση της αναφοράς σε αυτή τη συσκευή, οπότε δεν άλλαξε τίποτα. Ελέγξτε τον ελεύθερο χώρο και δοκιμάστε ξανά."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El informe no se ha podido guardar en este dispositivo, así que no ha cambiado nada. Comprueba el espacio libre e inténtalo de nuevo."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raporttia ei voitu tallentaa tälle laitteelle, joten mitään ei muutettu. Tarkista vapaa tila ja yritä uudelleen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le rapport n'a pas pu être enregistré sur cet appareil : rien n'a été modifié. Vérifiez l'espace libre et réessayez."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Izvješće nije moguće spremiti na ovaj uređaj pa ništa nije promijenjeno. Provjerite slobodan prostor i pokušajte ponovno."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A jelentést nem sikerült menteni erre az eszközre, ezért semmi sem változott. Ellenőrizd a szabad tárhelyet, és próbáld újra."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il referto non può essere salvato su questo dispositivo, quindi non è stato modificato nulla. Controlla lo spazio libero e riprova."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このデバイスにレポートを保存できなかったため、何も変更されていません。空き容量を確認して、もう一度お試しください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het rapport kon niet op dit apparaat worden bewaard, dus er is niets gewijzigd. Controleer de vrije opslag en probeer het opnieuw."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie udało się zapisać raportu na tym urządzeniu, więc nic nie zostało zmienione. Sprawdź wolne miejsce i spróbuj ponownie."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível salvar o relatório neste dispositivo, então nada foi alterado. Verifique o espaço livre e tente novamente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível guardar o relatório neste dispositivo, por isso nada foi alterado. Verifique o espaço livre e tente novamente."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raportul nu a putut fi salvat pe acest dispozitiv, așa că nu s-a schimbat nimic. Verifică spațiul liber și încearcă din nou."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось сохранить отчёт на этом устройстве, поэтому ничего не изменилось. Проверьте свободное место и повторите попытку."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Správu sa nepodarilo uložiť do tohto zariadenia, takže sa nič nezmenilo. Skontrolujte voľné miesto a skúste to znova."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapporten kunde inte sparas på den här enheten, så inget har ändrats. Kontrollera det lediga utrymmet och försök igen."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapor bu cihaza kaydedilemedi, bu yüzden hiçbir şey değişmedi. Boş alanı kontrol edip tekrar deneyin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не вдалося зберегти звіт на цьому пристрої, тому нічого не змінилося. Перевірте вільне місце та спробуйте ще раз."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法在此设备上保存报告，因此未作任何更改。请检查可用存储空间后重试。"
+          }
+        }
+      }
+    },
+    "Some values couldn't be prepared for saving, so nothing was changed. Try again in a moment." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Някои стойности не можаха да се подготвят за запазване, затова нищо не е променено. Опитайте отново след малко."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alguns valors no s'han pogut preparar per desar-los, de manera que no s'ha canviat res. Torna-ho a provar d'aquí a una estona."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Některé hodnoty se nepodařilo připravit k uložení, takže se nic nezměnilo. Zkuste to za chvíli znovu."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nogle værdier kunne ikke klargøres til at blive gemt, så intet er ændret. Prøv igen om lidt."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einige Werte konnten nicht zum Speichern vorbereitet werden, daher wurde nichts geändert. Versuche es gleich noch einmal."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ορισμένες τιμές δεν ήταν δυνατό να προετοιμαστούν για αποθήκευση, οπότε δεν άλλαξε τίποτα. Δοκιμάστε ξανά σε λίγο."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Algunos valores no se han podido preparar para guardarlos, así que no ha cambiado nada. Inténtalo de nuevo en un momento."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Joitakin arvoja ei voitu valmistella tallennettaviksi, joten mitään ei muutettu. Yritä hetken kuluttua uudelleen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Certaines valeurs n'ont pas pu être préparées pour l'enregistrement : rien n'a été modifié. Réessayez dans un instant."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neke vrijednosti nije moguće pripremiti za spremanje pa ništa nije promijenjeno. Pokušajte ponovno za trenutak."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Néhány értéket nem sikerült előkészíteni a mentésre, ezért semmi sem változott. Próbáld újra egy kis idő múlva."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alcuni valori non possono essere preparati per il salvataggio, quindi non è stato modificato nulla. Riprova tra poco."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一部の値を保存用に準備できなかったため、何も変更されていません。しばらくしてからもう一度お試しください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sommige waarden konden niet worden voorbereid om te bewaren, dus er is niets gewijzigd. Probeer het zo meteen opnieuw."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie udało się przygotować niektórych wartości do zapisania, więc nic nie zostało zmienione. Spróbuj ponownie za chwilę."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível preparar alguns valores para salvar, então nada foi alterado. Tente novamente em instantes."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível preparar alguns valores para guardar, por isso nada foi alterado. Tente novamente daqui a pouco."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unele valori nu au putut fi pregătite pentru salvare, așa că nu s-a schimbat nimic. Încearcă din nou peste puțin timp."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось подготовить некоторые значения к сохранению, поэтому ничего не изменилось. Повторите попытку чуть позже."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niektoré hodnoty sa nepodarilo pripraviť na uloženie, takže sa nič nezmenilo. Skúste to o chvíľu znova."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vissa värden kunde inte förberedas för att sparas, så inget har ändrats. Försök igen om en stund."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bazı değerler kaydetmeye hazırlanamadı, bu yüzden hiçbir şey değişmedi. Birazdan tekrar deneyin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не вдалося підготувати деякі значення до збереження, тому нічого не змінилося. Спробуйте ще раз трохи згодом."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分数值无法准备保存，因此未作任何更改。请稍后重试。"
+          }
+        }
+      }
+    },
+    "The updated report was saved, but values you removed couldn't be deleted yet. Edit the report to remove them again." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Актуализираният отчет е запазен, но премахнатите от вас стойности още не могат да се изтрият. Редактирайте отчета, за да ги премахнете отново."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'informe actualitzat s'ha desat, però els valors que has tret encara no s'han pogut eliminar. Edita l'informe per tornar-los a treure."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktualizovaný protokol byl uložen, ale odebrané hodnoty se zatím nepodařilo smazat. Upravte protokol a odeberte je znovu."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den opdaterede rapport er gemt, men de værdier, du fjernede, kunne ikke slettes endnu. Rediger rapporten for at fjerne dem igen."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der aktualisierte Bericht wurde gespeichert, aber die entfernten Werte konnten noch nicht gelöscht werden. Bearbeite den Bericht, um sie erneut zu entfernen."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Η ενημερωμένη αναφορά αποθηκεύτηκε, αλλά οι τιμές που αφαιρέσατε δεν ήταν δυνατό να διαγραφούν ακόμη. Επεξεργαστείτε την αναφορά για να τις αφαιρέσετε ξανά."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El informe actualizado se ha guardado, pero los valores que quitaste aún no se han podido eliminar. Edita el informe para volver a quitarlos."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Päivitetty raportti tallennettiin, mutta poistamiasi arvoja ei vielä voitu poistaa. Muokkaa raporttia ja poista ne uudelleen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le rapport mis à jour a été enregistré, mais les valeurs retirées n'ont pas encore pu être supprimées. Modifiez le rapport pour les retirer à nouveau."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ažurirano izvješće je spremljeno, ali uklonjene vrijednosti još nije moguće izbrisati. Uredite izvješće kako biste ih ponovno uklonili."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A frissített jelentés mentve, de az eltávolított értékeket még nem sikerült törölni. Szerkeszd a jelentést, és távolítsd el őket újra."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il referto aggiornato è stato salvato, ma i valori rimossi non possono ancora essere eliminati. Modifica il referto per rimuoverli di nuovo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新したレポートは保存されましたが、削除した値はまだ削除できていません。レポートを編集して、もう一度削除してください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het bijgewerkte rapport is bewaard, maar de waarden die je hebt verwijderd konden nog niet worden gewist. Bewerk het rapport om ze opnieuw te verwijderen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zaktualizowany raport został zapisany, ale usuniętych wartości nie udało się jeszcze skasować. Edytuj raport, aby usunąć je ponownie."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O relatório atualizado foi salvo, mas os valores removidos ainda não puderam ser apagados. Edite o relatório para removê-los novamente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O relatório atualizado foi guardado, mas os valores removidos ainda não puderam ser apagados. Edite o relatório para os remover novamente."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raportul actualizat a fost salvat, dar valorile eliminate nu au putut fi șterse încă. Editează raportul ca să le elimini din nou."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Обновлённый отчёт сохранён, но удалённые вами значения пока не удалось стереть. Отредактируйте отчёт, чтобы удалить их снова."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktualizovaná správa bola uložená, ale odstránené hodnoty sa zatiaľ nepodarilo vymazať. Upravte správu a odstráňte ich znova."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den uppdaterade rapporten har sparats, men värdena du tog bort kunde inte raderas ännu. Redigera rapporten för att ta bort dem igen."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Güncellenen rapor kaydedildi ancak kaldırdığınız değerler henüz silinemedi. Onları tekrar kaldırmak için raporu düzenleyin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Оновлений звіт збережено, але вилучені вами значення поки не вдалося стерти. Відредагуйте звіт, щоб вилучити їх знову."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新后的报告已保存，但你移除的数值暂时无法删除。请编辑报告再次移除。"
+          }
+        }
+      }
+    },
+    "Couldn't connect to Health Connect. Your reports stay in LabImporter. Try again in Settings." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Неуспешно свързване с Health Connect. Отчетите остават в LabImporter. Опитайте отново в Настройки."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No s'ha pogut connectar amb Health Connect. Els informes es queden a LabImporter. Torna-ho a provar a Ajustaments."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "K Health Connect se nepodařilo připojit. Protokoly zůstávají v LabImporteru. Zkuste to znovu v Nastavení."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der kunne ikke oprettes forbindelse til Health Connect. Dine rapporter bliver i LabImporter. Prøv igen under Indstillinger."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbindung zu Health Connect fehlgeschlagen. Deine Berichte bleiben in LabImporter. Versuche es in den Einstellungen noch einmal."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Δεν ήταν δυνατή η σύνδεση με το Health Connect. Οι αναφορές σας παραμένουν στο LabImporter. Δοκιμάστε ξανά στις Ρυθμίσεις."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido conectar con Health Connect. Tus informes siguen en LabImporter. Inténtalo de nuevo en Ajustes."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yhteyttä Health Connectiin ei voitu muodostaa. Raporttisi säilyvät LabImporterissa. Yritä uudelleen asetuksissa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de se connecter à Health Connect. Vos rapports restent dans LabImporter. Réessayez dans les Réglages."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Povezivanje s Health Connectom nije uspjelo. Izvješća ostaju u LabImporteru. Pokušajte ponovno u Postavkama."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nem sikerült csatlakozni a Health Connecthez. A jelentéseid a LabImporterben maradnak. Próbáld újra a Beállításokban."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossibile connettersi a Health Connect. I referti restano in LabImporter. Riprova in Impostazioni."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ヘルスコネクトに接続できませんでした。レポートはLabImporterに残ります。設定からもう一度お試しください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kan geen verbinding maken met Health Connect. Je rapporten blijven in LabImporter. Probeer het opnieuw via Instellingen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie udało się połączyć z Health Connect. Raporty pozostają w LabImporterze. Spróbuj ponownie w Ustawieniach."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível conectar ao Health Connect. Seus relatórios continuam no LabImporter. Tente novamente em Ajustes."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível ligar ao Health Connect. Os relatórios permanecem no LabImporter. Tente novamente nos Ajustes."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectarea la Health Connect nu a reușit. Rapoartele tale rămân în LabImporter. Încearcă din nou în Configurări."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось подключиться к Health Connect. Отчёты остаются в LabImporter. Повторите попытку в настройках."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "K Health Connect sa nepodarilo pripojiť. Správy zostávajú v LabImporteri. Skúste to znova v Nastaveniach."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Det gick inte att ansluta till Health Connect. Dina rapporter finns kvar i LabImporter. Försök igen i Inställningar."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect'e bağlanılamadı. Raporlarınız LabImporter'da kalır. Ayarlar'dan tekrar deneyin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не вдалося підключитися до Health Connect. Звіти залишаються в LabImporter. Спробуйте ще раз у налаштуваннях."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法连接到 Health Connect。报告仍保留在 LabImporter 中。请在设置中重试。"
+          }
+        }
+      }
+    },
+    "New reports: %1$lld · Already present: %2$lld · Not saved: %3$lld" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нови отчети: %1$lld · Вече налични: %2$lld · Незапазени: %3$lld"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informes nous: %1$lld · Ja presents: %2$lld · No desats: %3$lld"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nové protokoly: %1$lld · Již přítomné: %2$lld · Neuložené: %3$lld"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nye rapporter: %1$lld · Findes allerede: %2$lld · Ikke gemt: %3$lld"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neue Berichte: %1$lld · Bereits vorhanden: %2$lld · Nicht gespeichert: %3$lld"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Νέες αναφορές: %1$lld · Υπάρχουν ήδη: %2$lld · Δεν αποθηκεύτηκαν: %3$lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informes nuevos: %1$lld · Ya presentes: %2$lld · No guardados: %3$lld"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uudet raportit: %1$lld · Jo olemassa: %2$lld · Ei tallennettu: %3$lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nouveaux rapports : %1$lld · Déjà présents : %2$lld · Non enregistrés : %3$lld"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nova izvješća: %1$lld · Već postoje: %2$lld · Nije spremljeno: %3$lld"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Új jelentések: %1$lld · Már megvan: %2$lld · Nincs mentve: %3$lld"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nuovi referti: %1$lld · Già presenti: %2$lld · Non salvati: %3$lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新しいレポート：%1$lld件 · 既存：%2$lld件 · 未保存：%3$lld件"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nieuwe rapporten: %1$lld · Al aanwezig: %2$lld · Niet bewaard: %3$lld"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nowe raporty: %1$lld · Już istnieją: %2$lld · Niezapisane: %3$lld"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relatórios novos: %1$lld · Já presentes: %2$lld · Não salvos: %3$lld"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relatórios novos: %1$lld · Já presentes: %2$lld · Não guardados: %3$lld"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapoarte noi: %1$lld · Deja prezente: %2$lld · Nesalvate: %3$lld"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новые отчёты: %1$lld · Уже есть: %2$lld · Не сохранено: %3$lld"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nové správy: %1$lld · Už existujú: %2$lld · Neuložené: %3$lld"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nya rapporter: %1$lld · Finns redan: %2$lld · Inte sparade: %3$lld"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeni raporlar: %1$lld · Zaten mevcut: %2$lld · Kaydedilmedi: %3$lld"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нові звіти: %1$lld · Уже є: %2$lld · Не збережено: %3$lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新报告：%1$lld · 已存在：%2$lld · 未保存：%3$lld"
+          }
+        }
+      }
+    },
+    "Your saved reports can't be read right now, so nothing was imported. Try again in a moment." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запазените отчети не могат да се прочетат в момента, затова нищо не е импортирано. Опитайте отново след малко."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ara mateix no es poden llegir els informes desats, de manera que no s'ha importat res. Torna-ho a provar d'aquí a una estona."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uložené protokoly teď nelze přečíst, takže se nic neimportovalo. Zkuste to za chvíli znovu."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dine gemte rapporter kan ikke læses lige nu, så intet er importeret. Prøv igen om lidt."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine gespeicherten Berichte können gerade nicht gelesen werden, daher wurde nichts importiert. Versuche es gleich noch einmal."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Δεν είναι δυνατή η ανάγνωση των αποθηκευμένων αναφορών σας αυτή τη στιγμή, οπότε δεν εισήχθη τίποτα. Δοκιμάστε ξανά σε λίγο."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tus informes guardados no se pueden leer ahora mismo, así que no se ha importado nada. Inténtalo de nuevo en un momento."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tallennettuja raporttejasi ei voi lukea juuri nyt, joten mitään ei tuotu. Yritä hetken kuluttua uudelleen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vos rapports enregistrés ne peuvent pas être lus pour le moment : rien n'a été importé. Réessayez dans un instant."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spremljena izvješća trenutačno se ne mogu pročitati pa ništa nije uvezeno. Pokušajte ponovno za trenutak."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A mentett jelentéseid most nem olvashatók, ezért semmi sem lett importálva. Próbáld újra egy kis idő múlva."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al momento i referti salvati non possono essere letti, quindi non è stato importato nulla. Riprova tra poco."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存済みのレポートを現在読み取れないため、何も読み込まれませんでした。しばらくしてからもう一度お試しください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je bewaarde rapporten kunnen nu niet worden gelezen, dus er is niets geïmporteerd. Probeer het zo meteen opnieuw."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zapisanych raportów nie można teraz odczytać, więc nic nie zostało zaimportowane. Spróbuj ponownie za chwilę."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seus relatórios salvos não podem ser lidos agora, então nada foi importado. Tente novamente em instantes."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os relatórios guardados não podem ser lidos neste momento, por isso nada foi importado. Tente novamente daqui a pouco."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapoartele salvate nu pot fi citite acum, așa că nu s-a importat nimic. Încearcă din nou peste puțin timp."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранённые отчёты сейчас не удаётся прочитать, поэтому ничего не импортировано. Повторите попытку чуть позже."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uložené správy sa teraz nedajú prečítať, takže sa nič neimportovalo. Skúste to o chvíľu znova."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dina sparade rapporter kan inte läsas just nu, så inget har importerats. Försök igen om en stund."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kayıtlı raporlarınız şu anda okunamıyor, bu yüzden hiçbir şey içe aktarılmadı. Birazdan tekrar deneyin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Збережені звіти зараз не вдається прочитати, тому нічого не імпортовано. Спробуйте ще раз трохи згодом."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目前无法读取已保存的报告，因此未导入任何内容。请稍后重试。"
           }
         }
       }

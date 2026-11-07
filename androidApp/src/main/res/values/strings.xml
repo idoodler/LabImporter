@@ -159,7 +159,10 @@
     <string name="model_ready_text">LabImporter can now read your lab reports, entirely on this phone.</string>
     <string name="model_failed_title">AI Model Not Downloaded</string>
     <string name="error_scanner">Document scanning isn\'t available on this device.</string>
-    <string name="error_save">Saving failed: %1$s</string>
+    <string name="error_save_health_connect">Health Connect couldn\'t save the report, so nothing was changed. Try again in a moment.</string>
+    <string name="error_save_storage">The report couldn\'t be saved on this device, so nothing was changed. Check the free storage and try again.</string>
+    <string name="error_save_values">Some values couldn\'t be prepared for saving, so nothing was changed. Try again in a moment.</string>
+    <string name="save_leftovers_warning">The updated report was saved, but values you removed couldn\'t be deleted yet. Edit the report to remove them again.</string>
 
     <!-- Review -->
     <string name="review_title">Review Values</string>
@@ -175,6 +178,20 @@
     <string name="loinc_suggested">Suggested: %1$s</string>
     <string name="loinc_duplicate">Duplicate: %1$s</string>
     <string name="engine_gemini" translatable="false">Gemini Nano</string>
+    <string name="compare_with_report">Compare with report</string>
+    <string name="compare_with_report_detail">This value wasn\'t found in the report text. Compare it with your report.</string>
+    <plurals name="values_to_check">
+        <item quantity="one">%d value to check</item>
+        <item quantity="other">%d values to check</item>
+    </plurals>
+    <plurals name="values_to_correct">
+        <item quantity="one">%d value to correct</item>
+        <item quantity="other">%d values to correct</item>
+    </plurals>
+    <string name="correct_or_deselect">Can\'t be saved as written. Correct or deselect it.</string>
+    <string name="no_date_found">No date found in the report. Check that this date is right.</string>
+    <string name="patient_and_lab">Patient and Lab</string>
+    <string name="not_filled_in">Not filled in</string>
     <plurals name="exportable_count">
         <item quantity="one">%1$d of %2$d values ready to save</item>
         <item quantity="other">%1$d of %2$d values ready to save</item>
@@ -222,6 +239,11 @@
     <string name="ai_available">Ready. Reports are read by Gemini Nano, entirely on this device.</string>
     <string name="ai_checking">Checking…</string>
     <string name="try_again">Try Again</string>
+    <string name="reports_load_failed_title">Couldn\'t Load Your Reports</string>
+    <string name="reports_load_failed_message">Your saved reports weren\'t changed, but they can\'t be read right now.</string>
+    <string name="reports_unreadable_title">Some Reports Can\'t Be Read</string>
+    <string name="reports_unreadable_message">Reports that can\'t be read: %1$d. They stay on this device and weren\'t deleted.</string>
+    <string name="hc_connect_failed">Couldn\'t connect to Health Connect. Your reports stay in LabImporter. Try again in Settings.</string>
     <!-- Transfer (iPhone ⇄ Android) -->
     <string name="transfer_title">Transfer</string>
     <string name="transfer_export">Export All Reports</string>
@@ -230,6 +252,8 @@
     <string name="transfer_import_detail">From a LabImporter file exported on iPhone or Android. Reports that are already here are skipped.</string>
     <string name="transfer_unsupported">This file doesn\'t contain LabImporter reports.</string>
     <string name="transfer_summary">New reports: %1$d · Already present: %2$d</string>
+    <string name="transfer_summary_failed">New reports: %1$d · Already present: %2$d · Not saved: %3$d</string>
+    <string name="transfer_reports_unreadable">Your saved reports can\'t be read right now, so nothing was imported. Try again in a moment.</string>
     <string name="privacy_title">Private by Design</string>
     <string name="privacy_message">Everything runs on-device. LabImporter never transmits your lab data.</string>
     <string name="loinc_catalog">LOINC catalog</string>

@@ -145,7 +145,10 @@
     <string name="model_ready_text">LabImporter teď může číst vaše laboratorní protokoly, výhradně v tomto telefonu.</string>
     <string name="model_failed_title">Model AI se nestáhl</string>
     <string name="error_scanner">Skenování dokumentů není na tomto zařízení k dispozici.</string>
-    <string name="error_save">Uložení se nezdařilo: %1$s</string>
+    <string name="error_save_health_connect">Health Connect nemohl protokol uložit, takže se nic nezměnilo. Zkuste to za chvíli znovu.</string>
+    <string name="error_save_storage">Protokol se nepodařilo uložit do tohoto zařízení, takže se nic nezměnilo. Zkontrolujte volné místo a zkuste to znovu.</string>
+    <string name="error_save_values">Některé hodnoty se nepodařilo připravit k uložení, takže se nic nezměnilo. Zkuste to za chvíli znovu.</string>
+    <string name="save_leftovers_warning">Aktualizovaný protokol byl uložen, ale odebrané hodnoty se zatím nepodařilo smazat. Upravte protokol a odeberte je znovu.</string>
     <string name="review_title">Zkontrolovat hodnoty</string>
     <string name="edit_report">Upravit protokol</string>
     <string name="lab_or_doctor">Laboratoř / lékař</string>
@@ -158,6 +161,24 @@
     <string name="search_loinc">Hledat laboratorní vyšetření</string>
     <string name="loinc_suggested">Návrh: %1$s</string>
     <string name="loinc_duplicate">Duplicita: %1$s</string>
+    <string name="compare_with_report">Porovnejte s protokolem</string>
+    <string name="compare_with_report_detail">Tato hodnota nebyla v textu protokolu nalezena. Porovnejte ji se svým protokolem.</string>
+    <plurals name="values_to_check">
+        <item quantity="one">%d hodnota ke kontrole</item>
+        <item quantity="few">%d hodnoty ke kontrole</item>
+        <item quantity="many">%d hodnoty ke kontrole</item>
+        <item quantity="other">%d hodnot ke kontrole</item>
+    </plurals>
+    <plurals name="values_to_correct">
+        <item quantity="one">%d hodnota k opravě</item>
+        <item quantity="few">%d hodnoty k opravě</item>
+        <item quantity="many">%d hodnoty k opravě</item>
+        <item quantity="other">%d hodnot k opravě</item>
+    </plurals>
+    <string name="correct_or_deselect">Takto zapsanou hodnotu nelze uložit. Opravte ji nebo zrušte její výběr.</string>
+    <string name="no_date_found">V protokolu nebylo nalezeno datum. Zkontrolujte, zda je toto datum správné.</string>
+    <string name="patient_and_lab">Pacient a laboratoř</string>
+    <string name="not_filled_in">Nevyplněno</string>
     <plurals name="exportable_count">
         <item quantity="other">Připraveno k uložení: %1$d z %2$d</item>
         <item quantity="one">Připraveno k uložení: %1$d z %2$d</item>
@@ -205,6 +226,11 @@
     <string name="ai_available">Připraveno. Protokoly čte Gemini Nano výhradně v tomto zařízení.</string>
     <string name="ai_checking">Kontrola…</string>
     <string name="try_again">Zkusit znovu</string>
+    <string name="reports_load_failed_title">Protokoly se nepodařilo načíst</string>
+    <string name="reports_load_failed_message">Uložené protokoly se nezměnily, ale momentálně je nelze přečíst.</string>
+    <string name="reports_unreadable_title">Některé protokoly nelze přečíst</string>
+    <string name="reports_unreadable_message">Protokoly, které nelze přečíst: %1$d. Zůstávají v tomto zařízení a nebyly smazány.</string>
+    <string name="hc_connect_failed">K Health Connect se nepodařilo připojit. Protokoly zůstávají v LabImporteru. Zkuste to znovu v Nastavení.</string>
     <string name="transfer_title">Přenos</string>
     <string name="transfer_export">Exportovat všechny protokoly</string>
     <string name="transfer_export_detail">Uložte všechny protokoly do jednoho souboru, například pro přenos do jiného telefonu.</string>
@@ -212,6 +238,8 @@
     <string name="transfer_import_detail">Ze souboru LabImporteru exportovaného na iPhonu nebo Androidu. Protokoly, které tu už jsou, se přeskočí.</string>
     <string name="transfer_unsupported">Tento soubor neobsahuje protokoly z LabImporteru.</string>
     <string name="transfer_summary">Nové protokoly: %1$d · Již existující: %2$d</string>
+    <string name="transfer_summary_failed">Nové protokoly: %1$d · Již přítomné: %2$d · Neuložené: %3$d</string>
+    <string name="transfer_reports_unreadable">Uložené protokoly teď nelze přečíst, takže se nic neimportovalo. Zkuste to za chvíli znovu.</string>
     <string name="privacy_title">Soukromí v základu</string>
     <string name="privacy_message">Vše běží na zařízení. LabImporter nikdy nepřenáší vaše laboratorní data.</string>
     <string name="loinc_catalog">Katalog LOINC</string>

@@ -4,7 +4,8 @@ import Foundation
 /// A stand-in for the on-device model, for the simulator and tests (which
 /// have none): a Function Health–style report and a "model" that reads its
 /// rows the way the real one does — copying the status label ("In Range· "),
-/// a flag ("4.5 *") and a section heading along with the values. Everything
+/// a flag ("4.5 *") and a section heading along with the values, and misreading
+/// a digit (glucose 92 as 922). Everything
 /// after the model (the shared post-processing, LOINC resolution, review,
 /// export) runs for real. Never part of a release build.
 enum StandInReport {
@@ -25,6 +26,8 @@ enum StandInReport {
         // A section heading the model reads as a test: it must never be saved.
         row("HEPATITIS PANEL", "NON-REACTIVE", "", printedValue: ""),
         row("Hepatitis B Surface Antigen", "NON-REACTIVE", ""),
+        // A digit the model got wrong: the report text doesn't print 922, so review flags it.
+        row("Glucose", "922", "mg/dL", printedValue: "92"),
     ]
 
     /// The report, long enough to be read in more than one part.
@@ -42,7 +45,7 @@ enum StandInReport {
         let entries = rows.filter { part.contains($0.key) }.map(\.entry)
         onProgress(ParseProgress(entryCount: entries.count, latestName: entries.last?.name))
         return AILabReport(
-            entries: entries, reportDate: "2026-08-12", patientName: "Jane Roe",
+            entries: entries, reportDate: ScreenshotMode.readsNoDate ? "" : "2026-08-12", patientName: "Jane Roe",
             authorName: "Function Health", reportLanguage: "en"
         )
     }

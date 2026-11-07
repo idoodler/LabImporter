@@ -142,7 +142,10 @@
     <string name="model_ready_text">Ara LabImporter pot llegir els teus informes de laboratori, completament en aquest telèfon.</string>
     <string name="model_failed_title">No s\'ha baixat el model d\'IA</string>
     <string name="error_scanner">L\'escaneig de documents no està disponible en aquest dispositiu.</string>
-    <string name="error_save">No s\'ha pogut desar: %1$s</string>
+    <string name="error_save_health_connect">Health Connect no ha pogut desar l\'informe, de manera que no s\'ha canviat res. Torna-ho a provar d\'aquí a una estona.</string>
+    <string name="error_save_storage">L\'informe no s\'ha pogut desar en aquest dispositiu, de manera que no s\'ha canviat res. Comprova l\'espai lliure i torna-ho a provar.</string>
+    <string name="error_save_values">Alguns valors no s\'han pogut preparar per desar-los, de manera que no s\'ha canviat res. Torna-ho a provar d\'aquí a una estona.</string>
+    <string name="save_leftovers_warning">L\'informe actualitzat s\'ha desat, però els valors que has tret encara no s\'han pogut eliminar. Edita l\'informe per tornar-los a treure.</string>
     <string name="review_title">Revisa els valors</string>
     <string name="edit_report">Edita l\'informe</string>
     <string name="lab_or_doctor">Laboratori / Metge</string>
@@ -155,6 +158,22 @@
     <string name="search_loinc">Cerca proves de laboratori</string>
     <string name="loinc_suggested">Suggeriment: %1$s</string>
     <string name="loinc_duplicate">Duplicat: %1$s</string>
+    <string name="compare_with_report">Compara-ho amb l\'informe</string>
+    <string name="compare_with_report_detail">Aquest valor no s\'ha trobat al text de l\'informe. Compara\'l amb el teu informe.</string>
+    <plurals name="values_to_check">
+        <item quantity="one">%d valor per revisar</item>
+        <item quantity="other">%d valors per revisar</item>
+        <item quantity="many">%d valors per revisar</item>
+    </plurals>
+    <plurals name="values_to_correct">
+        <item quantity="one">%d valor per corregir</item>
+        <item quantity="other">%d valors per corregir</item>
+        <item quantity="many">%d valors per corregir</item>
+    </plurals>
+    <string name="correct_or_deselect">No es pot desar tal com està escrit. Corregeix-lo o desmarca\'l.</string>
+    <string name="no_date_found">No s\'ha trobat cap data a l\'informe. Comprova que aquesta data sigui correcta.</string>
+    <string name="patient_and_lab">Pacient i laboratori</string>
+    <string name="not_filled_in">Sense omplir</string>
     <plurals name="exportable_count">
         <item quantity="other">A punt per desar: %1$d de %2$d</item>
         <item quantity="one">A punt per desar: %1$d de %2$d</item>
@@ -199,6 +218,11 @@
     <string name="ai_available">A punt. El Gemini Nano llegeix els informes completament en aquest dispositiu.</string>
     <string name="ai_checking">S\'està comprovant…</string>
     <string name="try_again">Torna-ho a provar</string>
+    <string name="reports_load_failed_title">No s\'han pogut carregar els informes</string>
+    <string name="reports_load_failed_message">Els informes desats no han canviat, però ara mateix no es poden llegir.</string>
+    <string name="reports_unreadable_title">Alguns informes no es poden llegir</string>
+    <string name="reports_unreadable_message">Informes que no es poden llegir: %1$d. Es queden en aquest dispositiu i no s\'han eliminat.</string>
+    <string name="hc_connect_failed">No s\'ha pogut connectar amb Health Connect. Els informes es queden a LabImporter. Torna-ho a provar a Ajustaments.</string>
     <string name="transfer_title">Transferència</string>
     <string name="transfer_export">Exporta tots els informes</string>
     <string name="transfer_export_detail">Desa tots els informes en un sol fitxer, per exemple per moure\'ls a un altre telèfon.</string>
@@ -206,6 +230,8 @@
     <string name="transfer_import_detail">Des d\'un fitxer del LabImporter exportat en un iPhone o un Android. Els informes que ja hi són s\'ometen.</string>
     <string name="transfer_unsupported">Aquest fitxer no conté informes de LabImporter.</string>
     <string name="transfer_summary">Informes nous: %1$d · Ja presents: %2$d</string>
+    <string name="transfer_summary_failed">Informes nous: %1$d · Ja presents: %2$d · No desats: %3$d</string>
+    <string name="transfer_reports_unreadable">Ara mateix no es poden llegir els informes desats, de manera que no s\'ha importat res. Torna-ho a provar d\'aquí a una estona.</string>
     <string name="privacy_title">Privat per disseny</string>
     <string name="privacy_message">Tot s\'executa al dispositiu. LabImporter no transmet mai les teves dades de laboratori.</string>
     <string name="loinc_catalog">Catàleg LOINC</string>

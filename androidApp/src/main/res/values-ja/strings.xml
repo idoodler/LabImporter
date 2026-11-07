@@ -136,7 +136,10 @@
     <string name="model_ready_text">LabImporterで検査レポートを読み取れるようになりました。処理はすべてこのスマートフォン上で行われます。</string>
     <string name="model_failed_title">AIモデルをダウンロードできませんでした</string>
     <string name="error_scanner">このデバイスでは書類のスキャンを利用できません。</string>
-    <string name="error_save">保存に失敗しました：%1$s</string>
+    <string name="error_save_health_connect">ヘルスコネクトがレポートを保存できなかったため、何も変更されていません。しばらくしてからもう一度お試しください。</string>
+    <string name="error_save_storage">このデバイスにレポートを保存できなかったため、何も変更されていません。空き容量を確認して、もう一度お試しください。</string>
+    <string name="error_save_values">一部の値を保存用に準備できなかったため、何も変更されていません。しばらくしてからもう一度お試しください。</string>
+    <string name="save_leftovers_warning">更新したレポートは保存されましたが、削除した値はまだ削除できていません。レポートを編集して、もう一度削除してください。</string>
     <string name="review_title">値を確認</string>
     <string name="edit_report">レポートを編集</string>
     <string name="lab_or_doctor">検査機関 / 医師</string>
@@ -149,6 +152,18 @@
     <string name="search_loinc">検査項目を検索</string>
     <string name="loinc_suggested">候補：%1$s</string>
     <string name="loinc_duplicate">重複：%1$s</string>
+    <string name="compare_with_report">レポートと照合してください</string>
+    <string name="compare_with_report_detail">この値はレポートの本文に見つかりませんでした。レポートと照合してください。</string>
+    <plurals name="values_to_check">
+        <item quantity="other">確認する値: %d件</item>
+    </plurals>
+    <plurals name="values_to_correct">
+        <item quantity="other">修正する値: %d件</item>
+    </plurals>
+    <string name="correct_or_deselect">この形式では保存できません。修正するか、選択を解除してください。</string>
+    <string name="no_date_found">レポートに日付が見つかりませんでした。この日付が正しいか確認してください。</string>
+    <string name="patient_and_lab">患者と検査機関</string>
+    <string name="not_filled_in">未入力</string>
     <plurals name="exportable_count">
         <item quantity="other">保存可能：%2$d件中%1$d件</item>
     </plurals>
@@ -187,6 +202,11 @@
     <string name="ai_available">準備完了。レポートはGemini Nanoによって、すべてこのデバイス上で読み取られます。</string>
     <string name="ai_checking">確認中…</string>
     <string name="try_again">もう一度試す</string>
+    <string name="reports_load_failed_title">レポートを読み込めませんでした</string>
+    <string name="reports_load_failed_message">保存済みのレポートは変更されていませんが、現在は読み取れません。</string>
+    <string name="reports_unreadable_title">読み取れないレポートがあります</string>
+    <string name="reports_unreadable_message">読み取れないレポート：%1$d件。このデバイスに残っており、削除されていません。</string>
+    <string name="hc_connect_failed">ヘルスコネクトに接続できませんでした。レポートはLabImporterに残ります。設定からもう一度お試しください。</string>
     <string name="transfer_title">転送</string>
     <string name="transfer_export">すべてのレポートを書き出す</string>
     <string name="transfer_export_detail">すべてのレポートを1つのファイルに保存します（別のスマートフォンへの移行などに）。</string>
@@ -194,6 +214,8 @@
     <string name="transfer_import_detail">iPhoneまたはAndroidで書き出したLabImporterのファイルから取り込みます。すでにあるレポートはスキップされます。</string>
     <string name="transfer_unsupported">このファイルにはLabImporterのレポートが含まれていません。</string>
     <string name="transfer_summary">新しいレポート：%1$d件 · 既存：%2$d件</string>
+    <string name="transfer_summary_failed">新しいレポート：%1$d件 · 既存：%2$d件 · 未保存：%3$d件</string>
+    <string name="transfer_reports_unreadable">保存済みのレポートを現在読み取れないため、何も読み込まれませんでした。しばらくしてからもう一度お試しください。</string>
     <string name="privacy_title">設計段階からプライバシーを重視</string>
     <string name="privacy_message">すべてデバイス上で処理されます。LabImporterが検査データを送信することはありません。</string>
     <string name="loinc_catalog">LOINCカタログ</string>

@@ -142,7 +142,10 @@
     <string name="model_ready_text">Ora LabImporter può leggere i tuoi referti di laboratorio, interamente su questo telefono.</string>
     <string name="model_failed_title">Modello di IA non scaricato</string>
     <string name="error_scanner">La scansione dei documenti non è disponibile su questo dispositivo.</string>
-    <string name="error_save">Salvataggio non riuscito: %1$s</string>
+    <string name="error_save_health_connect">Health Connect non ha potuto salvare il referto, quindi non è stato modificato nulla. Riprova tra poco.</string>
+    <string name="error_save_storage">Il referto non può essere salvato su questo dispositivo, quindi non è stato modificato nulla. Controlla lo spazio libero e riprova.</string>
+    <string name="error_save_values">Alcuni valori non possono essere preparati per il salvataggio, quindi non è stato modificato nulla. Riprova tra poco.</string>
+    <string name="save_leftovers_warning">Il referto aggiornato è stato salvato, ma i valori rimossi non possono ancora essere eliminati. Modifica il referto per rimuoverli di nuovo.</string>
     <string name="review_title">Controlla valori</string>
     <string name="edit_report">Modifica referto</string>
     <string name="lab_or_doctor">Lab / Medico</string>
@@ -155,6 +158,22 @@
     <string name="search_loinc">Cerca esami di laboratorio</string>
     <string name="loinc_suggested">Suggerimento: %1$s</string>
     <string name="loinc_duplicate">Duplicato: %1$s</string>
+    <string name="compare_with_report">Confronta con il referto</string>
+    <string name="compare_with_report_detail">Questo valore non è stato trovato nel testo del referto. Confrontalo con il tuo referto.</string>
+    <plurals name="values_to_check">
+        <item quantity="one">%d valore da controllare</item>
+        <item quantity="other">%d valori da controllare</item>
+        <item quantity="many">%d valori da controllare</item>
+    </plurals>
+    <plurals name="values_to_correct">
+        <item quantity="one">%d valore da correggere</item>
+        <item quantity="other">%d valori da correggere</item>
+        <item quantity="many">%d valori da correggere</item>
+    </plurals>
+    <string name="correct_or_deselect">Non può essere salvato così come è scritto. Correggilo o deselezionalo.</string>
+    <string name="no_date_found">Nessuna data trovata nel referto. Controlla che questa data sia corretta.</string>
+    <string name="patient_and_lab">Paziente e laboratorio</string>
+    <string name="not_filled_in">Non compilato</string>
     <plurals name="exportable_count">
         <item quantity="other">Pronti da salvare: %1$d di %2$d</item>
         <item quantity="one">Pronti da salvare: %1$d di %2$d</item>
@@ -199,6 +218,11 @@
     <string name="ai_available">Pronto. I referti vengono letti da Gemini Nano, interamente su questo dispositivo.</string>
     <string name="ai_checking">Verifica in corso…</string>
     <string name="try_again">Riprova</string>
+    <string name="reports_load_failed_title">Impossibile caricare i referti</string>
+    <string name="reports_load_failed_message">I referti salvati non sono stati modificati, ma al momento non possono essere letti.</string>
+    <string name="reports_unreadable_title">Alcuni referti non possono essere letti</string>
+    <string name="reports_unreadable_message">Referti che non possono essere letti: %1$d. Restano su questo dispositivo e non sono stati eliminati.</string>
+    <string name="hc_connect_failed">Impossibile connettersi a Health Connect. I referti restano in LabImporter. Riprova in Impostazioni.</string>
     <string name="transfer_title">Trasferimento</string>
     <string name="transfer_export">Esporta tutti i referti</string>
     <string name="transfer_export_detail">Salva tutti i referti in un unico file, ad esempio per spostarli su un altro telefono.</string>
@@ -206,6 +230,8 @@
     <string name="transfer_import_detail">Da un file di LabImporter esportato su iPhone o Android. I referti già presenti vengono saltati.</string>
     <string name="transfer_unsupported">Questo file non contiene referti di LabImporter.</string>
     <string name="transfer_summary">Nuovi referti: %1$d · Già presenti: %2$d</string>
+    <string name="transfer_summary_failed">Nuovi referti: %1$d · Già presenti: %2$d · Non salvati: %3$d</string>
+    <string name="transfer_reports_unreadable">Al momento i referti salvati non possono essere letti, quindi non è stato importato nulla. Riprova tra poco.</string>
     <string name="privacy_title">Privato per progettazione</string>
     <string name="privacy_message">Tutto avviene sul dispositivo. LabImporter non trasmette mai i tuoi dati di laboratorio.</string>
     <string name="loinc_catalog">Catalogo LOINC</string>

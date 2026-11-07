@@ -11,6 +11,8 @@ struct HomeView: View {
     @State private var importEngine = LabImportEngine()
     @State private var labValues: [LabValue] = []
     @State private var parsedReportDate: Date?
+    /// An import that found no date, unlike a manual report, which has none to find.
+    @State private var isParsedDateMissing = false
     @State private var parsedPatientName: String?
     @State private var parsedAuthorName: String?
     @State private var showReview = false
@@ -98,6 +100,7 @@ struct HomeView: View {
                 ReviewView(
                     labValues: labValues,
                     reportDate: parsedReportDate ?? Date(),
+                    isDateMissing: isParsedDateMissing,
                     extractedPatientName: parsedPatientName,
                     extractedAuthorName: parsedAuthorName
                 )
@@ -354,6 +357,7 @@ struct HomeView: View {
         importEngine.onParsed = { result in
             labValues = result.values
             parsedReportDate = result.reportDate
+            isParsedDateMissing = result.reportDate == nil
             parsedPatientName = result.patientName
             parsedAuthorName = result.authorName
             showReview = true
@@ -372,6 +376,7 @@ struct HomeView: View {
     private func createManually() {
         labValues = []
         parsedReportDate = nil
+        isParsedDateMissing = false
         parsedPatientName = nil
         parsedAuthorName = nil
         showReview = true

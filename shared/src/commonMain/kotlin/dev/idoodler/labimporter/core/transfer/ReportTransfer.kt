@@ -92,7 +92,7 @@ object ReportTransfer {
 
     /**
      * Content identity of a report: its date plus every reading (LOINC code,
-     * value at export precision or qualitative result, UCUM unit). Independent
+     * value at four significant digits as in older exports, or qualitative result; UCUM unit). Independent
      * of storage ids, patient/lab names and of how either platform spells units.
      */
     fun fingerprint(report: LabReport): String =

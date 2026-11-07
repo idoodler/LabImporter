@@ -145,7 +145,10 @@
     <string name="model_ready_text">LabImporter może teraz odczytywać Twoje wyniki badań, w całości na tym telefonie.</string>
     <string name="model_failed_title">Nie pobrano modelu AI</string>
     <string name="error_scanner">Skanowanie dokumentów nie jest dostępne na tym urządzeniu.</string>
-    <string name="error_save">Nie udało się zapisać: %1$s</string>
+    <string name="error_save_health_connect">Health Connect nie mógł zapisać raportu, więc nic nie zostało zmienione. Spróbuj ponownie za chwilę.</string>
+    <string name="error_save_storage">Nie udało się zapisać raportu na tym urządzeniu, więc nic nie zostało zmienione. Sprawdź wolne miejsce i spróbuj ponownie.</string>
+    <string name="error_save_values">Nie udało się przygotować niektórych wartości do zapisania, więc nic nie zostało zmienione. Spróbuj ponownie za chwilę.</string>
+    <string name="save_leftovers_warning">Zaktualizowany raport został zapisany, ale usuniętych wartości nie udało się jeszcze skasować. Edytuj raport, aby usunąć je ponownie.</string>
     <string name="review_title">Sprawdź wartości</string>
     <string name="edit_report">Edytuj raport</string>
     <string name="lab_or_doctor">Laboratorium / Lekarz</string>
@@ -158,6 +161,24 @@
     <string name="search_loinc">Szukaj badań</string>
     <string name="loinc_suggested">Propozycja: %1$s</string>
     <string name="loinc_duplicate">Duplikat: %1$s</string>
+    <string name="compare_with_report">Porównaj z raportem</string>
+    <string name="compare_with_report_detail">Tej wartości nie znaleziono w tekście raportu. Porównaj ją ze swoim raportem.</string>
+    <plurals name="values_to_check">
+        <item quantity="one">%d wartość do sprawdzenia</item>
+        <item quantity="few">%d wartości do sprawdzenia</item>
+        <item quantity="many">%d wartości do sprawdzenia</item>
+        <item quantity="other">%d wartości do sprawdzenia</item>
+    </plurals>
+    <plurals name="values_to_correct">
+        <item quantity="one">%d wartość do poprawienia</item>
+        <item quantity="few">%d wartości do poprawienia</item>
+        <item quantity="many">%d wartości do poprawienia</item>
+        <item quantity="other">%d wartości do poprawienia</item>
+    </plurals>
+    <string name="correct_or_deselect">Nie można zapisać w tej postaci. Popraw wartość lub usuń jej zaznaczenie.</string>
+    <string name="no_date_found">W raporcie nie znaleziono daty. Sprawdź, czy ta data jest poprawna.</string>
+    <string name="patient_and_lab">Pacjent i laboratorium</string>
+    <string name="not_filled_in">Nie wypełniono</string>
     <plurals name="exportable_count">
         <item quantity="other">Gotowe do zapisania: %1$d z %2$d</item>
         <item quantity="one">Gotowe do zapisania: %1$d z %2$d</item>
@@ -205,6 +226,11 @@
     <string name="ai_available">Gotowe. Raporty są odczytywane przez Gemini Nano w całości na tym urządzeniu.</string>
     <string name="ai_checking">Sprawdzanie…</string>
     <string name="try_again">Spróbuj ponownie</string>
+    <string name="reports_load_failed_title">Nie udało się wczytać raportów</string>
+    <string name="reports_load_failed_message">Zapisane raporty nie zostały zmienione, ale w tej chwili nie można ich odczytać.</string>
+    <string name="reports_unreadable_title">Niektórych raportów nie można odczytać</string>
+    <string name="reports_unreadable_message">Raporty, których nie można odczytać: %1$d. Pozostają na tym urządzeniu i nie zostały usunięte.</string>
+    <string name="hc_connect_failed">Nie udało się połączyć z Health Connect. Raporty pozostają w LabImporterze. Spróbuj ponownie w Ustawieniach.</string>
     <string name="transfer_title">Przenoszenie</string>
     <string name="transfer_export">Eksportuj wszystkie raporty</string>
     <string name="transfer_export_detail">Zapisz wszystkie raporty w jednym pliku, na przykład aby przenieść je na inny telefon.</string>
@@ -212,6 +238,8 @@
     <string name="transfer_import_detail">Z pliku LabImporter wyeksportowanego na iPhonie lub Androidzie. Raporty, które już tu są, zostaną pominięte.</string>
     <string name="transfer_unsupported">Ten plik nie zawiera raportów LabImporter.</string>
     <string name="transfer_summary">Nowe raporty: %1$d · Już istniejące: %2$d</string>
+    <string name="transfer_summary_failed">Nowe raporty: %1$d · Już istnieją: %2$d · Niezapisane: %3$d</string>
+    <string name="transfer_reports_unreadable">Zapisanych raportów nie można teraz odczytać, więc nic nie zostało zaimportowane. Spróbuj ponownie za chwilę.</string>
     <string name="privacy_title">Prywatność od podstaw</string>
     <string name="privacy_message">Wszystko dzieje się na urządzeniu. LabImporter nigdy nie wysyła Twoich danych laboratoryjnych.</string>
     <string name="loinc_catalog">Katalog LOINC</string>

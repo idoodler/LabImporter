@@ -1,6 +1,7 @@
 package dev.idoodler.labimporter.data
 
 import android.content.Context
+import android.util.Log
 import dev.idoodler.labimporter.core.LabReportStore
 import dev.idoodler.labimporter.core.export.FhirLabCodec
 import dev.idoodler.labimporter.core.model.LabReport
@@ -10,36 +11,96 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.io.FileOutputStream
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 
 /**
  * On-device fallback for devices without Health Connect Medical Records. Each
  * report is one file in app-private, no-backup storage holding exactly the
  * FHIR Observations that would be written to Health Connect, so switching
  * stores later is a straight copy.
+ *
+ * @param moveFile puts a finished temporary file in place; tests make it fail.
  */
-class LocalReportStore(context: Context, private val softwareIdentity: String) : LabReportStore {
+class LocalReportStore(
+    context: Context,
+    private val softwareIdentity: String,
+    private val moveFile: (File, File) -> Unit = ::replaceAtomically,
+) : LabReportStore {
     private val directory = File(context.noBackupFilesDir, "reports").apply { mkdirs() }
     private val serializer = ListSerializer(String.serializer())
 
+    @Volatile
+    override var unreadableReports = 0
+        private set
+
     override suspend fun loadReports(): List<LabReport> = withContext(Dispatchers.IO) {
-        val resources = directory.listFiles { f -> f.extension == "json" }.orEmpty().flatMap { file ->
-            runCatching { Json.decodeFromString(serializer, file.readText()) }.getOrDefault(emptyList())
+        val files = directory.listFiles { f -> f.extension == "json" }.orEmpty().map(::read)
+        unreadableReports = files.count { it == null }
+        files.filterNotNull().flatten()
+    }
+
+    /** The reports in [file], or null when it can't be read. It stays: a later version may read it. */
+    private fun read(file: File): List<LabReport>? {
+        val resources = try {
+            Json.decodeFromString(serializer, file.readText())
+        } catch (e: Exception) {
+            // Only the type: a parse error's message quotes the file, and that's a health record.
+            Log.w(TAG, "Couldn't read a saved report: ${e::class.simpleName}")
+            return null
         }
-        FhirLabCodec.decode(resources)
+        val reports = FhirLabCodec.decode(resources)
+        if (reports.sumOf { it.entries.size } < resources.size) {
+            // Showing what's left would let a move into Health Connect delete the rest.
+            Log.w(TAG, "Couldn't read every value of a saved report")
+            return null
+        }
+        return reports
     }
 
     override suspend fun save(report: LabReport) = withContext(Dispatchers.IO) {
-        val resources = FhirLabCodec.encode(report, softwareIdentity).map { it.json }
-        val tmp = File(directory, "${report.id}.json.tmp")
-        tmp.writeText(Json.encodeToString(serializer, resources))
-        tmp.renameTo(file(report))
-        Unit
+        val resources = FhirLabCodec.encodeForSaving(report, softwareIdentity).map { it.json }
+        val target = file(report)
+        val tmp = File(directory, "${target.name}.tmp")
+        try {
+            FileOutputStream(tmp).use { out ->
+                out.write(Json.encodeToString(serializer, resources).encodeToByteArray())
+                out.fd.sync() // On disk before it replaces the old version, or a power cut could leave neither.
+            }
+            moveFile(tmp, target)
+        } catch (e: Exception) {
+            tmp.delete()
+            throw e
+        }
     }
 
     override suspend fun delete(report: LabReport) = withContext(Dispatchers.IO) {
-        file(report).delete()
+        // Throws when the file stays, which File.delete() only hints at; a file already gone is deleted.
+        Files.deleteIfExists(file(report).toPath())
         Unit
     }
 
-    private fun file(report: LabReport) = File(directory, "${report.id.filter { it.isLetterOrDigit() || it == '-' }}.json")
+    /** A save already replaced the whole file; only a changed id leaves another one behind. */
+    override suspend fun removeDropped(old: LabReport, updated: LabReport) {
+        if (file(old) != file(updated)) delete(old)
+    }
+
+    /**
+     * Ids can come from a transfer file, so whatever isn't safe in a file name goes.
+     * The hash keeps two such ids from landing on (and overwriting) one file.
+     */
+    private fun file(report: LabReport): File {
+        val safe = report.id.filter { it.isLetterOrDigit() || it == '-' }
+        val name = if (safe == report.id) safe else "$safe-${report.id.hashCode().toUInt().toString(16)}"
+        return File(directory, "$name.json")
+    }
+
+    private companion object {
+        const val TAG = "LocalReportStore"
+    }
+}
+
+private fun replaceAtomically(from: File, to: File) {
+    Files.move(from.toPath(), to.toPath(), StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING)
 }

@@ -135,7 +135,7 @@ object CdaExport {
         val (loinc, display) = LabMapping.loincCode(value.code) ?: return null
         val num = value.numericValue
         val valueXml = if (num != null) {
-            """<value xsi:type="PQ" value="${NumberFormatting.cdaValue(num)}" unit="${esc(Ucum.fromPrinted(value.unit))}"/>"""
+            """<value xsi:type="PQ" value="${NumberFormatting.exactValue(num)}" unit="${esc(Ucum.fromPrinted(value.unit))}"/>"""
         } else {
             // ST has no unit: it travels in the text ("<0.5 mg/dl"); CdaParser splits it off again.
             val result = value.qualitativeResult ?: return null

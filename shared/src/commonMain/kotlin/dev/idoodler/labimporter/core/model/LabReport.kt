@@ -25,6 +25,10 @@ data class LabReport(
     ) {
         val resolvedName: String
             get() = LabMapping.displayName(code).let { if (it == code) name else it }
+
+        /** Whether there is a result to store: a number or a qualitative result. */
+        val hasResult: Boolean
+            get() = numericValue != null || QualitativeResult.of(displayValue) != null
     }
 
     /** Bridges to editable values for the review flow. */
@@ -57,7 +61,7 @@ data class LabReport(
                 val loinc = LabMapping.loincCode(it.code)!!.loinc
                 Entry(
                     id = it.id, code = loinc, name = it.name,
-                    displayValue = it.numericValue?.let(NumberFormatting::cdaValue) ?: it.qualitativeResult!!,
+                    displayValue = it.numericValue?.let(NumberFormatting::exactValue) ?: it.qualitativeResult!!,
                     numericValue = it.numericValue, unit = it.unit.trim(),
                 )
             },

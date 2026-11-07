@@ -186,11 +186,16 @@ struct AddCodePickerPage: View {
 struct CodePickerSheet: View {
     @Binding var code: String
     @Binding var name: String
+    /// A test was picked — not called when the sheet is closed without choosing.
+    var onChoose: () -> Void = {}
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         NavigationStack {
-            LabTestPickerList(code: $code, name: $name, preserveExistingName: false) { dismiss() }
+            LabTestPickerList(code: $code, name: $name, preserveExistingName: false) {
+                onChoose()
+                dismiss()
+            }
                 .navigationTitle("Lab Test")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {

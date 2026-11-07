@@ -139,7 +139,10 @@
     <string name="model_ready_text">LabImporter artık laboratuvar raporlarınızı tamamen bu telefonda okuyabilir.</string>
     <string name="model_failed_title">Yapay zeka modeli indirilemedi</string>
     <string name="error_scanner">Belge tarama bu cihazda kullanılamıyor.</string>
-    <string name="error_save">Kaydetme başarısız: %1$s</string>
+    <string name="error_save_health_connect">Health Connect raporu kaydedemedi, bu yüzden hiçbir şey değişmedi. Birazdan tekrar deneyin.</string>
+    <string name="error_save_storage">Rapor bu cihaza kaydedilemedi, bu yüzden hiçbir şey değişmedi. Boş alanı kontrol edip tekrar deneyin.</string>
+    <string name="error_save_values">Bazı değerler kaydetmeye hazırlanamadı, bu yüzden hiçbir şey değişmedi. Birazdan tekrar deneyin.</string>
+    <string name="save_leftovers_warning">Güncellenen rapor kaydedildi ancak kaldırdığınız değerler henüz silinemedi. Onları tekrar kaldırmak için raporu düzenleyin.</string>
     <string name="review_title">Değerleri İncele</string>
     <string name="edit_report">Raporu düzenle</string>
     <string name="lab_or_doctor">Lab / Doktor</string>
@@ -152,6 +155,20 @@
     <string name="search_loinc">Laboratuvar testlerini ara</string>
     <string name="loinc_suggested">Öneri: %1$s</string>
     <string name="loinc_duplicate">Yinelenen: %1$s</string>
+    <string name="compare_with_report">Raporla karşılaştırın</string>
+    <string name="compare_with_report_detail">Bu değer rapor metninde bulunamadı. Raporunuzla karşılaştırın.</string>
+    <plurals name="values_to_check">
+        <item quantity="one">Kontrol edilecek %d değer</item>
+        <item quantity="other">Kontrol edilecek %d değer</item>
+    </plurals>
+    <plurals name="values_to_correct">
+        <item quantity="one">Düzeltilecek %d değer</item>
+        <item quantity="other">Düzeltilecek %d değer</item>
+    </plurals>
+    <string name="correct_or_deselect">Bu yazılışla kaydedilemez. Düzeltin veya seçimi kaldırın.</string>
+    <string name="no_date_found">Raporda tarih bulunamadı. Bu tarihin doğru olup olmadığını kontrol edin.</string>
+    <string name="patient_and_lab">Hasta ve laboratuvar</string>
+    <string name="not_filled_in">Doldurulmadı</string>
     <plurals name="exportable_count">
         <item quantity="other">Kaydedilmeye hazır: %1$d / %2$d</item>
         <item quantity="one">Kaydedilmeye hazır: %1$d / %2$d</item>
@@ -193,6 +210,11 @@
     <string name="ai_available">Hazır. Raporlar tamamen bu cihazda Gemini Nano tarafından okunur.</string>
     <string name="ai_checking">Kontrol ediliyor…</string>
     <string name="try_again">Yeniden dene</string>
+    <string name="reports_load_failed_title">Raporlarınız yüklenemedi</string>
+    <string name="reports_load_failed_message">Kayıtlı raporlarınız değişmedi ancak şu anda okunamıyor.</string>
+    <string name="reports_unreadable_title">Bazı raporlar okunamıyor</string>
+    <string name="reports_unreadable_message">Okunamayan raporlar: %1$d. Bu cihazda kalır ve silinmedi.</string>
+    <string name="hc_connect_failed">Health Connect\'e bağlanılamadı. Raporlarınız LabImporter\'da kalır. Ayarlar\'dan tekrar deneyin.</string>
     <string name="transfer_title">Aktarım</string>
     <string name="transfer_export">Tüm raporları dışa aktar</string>
     <string name="transfer_export_detail">Tüm raporları tek bir dosyaya kaydedin; örneğin başka bir telefona taşımak için.</string>
@@ -200,6 +222,8 @@
     <string name="transfer_import_detail">iPhone\'da veya Android\'de dışa aktarılan bir LabImporter dosyasından. Zaten burada olan raporlar atlanır.</string>
     <string name="transfer_unsupported">Bu dosya LabImporter raporu içermiyor.</string>
     <string name="transfer_summary">Yeni raporlar: %1$d · Zaten var: %2$d</string>
+    <string name="transfer_summary_failed">Yeni raporlar: %1$d · Zaten mevcut: %2$d · Kaydedilmedi: %3$d</string>
+    <string name="transfer_reports_unreadable">Kayıtlı raporlarınız şu anda okunamıyor, bu yüzden hiçbir şey içe aktarılmadı. Birazdan tekrar deneyin.</string>
     <string name="privacy_title">Tasarımı gereği gizli</string>
     <string name="privacy_message">Her şey cihazda işlenir. LabImporter laboratuvar verilerinizi asla aktarmaz.</string>
     <string name="loinc_catalog">LOINC kataloğu</string>

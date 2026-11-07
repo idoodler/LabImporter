@@ -142,7 +142,10 @@
     <string name="model_ready_text">Acum LabImporter îți poate citi rapoartele de laborator, în întregime pe acest telefon.</string>
     <string name="model_failed_title">Modelul IA nu a fost descărcat</string>
     <string name="error_scanner">Scanarea documentelor nu este disponibilă pe acest dispozitiv.</string>
-    <string name="error_save">Salvarea a eșuat: %1$s</string>
+    <string name="error_save_health_connect">Health Connect nu a putut salva raportul, așa că nu s-a schimbat nimic. Încearcă din nou peste puțin timp.</string>
+    <string name="error_save_storage">Raportul nu a putut fi salvat pe acest dispozitiv, așa că nu s-a schimbat nimic. Verifică spațiul liber și încearcă din nou.</string>
+    <string name="error_save_values">Unele valori nu au putut fi pregătite pentru salvare, așa că nu s-a schimbat nimic. Încearcă din nou peste puțin timp.</string>
+    <string name="save_leftovers_warning">Raportul actualizat a fost salvat, dar valorile eliminate nu au putut fi șterse încă. Editează raportul ca să le elimini din nou.</string>
     <string name="review_title">Revizuiește valorile</string>
     <string name="edit_report">Editează raportul</string>
     <string name="lab_or_doctor">Laborator / Medic</string>
@@ -155,6 +158,22 @@
     <string name="search_loinc">Caută analize de laborator</string>
     <string name="loinc_suggested">Sugestie: %1$s</string>
     <string name="loinc_duplicate">Duplicat: %1$s</string>
+    <string name="compare_with_report">Compară cu raportul</string>
+    <string name="compare_with_report_detail">Această valoare nu a fost găsită în textul raportului. Compar-o cu raportul tău.</string>
+    <plurals name="values_to_check">
+        <item quantity="one">%d valoare de verificat</item>
+        <item quantity="few">%d valori de verificat</item>
+        <item quantity="other">%d de valori de verificat</item>
+    </plurals>
+    <plurals name="values_to_correct">
+        <item quantity="one">%d valoare de corectat</item>
+        <item quantity="few">%d valori de corectat</item>
+        <item quantity="other">%d de valori de corectat</item>
+    </plurals>
+    <string name="correct_or_deselect">Nu poate fi salvată în această formă. Corectați valoarea sau debifați-o.</string>
+    <string name="no_date_found">Nu s-a găsit nicio dată în raport. Verifică dacă această dată este corectă.</string>
+    <string name="patient_and_lab">Pacient și laborator</string>
+    <string name="not_filled_in">Necompletat</string>
     <plurals name="exportable_count">
         <item quantity="other">Gata de salvare: %1$d din %2$d</item>
         <item quantity="one">Gata de salvare: %1$d din %2$d</item>
@@ -199,6 +218,11 @@
     <string name="ai_available">Gata. Rapoartele sunt citite de Gemini Nano, în întregime pe acest dispozitiv.</string>
     <string name="ai_checking">Se verifică…</string>
     <string name="try_again">Încearcă din nou</string>
+    <string name="reports_load_failed_title">Rapoartele nu au putut fi încărcate</string>
+    <string name="reports_load_failed_message">Rapoartele salvate nu au fost modificate, dar nu pot fi citite acum.</string>
+    <string name="reports_unreadable_title">Unele rapoarte nu pot fi citite</string>
+    <string name="reports_unreadable_message">Rapoarte care nu pot fi citite: %1$d. Rămân pe acest dispozitiv și nu au fost șterse.</string>
+    <string name="hc_connect_failed">Conectarea la Health Connect nu a reușit. Rapoartele tale rămân în LabImporter. Încearcă din nou în Configurări.</string>
     <string name="transfer_title">Transfer</string>
     <string name="transfer_export">Exportă toate rapoartele</string>
     <string name="transfer_export_detail">Salvează toate rapoartele într-un singur fișier, de exemplu ca să le muți pe alt telefon.</string>
@@ -206,6 +230,8 @@
     <string name="transfer_import_detail">Dintr-un fișier LabImporter exportat pe iPhone sau Android. Rapoartele care există deja aici sunt omise.</string>
     <string name="transfer_unsupported">Acest fișier nu conține rapoarte LabImporter.</string>
     <string name="transfer_summary">Rapoarte noi: %1$d · Deja existente: %2$d</string>
+    <string name="transfer_summary_failed">Rapoarte noi: %1$d · Deja prezente: %2$d · Nesalvate: %3$d</string>
+    <string name="transfer_reports_unreadable">Rapoartele salvate nu pot fi citite acum, așa că nu s-a importat nimic. Încearcă din nou peste puțin timp.</string>
     <string name="privacy_title">Privat prin design</string>
     <string name="privacy_message">Totul se procesează pe dispozitiv. LabImporter nu transmite niciodată datele tale de laborator.</string>
     <string name="loinc_catalog">Catalog LOINC</string>

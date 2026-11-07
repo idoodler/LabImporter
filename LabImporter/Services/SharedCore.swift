@@ -56,7 +56,7 @@ extension LabValue {
         LabImporterCore.LabValue(
             id: id.uuidString, code: code, name: name, displayValue: displayValue,
             numericValue: numericValue.map { KotlinDouble(double: $0) }, unit: unit,
-            isSelected: isSelected, isSuggestedCode: isSuggestedCode
+            isSelected: isSelected, isSuggestedCode: isSuggestedCode, needsSourceCheck: needsSourceCheck
         )
     }
 
@@ -64,7 +64,7 @@ extension LabValue {
         self.init(
             id: UUID(uuidString: value.id) ?? UUID(), code: value.code, name: value.name,
             displayValue: value.displayValue, numericValue: value.numericValue?.doubleValue, unit: value.unit,
-            isSelected: value.isSelected, isSuggestedCode: value.isSuggestedCode
+            isSelected: value.isSelected, isSuggestedCode: value.isSuggestedCode, needsSourceCheck: value.needsSourceCheck
         )
     }
 }

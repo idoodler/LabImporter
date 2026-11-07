@@ -145,7 +145,10 @@
     <string name="model_ready_text">LabImporter teraz môže čítať vaše laboratórne správy, výhradne v tomto telefóne.</string>
     <string name="model_failed_title">Model AI sa nestiahol</string>
     <string name="error_scanner">Skenovanie dokumentov nie je na tomto zariadení dostupné.</string>
-    <string name="error_save">Uloženie zlyhalo: %1$s</string>
+    <string name="error_save_health_connect">Health Connect nemohol správu uložiť, takže sa nič nezmenilo. Skúste to o chvíľu znova.</string>
+    <string name="error_save_storage">Správu sa nepodarilo uložiť do tohto zariadenia, takže sa nič nezmenilo. Skontrolujte voľné miesto a skúste to znova.</string>
+    <string name="error_save_values">Niektoré hodnoty sa nepodarilo pripraviť na uloženie, takže sa nič nezmenilo. Skúste to o chvíľu znova.</string>
+    <string name="save_leftovers_warning">Aktualizovaná správa bola uložená, ale odstránené hodnoty sa zatiaľ nepodarilo vymazať. Upravte správu a odstráňte ich znova.</string>
     <string name="review_title">Skontrolovať hodnoty</string>
     <string name="edit_report">Upraviť správu</string>
     <string name="lab_or_doctor">Laboratórium / Lekár</string>
@@ -158,6 +161,24 @@
     <string name="search_loinc">Hľadať laboratórne testy</string>
     <string name="loinc_suggested">Návrh: %1$s</string>
     <string name="loinc_duplicate">Duplicita: %1$s</string>
+    <string name="compare_with_report">Porovnajte so správou</string>
+    <string name="compare_with_report_detail">Táto hodnota sa v texte správy nenašla. Porovnajte ju so svojou správou.</string>
+    <plurals name="values_to_check">
+        <item quantity="one">%d hodnota na kontrolu</item>
+        <item quantity="few">%d hodnoty na kontrolu</item>
+        <item quantity="many">%d hodnoty na kontrolu</item>
+        <item quantity="other">%d hodnôt na kontrolu</item>
+    </plurals>
+    <plurals name="values_to_correct">
+        <item quantity="one">%d hodnota na opravu</item>
+        <item quantity="few">%d hodnoty na opravu</item>
+        <item quantity="many">%d hodnoty na opravu</item>
+        <item quantity="other">%d hodnôt na opravu</item>
+    </plurals>
+    <string name="correct_or_deselect">Takto zapísanú hodnotu nemožno uložiť. Opravte ju alebo zrušte jej výber.</string>
+    <string name="no_date_found">V správe sa nenašiel dátum. Skontrolujte, či je tento dátum správny.</string>
+    <string name="patient_and_lab">Pacient a laboratórium</string>
+    <string name="not_filled_in">Nevyplnené</string>
     <plurals name="exportable_count">
         <item quantity="other">Pripravené na uloženie: %1$d z %2$d</item>
         <item quantity="one">Pripravené na uloženie: %1$d z %2$d</item>
@@ -205,6 +226,11 @@
     <string name="ai_available">Pripravené. Správy číta Gemini Nano výhradne v tomto zariadení.</string>
     <string name="ai_checking">Kontroluje sa…</string>
     <string name="try_again">Skúsiť znova</string>
+    <string name="reports_load_failed_title">Správy sa nepodarilo načítať</string>
+    <string name="reports_load_failed_message">Uložené správy sa nezmenili, ale momentálne ich nemožno prečítať.</string>
+    <string name="reports_unreadable_title">Niektoré správy nemožno prečítať</string>
+    <string name="reports_unreadable_message">Správy, ktoré nemožno prečítať: %1$d. Zostávajú v tomto zariadení a neboli vymazané.</string>
+    <string name="hc_connect_failed">K Health Connect sa nepodarilo pripojiť. Správy zostávajú v LabImporteri. Skúste to znova v Nastaveniach.</string>
     <string name="transfer_title">Prenos</string>
     <string name="transfer_export">Exportovať všetky správy</string>
     <string name="transfer_export_detail">Uložte všetky správy do jedného súboru, napríklad na prenos do iného telefónu.</string>
@@ -212,6 +238,8 @@
     <string name="transfer_import_detail">Zo súboru LabImportera exportovaného v iPhone alebo Androide. Správy, ktoré tu už sú, sa preskočia.</string>
     <string name="transfer_unsupported">Tento súbor neobsahuje správy z LabImportera.</string>
     <string name="transfer_summary">Nové správy: %1$d · Už existujúce: %2$d</string>
+    <string name="transfer_summary_failed">Nové správy: %1$d · Už existujú: %2$d · Neuložené: %3$d</string>
+    <string name="transfer_reports_unreadable">Uložené správy sa teraz nedajú prečítať, takže sa nič neimportovalo. Skúste to o chvíľu znova.</string>
     <string name="privacy_title">Súkromie v základe</string>
     <string name="privacy_message">Všetko prebieha v zariadení. LabImporter nikdy neprenáša vaše laboratórne údaje.</string>
     <string name="loinc_catalog">Katalóg LOINC</string>

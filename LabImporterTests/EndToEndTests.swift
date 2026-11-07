@@ -52,8 +52,11 @@ struct EndToEndTests {
         #expect(hbsAg.isSuggestedCode)
         let heading = try #require(values.first { $0.name.localizedCaseInsensitiveContains("Hepatitis Panel") })
         #expect(!heading.isExportable, "A section heading is never saved: \(heading.code)")
-        #expect(values.filter(\.isExportable).count == 7)
+        #expect(values.filter(\.isExportable).count == 8)
         #expect(values.duplicateLoincCodes().isEmpty)
+        // The whole text is compared, not the part a value was read from: only the misread 922 is flagged.
+        #expect(values.filter(\.needsSourceCheck).map(\.displayValue) == ["922"])
+        #expect(values.valuesToCheckCount() == 1)
 
         // 4. Saved as a CDA document and read back the way Apple Health returns it.
         let xml = CDAExportService().generateCDA(
@@ -61,14 +64,14 @@ struct EndToEndTests {
         )
         #expect(xml.contains(#"<value xsi:type="ST">&lt;1.0 mcg/dL</value>"#))
         let saved = try #require(HealthKitService.report(fromCDA: xml, id: UUID()))
-        #expect(saved.entries.count == 7)
+        #expect(saved.entries.count == 8)
         let savedLead = try #require(saved.entries.first { $0.code == "77307-7" })
         #expect(savedLead.displayValue == "<1.0" && savedLead.unit == "mcg/dL" && savedLead.numericValue == nil)
         #expect(saved.entries.first { $0.code == "3084-1" }?.numericValue == 5.1)
 
         // 5. The dashboard charts the numbers and lists the results that aren't numbers.
         let dashboard = DashboardView.Content(reports: [saved], prefs: LabDisplayPreferences())
-        #expect(dashboard.metrics.count == 7)
+        #expect(dashboard.metrics.count == 8)
         let leadMetric = try #require(dashboard.metrics.first { $0.entry.code == "77307-7" })
         #expect(leadMetric.isQualitative && leadMetric.results.map(\.formatted) == ["<1.0 mcg/dL"])
         #expect(dashboard.metrics.first { $0.entry.code == "3084-1" }?.isQualitative == false)
@@ -90,7 +93,7 @@ struct EndToEndTests {
             return try await StandInReport.read(part, progress)
         }
         let result = try await halving.parseLabValues(from: StandInReport.text)
-        #expect(result.values.filter(\.isExportable).count == 7)
+        #expect(result.values.filter(\.isExportable).count == 8)
 
         let refusing = LabParserService { _, _ in throw LabParserError.documentTooLong }
         await #expect(throws: LabParserError.documentTooLong) {

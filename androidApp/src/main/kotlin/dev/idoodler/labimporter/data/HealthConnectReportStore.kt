@@ -19,6 +19,7 @@ import androidx.health.connect.client.request.ReadMedicalResourcesInitialRequest
 import androidx.health.connect.client.request.ReadMedicalResourcesPageRequest
 import androidx.health.connect.client.request.UpsertMedicalResourceRequest
 import dev.idoodler.labimporter.core.LabReportStore
+import dev.idoodler.labimporter.core.droppedEntryIds
 import dev.idoodler.labimporter.core.export.FhirLabCodec
 import dev.idoodler.labimporter.core.model.LabReport
 
@@ -35,6 +36,9 @@ enum class HealthConnectAvailability {
     AVAILABLE,
 }
 
+/** Health Connect went away after the choice to use it was made; the UI says so in its own words. */
+class HealthConnectUnavailableException : Exception("Health Connect is not available on this device")
+
 /** Health Connect as [ReportRepository] uses it — a seam, so moving reports into it is testable. */
 interface HealthConnectStore : LabReportStore {
     fun availability(): HealthConnectAvailability
@@ -50,11 +54,14 @@ interface HealthConnectStore : LabReportStore {
  *
  * The Medical Records API is still experimental in Jetpack; everything here is
  * gated on [availability] so the app degrades to [LocalReportStore].
+ *
+ * @param newClient the client, or null where there's none; tests pass a scripted one.
  */
 @OptIn(ExperimentalPersonalHealthRecordApi::class)
 class HealthConnectReportStore(
     private val context: Context,
     private val softwareIdentity: String,
+    private val newClient: (Context) -> HealthConnectClient? = ::systemClient,
 ) : HealthConnectStore {
 
     val permissions: Set<String> = setOf(
@@ -62,13 +69,7 @@ class HealthConnectReportStore(
         HealthPermission.PERMISSION_READ_MEDICAL_DATA_LABORATORY_RESULTS,
     )
 
-    private val client: HealthConnectClient? by lazy {
-        if (HealthConnectClient.getSdkStatus(context) == HealthConnectClient.SDK_AVAILABLE) {
-            HealthConnectClient.getOrCreate(context)
-        } else {
-            null
-        }
-    }
+    private val client: HealthConnectClient? by lazy { newClient(context) }
 
     override fun availability(): HealthConnectAvailability {
         val sdk = HealthConnectClient.getSdkStatus(context)
@@ -111,24 +112,24 @@ class HealthConnectReportStore(
 
     override suspend fun save(report: LabReport) {
         val c = requireClient()
+        val resources = withContext(Dispatchers.Default) { FhirLabCodec.encodeForSaving(report, softwareIdentity) }
         val source = existingSource(c) ?: createSource(c)
-        val requests = withContext(Dispatchers.Default) {
-            FhirLabCodec.encode(report, softwareIdentity).map { UpsertMedicalResourceRequest(source.id, source.fhirVersion, it.json) }
-        }
-        if (requests.isNotEmpty()) c.upsertMedicalResources(requests)
+        c.upsertMedicalResources(resources.map { UpsertMedicalResourceRequest(source.id, source.fhirVersion, it.json) })
     }
 
-    override suspend fun delete(report: LabReport) {
+    override suspend fun delete(report: LabReport) = deleteEntries(report.entries.map { it.id })
+
+    /** Entries keep their ids through an edit, so the save already replaced those that stayed. */
+    override suspend fun removeDropped(old: LabReport, updated: LabReport) = deleteEntries(droppedEntryIds(old, updated))
+
+    private suspend fun deleteEntries(entryIds: List<String>) {
+        if (entryIds.isEmpty()) return
         val c = requireClient()
         val source = existingSource(c) ?: return
-        val ids = report.entries.map {
-            MedicalResourceId(source.id, FhirResource.FHIR_RESOURCE_TYPE_OBSERVATION, it.id)
-        }
-        if (ids.isNotEmpty()) c.deleteMedicalResources(ids)
+        c.deleteMedicalResources(entryIds.map { MedicalResourceId(source.id, FhirResource.FHIR_RESOURCE_TYPE_OBSERVATION, it) })
     }
 
-    private fun requireClient(): HealthConnectClient =
-        client ?: throw IllegalStateException("Health Connect is not available on this device")
+    private fun requireClient(): HealthConnectClient = client ?: throw HealthConnectUnavailableException()
 
     private suspend fun existingSource(c: HealthConnectClient): MedicalDataSource? =
         c.getMedicalDataSources(GetMedicalDataSourcesRequest(listOf(context.packageName))).firstOrNull()
@@ -146,3 +147,10 @@ class HealthConnectReportStore(
         const val PAGE_SIZE = 500
     }
 }
+
+private fun systemClient(context: Context): HealthConnectClient? =
+    if (HealthConnectClient.getSdkStatus(context) == HealthConnectClient.SDK_AVAILABLE) {
+        HealthConnectClient.getOrCreate(context)
+    } else {
+        null
+    }

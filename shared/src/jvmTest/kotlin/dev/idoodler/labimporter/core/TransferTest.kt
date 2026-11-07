@@ -55,7 +55,7 @@ class TransferTest {
 
     @Test
     fun fingerprintIgnoresUnitSpellingAndExportPrecision() {
-        // iOS reads units back as UCUM ("mg/dL") and values at %.4g; Android keeps what was printed.
+        // iOS reads units back as UCUM ("mg/dL"), older exports carry values at %.4g; Android keeps what was printed.
         val ios = report("a", may.date, Triple("2160-0", 0.8, "mg/dL"), Triple("2823-3", 4.1, "mmol/L"))
         assertEquals(ReportTransfer.fingerprint(may), ReportTransfer.fingerprint(ios))
         val precise = report("b", sep.date, Triple("2160-0", 0.93000001, "mg/dl"))

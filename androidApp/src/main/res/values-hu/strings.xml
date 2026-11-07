@@ -139,7 +139,10 @@
     <string name="model_ready_text">A LabImporter most már be tudja olvasni a laborjelentéseidet, teljes egészében ezen a telefonon.</string>
     <string name="model_failed_title">Az MI-modell nem töltődött le</string>
     <string name="error_scanner">A dokumentumszkennelés nem érhető el ezen az eszközön.</string>
-    <string name="error_save">Sikertelen mentés: %1$s</string>
+    <string name="error_save_health_connect">A Health Connect nem tudta menteni a jelentést, ezért semmi sem változott. Próbáld újra egy kis idő múlva.</string>
+    <string name="error_save_storage">A jelentést nem sikerült menteni erre az eszközre, ezért semmi sem változott. Ellenőrizd a szabad tárhelyet, és próbáld újra.</string>
+    <string name="error_save_values">Néhány értéket nem sikerült előkészíteni a mentésre, ezért semmi sem változott. Próbáld újra egy kis idő múlva.</string>
+    <string name="save_leftovers_warning">A frissített jelentés mentve, de az eltávolított értékeket még nem sikerült törölni. Szerkeszd a jelentést, és távolítsd el őket újra.</string>
     <string name="review_title">Értékek átnézése</string>
     <string name="edit_report">Jelentés szerkesztése</string>
     <string name="lab_or_doctor">Labor / Orvos</string>
@@ -152,6 +155,20 @@
     <string name="search_loinc">Laborvizsgálatok keresése</string>
     <string name="loinc_suggested">Javaslat: %1$s</string>
     <string name="loinc_duplicate">Ismétlődés: %1$s</string>
+    <string name="compare_with_report">Vesd össze a lelettel</string>
+    <string name="compare_with_report_detail">Ez az érték nem található a lelet szövegében. Vesd össze a leleteddel.</string>
+    <plurals name="values_to_check">
+        <item quantity="one">%d ellenőrizendő érték</item>
+        <item quantity="other">%d ellenőrizendő érték</item>
+    </plurals>
+    <plurals name="values_to_correct">
+        <item quantity="one">%d javítandó érték</item>
+        <item quantity="other">%d javítandó érték</item>
+    </plurals>
+    <string name="correct_or_deselect">Ebben a formában nem menthető. Javítsd ki, vagy szüntesd meg a kijelölését.</string>
+    <string name="no_date_found">A leletben nem található dátum. Ellenőrizd, hogy ez a dátum helyes-e.</string>
+    <string name="patient_and_lab">Páciens és labor</string>
+    <string name="not_filled_in">Nincs kitöltve</string>
     <plurals name="exportable_count">
         <item quantity="other">Menthető: %1$d / %2$d</item>
         <item quantity="one">Menthető: %1$d / %2$d</item>
@@ -193,6 +210,11 @@
     <string name="ai_available">Kész. A jelentéseket a Gemini Nano olvassa be, teljes egészében ezen az eszközön.</string>
     <string name="ai_checking">Ellenőrzés…</string>
     <string name="try_again">Próbáld újra</string>
+    <string name="reports_load_failed_title">Nem sikerült betölteni a jelentéseket</string>
+    <string name="reports_load_failed_message">A mentett jelentéseid nem változtak, de most nem olvashatók.</string>
+    <string name="reports_unreadable_title">Néhány jelentés nem olvasható</string>
+    <string name="reports_unreadable_message">Nem olvasható jelentések: %1$d. Ezen az eszközön maradnak, és nem törlődtek.</string>
+    <string name="hc_connect_failed">Nem sikerült csatlakozni a Health Connecthez. A jelentéseid a LabImporterben maradnak. Próbáld újra a Beállításokban.</string>
     <string name="transfer_title">Áthelyezés</string>
     <string name="transfer_export">Összes jelentés exportálása</string>
     <string name="transfer_export_detail">Mentsd az összes jelentést egyetlen fájlba, például hogy átvidd őket egy másik telefonra.</string>
@@ -200,6 +222,8 @@
     <string name="transfer_import_detail">iPhone-on vagy Androidon exportált LabImporter-fájlból. A már itt lévő jelentések kimaradnak.</string>
     <string name="transfer_unsupported">Ez a fájl nem tartalmaz LabImporter-jelentéseket.</string>
     <string name="transfer_summary">Új jelentések: %1$d · Már meglévők: %2$d</string>
+    <string name="transfer_summary_failed">Új jelentések: %1$d · Már megvan: %2$d · Nincs mentve: %3$d</string>
+    <string name="transfer_reports_unreadable">A mentett jelentéseid most nem olvashatók, ezért semmi sem lett importálva. Próbáld újra egy kis idő múlva.</string>
     <string name="privacy_title">Alapból privát</string>
     <string name="privacy_message">Minden az eszközön fut. A LabImporter sosem továbbítja a laboradataidat.</string>
     <string name="loinc_catalog">LOINC-katalógus</string>

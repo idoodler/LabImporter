@@ -139,7 +139,10 @@
     <string name="model_ready_text">LabImporter voi nyt lukea laboratorioraporttisi kokonaan tällä puhelimella.</string>
     <string name="model_failed_title">Tekoälymallia ei ladattu</string>
     <string name="error_scanner">Asiakirjojen skannaus ei ole käytettävissä tällä laitteella.</string>
-    <string name="error_save">Tallennus epäonnistui: %1$s</string>
+    <string name="error_save_health_connect">Health Connect ei voinut tallentaa raporttia, joten mitään ei muutettu. Yritä hetken kuluttua uudelleen.</string>
+    <string name="error_save_storage">Raporttia ei voitu tallentaa tälle laitteelle, joten mitään ei muutettu. Tarkista vapaa tila ja yritä uudelleen.</string>
+    <string name="error_save_values">Joitakin arvoja ei voitu valmistella tallennettaviksi, joten mitään ei muutettu. Yritä hetken kuluttua uudelleen.</string>
+    <string name="save_leftovers_warning">Päivitetty raportti tallennettiin, mutta poistamiasi arvoja ei vielä voitu poistaa. Muokkaa raporttia ja poista ne uudelleen.</string>
     <string name="review_title">Tarkista arvot</string>
     <string name="edit_report">Muokkaa raporttia</string>
     <string name="lab_or_doctor">Laboratorio / lääkäri</string>
@@ -152,6 +155,20 @@
     <string name="search_loinc">Hae laboratoriokokeita</string>
     <string name="loinc_suggested">Ehdotus: %1$s</string>
     <string name="loinc_duplicate">Kaksoiskappale: %1$s</string>
+    <string name="compare_with_report">Vertaa raporttiin</string>
+    <string name="compare_with_report_detail">Tätä arvoa ei löytynyt raportin tekstistä. Vertaa sitä raporttiisi.</string>
+    <plurals name="values_to_check">
+        <item quantity="one">%d arvo tarkistettava</item>
+        <item quantity="other">%d arvoa tarkistettava</item>
+    </plurals>
+    <plurals name="values_to_correct">
+        <item quantity="one">%d arvo korjattava</item>
+        <item quantity="other">%d arvoa korjattava</item>
+    </plurals>
+    <string name="correct_or_deselect">Ei voi tallentaa tässä muodossa. Korjaa arvo tai poista sen valinta.</string>
+    <string name="no_date_found">Raportista ei löytynyt päivämäärää. Tarkista, että tämä päivämäärä on oikein.</string>
+    <string name="patient_and_lab">Potilas ja laboratorio</string>
+    <string name="not_filled_in">Ei täytetty</string>
     <plurals name="exportable_count">
         <item quantity="other">Valmiina tallennettavaksi: %1$d/%2$d</item>
         <item quantity="one">Valmiina tallennettavaksi: %1$d/%2$d</item>
@@ -193,6 +210,11 @@
     <string name="ai_available">Valmis. Gemini Nano lukee raportit kokonaan tällä laitteella.</string>
     <string name="ai_checking">Tarkistetaan…</string>
     <string name="try_again">Yritä uudelleen</string>
+    <string name="reports_load_failed_title">Raportteja ei voitu ladata</string>
+    <string name="reports_load_failed_message">Tallennetut raporttisi eivät muuttuneet, mutta niitä ei voi lukea juuri nyt.</string>
+    <string name="reports_unreadable_title">Joitakin raportteja ei voi lukea</string>
+    <string name="reports_unreadable_message">Raportit, joita ei voi lukea: %1$d. Ne säilyvät tällä laitteella, eikä niitä poistettu.</string>
+    <string name="hc_connect_failed">Yhteyttä Health Connectiin ei voitu muodostaa. Raporttisi säilyvät LabImporterissa. Yritä uudelleen asetuksissa.</string>
     <string name="transfer_title">Siirto</string>
     <string name="transfer_export">Vie kaikki raportit</string>
     <string name="transfer_export_detail">Tallenna kaikki raportit yhteen tiedostoon, esimerkiksi siirtääksesi ne toiseen puhelimeen.</string>
@@ -200,6 +222,8 @@
     <string name="transfer_import_detail">iPhonessa tai Androidissa viedystä LabImporter-tiedostosta. Täällä jo olevat raportit ohitetaan.</string>
     <string name="transfer_unsupported">Tämä tiedosto ei sisällä LabImporter-raportteja.</string>
     <string name="transfer_summary">Uusia raportteja: %1$d · Jo olemassa: %2$d</string>
+    <string name="transfer_summary_failed">Uudet raportit: %1$d · Jo olemassa: %2$d · Ei tallennettu: %3$d</string>
+    <string name="transfer_reports_unreadable">Tallennettuja raporttejasi ei voi lukea juuri nyt, joten mitään ei tuotu. Yritä hetken kuluttua uudelleen.</string>
     <string name="privacy_title">Yksityinen alusta asti</string>
     <string name="privacy_message">Kaikki toimii laitteella. LabImporter ei koskaan lähetä laboratoriotietojasi.</string>
     <string name="loinc_catalog">LOINC-luettelo</string>

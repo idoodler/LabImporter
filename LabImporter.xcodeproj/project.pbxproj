@@ -20,11 +20,13 @@
 		4A2398D082C09285D2C39F94 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B256B38BDF50DF9CBDFE493B /* ModelTests.swift */; };
 		55AD043FD51A83E346BFA65E /* ParseSchemaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AC48436CB533C97960A62A4 /* ParseSchemaTests.swift */; };
 		636BA85E2FCC52EE006E8E71 /* HealthPermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 636BA85D2FCC52EE006E8E71 /* HealthPermissionView.swift */; };
+		722132285A9D990634FD33F5 /* ReviewCheckTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83862F9A9F20E82821BA1533 /* ReviewCheckTests.swift */; };
 		73D3F8193A715FEBEC095F72 /* ReviewView+FoldLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3A8BA7574CA07A0AABF2E0F /* ReviewView+FoldLayout.swift */; };
 		80396BC045B0FE1CEEFB9AAE /* LaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E285DF31AC9A5A11C742F9F /* LaunchTests.swift */; };
 		849D1937738CB997922A807B /* MetricGridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 080505D3CD8BB2B99BD6C4DC /* MetricGridLayout.swift */; };
 		8EDE12FEB078268601ECD96D /* ShareInbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D4C1275881023AFBBE0AC /* ShareInbox.swift */; };
 		90E17444A6DE71E71633BD10 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF39E6CDE0AAC7930FA57B0 /* ShareViewController.swift */; };
+		92D1FF1F915B80A52FB8CDA5 /* ReviewView+Details.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4596CF61399FD54AB81B4026 /* ReviewView+Details.swift */; };
 		9D2473C32C706BBA4D437E47 /* GeometryProxy+Fold.swift in Sources */ = {isa = PBXBuildFile; fileRef = 720E7587F318ED358D389A94 /* GeometryProxy+Fold.swift */; };
 		A7AB66CBD5805334A9273027 /* SharedCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 794A5456843DA760D334FE72 /* SharedCore.swift */; };
 		A7EA43B1DB70508F02B1A197 /* ShareInbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D4C1275881023AFBBE0AC /* ShareInbox.swift */; };
@@ -170,6 +172,7 @@
 		1FFE290841848738CAADD9E0 /* ShareInboxTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareInboxTests.swift; sourceTree = "<group>"; };
 		347D4C1275881023AFBBE0AC /* ShareInbox.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareInbox.swift; sourceTree = "<group>"; };
 		3B41D7BB510B15B47C17F1B2 /* LabImporterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LabImporterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		4596CF61399FD54AB81B4026 /* ReviewView+Details.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "ReviewView+Details.swift"; sourceTree = "<group>"; };
 		4E285DF31AC9A5A11C742F9F /* LaunchTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LaunchTests.swift; sourceTree = "<group>"; };
 		5C249C5104229F87EE9CF7B8 /* ResultHistoryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ResultHistoryView.swift; sourceTree = "<group>"; };
 		636BA85D2FCC52EE006E8E71 /* HealthPermissionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthPermissionView.swift; sourceTree = "<group>"; };
@@ -180,6 +183,7 @@
 		794A5456843DA760D334FE72 /* SharedCore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SharedCore.swift; sourceTree = "<group>"; };
 		7CC9022D4642CE32D74F146D /* LabImporterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LabImporterUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F0CBFE11718F29651A9550A /* EndToEndUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EndToEndUITests.swift; sourceTree = "<group>"; };
+		83862F9A9F20E82821BA1533 /* ReviewCheckTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviewCheckTests.swift; sourceTree = "<group>"; };
 		8697C8B69368D44D6635379B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		92C3A56423879B13EECC5A2D /* ReportTransferService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReportTransferService.swift; sourceTree = "<group>"; };
 		9AC48436CB533C97960A62A4 /* ParseSchemaTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParseSchemaTests.swift; sourceTree = "<group>"; };
@@ -378,6 +382,7 @@
 				ED3D8155A96425EDC36A74FD /* MetricGridLayoutTests.swift */,
 				EF6109F139005B280A9DDC17 /* OCRServiceTests.swift */,
 				63C5596F066A74D848750899 /* EndToEndTests.swift */,
+				83862F9A9F20E82821BA1533 /* ReviewCheckTests.swift */,
 			);
 			name = LabImporterTests;
 			path = LabImporterTests;
@@ -538,6 +543,7 @@
 				AABB000000000000000094AA /* LoincBrowserView.swift */,
 				AANV000000000000000002AA /* NewValuesSiriPromptView.swift */,
 				B3A8BA7574CA07A0AABF2E0F /* ReviewView+FoldLayout.swift */,
+				4596CF61399FD54AB81B4026 /* ReviewView+Details.swift */,
 			);
 			path = Review;
 			sourceTree = "<group>";
@@ -950,6 +956,7 @@
 				49F7BFCE5950051D9255C7EA /* MetricGridLayoutTests.swift in Sources */,
 				3FCE84C3C02472A177583529 /* OCRServiceTests.swift in Sources */,
 				BF71244B1E2EBC3EC31440DA /* EndToEndTests.swift in Sources */,
+				722132285A9D990634FD33F5 /* ReviewCheckTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1052,6 +1059,7 @@
 				9D2473C32C706BBA4D437E47 /* GeometryProxy+Fold.swift in Sources */,
 				EB967E14C5675BC987EB00F6 /* ResultHistoryView.swift in Sources */,
 				3CDD1993E4770DF0D5AEFEAF /* StandInReport.swift in Sources */,
+				92D1FF1F915B80A52FB8CDA5 /* ReviewView+Details.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

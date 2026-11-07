@@ -184,7 +184,7 @@ struct AddValueSheet: View {
             code: resolvedCode,
             name: name.trimmingCharacters(in: .whitespaces),
             displayValue: displayValue,
-            numericValue: Double(normalized),
+            numericValue: LabValue.number(from: normalized),
             unit: unit.trimmingCharacters(in: .whitespaces)
         )
         onAdd(value)

@@ -145,7 +145,10 @@
     <string name="model_ready_text">Тепер LabImporter може читати ваші лабораторні звіти — повністю на цьому телефоні.</string>
     <string name="model_failed_title">Модель ШІ не завантажено</string>
     <string name="error_scanner">Сканування документів недоступне на цьому пристрої.</string>
-    <string name="error_save">Не вдалося зберегти: %1$s</string>
+    <string name="error_save_health_connect">Health Connect не зміг зберегти звіт, тому нічого не змінилося. Спробуйте ще раз трохи згодом.</string>
+    <string name="error_save_storage">Не вдалося зберегти звіт на цьому пристрої, тому нічого не змінилося. Перевірте вільне місце та спробуйте ще раз.</string>
+    <string name="error_save_values">Не вдалося підготувати деякі значення до збереження, тому нічого не змінилося. Спробуйте ще раз трохи згодом.</string>
+    <string name="save_leftovers_warning">Оновлений звіт збережено, але вилучені вами значення поки не вдалося стерти. Відредагуйте звіт, щоб вилучити їх знову.</string>
     <string name="review_title">Перевірити значення</string>
     <string name="edit_report">Редагувати звіт</string>
     <string name="lab_or_doctor">Лабораторія / Лікар</string>
@@ -158,6 +161,24 @@
     <string name="search_loinc">Пошук лабораторних аналізів</string>
     <string name="loinc_suggested">Пропозиція: %1$s</string>
     <string name="loinc_duplicate">Дублікат: %1$s</string>
+    <string name="compare_with_report">Порівняйте зі звітом</string>
+    <string name="compare_with_report_detail">Це значення не знайдено в тексті звіту. Порівняйте його зі своїм звітом.</string>
+    <plurals name="values_to_check">
+        <item quantity="one">%d значення для перевірки</item>
+        <item quantity="few">%d значення для перевірки</item>
+        <item quantity="many">%d значень для перевірки</item>
+        <item quantity="other">%d значення для перевірки</item>
+    </plurals>
+    <plurals name="values_to_correct">
+        <item quantity="one">%d значення для виправлення</item>
+        <item quantity="few">%d значення для виправлення</item>
+        <item quantity="many">%d значень для виправлення</item>
+        <item quantity="other">%d значення для виправлення</item>
+    </plurals>
+    <string name="correct_or_deselect">Не можна зберегти в такому вигляді. Виправте значення або зніміть із нього позначку.</string>
+    <string name="no_date_found">У звіті не знайдено дату. Перевірте, чи правильна ця дата.</string>
+    <string name="patient_and_lab">Пацієнт і лабораторія</string>
+    <string name="not_filled_in">Не заповнено</string>
     <plurals name="exportable_count">
         <item quantity="other">Готово до збереження: %1$d з %2$d</item>
         <item quantity="one">Готово до збереження: %1$d з %2$d</item>
@@ -205,6 +226,11 @@
     <string name="ai_available">Готово. Звіти читає Gemini Nano — повністю на цьому пристрої.</string>
     <string name="ai_checking">Перевірка…</string>
     <string name="try_again">Спробувати ще раз</string>
+    <string name="reports_load_failed_title">Не вдалося завантажити звіти</string>
+    <string name="reports_load_failed_message">Збережені звіти не змінилися, але зараз їх не вдається прочитати.</string>
+    <string name="reports_unreadable_title">Деякі звіти не вдається прочитати</string>
+    <string name="reports_unreadable_message">Звіти, які не вдається прочитати: %1$d. Вони залишаються на цьому пристрої й не видалені.</string>
+    <string name="hc_connect_failed">Не вдалося підключитися до Health Connect. Звіти залишаються в LabImporter. Спробуйте ще раз у налаштуваннях.</string>
     <string name="transfer_title">Перенесення</string>
     <string name="transfer_export">Експортувати всі звіти</string>
     <string name="transfer_export_detail">Збережіть усі звіти в один файл, наприклад щоб перенести їх на інший телефон.</string>
@@ -212,6 +238,8 @@
     <string name="transfer_import_detail">З файлу LabImporter, експортованого на iPhone чи Android. Звіти, які тут уже є, пропускаються.</string>
     <string name="transfer_unsupported">Цей файл не містить звітів LabImporter.</string>
     <string name="transfer_summary">Нові звіти: %1$d · Уже є: %2$d</string>
+    <string name="transfer_summary_failed">Нові звіти: %1$d · Уже є: %2$d · Не збережено: %3$d</string>
+    <string name="transfer_reports_unreadable">Збережені звіти зараз не вдається прочитати, тому нічого не імпортовано. Спробуйте ще раз трохи згодом.</string>
     <string name="privacy_title">Конфіденційність за задумом</string>
     <string name="privacy_message">Усе відбувається на пристрої. LabImporter ніколи не передає ваші лабораторні дані.</string>
     <string name="loinc_catalog">Каталог LOINC</string>

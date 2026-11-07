@@ -3,6 +3,8 @@ package dev.idoodler.labimporter.core
 import dev.idoodler.labimporter.core.export.CdaExport
 import dev.idoodler.labimporter.core.export.CdaParser
 import dev.idoodler.labimporter.core.export.FhirLabCodec
+import dev.idoodler.labimporter.core.export.ReportEncodingException
+import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.core.model.LabReport
 import dev.idoodler.labimporter.core.model.LabValue
 import dev.idoodler.labimporter.core.model.QualitativeResult
@@ -11,6 +13,7 @@ import kotlinx.datetime.LocalDate
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -120,6 +123,32 @@ class ExportTest {
         )
         // The transfer file recognizes the same report again.
         assertEquals(ReportTransfer.fingerprint(report), ReportTransfer.fingerprint(decoded))
+    }
+
+    @Test
+    fun savingRefusesToDropAResult() {
+        fun report(vararg entries: LabReport.Entry) = LabReport("r", LocalDate(2026, 5, 6), "", "", entries.toList())
+        val known = LabReport.Entry("a", "2160-0", "Creatinine", "0.8", 0.8, "mg/dl")
+        val noResult = LabReport.Entry("b", "2823-3", "Potassium", "-", null, "mmol/l")
+        val unknown = LabReport.Entry("c", "NOPE", "Unmapped", "1", 1.0, "")
+
+        // Nothing is lost when an entry without a result stays behind…
+        assertEquals(listOf("a"), FhirLabCodec.encodeForSaving(report(known, noResult), "test").map { it.id })
+        // …but a result the codec would silently drop, or a report with nothing to store, is an error.
+        assertEquals(1, assertFailsWith<ReportEncodingException> { FhirLabCodec.encodeForSaving(report(known, unknown), "test") }.unencoded)
+        assertFailsWith<ReportEncodingException> { FhirLabCodec.encodeForSaving(report(noResult), "test") }
+        assertFailsWith<ReportEncodingException> { FhirLabCodec.encodeForSaving(report(), "test") }
+    }
+
+    @Test
+    fun savingWithoutTheCatalogIsAnErrorNotAnEmptySuccess() {
+        val report = LabReport("r", LocalDate(2026, 5, 6), "", "", listOf(LabReport.Entry("a", "2160-0", "Creatinine", "0.8", 0.8, "mg/dl")))
+        LabCore.start("/nonexistent/loinc.db", "en-US") { LabDisplayPreferences() } // Not unpacked yet, as on a cold start after an update.
+        try {
+            assertEquals(1, assertFailsWith<ReportEncodingException> { FhirLabCodec.encodeForSaving(report, "test") }.unencoded)
+        } finally {
+            startCatalog()
+        }
     }
 
     @Test

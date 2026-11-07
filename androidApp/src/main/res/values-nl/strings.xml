@@ -139,7 +139,10 @@
     <string name="model_ready_text">LabImporter kan je labrapporten nu lezen, volledig op deze telefoon.</string>
     <string name="model_failed_title">AI-model niet gedownload</string>
     <string name="error_scanner">Document scannen is niet beschikbaar op dit apparaat.</string>
-    <string name="error_save">Bewaren mislukt: %1$s</string>
+    <string name="error_save_health_connect">Health Connect kon het rapport niet bewaren, dus er is niets gewijzigd. Probeer het zo meteen opnieuw.</string>
+    <string name="error_save_storage">Het rapport kon niet op dit apparaat worden bewaard, dus er is niets gewijzigd. Controleer de vrije opslag en probeer het opnieuw.</string>
+    <string name="error_save_values">Sommige waarden konden niet worden voorbereid om te bewaren, dus er is niets gewijzigd. Probeer het zo meteen opnieuw.</string>
+    <string name="save_leftovers_warning">Het bijgewerkte rapport is bewaard, maar de waarden die je hebt verwijderd konden nog niet worden gewist. Bewerk het rapport om ze opnieuw te verwijderen.</string>
     <string name="review_title">Waarden controleren</string>
     <string name="edit_report">Rapport bewerken</string>
     <string name="lab_or_doctor">Lab / Dokter</string>
@@ -152,6 +155,20 @@
     <string name="search_loinc">Labtests zoeken</string>
     <string name="loinc_suggested">Voorstel: %1$s</string>
     <string name="loinc_duplicate">Dubbel: %1$s</string>
+    <string name="compare_with_report">Vergelijk met rapport</string>
+    <string name="compare_with_report_detail">Deze waarde is niet gevonden in de tekst van het rapport. Vergelijk hem met je rapport.</string>
+    <plurals name="values_to_check">
+        <item quantity="one">%d waarde om te controleren</item>
+        <item quantity="other">%d waarden om te controleren</item>
+    </plurals>
+    <plurals name="values_to_correct">
+        <item quantity="one">%d waarde om te corrigeren</item>
+        <item quantity="other">%d waarden om te corrigeren</item>
+    </plurals>
+    <string name="correct_or_deselect">Kan niet zo worden bewaard. Corrigeer deze waarde of deselecteer hem.</string>
+    <string name="no_date_found">Geen datum gevonden in het rapport. Controleer of deze datum klopt.</string>
+    <string name="patient_and_lab">Patiënt en lab</string>
+    <string name="not_filled_in">Niet ingevuld</string>
     <plurals name="exportable_count">
         <item quantity="other">Klaar om te bewaren: %1$d van %2$d</item>
         <item quantity="one">Klaar om te bewaren: %1$d van %2$d</item>
@@ -193,6 +210,11 @@
     <string name="ai_available">Klaar. Rapporten worden door Gemini Nano gelezen, volledig op dit apparaat.</string>
     <string name="ai_checking">Controleren…</string>
     <string name="try_again">Opnieuw proberen</string>
+    <string name="reports_load_failed_title">Je rapporten konden niet worden geladen</string>
+    <string name="reports_load_failed_message">Je bewaarde rapporten zijn niet gewijzigd, maar kunnen nu niet worden gelezen.</string>
+    <string name="reports_unreadable_title">Sommige rapporten kunnen niet worden gelezen</string>
+    <string name="reports_unreadable_message">Rapporten die niet kunnen worden gelezen: %1$d. Ze blijven op dit apparaat en zijn niet verwijderd.</string>
+    <string name="hc_connect_failed">Kan geen verbinding maken met Health Connect. Je rapporten blijven in LabImporter. Probeer het opnieuw via Instellingen.</string>
     <string name="transfer_title">Overzetten</string>
     <string name="transfer_export">Alle rapporten exporteren</string>
     <string name="transfer_export_detail">Bewaar alle rapporten in één bestand, bijvoorbeeld om ze naar een andere telefoon over te zetten.</string>
@@ -200,6 +222,8 @@
     <string name="transfer_import_detail">Uit een LabImporter-bestand dat op een iPhone of Android is geëxporteerd. Rapporten die hier al staan, worden overgeslagen.</string>
     <string name="transfer_unsupported">Dit bestand bevat geen LabImporter-rapporten.</string>
     <string name="transfer_summary">Nieuwe rapporten: %1$d · Al aanwezig: %2$d</string>
+    <string name="transfer_summary_failed">Nieuwe rapporten: %1$d · Al aanwezig: %2$d · Niet bewaard: %3$d</string>
+    <string name="transfer_reports_unreadable">Je bewaarde rapporten kunnen nu niet worden gelezen, dus er is niets geïmporteerd. Probeer het zo meteen opnieuw.</string>
     <string name="privacy_title">Privé vanaf het ontwerp</string>
     <string name="privacy_message">Alles gebeurt op je apparaat. LabImporter verstuurt je labgegevens nooit.</string>
     <string name="loinc_catalog">LOINC-catalogus</string>

@@ -7,6 +7,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Arrangement
 import dev.idoodler.labimporter.ui.dashboard.HealthConnectOfferCard
+import dev.idoodler.labimporter.ui.dashboard.UnreadableReportsCard
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
@@ -402,6 +403,8 @@ private fun Screen(
             onOpenMetric = { push(Destination.Trend(it)) },
             importActions = importActions,
             isLoading = isLoading,
+            loadFailed = viewModel.loadFailed.collectAsStateWithLifecycle().value,
+            onTryLoadingAgain = viewModel::refresh,
             onOpenReports = { push(Destination.Reports) }.takeUnless { railRoot },
             onOpenSettings = { push(Destination.Settings) }.takeUnless { railRoot },
             patientName = viewModel.patientName.collectAsStateWithLifecycle().value,
@@ -411,6 +414,8 @@ private fun Screen(
             onExportPdf = { push(Destination.PdfExport) },
             onDeleteReports = viewModel::deleteReports,
             onSelectionModeChange = onSelectionModeChange,
+            loadFailed = viewModel.loadFailed.collectAsStateWithLifecycle().value,
+            onTryLoadingAgain = viewModel::refresh,
         )
         Destination.PdfExport -> PdfExportScreen(reports, preferences, onGenerate = viewModel::exportPdf, onBack = pop)
         Destination.Settings -> {
@@ -463,18 +468,20 @@ private fun Screen(
 }
 
 /**
- * The dashboard's notices: the model download while it isn't ready, and the
- * offer to move reports into Health Connect once it's available. Null when
- * there's nothing to say.
+ * The dashboard's notices: saved reports that can't be read, the model download
+ * while it isn't ready, and the offer to move reports into Health Connect once
+ * it's available. Null when there's nothing to say.
  */
 @Composable
 private fun dashboardNotices(viewModel: AppViewModel, connectHealthConnect: () -> Unit): (@Composable () -> Unit)? {
     val availability by viewModel.aiAvailability.collectAsStateWithLifecycle()
     val offerHealthConnect by viewModel.offerHealthConnect.collectAsStateWithLifecycle()
     val modelNotice = availability is AiAvailability.Preparing || availability is AiAvailability.PreparationFailed
-    if (!modelNotice && !offerHealthConnect) return null
+    val unreadableReports by viewModel.unreadableReports.collectAsStateWithLifecycle()
+    if (unreadableReports == 0 && !modelNotice && !offerHealthConnect) return null
     return {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            if (unreadableReports > 0) UnreadableReportsCard(unreadableReports)
             if (modelNotice) {
                 ModelStatusCard(
                     availability, viewModel.aiEngine, onTryAgain = viewModel::checkAiAgain,

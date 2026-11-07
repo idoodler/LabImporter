@@ -175,6 +175,15 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   table — resolution is entirely catalog/FTS driven. The model's report date
   is kept only if the report text prints it (`verifiedDate`; a mis-copied year
   falls back to the one printed date with that day and month, else no date).
+  Results are checked against the whole report text the same way
+  (`ReportSourceText`): a value it doesn't print gets `needsSourceCheck`, a
+  "compare with report" badge in review that editing clears and that never
+  blocks saving. No date found also says so on the date row until it's changed.
+  A number is compared as printed, with its sign and without a qualifier (0.5
+  isn't printed by "<0,5", 160 by "1:160"), and "263,000" is read by the report's
+  own decimal notation: 263000 beside decimal points, 263 beside decimal commas;
+  with no such sign it's no number. Text that can't be saved as written
+  (`needsCorrection`) holds back saving until it's corrected or deselected.
 - **Model quality check:** `evaluation/` (JVM, not part of the app or CI) runs
   an on-device model over synthetic sample reports with the app's exact prompt,
   schema and post-processing, and scores values, LOINC codes and dates — see

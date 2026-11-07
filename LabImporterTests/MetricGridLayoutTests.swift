@@ -54,6 +54,10 @@ struct ReviewPaneGeometryTests {
         // The Review sheet on an unfolded Duo: 650 pt wide, the fold in its middle.
         let split = try #require(ReviewPaneGeometry(width: 650, fold: 305...345).split)
         #expect(split == ReviewPaneGeometry.Split(leading: 305, gap: 40, trailing: 305))
+        #expect(!split.valuesLead, "An even fold keeps the values after the summary")
+        // The values take the wider pane, wherever the fold falls.
+        #expect(try #require(ReviewPaneGeometry(width: 800, fold: 420...460).split).valuesLead)
+        #expect(try !#require(ReviewPaneGeometry(width: 800, fold: 340...380).split).valuesLead)
         // No fold, a fold outside the view, or too little room on one side: one list.
         #expect(ReviewPaneGeometry(width: 650).split == nil)
         #expect(ReviewPaneGeometry(width: 339, fold: -56...(-16)).split == nil)

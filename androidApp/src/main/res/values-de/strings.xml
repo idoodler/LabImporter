@@ -139,7 +139,10 @@
     <string name="model_ready_text">LabImporter kann deine Laborberichte jetzt lesen – vollständig auf diesem Telefon.</string>
     <string name="model_failed_title">KI-Modell nicht geladen</string>
     <string name="error_scanner">Das Scannen von Dokumenten ist auf diesem Gerät nicht verfügbar.</string>
-    <string name="error_save">Speichern fehlgeschlagen: %1$s</string>
+    <string name="error_save_health_connect">Health Connect konnte den Bericht nicht speichern, daher wurde nichts geändert. Versuche es gleich noch einmal.</string>
+    <string name="error_save_storage">Der Bericht konnte auf diesem Gerät nicht gespeichert werden, daher wurde nichts geändert. Prüfe den freien Speicher und versuche es noch einmal.</string>
+    <string name="error_save_values">Einige Werte konnten nicht zum Speichern vorbereitet werden, daher wurde nichts geändert. Versuche es gleich noch einmal.</string>
+    <string name="save_leftovers_warning">Der aktualisierte Bericht wurde gespeichert, aber die entfernten Werte konnten noch nicht gelöscht werden. Bearbeite den Bericht, um sie erneut zu entfernen.</string>
     <string name="review_title">Werte überprüfen</string>
     <string name="edit_report">Bericht bearbeiten</string>
     <string name="lab_or_doctor">Labor / Arzt</string>
@@ -152,6 +155,20 @@
     <string name="search_loinc">Labortest suchen</string>
     <string name="loinc_suggested">Vorschlag: %1$s</string>
     <string name="loinc_duplicate">Doppelt: %1$s</string>
+    <string name="compare_with_report">Mit Bericht vergleichen</string>
+    <string name="compare_with_report_detail">Dieser Wert wurde im Text des Berichts nicht gefunden. Vergleiche ihn mit deinem Bericht.</string>
+    <plurals name="values_to_check">
+        <item quantity="one">%d Wert zu prüfen</item>
+        <item quantity="other">%d Werte zu prüfen</item>
+    </plurals>
+    <plurals name="values_to_correct">
+        <item quantity="one">%d Wert zu korrigieren</item>
+        <item quantity="other">%d Werte zu korrigieren</item>
+    </plurals>
+    <string name="correct_or_deselect">Kann so nicht gespeichert werden. Korrigiere den Wert oder wähle ihn ab.</string>
+    <string name="no_date_found">Im Bericht wurde kein Datum gefunden. Prüfe, ob dieses Datum stimmt.</string>
+    <string name="patient_and_lab">Patient und Labor</string>
+    <string name="not_filled_in">Nicht ausgefüllt</string>
     <plurals name="exportable_count">
         <item quantity="other">Bereit zum Speichern: %1$d von %2$d</item>
         <item quantity="one">Bereit zum Speichern: %1$d von %2$d</item>
@@ -193,6 +210,11 @@
     <string name="ai_available">Bereit. Berichte werden von Gemini Nano vollständig auf diesem Gerät gelesen.</string>
     <string name="ai_checking">Wird geprüft …</string>
     <string name="try_again">Erneut versuchen</string>
+    <string name="reports_load_failed_title">Berichte konnten nicht geladen werden</string>
+    <string name="reports_load_failed_message">Deine gespeicherten Berichte wurden nicht verändert, können aber gerade nicht gelesen werden.</string>
+    <string name="reports_unreadable_title">Einige Berichte können nicht gelesen werden</string>
+    <string name="reports_unreadable_message">Berichte, die nicht gelesen werden können: %1$d. Sie bleiben auf diesem Gerät und wurden nicht gelöscht.</string>
+    <string name="hc_connect_failed">Verbindung zu Health Connect fehlgeschlagen. Deine Berichte bleiben in LabImporter. Versuche es in den Einstellungen noch einmal.</string>
     <string name="transfer_title">Übertragen</string>
     <string name="transfer_export">Alle Berichte exportieren</string>
     <string name="transfer_export_detail">Speichere alle Berichte in einer Datei, zum Beispiel um sie auf ein anderes Smartphone zu übertragen.</string>
@@ -200,6 +222,8 @@
     <string name="transfer_import_detail">Aus einer LabImporter-Datei, die auf einem iPhone oder Android-Gerät exportiert wurde. Bereits vorhandene Berichte werden übersprungen.</string>
     <string name="transfer_unsupported">Diese Datei enthält keine LabImporter-Berichte.</string>
     <string name="transfer_summary">Neue Berichte: %1$d · Bereits vorhanden: %2$d</string>
+    <string name="transfer_summary_failed">Neue Berichte: %1$d · Bereits vorhanden: %2$d · Nicht gespeichert: %3$d</string>
+    <string name="transfer_reports_unreadable">Deine gespeicherten Berichte können gerade nicht gelesen werden, daher wurde nichts importiert. Versuche es gleich noch einmal.</string>
     <string name="privacy_title">Privat von Grund auf</string>
     <string name="privacy_message">Alles läuft auf deinem Gerät. LabImporter überträgt deine Labordaten nie.</string>
     <string name="loinc_catalog">LOINC-Katalog</string>

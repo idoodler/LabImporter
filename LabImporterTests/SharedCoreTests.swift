@@ -38,7 +38,7 @@ struct SharedCoreTests {
         #expect(report.authorName == "Labor & Co")
         // Only exportable values were written: mapped, selected, numeric.
         #expect(report.entries.map(\.code) == ["2160-0", "2823-3", "4548-4", "1742-6"])
-        #expect(report.entries.map(\.numericValue) == [0.8, 4.1, 6.53, 12_350])
+        #expect(report.entries.map(\.numericValue) == [0.8, 4.1, 6.53, 12_345.6])
         #expect(report.entries.map(\.unit) == ["mg/dL", "mmol/L", "%", "U/L"])
         // Documents this app didn't write are skipped, never guessed at.
         #expect(HealthKitService.report(fromCDA: "<ClinicalDocument/>", id: id) == nil)

@@ -136,7 +136,10 @@
     <string name="model_ready_text">LabImporter 现在可以读取你的化验报告了，全部在此手机上完成。</string>
     <string name="model_failed_title">AI 模型未下载</string>
     <string name="error_scanner">此设备不支持文档扫描。</string>
-    <string name="error_save">保存失败：%1$s</string>
+    <string name="error_save_health_connect">Health Connect 无法保存报告，因此未作任何更改。请稍后重试。</string>
+    <string name="error_save_storage">无法在此设备上保存报告，因此未作任何更改。请检查可用存储空间后重试。</string>
+    <string name="error_save_values">部分数值无法准备保存，因此未作任何更改。请稍后重试。</string>
+    <string name="save_leftovers_warning">更新后的报告已保存，但你移除的数值暂时无法删除。请编辑报告再次移除。</string>
     <string name="review_title">审核数值</string>
     <string name="edit_report">编辑报告</string>
     <string name="lab_or_doctor">医院 / 医生</string>
@@ -149,6 +152,18 @@
     <string name="search_loinc">搜索检验项目</string>
     <string name="loinc_suggested">建议：%1$s</string>
     <string name="loinc_duplicate">重复：%1$s</string>
+    <string name="compare_with_report">请与报告核对</string>
+    <string name="compare_with_report_detail">在报告文本中未找到此值。请与您的报告核对。</string>
+    <plurals name="values_to_check">
+        <item quantity="other">%d 个值待核对</item>
+    </plurals>
+    <plurals name="values_to_correct">
+        <item quantity="other">%d 个值待更正</item>
+    </plurals>
+    <string name="correct_or_deselect">无法按此写法保存。请更正或取消选择。</string>
+    <string name="no_date_found">报告中未找到日期。请确认此日期是否正确。</string>
+    <string name="patient_and_lab">患者和医院</string>
+    <string name="not_filled_in">未填写</string>
     <plurals name="exportable_count">
         <item quantity="other">可保存：%1$d / %2$d</item>
     </plurals>
@@ -187,6 +202,11 @@
     <string name="ai_available">就绪。报告完全在此设备上由 Gemini Nano 读取。</string>
     <string name="ai_checking">正在检查…</string>
     <string name="try_again">重试</string>
+    <string name="reports_load_failed_title">无法载入报告</string>
+    <string name="reports_load_failed_message">已保存的报告没有更改，但目前无法读取。</string>
+    <string name="reports_unreadable_title">部分报告无法读取</string>
+    <string name="reports_unreadable_message">无法读取的报告：%1$d 份。它们仍保留在此设备上，并未删除。</string>
+    <string name="hc_connect_failed">无法连接到 Health Connect。报告仍保留在 LabImporter 中。请在设置中重试。</string>
     <string name="transfer_title">迁移</string>
     <string name="transfer_export">导出全部报告</string>
     <string name="transfer_export_detail">将所有报告保存为一个文件，例如用于迁移到另一部手机。</string>
@@ -194,6 +214,8 @@
     <string name="transfer_import_detail">来自在 iPhone 或 Android 上导出的 LabImporter 文件。已存在的报告会被跳过。</string>
     <string name="transfer_unsupported">此文件不包含 LabImporter 报告。</string>
     <string name="transfer_summary">新报告：%1$d · 已存在：%2$d</string>
+    <string name="transfer_summary_failed">新报告：%1$d · 已存在：%2$d · 未保存：%3$d</string>
+    <string name="transfer_reports_unreadable">目前无法读取已保存的报告，因此未导入任何内容。请稍后重试。</string>
     <string name="privacy_title">隐私至上设计</string>
     <string name="privacy_message">一切在设备上完成。LabImporter 绝不会传输你的化验数据。</string>
     <string name="loinc_catalog">LOINC 目录</string>

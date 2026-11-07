@@ -125,7 +125,7 @@
                         codeSystemName="LOINC"/>
                   <statusCode code="completed"/>
                   <effectiveTime value="20260506"/>
-                  <value xsi:type="PQ" value="1.235e+04" unit="U/L"/>
+                  <value xsi:type="PQ" value="12345.6" unit="U/L"/>
                 </observation>
               </component>
             </organizer>

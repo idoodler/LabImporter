@@ -23,47 +23,42 @@ struct ReviewPaneGeometry: Equatable {
         let leading: CGFloat
         let gap: CGFloat
         let trailing: CGFloat
+
+        /// The values get the wider pane: comparing them is what the screen is for.
+        /// With an even fold they stay after the summary, in reading order.
+        var valuesLead: Bool { leading > trailing }
     }
 }
 
 extension ReviewView {
-    /// One list — or, when an iPhone Duo's fold runs through the screen, two
-    /// panes beside it: the report (summary, patient, author, date) before the
-    /// fold and its values, with the Save/Share bar, after it. Without this the
-    /// centered form and its buttons sit right across the hinge.
+    /// One list in the order of the job — summary and date, the values to compare
+    /// with the report, then patient and lab folded away — or, when an iPhone
+    /// Duo's fold runs through the screen, two panes beside it: the report
+    /// (summary, date, patient, author) and its values with the Save/Share bar.
+    /// Without this the centered form and its buttons sit right across the hinge.
     @ViewBuilder
     var reviewLists: some View {
         Group {
             if let split = paneGeometry.split {
                 HStack(spacing: 0) {
-                    List {
-                        headerSection
-                        patientSection
-                        authorSection
-                        dateSection
-                    }
-                    .frame(width: split.leading)
-                    Spacer(minLength: 0)
-                        .frame(width: split.gap)
-                    List {
-                        valuesSection
-                        addValueSection
-                        unsupportedSection
-                    }
-                    .frame(width: split.trailing)
-                    .safeAreaInset(edge: .bottom, spacing: 0) {
-                        actionBar
+                    if split.valuesLead {
+                        valuesPane.frame(width: split.leading)
+                        Spacer(minLength: 0).frame(width: split.gap)
+                        reportPane.frame(width: split.trailing)
+                    } else {
+                        reportPane.frame(width: split.leading)
+                        Spacer(minLength: 0).frame(width: split.gap)
+                        valuesPane.frame(width: split.trailing)
                     }
                 }
             } else {
                 List {
                     headerSection
-                    patientSection
-                    authorSection
                     dateSection
                     valuesSection
                     addValueSection
                     unsupportedSection
+                    detailsSection
                 }
                 .safeAreaInset(edge: .bottom, spacing: 0) {
                     actionBar
@@ -73,5 +68,26 @@ extension ReviewView {
         .onGeometryChange(for: ReviewPaneGeometry.self) { proxy in
             ReviewPaneGeometry(width: proxy.size.width, fold: proxy.verticalFold)
         } action: { paneGeometry = $0 }
+    }
+
+    /// There's room for patient and lab here, so they aren't folded away.
+    private var reportPane: some View {
+        List {
+            headerSection
+            dateSection
+            patientSection
+            authorSection
+        }
+    }
+
+    private var valuesPane: some View {
+        List {
+            valuesSection
+            addValueSection
+            unsupportedSection
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            actionBar
+        }
     }
 }

@@ -9,6 +9,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasScrollAction
+import androidx.compose.ui.test.hasScrollToNodeAction
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -36,6 +37,7 @@ import dev.idoodler.labimporter.core.model.CodeName
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.ui.dashboard.DashboardScreen
 import dev.idoodler.labimporter.ui.dashboard.TrendScreen
+import dev.idoodler.labimporter.ui.dashboard.UnreadableReportsCard
 import dev.idoodler.labimporter.ui.importflow.ImportActions
 import dev.idoodler.labimporter.core.model.LabValue
 import dev.idoodler.labimporter.data.PatientDetails
@@ -272,6 +274,66 @@ class ScreensTest {
     }
 
     @Test
+    fun aFailedLoadIsShownInsteadOfTheEmptyDashboard() {
+        var retries = 0
+        compose.setContent {
+            LabImporterTheme {
+                DashboardScreen(
+                    emptyList(), LabDisplayPreferences(), {}, ImportActions({}, {}, {}, {}, {}),
+                    loadFailed = true, onTryLoadingAgain = { retries++ }, notices = { UnreadableReportsCard(2) },
+                )
+            }
+        }
+        compose.onNodeWithText(string(R.string.reports_load_failed_title)).assertIsDisplayed()
+        compose.onNodeWithText(ApplicationProvider.getApplicationContext<TestApplication>().getString(R.string.reports_unreadable_message, 2)).assertExists()
+        compose.onNodeWithText(string(R.string.import_title)).assertDoesNotExist()
+        compose.onNodeWithText(string(R.string.try_again)).performClick()
+        assertEquals(1, retries)
+    }
+
+    @Test
+    fun aFailedLoadStaysOnScreenAboveReportsAlreadyShown() {
+        compose.setContent {
+            LabImporterTheme {
+                DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, ImportActions({}, {}, {}, {}, {}), loadFailed = true)
+            }
+        }
+        compose.onNodeWithText(string(R.string.reports_load_failed_title)).assertExists()
+    }
+
+    @Test
+    fun aFailedLoadIsShownInsteadOfTheEmptyReportList() {
+        var retries = 0
+        compose.setContent { LabImporterTheme { HistoryScreen(emptyList(), {}, loadFailed = true, onTryLoadingAgain = { retries++ }) } }
+        compose.onNodeWithText(string(R.string.reports_load_failed_title)).assertIsDisplayed()
+        compose.onNodeWithText(string(R.string.history_empty_title)).assertDoesNotExist()
+        compose.onNodeWithText(string(R.string.try_again)).performClick()
+        assertEquals(1, retries)
+    }
+
+    @Test
+    fun aFailedLoadStaysOnScreenAboveReportsInTheList() {
+        compose.setContent { LabImporterTheme { HistoryScreen(PreviewSamples.reports, {}, loadFailed = true) } }
+        compose.onNodeWithText(string(R.string.reports_load_failed_title)).assertExists()
+    }
+
+    @Test
+    fun anEmptyReportListWithoutAProblemSaysThereAreNone() {
+        compose.setContent { LabImporterTheme { HistoryScreen(emptyList(), {}) } }
+        compose.onNodeWithText(string(R.string.history_empty_title)).assertExists()
+        compose.onNodeWithText(string(R.string.reports_load_failed_title)).assertDoesNotExist()
+    }
+
+    @Test
+    fun anEmptyDashboardWithoutAProblemStillInvitesAnImport() {
+        compose.setContent {
+            LabImporterTheme { DashboardScreen(emptyList(), LabDisplayPreferences(), {}, ImportActions({}, {}, {}, {}, {})) }
+        }
+        compose.onNodeWithText(string(R.string.import_title)).assertExists()
+        compose.onNodeWithText(string(R.string.reports_load_failed_title)).assertDoesNotExist()
+    }
+
+    @Test
     fun resultsThatArentNumbersAreListedOnTheDashboardAndTheTrendScreen() {
         var opened by mutableStateOf<String?>(null)
         compose.setContent {
@@ -306,7 +368,7 @@ class ScreensTest {
         )
         compose.setContent { LabImporterTheme { ReviewScreen(draft, { draft = it(draft) }, { _, _ -> }, { "" }, {}, {}, {}) } }
         val suggestion = app.getString(R.string.detected_in_report, "Erika Muster")
-        compose.onNode(hasScrollAction()).performScrollToNode(hasText(suggestion))
+        compose.onNode(hasScrollToNodeAction()).performScrollToNode(hasText(suggestion))
         compose.onNodeWithText(string(R.string.use)).performClick()
         assertEquals("Erika Muster", draft.patientName)
         // Once used, the suggestion goes away.

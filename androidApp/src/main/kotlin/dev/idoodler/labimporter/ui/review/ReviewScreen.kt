@@ -1,10 +1,10 @@
 package dev.idoodler.labimporter.ui.review
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -28,6 +29,9 @@ import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Science
 import androidx.compose.material.icons.rounded.DeleteOutline
+import androidx.compose.material.icons.rounded.ExpandLess
+import androidx.compose.material.icons.rounded.ExpandMore
+import androidx.compose.material.icons.rounded.FindInPage
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
@@ -56,31 +60,37 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.collapse
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.expand
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.idoodler.labimporter.R
 import dev.idoodler.labimporter.ai.AiEngine
-import dev.idoodler.labimporter.ai.gemma.GemmaModel
 import dev.idoodler.labimporter.ai.DevelopmentStandIn
 import dev.idoodler.labimporter.core.model.LabCategory
 import dev.idoodler.labimporter.core.model.LabMapping
 import dev.idoodler.labimporter.core.model.LabValue
 import dev.idoodler.labimporter.core.model.duplicateLoincCodes
+import dev.idoodler.labimporter.core.model.valuesToCheckCount
+import dev.idoodler.labimporter.core.model.valuesToCorrectCount
 import dev.idoodler.labimporter.ui.ReviewDraft
 import dev.idoodler.labimporter.ui.components.formatDate
-import dev.idoodler.labimporter.ui.components.formatNumber
-import dev.idoodler.labimporter.ui.components.parseNumberInput
 import dev.idoodler.labimporter.ui.design.CategoryBadge
 import dev.idoodler.labimporter.ui.design.CategoryChip
 import dev.idoodler.labimporter.ui.design.CategoryWash
@@ -105,7 +115,6 @@ import kotlin.time.Instant
  * Review and correct parsed values before saving — nothing reaches the health
  * store without passing through here. Mirrors iOS `ReviewView`.
  */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ReviewScreen(
     draft: ReviewDraft,
@@ -120,7 +129,9 @@ fun ReviewScreen(
     var pickingDate by remember { mutableStateOf(false) }
     val duplicates = remember(draft.values) { draft.values.duplicateLoincCodes() }
     val exportable = remember(draft.values) { draft.values.count { it.isExportable } }
-    val canSave = exportable > 0 && duplicates.isEmpty()
+    val valuesToCorrect = remember(draft.values) { draft.values.valuesToCorrectCount() }
+    val canSave = exportable > 0 && duplicates.isEmpty() && valuesToCorrect == 0
+    val valuesToCheck = remember(draft.values) { draft.values.valuesToCheckCount() }
     val categories = remember(draft.values) {
         draft.values.filter { LabMapping.loincCode(it.code) != null }.map { LabCategory.forCode(it.code) }
     }
@@ -157,38 +168,28 @@ fun ReviewScreen(
                         shape = MaterialTheme.shapes.extraLarge,
                         colors = CardDefaults.cardColors(containerColor = groupContainerColor()),
                     ) {
-                        Column(Modifier.padding(20.dp)) {
+                        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 ShapeBadge(
                                     MaterialShapes.Sunny, MaterialTheme.colorScheme.primary,
                                     if (draft.engine == AiEngine.DEVELOPMENT_STAND_IN) Icons.Rounded.Science else Icons.Rounded.AutoAwesome,
-                                    size = 60.dp,
+                                    size = 48.dp,
                                     brush = Brush.linearGradient(
                                         if (wash.size > 1) wash.take(2) else listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.tertiary),
                                     ),
                                 )
-                                Spacer(Modifier.width(16.dp))
-                                Column(Modifier.weight(1f)) {
-                                    Text(stringResource(R.string.lab_report), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                                Spacer(Modifier.width(12.dp))
+                                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                     Text(
                                         pluralStringResource(R.plurals.value_count, draft.values.size, draft.values.size),
-                                        style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold,
                                     )
-                                }
-                            }
-                            Row(Modifier.padding(top = 14.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                StatusPill(canSave, duplicates.isNotEmpty())
-                                when (draft.engine) {
-                                    AiEngine.GEMINI_NANO -> EngineChip(Icons.Rounded.AutoAwesome, stringResource(R.string.engine_gemini))
-                                    AiEngine.GEMMA -> EngineChip(Icons.Rounded.AutoAwesome, GemmaModel.NAME)
-                                    AiEngine.DEVELOPMENT_STAND_IN, null -> Unit
+                                    StatusPill(canSave, duplicates.isNotEmpty(), valuesToCorrect, valuesToCheck)
                                 }
                             }
                             if (categories.isNotEmpty()) {
-                                FlowRow(
-                                    Modifier.padding(top = 12.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp),
-                                ) {
+                                // One scrolling line, however many categories: the values must start on the first screen.
+                                Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                     categories.groupingBy { it }.eachCount().entries.sortedByDescending { it.value }.forEach { (category, count) ->
                                         CategoryChip(category, count)
                                     }
@@ -200,14 +201,14 @@ fun ReviewScreen(
                                 Text(
                                     standIn.reviewBanner, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold,
                                     color = MaterialTheme.colorScheme.onErrorContainer,
-                                    modifier = Modifier.padding(top = 12.dp).fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth()
                                         .background(MaterialTheme.colorScheme.errorContainer, MaterialTheme.shapes.large).padding(12.dp),
                                 )
                             }
+                            DateRow(draft, onPickDate = { pickingDate = true })
                         }
                     }
                 }
-                item(key = "details") { DetailsCard(draft, onUpdateDraft, onPickDate = { pickingDate = true }) }
                 item(key = "values-title") {
                     Row(verticalAlignment = Alignment.Bottom) {
                         SectionTitle(stringResource(R.string.lab_values), Modifier.weight(1f))
@@ -238,6 +239,7 @@ fun ReviewScreen(
                         Text(stringResource(R.string.add_value))
                     }
                 }
+                item(key = "details") { DetailsCard(draft, onUpdateDraft) }
                 item(key = "save") {
                     Button(
                         onClick = onSave, enabled = canSave,
@@ -274,7 +276,7 @@ fun ReviewScreen(
                 TextButton(onClick = {
                     state.selectedDateMillis?.let { millis ->
                         val date = Instant.fromEpochMilliseconds(millis).toLocalDateTime(TimeZone.UTC).date
-                        onUpdateDraft { it.copy(date = date) }
+                        onUpdateDraft { it.withDate(date) }
                     }
                     pickingDate = false
                 }) { Text(stringResource(R.string.ok)) }
@@ -285,55 +287,133 @@ fun ReviewScreen(
 }
 
 @Composable
-private fun StatusPill(ready: Boolean, duplicates: Boolean) {
+private fun StatusPill(ready: Boolean, duplicates: Boolean, valuesToCorrect: Int, valuesToCheck: Int) {
     val quad = when {
-        duplicates -> Quad(Icons.Rounded.Warning, R.string.duplicates_short, MaterialTheme.colorScheme.errorContainer, MaterialTheme.colorScheme.onErrorContainer)
-        ready -> Quad(Icons.Rounded.CheckCircle, R.string.ready_to_save, tintedSurface(LabCategory.HEPATIC.color, 0.35f), MaterialTheme.colorScheme.onSurface)
-        else -> Quad(Icons.Rounded.Warning, R.string.choose_loinc, MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.colorScheme.onSecondaryContainer)
+        duplicates -> Quad(Icons.Rounded.Warning, stringResource(R.string.duplicates_short), MaterialTheme.colorScheme.errorContainer, MaterialTheme.colorScheme.onErrorContainer)
+        valuesToCorrect > 0 -> Quad(Icons.Rounded.Warning, pluralStringResource(R.plurals.values_to_correct, valuesToCorrect, valuesToCorrect), MaterialTheme.colorScheme.errorContainer, MaterialTheme.colorScheme.onErrorContainer)
+        valuesToCheck > 0 -> Quad(Icons.Rounded.FindInPage, pluralStringResource(R.plurals.values_to_check, valuesToCheck, valuesToCheck), tintedSurface(CheckColor, 0.35f), MaterialTheme.colorScheme.onSurface)
+        ready -> Quad(Icons.Rounded.CheckCircle, stringResource(R.string.ready_to_save), tintedSurface(LabCategory.HEPATIC.color, 0.35f), MaterialTheme.colorScheme.onSurface)
+        else -> Quad(Icons.Rounded.Warning, stringResource(R.string.choose_loinc), MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.colorScheme.onSecondaryContainer)
     }
     Surface(shape = CircleShape, color = quad.c, contentColor = quad.d) {
         Row(Modifier.padding(horizontal = 12.dp, vertical = 7.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(quad.a, null, Modifier.size(18.dp), tint = if (ready && !duplicates) LabCategory.HEPATIC.color else quad.d)
+            val tint = when {
+                duplicates || valuesToCorrect > 0 -> quad.d
+                valuesToCheck > 0 -> CheckColor
+                ready -> LabCategory.HEPATIC.color
+                else -> quad.d
+            }
+            Icon(quad.a, null, Modifier.size(18.dp), tint = tint)
             Spacer(Modifier.width(6.dp))
-            Text(stringResource(quad.b), style = MaterialTheme.typography.labelLarge)
+            Text(quad.b, style = MaterialTheme.typography.labelLarge)
         }
     }
 }
 
 private data class Quad<A, B, C, D>(val a: A, val b: B, val c: C, val d: D)
 
+/** The colour of "compare this with the report": a caution, not the error colour of what blocks saving. */
+private val CheckColor: Color get() = LabCategory.GLYCEMIC.color
+
+/** The report's date; says so when the import found none, until the user changes it. */
 @Composable
-private fun EngineChip(icon: ImageVector, label: String) {
-    AssistChip(
-        onClick = {}, enabled = false, label = { Text(label) }, leadingIcon = { Icon(icon, null) }, shape = CircleShape,
-        colors = AssistChipDefaults.assistChipColors(
-            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            disabledLeadingIconContentColor = MaterialTheme.colorScheme.primary,
-        ),
-    )
+private fun DateRow(draft: ReviewDraft, onPickDate: () -> Unit) {
+    val notFound = stringResource(R.string.no_date_found)
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        FilledTonalButton(
+            onClick = onPickDate,
+            modifier = Modifier.fillMaxWidth().height(48.dp)
+                .semantics { if (draft.dateNotFound) stateDescription = notFound },
+        ) {
+            Icon(Icons.Rounded.CalendarMonth, null)
+            Spacer(Modifier.width(10.dp))
+            Text(formatDate(draft.date, FormatStyle.LONG), style = MaterialTheme.typography.titleSmall)
+        }
+        if (draft.dateNotFound) {
+            Row(Modifier.padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Rounded.FindInPage, null, Modifier.size(18.dp), tint = CheckColor)
+                Spacer(Modifier.width(6.dp))
+                Text(notFound, style = MaterialTheme.typography.bodySmall)
+            }
+        }
+    }
 }
 
+/**
+ * Lab and patient, after the values and folded to one line of what's filled
+ * in: comparing values with the report is the job here. Names found in the
+ * report stay in view even then: they're offers to take up.
+ */
 @Composable
-private fun DetailsCard(draft: ReviewDraft, onUpdateDraft: ((ReviewDraft) -> ReviewDraft) -> Unit, onPickDate: () -> Unit) {
+private fun DetailsCard(draft: ReviewDraft, onUpdateDraft: ((ReviewDraft) -> ReviewDraft) -> Unit) {
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    val summary = listOf(draft.patientName, draft.authorName).map { it.trim() }.filter { it.isNotEmpty() }.joinToString(" · ")
     Card(shape = MaterialTheme.shapes.extraLarge, colors = CardDefaults.cardColors(containerColor = groupContainerColor())) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            FilledTonalButton(onClick = onPickDate, modifier = Modifier.fillMaxWidth().height(52.dp)) {
-                Icon(Icons.Rounded.CalendarMonth, null)
-                Spacer(Modifier.width(10.dp))
-                Text(formatDate(draft.date, FormatStyle.LONG), style = MaterialTheme.typography.titleSmall)
+        Row(
+            Modifier.fillMaxWidth()
+                .clickable(role = Role.Button) { expanded = !expanded }
+                .semantics {
+                    if (expanded) collapse { expanded = false; true } else expand { expanded = true; true }
+                }
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text(stringResource(R.string.patient_and_lab), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Text(
+                    summary.ifEmpty { stringResource(R.string.not_filled_in) }, style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                )
             }
-            OutlinedTextField(
-                value = draft.authorName, onValueChange = { v -> onUpdateDraft { it.copy(authorName = v) } },
-                label = { Text(stringResource(R.string.lab_or_doctor)) }, singleLine = true,
-                shape = MaterialTheme.shapes.large, modifier = Modifier.fillMaxWidth(),
-            )
+            Icon(if (expanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore, null)
+        }
+        Column(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            if (expanded) {
+                OutlinedTextField(
+                    value = draft.authorName, onValueChange = { v -> onUpdateDraft { it.copy(authorName = v) } },
+                    label = { Text(stringResource(R.string.lab_or_doctor)) }, singleLine = true,
+                    shape = MaterialTheme.shapes.large, modifier = Modifier.fillMaxWidth(),
+                )
+            }
             Suggestion(draft.detectedAuthorName, draft.authorName) { name -> onUpdateDraft { it.copy(authorName = name) } }
-            OutlinedTextField(
-                value = draft.patientName, onValueChange = { v -> onUpdateDraft { it.copy(patientName = v) } },
-                label = { Text(stringResource(R.string.patient)) }, singleLine = true,
-                shape = MaterialTheme.shapes.large, modifier = Modifier.fillMaxWidth(),
-            )
+            if (expanded) {
+                OutlinedTextField(
+                    value = draft.patientName, onValueChange = { v -> onUpdateDraft { it.copy(patientName = v) } },
+                    label = { Text(stringResource(R.string.patient)) }, singleLine = true,
+                    shape = MaterialTheme.shapes.large, modifier = Modifier.fillMaxWidth(),
+                )
+            }
             Suggestion(draft.detectedPatientName, draft.patientName) { name -> onUpdateDraft { it.copy(patientName = name) } }
+        }
+    }
+}
+
+/** The result isn't in the report text. TalkBack hears it in full, here and on the value field. */
+@Composable
+private fun CompareBadge(detail: String, modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier.semantics(mergeDescendants = true) { contentDescription = detail },
+        shape = CircleShape, color = tintedSurface(CheckColor, 0.35f), contentColor = MaterialTheme.colorScheme.onSurface,
+    ) {
+        Row(Modifier.padding(horizontal = 10.dp, vertical = 5.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Rounded.FindInPage, null, Modifier.size(16.dp), tint = CheckColor)
+            Spacer(Modifier.width(5.dp))
+            Text(stringResource(R.string.compare_with_report), style = MaterialTheme.typography.labelMedium)
+        }
+    }
+}
+
+/** The result can't be saved as written. The field's red outline alone says nothing to TalkBack or about why. */
+@Composable
+private fun CorrectBadge(detail: String, modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier, shape = CircleShape,
+        color = MaterialTheme.colorScheme.errorContainer, contentColor = MaterialTheme.colorScheme.onErrorContainer,
+    ) {
+        Row(Modifier.padding(horizontal = 10.dp, vertical = 5.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Rounded.Warning, null, Modifier.size(16.dp))
+            Spacer(Modifier.width(5.dp))
+            Text(detail, style = MaterialTheme.typography.labelMedium)
         }
     }
 }
@@ -361,8 +441,11 @@ private fun ValueCard(
     modifier: Modifier = Modifier,
 ) {
     val mapped = LabMapping.loincCode(value.code) != null
+    val compareDetail = stringResource(R.string.compare_with_report_detail)
+    val correctDetail = stringResource(R.string.correct_or_deselect)
     val category = if (mapped) LabCategory.forCode(value.code) else null
-    var valueText by remember(value.id) { mutableStateOf(value.numericValue?.let(::formatNumber) ?: value.displayValue) }
+    // As printed, like iOS. A grouped "263,000" would read as 263.5 once edited to "263,500".
+    var valueText by remember(value.id) { mutableStateOf(value.displayValue) }
     // A qualitative result ("Negativ", "1:160") or a new row may need letters; a number gets the number pad.
     val keyboard = remember(value.id) { if (value.numericValue == null) KeyboardType.Text else KeyboardType.Decimal }
     val container = when {
@@ -398,6 +481,8 @@ private fun ValueCard(
                     TextButton(onClick = { onUpdate { it.copy(isSuggestedCode = false) } }) { Text(stringResource(R.string.confirm)) }
                 }
             }
+            if (value.needsSourceCheck) CompareBadge(compareDetail, Modifier.padding(start = 12.dp, top = 2.dp, bottom = 2.dp))
+            if (value.needsCorrection) CorrectBadge(correctDetail, Modifier.padding(start = 12.dp, top = 2.dp, bottom = 2.dp))
             Row(Modifier.padding(start = 12.dp, top = 6.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 val fieldColors = OutlinedTextFieldDefaults.colors(
                     unfocusedContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f),
@@ -407,14 +492,14 @@ private fun ValueCard(
                     value = valueText,
                     onValueChange = { text ->
                         valueText = text
-                        onUpdate { it.copy(displayValue = text, numericValue = parseNumberInput(text)) }
+                        onUpdate { it.withEditedResult(text) }
                     },
                     label = { Text(stringResource(R.string.value)) },
                     isError = value.isSelected && !value.hasResult,
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = keyboard),
                     shape = MaterialTheme.shapes.large, colors = fieldColors,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).semantics { if (value.needsSourceCheck) stateDescription = compareDetail },
                 )
                 OutlinedTextField(
                     value = value.unit, onValueChange = { text -> onUpdate { it.copy(unit = text) } },
@@ -456,10 +541,49 @@ private fun ReviewPreview() {
     LabImporterTheme(dynamicColor = false) { ReviewScreen(previewDraft, {}, { _, _ -> }, { "" }, {}, {}, {}) }
 }
 
-@Preview(name = "Read by Gemma", widthDp = 400, heightDp = 1100)
+/** A misread value to compare, no date in the report, and names found in it. */
+/** A result that can't be saved as written, next to one that can. */
+private val previewToCorrect = previewDraft.copy(
+    values = listOf(PreviewSamples.reviewValues.first().copy(displayValue = "neg 1", numericValue = null)) + PreviewSamples.reviewValues.drop(1),
+)
+
+@Preview(name = "To correct", widthDp = 400, heightDp = 1100)
 @Composable
-private fun ReviewGemmaPreview() {
-    LabImporterTheme(dynamicColor = false) { ReviewScreen(previewDraft.copy(engine = AiEngine.GEMMA), {}, { _, _ -> }, { "" }, {}, {}, {}) }
+private fun ReviewToCorrectPreview() {
+    LabImporterTheme(dynamicColor = false) { ReviewScreen(previewToCorrect, {}, { _, _ -> }, { "" }, {}, {}, {}) }
+}
+
+@Preview(name = "To correct – dark", widthDp = 400, heightDp = 1100, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun ReviewToCorrectDarkPreview() {
+    LabImporterTheme(darkTheme = true, dynamicColor = false) { ReviewScreen(previewToCorrect, {}, { _, _ -> }, { "" }, {}, {}, {}) }
+}
+
+private val previewToCheck = previewDraft.copy(
+    values = listOf(PreviewSamples.reviewValues.first().copy(displayValue = "65", numericValue = 65.0, needsSourceCheck = true)) + PreviewSamples.reviewValues.drop(1),
+    patientName = "",
+    authorName = "",
+    detectedPatientName = "Max Mustermann",
+    detectedAuthorName = "Labor Dr. Muster",
+    dateNotFound = true,
+)
+
+@Preview(name = "To check, no date, details folded", widthDp = 400, heightDp = 1100)
+@Composable
+private fun ReviewToCheckPreview() {
+    LabImporterTheme(dynamicColor = false) { ReviewScreen(previewToCheck, {}, { _, _ -> }, { "" }, {}, {}, {}) }
+}
+
+@Preview(name = "To check, no date, details folded – dark", widthDp = 400, heightDp = 1100, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun ReviewToCheckDarkPreview() {
+    LabImporterTheme(darkTheme = true, dynamicColor = false) { ReviewScreen(previewToCheck, {}, { _, _ -> }, { "" }, {}, {}, {}) }
+}
+
+@Preview(name = "To check – small phone", widthDp = 360, heightDp = 640)
+@Composable
+private fun ReviewToCheckSmallPreview() {
+    LabImporterTheme(dynamicColor = false) { ReviewScreen(previewToCheck, {}, { _, _ -> }, { "" }, {}, {}, {}) }
 }
 
 @Preview(name = "Development stand-in (debug) – dark", widthDp = 400, heightDp = 1100, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)

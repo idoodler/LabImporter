@@ -44,7 +44,7 @@ object CdaParser {
             // The stored code is the LOINC code; prefer our localized name and
             // fall back to the display name carried in the document.
             val mapped = LabMapping.displayName(obs.loinc)
-            val (text, unit) = obs.value?.let { NumberFormatting.cdaValue(it) to obs.unit } ?: QualitativeResult.split(obs.text!!)
+            val (text, unit) = obs.value?.let { NumberFormatting.exactValue(it) to obs.unit } ?: QualitativeResult.split(obs.text!!)
             LabReport.Entry(
                 id = Uuid.random().toString(),
                 code = obs.loinc,

@@ -16,6 +16,7 @@ import dev.idoodler.labimporter.ai.AiException
 import dev.idoodler.labimporter.ai.messageRes
 import dev.idoodler.labimporter.core.export.CdaExport
 import dev.idoodler.labimporter.core.export.PdfReport
+import dev.idoodler.labimporter.core.export.ReportEncodingException
 import dev.idoodler.labimporter.core.model.Dashboard
 import dev.idoodler.labimporter.shortcuts.LauncherShortcuts
 import dev.idoodler.labimporter.data.PatientDetails
@@ -29,6 +30,8 @@ import dev.idoodler.labimporter.core.transfer.ReportTransfer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import dev.idoodler.labimporter.data.HealthConnectAvailability
+import dev.idoodler.labimporter.data.HealthConnectUnavailableException
+import dev.idoodler.labimporter.data.ReplaceOutcome
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -62,7 +65,12 @@ data class ReviewDraft(
     val detectedAuthorName: String? = null,
     /** Set when editing an already-saved report. */
     val original: LabReport? = null,
-)
+    /** The import found no date the report prints, so [date] is only a starting point until the user changes it. */
+    val dateNotFound: Boolean = false,
+) {
+    /** The user set the date; [dateNotFound] stands until it really changes, as on iOS. */
+    fun withDate(newDate: LocalDate): ReviewDraft = copy(date = newDate, dateNotFound = dateNotFound && newDate == date)
+}
 
 /** Something asked for from outside the app (a launcher shortcut), done once the main screen shows — like iOS's `SiriActionBridge`. */
 sealed interface LaunchRequest {
@@ -110,6 +118,12 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     val reports: StateFlow<List<LabReport>> = repository.reports
     val isLoading: StateFlow<Boolean> = repository.isLoading
+
+    /** The last load failed: "no reports" would be wrong, so the dashboard says that instead. */
+    val loadFailed: StateFlow<Boolean> = repository.loadFailed
+
+    /** Saved reports that exist but can't be read. */
+    val unreadableReports: StateFlow<Int> = repository.unreadableReports
     val displayPreferences: StateFlow<LabDisplayPreferences> = preferences.displayPreferences
     val hasSeenWelcome: StateFlow<Boolean> = preferences.hasSeenWelcome
     val patientName: StateFlow<String> = preferences.patientName
@@ -142,6 +156,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     val launchRequest: StateFlow<LaunchRequest?> = _launchRequest.asStateFlow()
 
     init {
+        // Whatever a share sheet was given last time has been read by now; it's a health record.
+        viewModelScope.launch(Dispatchers.IO) { clearExports() }
         refresh()
         // Launcher shortcuts follow the dashboard: one per visible value, names only unless opted in.
         viewModelScope.launch {
@@ -163,6 +179,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     /** Reload reports + statuses (launch, resume, after permission changes). */
     fun refresh() {
         viewModelScope.launch {
+            // Moving reports into Health Connect encodes them, which needs the catalog: on a cold
+            // start (and after every app update, when it's copied again) it may not be open yet.
+            LabImporterApplication.catalogReady.first { it }
             refreshHealthConnect()
             repository.reload()
         }
@@ -226,7 +245,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             if (granted.containsAll(healthConnectPermissions)) {
                 val moved = runCatching { repository.enableHealthConnect() }.getOrElse {
-                    _message.value = it.message
+                    connectFailed(it)
                     0
                 }
                 if (moved > 0) _message.value = context.resources.getQuantityString(R.plurals.hc_moved_reports, moved, moved)
@@ -250,9 +269,15 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun setUseHealthConnect(enabled: Boolean) {
         viewModelScope.launch {
             runCatching { if (enabled) repository.enableHealthConnect() else repository.useLocalStorage() }
-                .onFailure { _message.value = it.message }
+                .onFailure(::connectFailed)
             refreshHealthConnect()
         }
+    }
+
+    private fun connectFailed(error: Throwable) {
+        if (error is CancellationException) throw error
+        Log.w(TAG, "Couldn't connect to Health Connect", error)
+        _message.value = context.getString(R.string.hc_connect_failed)
     }
 
     // endregion
@@ -307,6 +332,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 engine = engine,
                 detectedPatientName = result.patientName?.trim()?.takeIf { it.isNotEmpty() },
                 detectedAuthorName = result.authorName?.trim()?.takeIf { it.isNotEmpty() },
+                dateNotFound = result.reportDate == null,
             ),
         )
     }
@@ -382,19 +408,38 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 id = draft.original?.id ?: kotlin.uuid.Uuid.random().toString(),
             )
             runCatching {
-                if (draft.original != null) repository.replace(draft.original, report) else repository.save(report)
-            }.onSuccess {
+                if (draft.original != null) {
+                    repository.replace(draft.original, report)
+                } else {
+                    repository.save(report)
+                    ReplaceOutcome.REPLACED
+                }
+            }.onSuccess { outcome ->
                 // A new report's names are remembered for the next one; editing an old report leaves them.
                 if (draft.original == null) {
                     preferences.setPatientName(draft.patientName.trim())
                     preferences.setAuthorName(draft.authorName.trim())
                 }
                 _importState.value = ImportState.Idle
-                _message.value = context.resources.getQuantityString(R.plurals.saved_values, report.entries.size, report.entries.size)
+                _message.value = if (outcome == ReplaceOutcome.SAVED_WITH_LEFTOVERS) {
+                    context.getString(R.string.save_leftovers_warning)
+                } else {
+                    context.resources.getQuantityString(R.plurals.saved_values, report.entries.size, report.entries.size)
+                }
             }.onFailure {
-                _message.value = context.getString(R.string.error_save, it.message.orEmpty())
+                if (it is CancellationException) throw it
+                Log.w(TAG, "Couldn't save the report", it)
+                _message.value = context.getString(saveFailure(it))
             }
         }
+    }
+
+    /** Why a save failed, in the user's words; the exception itself is for the log. */
+    private suspend fun saveFailure(error: Throwable): Int = when {
+        error is ReportEncodingException -> R.string.error_save_values
+        error is HealthConnectUnavailableException || error is SecurityException -> R.string.error_save_health_connect
+        repository.isUsingHealthConnect() -> R.string.error_save_health_connect
+        else -> R.string.error_save_storage
     }
 
     // endregion
@@ -403,7 +448,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             runCatching { repository.delete(report) }
                 .onSuccess { _message.value = context.getString(R.string.report_deleted) }
-                .onFailure { _message.value = it.message }
+                .onFailure {
+                    if (it is CancellationException) throw it
+                    Log.w(TAG, "Couldn't delete the report", it)
+                    _message.value = context.getString(R.string.delete_some_failed)
+                }
         }
     }
 
@@ -427,7 +476,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     /** Every report as the transfer file (shared `ReportTransfer`: a FHIR Bundle), ready to share. */
     fun exportAllReports(): Uri? {
         val all = reports.value.takeIf { it.isNotEmpty() } ?: return null
-        val file = File(exportsDirectory(), ReportTransfer.fileName(today()))
+        val file = newExportFile(ReportTransfer.fileName(today()))
         file.writeText(ReportTransfer.export(all, softwareIdentity))
         return FileProvider.getUriForFile(context, "${context.packageName}.files", file)
     }
@@ -450,18 +499,32 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             } ?: return@launch run { _message.value = context.getString(R.string.error_read_document) }
             val read = ReportTransfer.read(contents) as? ReportTransfer.ReadResult.Reports
                 ?: return@launch run { _message.value = context.getString(R.string.transfer_unsupported) }
+            // Skipping what's already here needs the whole list. Everything imported gets fresh ids,
+            // so nothing would merge the duplicates once the saved reports can be read again.
+            repository.reload()
+            if (repository.loadFailed.value) {
+                _message.value = context.getString(R.string.transfer_reports_unreadable)
+                return@launch
+            }
             val plan = ReportTransfer.plan(reports.value, read.reports)
-            try {
-                // Fresh ids: storage ids from the other device mean nothing here.
-                repository.saveAll(plan.toImport.map { it.copy(id = kotlin.uuid.Uuid.random().toString()) })
-                _message.value = context.getString(R.string.transfer_summary, plan.toImport.size, plan.alreadyPresent)
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                _message.value = context.getString(R.string.error_save, e.message.orEmpty())
+            val failed = repository.saveAll(plan.toImport.map(::withFreshIds))
+            val imported = plan.toImport.size - failed
+            _message.value = if (failed > 0) {
+                context.getString(R.string.transfer_summary_failed, imported, plan.alreadyPresent, failed)
+            } else {
+                context.getString(R.string.transfer_summary, imported, plan.alreadyPresent)
             }
         }
     }
+
+    /**
+     * Storage ids from the file mean nothing here. Entries need fresh ones too: Health Connect
+     * upserts by entry id, so a file's older version of a report would overwrite the current one.
+     */
+    private fun withFreshIds(report: LabReport): LabReport = report.copy(
+        id = kotlin.uuid.Uuid.random().toString(),
+        entries = report.entries.map { it.copy(id = kotlin.uuid.Uuid.random().toString()) },
+    )
 
     // region PDF export
 
@@ -474,7 +537,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         val today = today()
         val data = PdfReport.build(reports.value, options.selectedCodes, options.timeRange, patientName.value, today)
         // Named after the newest report, like iOS.
-        val file = File(exportsDirectory(), "LabReport-${data.latestDate ?: today}.pdf")
+        val file = newExportFile("LabReport-${data.latestDate ?: today}.pdf")
         try {
             file.outputStream().use { PdfReportRenderer(context).render(data, options, patientDetails.value, java.time.LocalDateTime.now(), it) }
             FileProvider.getUriForFile(context, "${context.packageName}.files", file)
@@ -491,12 +554,22 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun exportsDirectory() = File(context.cacheDir, "exports").apply { mkdirs() }
 
+    private fun clearExports() {
+        exportsDirectory().listFiles().orEmpty().forEach { it.delete() }
+    }
+
+    /** Where to write an export. Only the latest one stays: each is a copy of the user's health data. */
+    private fun newExportFile(name: String): File {
+        clearExports()
+        return File(exportsDirectory(), name)
+    }
+
     // endregion
 
     /** Writes the report as a C-CDA document (shared generator) and returns a shareable Uri. */
     fun exportCda(report: LabReport): Uri {
         val xml = CdaExport.generate(report.asLabValues, report.date, softwareIdentity, report.patientName, report.authorName)
-        val file = File(exportsDirectory(), "LabResults-${report.date}.xml").apply { writeText(xml) }
+        val file = newExportFile("LabResults-${report.date}.xml").apply { writeText(xml) }
         return FileProvider.getUriForFile(context, "${context.packageName}.files", file)
     }
 

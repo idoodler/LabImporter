@@ -139,7 +139,10 @@
     <string name="model_ready_text">Το LabImporter μπορεί πλέον να διαβάζει τις εργαστηριακές σας αναφορές, εξ ολοκλήρου σε αυτό το τηλέφωνο.</string>
     <string name="model_failed_title">Δεν έγινε λήψη του μοντέλου ΤΝ</string>
     <string name="error_scanner">Η σάρωση εγγράφων δεν είναι διαθέσιμη σε αυτήν τη συσκευή.</string>
-    <string name="error_save">Η αποθήκευση απέτυχε: %1$s</string>
+    <string name="error_save_health_connect">Το Health Connect δεν μπόρεσε να αποθηκεύσει την αναφορά, οπότε δεν άλλαξε τίποτα. Δοκιμάστε ξανά σε λίγο.</string>
+    <string name="error_save_storage">Δεν ήταν δυνατή η αποθήκευση της αναφοράς σε αυτή τη συσκευή, οπότε δεν άλλαξε τίποτα. Ελέγξτε τον ελεύθερο χώρο και δοκιμάστε ξανά.</string>
+    <string name="error_save_values">Ορισμένες τιμές δεν ήταν δυνατό να προετοιμαστούν για αποθήκευση, οπότε δεν άλλαξε τίποτα. Δοκιμάστε ξανά σε λίγο.</string>
+    <string name="save_leftovers_warning">Η ενημερωμένη αναφορά αποθηκεύτηκε, αλλά οι τιμές που αφαιρέσατε δεν ήταν δυνατό να διαγραφούν ακόμη. Επεξεργαστείτε την αναφορά για να τις αφαιρέσετε ξανά.</string>
     <string name="review_title">Έλεγχος τιμών</string>
     <string name="edit_report">Επεξεργασία αναφοράς</string>
     <string name="lab_or_doctor">Εργαστήριο / Ιατρός</string>
@@ -152,6 +155,20 @@
     <string name="search_loinc">Αναζήτηση εργαστηριακών εξετάσεων</string>
     <string name="loinc_suggested">Πρόταση: %1$s</string>
     <string name="loinc_duplicate">Διπλότυπο: %1$s</string>
+    <string name="compare_with_report">Συγκρίνετε με την αναφορά</string>
+    <string name="compare_with_report_detail">Αυτή η τιμή δεν βρέθηκε στο κείμενο της αναφοράς. Συγκρίνετέ τη με την αναφορά σας.</string>
+    <plurals name="values_to_check">
+        <item quantity="one">%d τιμή προς έλεγχο</item>
+        <item quantity="other">%d τιμές προς έλεγχο</item>
+    </plurals>
+    <plurals name="values_to_correct">
+        <item quantity="one">%d τιμή προς διόρθωση</item>
+        <item quantity="other">%d τιμές προς διόρθωση</item>
+    </plurals>
+    <string name="correct_or_deselect">Δεν μπορεί να αποθηκευτεί όπως είναι γραμμένη. Διορθώστε την ή αποεπιλέξτε την.</string>
+    <string name="no_date_found">Δεν βρέθηκε ημερομηνία στην αναφορά. Ελέγξτε ότι αυτή η ημερομηνία είναι σωστή.</string>
+    <string name="patient_and_lab">Ασθενής και εργαστήριο</string>
+    <string name="not_filled_in">Δεν έχει συμπληρωθεί</string>
     <plurals name="exportable_count">
         <item quantity="other">Έτοιμες για αποθήκευση: %1$d από %2$d</item>
         <item quantity="one">Έτοιμες για αποθήκευση: %1$d από %2$d</item>
@@ -193,6 +210,11 @@
     <string name="ai_available">Έτοιμο. Οι αναφορές διαβάζονται από το Gemini Nano, εξ ολοκλήρου σε αυτήν τη συσκευή.</string>
     <string name="ai_checking">Έλεγχος…</string>
     <string name="try_again">Δοκιμάστε ξανά</string>
+    <string name="reports_load_failed_title">Δεν ήταν δυνατή η φόρτωση των αναφορών σας</string>
+    <string name="reports_load_failed_message">Οι αποθηκευμένες αναφορές σας δεν άλλαξαν, αλλά δεν είναι δυνατή η ανάγνωσή τους αυτή τη στιγμή.</string>
+    <string name="reports_unreadable_title">Ορισμένες αναφορές δεν είναι δυνατό να διαβαστούν</string>
+    <string name="reports_unreadable_message">Αναφορές που δεν είναι δυνατό να διαβαστούν: %1$d. Παραμένουν σε αυτή τη συσκευή και δεν διαγράφηκαν.</string>
+    <string name="hc_connect_failed">Δεν ήταν δυνατή η σύνδεση με το Health Connect. Οι αναφορές σας παραμένουν στο LabImporter. Δοκιμάστε ξανά στις Ρυθμίσεις.</string>
     <string name="transfer_title">Μεταφορά</string>
     <string name="transfer_export">Εξαγωγή όλων των αναφορών</string>
     <string name="transfer_export_detail">Αποθηκεύστε όλες τις αναφορές σε ένα αρχείο, για παράδειγμα για να τις μεταφέρετε σε άλλο τηλέφωνο.</string>
@@ -200,6 +222,8 @@
     <string name="transfer_import_detail">Από αρχείο LabImporter που εξήχθη σε iPhone ή Android. Οι αναφορές που υπάρχουν ήδη εδώ παραλείπονται.</string>
     <string name="transfer_unsupported">Αυτό το αρχείο δεν περιέχει αναφορές LabImporter.</string>
     <string name="transfer_summary">Νέες αναφορές: %1$d · Υπήρχαν ήδη: %2$d</string>
+    <string name="transfer_summary_failed">Νέες αναφορές: %1$d · Υπάρχουν ήδη: %2$d · Δεν αποθηκεύτηκαν: %3$d</string>
+    <string name="transfer_reports_unreadable">Δεν είναι δυνατή η ανάγνωση των αποθηκευμένων αναφορών σας αυτή τη στιγμή, οπότε δεν εισήχθη τίποτα. Δοκιμάστε ξανά σε λίγο.</string>
     <string name="privacy_title">Ιδιωτικότητα εκ σχεδιασμού</string>
     <string name="privacy_message">Όλα εκτελούνται στη συσκευή. Το LabImporter δεν μεταδίδει ποτέ τα εργαστηριακά σας δεδομένα.</string>
     <string name="loinc_catalog">Κατάλογος LOINC</string>
