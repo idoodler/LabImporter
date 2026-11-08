@@ -26,7 +26,6 @@
     <string name="onboarding_hc_message">Raporlarınızı Health Connect\'e kaydedin; böylece diğer sağlık verilerinizle birlikte dururlar. Laboratuvar sonuçları bu cihazda standart tıbbi kayıtlar olarak saklanır.</string>
     <string name="onboarding_hc_connected">Bağlandı. Raporlarınız laboratuvar sonuçları olarak Health Connect\'e kaydedilecek.</string>
     <string name="onboarding_hc_unavailable">Health Connect tıbbi kayıtları bu cihazda kullanılamıyor; bu nedenle raporlarınız bu cihazda LabImporter\'da gizli olarak saklanır. Daha sonra Ayarlar\'dan değiştirebilirsiniz.</string>
-    <string name="dashboard_empty_title">Henüz Rapor Yok</string>
     <string name="import_report">Raporu içe aktar</string>
     <string name="search_metrics">Laboratuvar değerlerinizi arayın</string>
     <string name="pinned">Sabitlenenler</string>

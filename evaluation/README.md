@@ -49,16 +49,34 @@ or with the unit "/l"), which shows up with either prompt; the two LOINC
 misses are "GPT"/"ALT (GPT)", which no catalog label names and which stay
 unmapped for the user to place. Text results the model leaves out entirely
 ("Orina: Proteínas … Negativo") or names ambiguously ("Eiweiß", which the
-catalog also uses for egg white) are the misses there.
+catalog also uses for egg white — now kept unmapped, see below) are the
+misses there.
 
-The source check, replaying those replies (2026-11-07):
+The source check, replaying those replies (2026-11-08), after it also checks
+the unit and the test's own line:
 
 ```
-SOURCE CHECK  wrong values flagged 0, wrong values NOT flagged 2, right values falsely flagged 0/89
+SOURCE CHECK  wrong values flagged 1, wrong values NOT flagged 1, right values falsely flagged 0/89
 ```
 
-No false alarm in 89 right values. Neither wrong value is a misread result, so
-the check can't see it: "22" with the unit "/l" is ALT's number in the wrong
-unit, and "positiv (+)" is printed but landed on the wrong test. The saved
-replies hold no misread digit, so this run says nothing about catching one;
-`ReportSourceTextTest` covers that (222 for 22).
+Before (result printed anywhere only): flagged 0, not flagged 2, false 0/89.
+"22" with the unit "/l" is now flagged: "/l" is no whole unit of the report
+("U/l"). The one left was "positiv (+)", which the model read right, on its
+own line ("Eiweiß positiv (+)"): the LOINC lookup then took "Eiweiß" for egg
+white (an allergen mix), so no check of the text against the reply could see
+it.
+
+Since an allergen mix is no longer suggested for a name of one of its members
+(`LoincRanking.namesOneMemberOfMix`), that "Eiweiß" stays unmapped for the
+user to place, and the replay (2026-11-08) reads:
+
+```
+TOTAL  correct 76/77 (recall 98%), extra numbers 1, precision 98%, invalid replies 0, LOINC 62/64, text results 14/16, dates 7/8
+SOURCE CHECK  wrong values flagged 1, wrong values NOT flagged 0, right values falsely flagged 0/90
+```
+
+No wrong value goes unflagged any more; the right values are one more (the
+unmapped "Eiweiß"), none falsely flagged. The saved replies hold no misread
+digit and no result on another test's row, so this run says nothing about
+catching those; `ReportSourceTextTest` covers them (222 for 22, and every
+sample report's results moved to another row).

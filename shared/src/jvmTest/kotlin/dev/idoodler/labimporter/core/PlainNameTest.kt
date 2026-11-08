@@ -80,6 +80,30 @@ class PlainNameTest {
     }
 
     @Test
+    fun aScaleTheResultShowsIsNotInTheName() {
+        // The dashboard showed "TSH Qn": a number is quantitative.
+        assertEquals("TSH", name("en", "3016-3"))
+        // A "negative" or "2+" is qualitative, as German and every other catalog language leave it to the result.
+        assertEquals("CRP", name("en", "11039-5"))
+        assertEquals("Nitrite Test strip (urine)", name("en", "5802-4"))
+        assertEquals("C-reaktives Protein", name("de", "11039-5"))
+        // What tells tests apart stays: a morphology isn't its count, a calculation or a method isn't the measurement.
+        assertEquals("RBC Auto Nom", name("en", "11273-0"))
+        assertEquals("RBC Auto", name("en", "789-8"))
+        assertEquals("Cholesterol in LDL Calc", name("en", "13457-7"))
+        assertEquals("Urobilinogen Test strip SemiQn (urine)", name("en", "19161-9"))
+    }
+
+    @Test
+    fun noNameCarriesAScaleTheResultShows() {
+        val scales = Regex("(?<![\\p{L}\\p{N}])(?:Qn|Ql)(?![\\p{L}\\p{N}])")
+        val left = listOf("en").flatMap { language ->
+            catalog.getValue(language).map { "$language ${it.code}: ${plain(language, it)}" }.filter { scales.containsMatchIn(it.substringAfter(": ")) }
+        }
+        assertTrue(left.isEmpty(), "${left.size} names:\n" + left.take(30).joinToString("\n"))
+    }
+
+    @Test
     fun aMissingLabelFallsBackToTheEnglishOne() {
         // 2024-8 has no German label.
         assertEquals("Carbon dioxide dissolved", name("de", "2024-8"))

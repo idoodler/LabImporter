@@ -26,7 +26,6 @@
     <string name="onboarding_hc_message">Ukladajte správy do Health Connect, aby boli spolu s ostatnými zdravotnými údajmi. Laboratórne výsledky sa ukladajú ako štandardné zdravotné záznamy v tomto zariadení.</string>
     <string name="onboarding_hc_connected">Pripojené. Vaše správy sa budú ukladať do Health Connect ako laboratórne výsledky.</string>
     <string name="onboarding_hc_unavailable">Zdravotné záznamy Health Connect nie sú v tomto zariadení dostupné, preto sa vaše správy ukladajú súkromne v LabImporteri v tomto zariadení. Neskôr to môžete zmeniť v Nastaveniach.</string>
-    <string name="dashboard_empty_title">Zatiaľ žiadne správy</string>
     <string name="import_report">Importovať správu</string>
     <string name="search_metrics">Hľadajte svoje laboratórne hodnoty</string>
     <string name="pinned">Pripnuté</string>

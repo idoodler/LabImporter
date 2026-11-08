@@ -303,8 +303,10 @@ def design_quality(inputs: Inputs) -> list[Measure]:
     else:
         for name, label in (("ios_strings", "iOS"), ("android_strings", "Android")):
             s = static[name]
+            android_only = len(s.get("android_only_keys", []))
+            shared = f" ({android_only} used by Android only)" if android_only else ""
             m.parts.append(check(not s["missing_translations"] and not s["stale_keys"],
-                                 f"{label}: {len(s['missing_translations'])} missing, {len(s['stale_keys'])} stale of {s['keys']} keys"))
+                                 f"{label}: {len(s['missing_translations'])} missing, {len(s['stale_keys'])} stale of {s['keys']} keys{shared}"))
     m.note = "File-format jargon in the main actions is judged by the panel."
     measures.append(m)
 

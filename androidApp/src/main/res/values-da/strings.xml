@@ -26,7 +26,6 @@
     <string name="onboarding_hc_message">Gem dine rapporter i Health Connect, så de er samlet med resten af dine helbredsdata. Laboratorieresultater gemmes som standardiserede medicinske poster på denne enhed.</string>
     <string name="onboarding_hc_connected">Forbundet. Dine rapporter gemmes i Health Connect som laboratorieresultater.</string>
     <string name="onboarding_hc_unavailable">Helbredsjournaler i Health Connect er ikke tilgængelige på denne enhed, så dine rapporter gemmes privat i LabImporter på denne enhed. Du kan skifte senere i Indstillinger.</string>
-    <string name="dashboard_empty_title">Ingen rapporter endnu</string>
     <string name="import_report">Importér rapport</string>
     <string name="search_metrics">Søg i dine laboratorieværdier</string>
     <string name="pinned">Fastgjort</string>

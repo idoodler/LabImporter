@@ -191,7 +191,7 @@ object LabParsePipeline {
                 numericValue = numeric,
                 unit = units[index],
                 isSuggestedCode = suggested,
-                needsSourceCheck = !source.prints(results[index]),
+                needsSourceCheck = !source.backs(results[index], units[index], listOf(entry.name, entry.code)),
             )
         }
         // A report can list a test twice: keep one entry per LOINC, the app's canonical identity.

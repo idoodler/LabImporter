@@ -26,7 +26,6 @@
     <string name="onboarding_hc_message">Tallenna raporttisi Health Connectiin, jotta ne ovat muiden terveystietojesi kanssa. Laboratoriotulokset tallennetaan tähän laitteeseen standardinmukaisina terveystietueina.</string>
     <string name="onboarding_hc_connected">Yhdistetty. Raporttisi tallennetaan Health Connectiin laboratoriotuloksina.</string>
     <string name="onboarding_hc_unavailable">Health Connectin terveystiedot eivät ole käytettävissä tällä laitteella, joten raporttisi tallennetaan yksityisesti LabImporteriin tälle laitteelle. Voit vaihtaa myöhemmin Asetuksissa.</string>
-    <string name="dashboard_empty_title">Ei vielä raportteja</string>
     <string name="import_report">Tuo raportti</string>
     <string name="search_metrics">Hae laboratorioarvojasi</string>
     <string name="pinned">Kiinnitetyt</string>

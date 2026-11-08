@@ -18,6 +18,11 @@
 # (installed here into build/quality/venv).
 set -u
 cd "$(dirname "$0")/../.."
+# The SDK where Android Studio installs it, when the shell doesn't say (local.properties
+# isn't committed, so Gradle can't find it otherwise).
+if [ -z "${ANDROID_HOME:-}" ] && [ -d "$HOME/Library/Android/sdk" ]; then
+  export ANDROID_HOME="$HOME/Library/Android/sdk"
+fi
 ROOT=$(pwd)
 OUT=build/quality
 LOGS=$OUT/logs

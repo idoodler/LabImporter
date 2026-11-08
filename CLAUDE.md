@@ -148,7 +148,9 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
     template and the term's LOINC system, with no table of tests. Blood, serum
     and plasma go; every other specimen and every method stays; a property goes
     only if the unit or the result says it anyway (mg/dL, "negativ"), so colour,
-    morphology and pCO2 keep theirs. Only places that tell terms apart (code
+    morphology and pCO2 keep theirs. So do English scale words: "Qn" and "Ql"
+    go ("TSH Qn" is TSH), "Nom", "Nar" and "SemiQn" stay ("RBC Auto Nom" is the
+    morphology, not the count). Only places that tell terms apart (code
     picker, browser, term screen, "About this value", a name Siri's lists would
     show twice) show the full label, `catalogName(for:)`. Exports keep LOINC's
     English display in the coding; a FHIR record's human `code.text` is what the
@@ -173,7 +175,14 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   the name's usual specimen (µmol/l creatinine → serum, not blood). The printed
   result's shape (`ResultShape`) rules out terms that can't hold it — a result
   in words ("negativ") or a strip grade is never a count or a concentration, a
-  titer only a titer — and panels/documents (scale `-`/`Doc`) never match. A
+  titer only a titer — and panels/documents (scale `-`/`Doc`) never match. Nor
+  does an allergen mix the name mentions only one member of
+  (`namesOneMemberOfMix`: class ALLERGY, a component opening with a
+  parenthesised "+" list, "(A+B+…) Ab.IgE"; the members are read on the term's
+  own labels, so a urine strip's "Eiweiß" is not the food allergen mix with
+  egg white); a mix is still found by its own name or code ("fx5") or picked
+  by hand. Every other "+" is no mix: phenotypes ("CD3+CD4+", so "CD4" is the
+  CD4 count), sums ("Calcidiol+ercalcidiol"), methods. A
   term the name *names* beats one matched only by a related name
   (`bySynonym`: "HGB" is hemoglobin, not "DO-Hgb"), "total" is no extra word
   ("Carbon dioxide, total" is plain CO₂), and a specimen or population the name
@@ -196,7 +205,11 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   A number is compared as printed, with its sign and without a qualifier (0.5
   isn't printed by "<0,5", 160 by "1:160"), and "263,000" is read by the report's
   own decimal notation: 263000 beside decimal points, 263 beside decimal commas;
-  with no such sign it's no number. Text that can't be saved as written
+  with no such sign it's no number. The unit must be printed as a whole unit
+  (case, spacing and µ/u aside: "/l" isn't printed by "U/l"), and the result on
+  a line that names the test (by the model's name or printed code) wherever such
+  a line prints a result at all — a PDF's text can put a table's names and
+  values apart, and then nothing is claimed. Text that can't be saved as written
   (`needsCorrection`) holds back saving until it's corrected or deselected.
 - **Model quality check:** `evaluation/` (JVM, not part of the app) runs
   an on-device model over synthetic sample reports with the app's exact prompt,

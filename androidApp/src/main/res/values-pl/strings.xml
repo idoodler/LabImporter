@@ -26,7 +26,6 @@
     <string name="onboarding_hc_message">Zapisuj raporty w Health Connect, aby były razem z pozostałymi danymi o zdrowiu. Wyniki badań są przechowywane na tym urządzeniu jako standardowe rekordy medyczne.</string>
     <string name="onboarding_hc_connected">Połączono. Raporty będą zapisywane w Health Connect jako wyniki badań.</string>
     <string name="onboarding_hc_unavailable">Dokumentacja medyczna Health Connect nie jest dostępna na tym urządzeniu, więc raporty są przechowywane prywatnie w LabImporterze na tym urządzeniu. Możesz to zmienić później w Ustawieniach.</string>
-    <string name="dashboard_empty_title">Brak raportów</string>
     <string name="import_report">Importuj raport</string>
     <string name="search_metrics">Wyszukuj swoje wyniki laboratoryjne</string>
     <string name="pinned">Przypięte</string>

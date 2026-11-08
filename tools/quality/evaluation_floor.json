@@ -3,10 +3,10 @@
   "valuesCorrect": {"min": 76},
   "extraNumbers": {"max": 1},
   "loincRight": {"min": 62},
-  "textKept": {"min": 13},
+  "textKept": {"min": 14},
   "datesRight": {"min": 7},
   "datesWrong": {"max": 0},
   "invalidReplies": {"max": 0},
-  "wrongValuesNotFlagged": {"max": 2},
+  "wrongValuesNotFlagged": {"max": 0},
   "falseFlags": {"max": 0}
 }

@@ -26,7 +26,6 @@
     <string name="onboarding_hc_message">Salvează rapoartele în Health Connect ca să stea alături de restul datelor tale de sănătate. Rezultatele de laborator sunt stocate ca înregistrări medicale standard pe acest dispozitiv.</string>
     <string name="onboarding_hc_connected">Conectat. Rapoartele tale vor fi salvate în Health Connect ca rezultate de laborator.</string>
     <string name="onboarding_hc_unavailable">Dosarele medicale Health Connect nu sunt disponibile pe acest dispozitiv, așa că rapoartele tale sunt stocate privat în LabImporter pe acest dispozitiv. Poți schimba mai târziu din Configurări.</string>
-    <string name="dashboard_empty_title">Niciun raport încă</string>
     <string name="import_report">Importă raportul</string>
     <string name="search_metrics">Caută-ți valorile de laborator</string>
     <string name="pinned">Fixate</string>

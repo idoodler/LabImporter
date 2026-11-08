@@ -26,7 +26,6 @@
     <string name="onboarding_hc_message">将报告保存到 Health Connect，与你的其他健康数据放在一起。化验结果会以标准医疗记录的形式存储在此设备上。</string>
     <string name="onboarding_hc_connected">已连接。你的报告将作为化验结果保存到 Health Connect。</string>
     <string name="onboarding_hc_unavailable">此设备不支持 Health Connect 医疗记录，因此你的报告会私密地存储在此设备的 LabImporter 中。你之后可以在“设置”中切换。</string>
-    <string name="dashboard_empty_title">暂无报告</string>
     <string name="import_report">导入报告</string>
     <string name="search_metrics">搜索你的化验值</string>
     <string name="pinned">已置顶</string>

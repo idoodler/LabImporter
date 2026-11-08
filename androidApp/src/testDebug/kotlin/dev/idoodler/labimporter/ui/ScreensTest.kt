@@ -120,7 +120,7 @@ class ScreensTest {
     fun standInResultsAreLabelledAsSamples() {
         review(listOf(value("a", "2160-0", 0.8)), engine = AiEngine.DEVELOPMENT_STAND_IN)
         compose.onNodeWithText(checkNotNull(DevelopmentStandIn.texts).reviewBanner).assertIsDisplayed()
-        compose.onNodeWithText(string(R.string.engine_gemini)).assertDoesNotExist()
+        compose.onNodeWithText(string(R.string.ai_title)).assertDoesNotExist()
     }
 
     private fun settings(ai: AiSettings) {

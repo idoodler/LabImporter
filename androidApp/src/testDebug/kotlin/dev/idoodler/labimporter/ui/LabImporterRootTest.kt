@@ -89,7 +89,6 @@ class LabImporterRootTest {
         launch()
         compose.onNodeWithText(string(R.string.unsupported_title)).assertIsDisplayed()
         compose.onNodeWithText(string(R.string.unsupported_message)).assertIsDisplayed()
-        compose.onNodeWithText(string(R.string.dashboard_empty_title)).assertDoesNotExist()
         compose.onNodeWithText(string(R.string.import_title)).assertDoesNotExist()
     }
 

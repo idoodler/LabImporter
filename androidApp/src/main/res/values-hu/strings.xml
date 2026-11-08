@@ -26,7 +26,6 @@
     <string name="onboarding_hc_message">Mentsd a jelentéseidet a Health Connectbe, hogy a többi egészségügyi adatod mellett legyenek. A laboreredmények szabványos orvosi rekordokként tárolódnak ezen az eszközön.</string>
     <string name="onboarding_hc_connected">Csatlakoztatva. A jelentéseid laboreredményként kerülnek a Health Connectbe.</string>
     <string name="onboarding_hc_unavailable">A Health Connect egészségügyi adatai nem érhetők el ezen az eszközön, ezért a jelentéseid privát módon, a LabImporterben tárolódnak ezen az eszközön. Később a Beállításokban válthatsz.</string>
-    <string name="dashboard_empty_title">Még nincsenek jelentések</string>
     <string name="import_report">Jelentés importálása</string>
     <string name="search_metrics">Keressen a laborértékei között</string>
     <string name="pinned">Rögzítve</string>

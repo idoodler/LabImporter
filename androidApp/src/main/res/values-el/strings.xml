@@ -26,7 +26,6 @@
     <string name="onboarding_hc_message">Αποθηκεύστε τις αναφορές σας στο Health Connect για να βρίσκονται μαζί με τα υπόλοιπα δεδομένα υγείας σας. Τα εργαστηριακά αποτελέσματα αποθηκεύονται ως τυπικές ιατρικές εγγραφές σε αυτήν τη συσκευή.</string>
     <string name="onboarding_hc_connected">Συνδέθηκε. Οι αναφορές σας θα αποθηκεύονται στο Health Connect ως εργαστηριακά αποτελέσματα.</string>
     <string name="onboarding_hc_unavailable">Τα ιατρικά αρχεία του Health Connect δεν είναι διαθέσιμα σε αυτήν τη συσκευή, οπότε οι αναφορές σας αποθηκεύονται ιδιωτικά στο LabImporter σε αυτήν τη συσκευή. Μπορείτε να το αλλάξετε αργότερα στις Ρυθμίσεις.</string>
-    <string name="dashboard_empty_title">Δεν υπάρχουν αναφορές ακόμη</string>
     <string name="import_report">Εισαγωγή αναφοράς</string>
     <string name="search_metrics">Αναζητήστε τις εργαστηριακές σας τιμές</string>
     <string name="pinned">Καρφιτσωμένα</string>

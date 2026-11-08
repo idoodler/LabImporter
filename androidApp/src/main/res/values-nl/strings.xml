@@ -26,7 +26,6 @@
     <string name="onboarding_hc_message">Bewaar je rapporten in Health Connect, zodat ze bij de rest van je gezondheidsgegevens staan. Labuitslagen worden als standaard medische dossiers op dit apparaat opgeslagen.</string>
     <string name="onboarding_hc_connected">Verbonden. Je rapporten worden als labuitslagen in Health Connect bewaard.</string>
     <string name="onboarding_hc_unavailable">Medische dossiers van Health Connect zijn niet beschikbaar op dit apparaat, dus je rapporten worden privé in LabImporter op dit apparaat bewaard. Je kunt later overschakelen in Instellingen.</string>
-    <string name="dashboard_empty_title">Nog geen rapporten</string>
     <string name="import_report">Rapport importeren</string>
     <string name="search_metrics">Doorzoek je labwaarden</string>
     <string name="pinned">Vastgezet</string>

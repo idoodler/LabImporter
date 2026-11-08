@@ -13,8 +13,25 @@ struct QualityScreen: Sendable {
         static func text(_ text: String) -> Marker { Marker(type: .staticText, label: text) }
         static func button(_ label: String) -> Marker { Marker(type: .button, label: label) }
 
-        func element(in app: XCUIApplication) -> XCUIElement {
-            app.descendants(matching: type).matching(NSPredicate(format: "identifier == %@ OR label == %@", label, label)).firstMatch
+        /// The marker in `language`'s wording too (the screenshot matrix runs in German), from the app's String Catalog.
+        func element(in app: XCUIApplication, language: String? = nil) -> XCUIElement {
+            let translated = language.flatMap { Self.translation(of: label, in: $0) } ?? label
+            let predicate = NSPredicate(format: "identifier IN %@ OR label IN %@", [label, translated], [label, translated])
+            return app.descendants(matching: type).matching(predicate).firstMatch
+        }
+
+        /// The simulator reads the Mac's files, so the catalog is read where the sources are.
+        private static func translation(of key: String, in language: String) -> String? {
+            let catalog = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+                .appendingPathComponent("LabImporter/Localizable.xcstrings")
+            guard let data = try? Data(contentsOf: catalog),
+                  let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let strings = root["strings"] as? [String: Any],
+                  let entry = strings[key] as? [String: Any],
+                  let localizations = entry["localizations"] as? [String: Any],
+                  let localization = localizations[language] as? [String: Any],
+                  let unit = localization["stringUnit"] as? [String: Any] else { return nil }
+            return unit["value"] as? String
         }
     }
 
@@ -74,13 +91,16 @@ struct QualityScreen: Sendable {
     func launch(extraArguments: [String]) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["--ss"] + arguments + extraArguments
+        // "-AppleLanguages (de)": the language the markers are shown in.
+        let language = extraArguments.firstIndex(of: "-AppleLanguages").flatMap { extraArguments.indices.contains($0 + 1) ? $0 + 1 : nil }
+            .map { extraArguments[$0].trimmingCharacters(in: CharacterSet(charactersIn: "()")) }
         app.launch()
         XCTAssertTrue(app.wait(for: .runningForeground, timeout: 30), name)
         if name == "review-planted-errors" {
             XCTAssertTrue(app.datePickers.firstMatch.waitForExistence(timeout: 60), "The report is read")
         }
         if tapping == nil {
-            XCTAssertTrue(shows.element(in: app).waitForExistence(timeout: 30), "\(name) shows \(shows.label)")
+            XCTAssertTrue(shows.element(in: app, language: language).waitForExistence(timeout: 30), "\(name) shows \(shows.label)")
         }
         waitUntilSettled(app)
         if let tapping {
@@ -91,7 +111,7 @@ struct QualityScreen: Sendable {
             }
             XCTAssertTrue(element.waitForExistence(timeout: 10), tapping)
             element.tap()
-            XCTAssertTrue(shows.element(in: app).waitForExistence(timeout: 15), "\(name) shows \(shows.label)")
+            XCTAssertTrue(shows.element(in: app, language: language).waitForExistence(timeout: 15), "\(name) shows \(shows.label)")
             waitUntilSettled(app)
         }
         return app

@@ -26,7 +26,6 @@
     <string name="onboarding_hc_message">Speichere deine Berichte in Health Connect, damit sie bei deinen übrigen Gesundheitsdaten liegen. Laborergebnisse werden als standardisierte medizinische Einträge auf diesem Gerät gespeichert.</string>
     <string name="onboarding_hc_connected">Verbunden. Deine Berichte werden als Laborergebnisse in Health Connect gespeichert.</string>
     <string name="onboarding_hc_unavailable">Gesundheitsakten in Health Connect sind auf diesem Gerät nicht verfügbar. Deine Berichte werden daher privat in LabImporter auf diesem Gerät gespeichert. Du kannst das später in den Einstellungen ändern.</string>
-    <string name="dashboard_empty_title">Noch keine Berichte</string>
     <string name="import_report">Bericht importieren</string>
     <string name="search_metrics">Durchsuche deine Laborwerte</string>
     <string name="pinned">Angeheftet</string>

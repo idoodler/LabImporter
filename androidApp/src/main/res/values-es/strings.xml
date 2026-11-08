@@ -26,7 +26,6 @@
     <string name="onboarding_hc_message">Guarda tus informes en Health Connect para tenerlos junto al resto de tus datos de salud. Los resultados de laboratorio se almacenan como registros médicos estándar en este dispositivo.</string>
     <string name="onboarding_hc_connected">Conectado. Tus informes se guardarán en Health Connect como resultados de laboratorio.</string>
     <string name="onboarding_hc_unavailable">Los registros médicos de Health Connect no están disponibles en este dispositivo, así que tus informes se guardan de forma privada en LabImporter en este dispositivo. Puedes cambiarlo más adelante en Ajustes.</string>
-    <string name="dashboard_empty_title">Sin informes aún</string>
     <string name="import_report">Importar informe</string>
     <string name="search_metrics">Busca tus valores de laboratorio</string>
     <string name="pinned">Fijados</string>

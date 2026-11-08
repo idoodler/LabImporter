@@ -26,7 +26,6 @@
     <string name="onboarding_hc_message">Enregistrez vos rapports dans Health Connect pour les garder avec le reste de vos données de santé. Les résultats de laboratoire sont stockés sous forme de dossiers médicaux standard sur cet appareil.</string>
     <string name="onboarding_hc_connected">Connecté. Vos rapports seront enregistrés dans Health Connect en tant que résultats de laboratoire.</string>
     <string name="onboarding_hc_unavailable">Les dossiers médicaux de Health Connect ne sont pas disponibles sur cet appareil : vos rapports sont donc conservés en privé dans LabImporter sur cet appareil. Vous pourrez changer plus tard dans Réglages.</string>
-    <string name="dashboard_empty_title">Aucun rapport pour l\'instant</string>
     <string name="import_report">Importer le rapport</string>
     <string name="search_metrics">Recherchez vos valeurs de laboratoire</string>
     <string name="pinned">Épinglés</string>

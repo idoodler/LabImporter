@@ -26,7 +26,6 @@
     <string name="onboarding_hc_message">Spara dina rapporter i Health Connect så att de finns tillsammans med resten av dina hälsodata. Labbresultat lagras som standardiserade medicinska poster på den här enheten.</string>
     <string name="onboarding_hc_connected">Ansluten. Dina rapporter sparas i Health Connect som labbresultat.</string>
     <string name="onboarding_hc_unavailable">Hälsojournaler i Health Connect är inte tillgängliga på den här enheten, så dina rapporter lagras privat i LabImporter på den här enheten. Du kan byta senare i Inställningar.</string>
-    <string name="dashboard_empty_title">Inga rapporter ännu</string>
     <string name="import_report">Importera rapport</string>
     <string name="search_metrics">Sök bland dina labbvärden</string>
     <string name="pinned">Fästa</string>

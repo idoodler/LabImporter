@@ -10,7 +10,8 @@ package dev.idoodler.labimporter.core.loinc
  * always the same: component, property, specimen, scale, method. The rule keeps
  * the component and the method (LDL Calc and LDL direct are different tests) and
  * drops a property only if the unit or the result beside the value says it anyway
- * ([PROPERTIES_THE_RESULT_STATES]); any other names the test. The specimen
+ * ([PROPERTIES_THE_RESULT_STATES]); any other names the test. A scale word goes
+ * on the same terms ([SCALES_THE_RESULT_STATES]: "TSH Qn" is TSH). The specimen
  * goes only for the usual blood, serum and plasma, decided by the term's
  * language-neutral LOINC system: urine or stool protein is a different test, so
  * nothing below may remove a specimen unless [USUAL_SYSTEMS] says so.
@@ -48,6 +49,7 @@ internal object LoincPlainName {
         // property is all that tells "Vancomycin" the drug level from the antibiotic test.
         val printsSpecimen = trailingGroupStart(head) >= 0 || METHOD_CONNECTOR.split(" $tail ", 2).first().isNotBlank()
         var name = "$head $tail".trim()
+        if (language == "en") name = name.split(' ').filterNot { it in SCALES_THE_RESULT_STATES }.joinToString(" ")
         if (usual) WORDED_SPECIMENS[language]?.let { name = withoutWordedSpecimen(name, it) }
         if (language == "en" && !usual) name = withSpecimenSpelledOut(name)
         val names = property.isNotEmpty() && (keepsProperty || (!usual && !printsSpecimen))
@@ -198,6 +200,17 @@ internal object LoincPlainName {
         "EntMass", "EntVol", "EntMCnc", "EntSCnc", "EntCat", "EntSub", "EntNum", "ArVRat", "Time", "RelTime", "TRto",
         "Prid", "Type", "ID", "Source", "Pn", "Addr", "Txt", "Bib", "Desc", "Disposition", "Anat", "TmStp", "Date",
     )
+
+    /**
+     * The scales LOINC's English display names print as a word ("TSH Qn", "Nitrite Test
+     * strip Ql (U)") that the result says anyway: a number is quantitative, a "negative" or
+     * "2+" qualitative — as the bracketed and in-template languages leave it to the result.
+     * "Nom", "Nar" and "SemiQn" stay: they tell a morphology from its count ("RBC Auto Nom"),
+     * a narrative from a nominal report, test strips of one scale from each other. Portuguese
+     * short names keep theirs: with no specimen or property printed, "Sperm Smn Qn" (velocity)
+     * and "HLA Ac Ql" (tissue) would read as another test.
+     */
+    private val SCALES_THE_RESULT_STATES = setOf("Qn", "Ql")
 
     private val IN_TEMPLATE_LANGUAGES = setOf("es", "it", "pl", "ru", "tr", "zh-Hans")
 

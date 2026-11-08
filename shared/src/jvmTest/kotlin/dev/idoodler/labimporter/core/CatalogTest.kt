@@ -125,6 +125,35 @@ class CatalogTest {
     }
 
     @Test
+    fun aNameOfOneMemberNeverLandsOnAMix() {
+        val loinc = LabCore.loinc!!
+        // A urine strip's "Eiweiß" once became the food allergen mix "(Arachis hypogaea+Kuhmilch+Eiweiß+…) IgE".
+        val (strip, _) = LabParsePipeline.resolveLoinc("", "Eiweiß", "de", "", "positiv (+)")
+        assertFalse('+' in loinc.detail(strip)?.component.orEmpty(), "Eiweiß → $strip")
+        // Nothing else fits a strip's protein in words: it stays for the user to place.
+        assertEquals("" to false, LabParsePipeline.resolveLoinc("", "Eiweiß", "de", "", "positiv (+)"))
+        // The mix itself is still found by its own code…
+        assertEquals("30187-9" to true, LabParsePipeline.resolveLoinc("fx5", "fx5", "de", "kU/l", "0,52"))
+        assertEquals("23801-4" to true, LabParsePipeline.resolveLoinc("fx5", "fx5", "de", "", "positiv"))
+        // …a single allergen as before.
+        assertEquals("6106-9" to true, LabParsePipeline.resolveLoinc("", "Eiweiß IgE-Antikörper [Einheiten/Volumen] in Serum", "de", "kU/l", "0,52"))
+        assertEquals("6106-9" to true, LabParsePipeline.resolveLoinc("f1", "Eiweiß IgE", "de", "kU/l", "0,52"))
+    }
+
+    @Test
+    fun aPlusOutsideAnAllergenMixIsNoMix() {
+        // Cell phenotypes ("Cells.CD3+CD4+") name one marker each, not a mix.
+        assertEquals("24467-3" to true, LabParsePipeline.resolveLoinc("", "CD4", "de", "/µl", "450"))
+        assertEquals("8123-2" to true, LabParsePipeline.resolveLoinc("", "CD4", "de", "%", "42"))
+        assertEquals("14135-8" to true, LabParsePipeline.resolveLoinc("", "CD8", "de", "/µl", "380"))
+        // QuantiFERON's "…release by CD4+ T-cells".
+        assertEquals(
+            "46217-6" to true,
+            LabParsePipeline.resolveLoinc("", "M. tuberculosis stim IFN-g by CD4+ T-cells", "en", "IU/ml", "0.12"),
+        )
+    }
+
+    @Test
     fun theTermThatNamesTheTestWinsOverOneThatMentionsIt() {
         // MCHC ("…Hämoglobinkonzentration eines Erythrozyten") is ordered more often than either.
         assertEquals("718-7" to true, LabParsePipeline.resolveLoinc("HB", "Hämoglobin", "de", "g/dl"))

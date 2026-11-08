@@ -26,7 +26,6 @@
     <string name="onboarding_hc_message">レポートをヘルスコネクトに保存すると、ほかの健康データと一緒に管理できます。検査結果は標準の医療記録としてこのデバイスに保存されます。</string>
     <string name="onboarding_hc_connected">接続済み。レポートは検査結果としてヘルスコネクトに保存されます。</string>
     <string name="onboarding_hc_unavailable">このデバイスではヘルスコネクトの医療記録を利用できないため、レポートはこのデバイスのLabImporter内に非公開で保存されます。あとから設定で切り替えられます。</string>
-    <string name="dashboard_empty_title">レポートがまだありません</string>
     <string name="import_report">レポートを読み込む</string>
     <string name="search_metrics">検査値を検索</string>
     <string name="pinned">ピン留め</string>

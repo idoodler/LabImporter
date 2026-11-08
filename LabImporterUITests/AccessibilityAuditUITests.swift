@@ -329,6 +329,8 @@ private enum AuditExemption {
         Entry(condition: "dashboard-qualitative/light/standard/1", type: .contrast, element: nil, reason: unpointed),
         Entry(condition: "dashboard-notices/light/standard/1", type: .contrast, element: "Reports saved by a newer version", reason: measured),
         Entry(condition: "dashboard-notices/light/standard/1", type: .contrast, element: "25-hydroxyvitamin D3", reason: measured),
+        // The same cards as dashboard-qualitative's: since "TSH Qn" reads "TSH", the audit reports one node it can't point to here too.
+        Entry(condition: "dashboard-notices/light/standard/1", type: .contrast, element: nil, reason: unpointed),
         Entry(condition: "dashboard-load-failed-stale/light/standard/1", type: .contrast, element: "Try Again", reason: measured),
         Entry(condition: "dashboard-load-failed-stale/light/standard/1", type: .contrast, element: "25-hydroxyvitamin D3", reason: measured),
         Entry(condition: "dashboard-load-failed-stale/light/standard/1", type: .contrast, element: "Cholesterol in LDL Calc", reason: measured),

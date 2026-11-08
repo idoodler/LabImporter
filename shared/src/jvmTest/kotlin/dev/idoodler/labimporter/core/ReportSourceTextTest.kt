@@ -348,22 +348,259 @@ class ReportSourceTextTest {
         assertEquals(1, listOf(value("2160-0"), value("KREA"), value("2823-3", selected = false), value("4548-4", flagged = false)).valuesToCheckCount())
     }
 
+    private fun printsUnit(text: String, unit: String) = ReportSourceText(text).printsUnit(unit)
+
+    @Test
+    fun aUnitMustBePrintedWhole() {
+        val alt = "ALT (GPT)             22             U/l            < 35"
+        // evaluation/README.md: the model read ALT's unit as "/l".
+        assertFalse(printsUnit(alt, "/l"))
+        assertFalse(printsUnit(alt, "U"), "not the start of a longer unit")
+        assertFalse(printsUnit("Kreatinin 1,12 mg/dl", "mg"))
+        assertFalse(printsUnit("Kreatinin 1,12 mg/dl", "dl"))
+        assertFalse(printsUnit("Kreatinin 1,12 mg/dl", "mg/l"))
+        // Nor the end of a power or a factor.
+        assertFalse(printsUnit("Leukozyten 6,8 10^9/l", "/l"))
+        assertFalse(printsUnit("WBC 6.8 10*3/uL", "/uL"))
+        assertFalse(printsUnit("eGFR 58 ml/min/1,73m²", "m²"))
+        assertFalse(printsUnit("eGFR 58 ml/min/1,73m²", "min"))
+    }
+
+    @Test
+    fun aUnitIsFoundWhateverTheCaseSpacingOrMicroSign() {
+        val alt = "ALT (GPT)             22             U/l            < 35"
+        assertTrue(printsUnit(alt, "U/l"))
+        assertTrue(printsUnit(alt, "U/L"))
+        assertTrue(printsUnit(alt, "u / l"))
+        assertTrue(printsUnit("Kreatinin 88 umol/L", "µmol/l"))
+        assertTrue(printsUnit("Kreatinin 88 µmol/L", "umol/l"))
+        assertTrue(printsUnit("Ferritin 88 μg/l", "µg/l"), "Greek mu and the micro sign")
+        assertTrue(printsUnit("eGFR 58 ml/min/1,73m²", "ml/min/1.73m²"))
+        assertTrue(printsUnit("eGFR 58 ml / min / 1,73 m²", "ml/min/1,73m²"))
+        assertTrue(printsUnit("LDL-Cholesterol 138 H mg/dL (calc) <100", "mg/dL (calc)"))
+        assertTrue(printsUnit("LDL-Cholesterol 138 H mg/dL (calc) <100", "mg/dL"))
+        assertTrue(printsUnit("Albumin/Kreatinin-Quotient 40,9 mg/g Krea < 30", "mg/g"))
+        assertTrue(printsUnit("Leukozyten 6,8 10^9/l", "10^9/l"))
+    }
+
+    @Test
+    fun aUnitGluedToItsValueOrAtTheEndIsPrinted() {
+        assertTrue(printsUnit("Thrombozyten 263/nl", "/nl"))
+        assertTrue(printsUnit("Thrombozyten 263 /nl", "/nl"))
+        assertTrue(printsUnit("Hb14g/dl", "g/dl"))
+        assertTrue(printsUnit("HbA1c 6,5%", "%"))
+        assertTrue(printsUnit("Kreatinin:0,80mg/dl", "mg/dl"))
+        assertTrue(printsUnit("Kalium 4,1 mmol/l.", "mmol/l"), "a full stop behind it")
+        assertTrue(printsUnit("Kalium 4,1 (mmol/l)", "mmol/l"))
+        assertTrue(printsUnit("U/l", "U/l"), "at the start and the end of the text")
+        assertTrue(printsUnit("血红蛋白145克/升", "克/升"))
+    }
+
+    @Test
+    fun noUnitClaimsNothing() {
+        assertTrue(printsUnit("HBsAg NEGATIV", ""))
+        assertTrue(printsUnit("HBsAg NEGATIV", "  "))
+    }
+
+    private fun beside(text: String, result: String, vararg names: String) = ReportSourceText(text).printsBesideTest(result, names.toList())
+
+    private val table = """
+        Untersuchung          Ergebnis       Einheit        Referenzbereich
+        Natrium               141            mmol/l         136 - 145
+        Kalium                5,6     H      mmol/l         3,5 - 5,1
+        Non-HDL-Cholesterin   138            mg/dl          < 130
+        HDL-Cholesterin       52             mg/dl          > 40
+        CRP                   < 0,5          mg/dl          < 0,5
+        eGFR (CKD-EPI)        58      L      ml/min/1,73m²  > 60
+        Nitrit                negativ
+        Eiweiß                positiv (+)
+    """.trimIndent()
+
+    @Test
+    fun aResultOnAnotherTestsRowIsCaught() {
+        assertFalse(beside(table, "141", "Kalium"), "printed, but on Natrium's row")
+        assertFalse(beside(table, "5,6", "Natrium"))
+        assertFalse(beside(table, "138", "HDL-Cholesterin"), "Non-HDL is another test")
+        assertFalse(beside(table, "52", "Non-HDL-Cholesterin"))
+        assertFalse(beside(table, "141", "CRP"), "a row printing a threshold prints a result")
+        assertFalse(beside(table, "141", "Kalium", "K"), "by any of its names")
+        assertFalse(beside(table, "141", "kalium"), "whatever the case")
+    }
+
+    @Test
+    fun aResultOnItsOwnRowIsNotFlagged() {
+        assertTrue(beside(table, "141", "Natrium"))
+        assertTrue(beside(table, "5.6", "Kalium"))
+        assertTrue(beside(table, "138", "Non-HDL-Cholesterin"))
+        assertTrue(beside(table, "52", "HDL-Cholesterin"))
+        assertTrue(beside(table, "<0.5", "CRP"))
+        assertTrue(beside(table, "positiv (+)", "Eiweiß"))
+        // By the printed code when the model wrote the name out, or the other way round.
+        assertTrue(beside(table, "58", "glomeruläre Filtrationsrate (eGFR)", "eGFR"))
+        assertTrue(beside(table, "58", "eGFR (CKD-EPI)", "GFR"))
+        assertTrue(beside("ALT (GPT)             22             U/l", "22", "Alanin-Aminotransferase", "GPT"))
+        assertTrue(beside("Kreatinin:0,80mg/dl; Kalium:4,1mmol/l", "0,80", "Kreatinin"), "two tests on one line")
+        assertTrue(beside("Kreatinin:0,80mg/dl; Kalium:4,1mmol/l", "4,1", "Kalium"))
+        assertTrue(beside("血红蛋白145克/升", "145", "血红蛋白"))
+    }
+
+    /** Where the rows can't be told, nothing is claimed: a false alarm on every value would teach people to ignore the badge. */
+    @Test
+    fun aRowThatCannotBeToldIsNotFlagged() {
+        // A PDF's text with the table's columns one after the other.
+        assertTrue(beside("Natrium\nKalium\n141\n5,6", "141", "Kalium"))
+        // A name that is printed with its own number, the result on the next line.
+        assertTrue(beside("Vitamin B12\n512 pg/ml\nFerritin 86 ng/ml", "512", "Vitamin B12"))
+        assertTrue(beside("HbA1c\n6,5 %", "6,5", "HB-A1C", "HbA1c"))
+        // A name the report doesn't print, nor its code.
+        assertTrue(beside(table, "141", "Sodium", "NA"))
+        // A heading the model took for a test.
+        assertTrue(beside("HEPATITIS PANEL\nHepatitis B Surface Antigen   NON-REACTIVE", "NON-REACTIVE", "HEPATITIS PANEL"))
+        // Results in words aren't told apart: a row in words prints no result to compare with.
+        assertTrue(beside(table, "positiv (+)", "Nitrit"))
+        // A test named on two rows: printed on either is enough.
+        assertTrue(beside("Kreatinin 1,12 mg/dl\nAlbumin/Kreatinin-Quotient 40,9 mg/g", "1,12", "Kreatinin"))
+        // No result, or no name, claims nothing.
+        assertTrue(beside(table, "-", "Kalium"))
+        assertTrue(beside(table, "141", " "))
+    }
+
+    @Test
+    fun aNameIsMatchedAsAWholeWord() {
+        val rows = "TEST1: 15 mg/dl\nTEST10: 105 mg/dl"
+        assertTrue(beside(rows, "15", "TEST1"))
+        assertFalse(beside(rows, "105", "TEST1"), "TEST10 is no TEST1")
+        assertFalse(beside("Thrombozyten 263 /nl\nThrombo-Zeit 12 s", "12", "Thrombozyten"))
+    }
+
+    @Test
+    fun aRowSplitAcrossLinesIsNotFlagged() {
+        // A PDF's text often puts the result (bold when out of range) on a line of its own.
+        assertTrue(beside("Hämoglobin  13,5 - 17,5 g/dl\n14,2", "14,2", "Hämoglobin"), "a reference range is no result")
+        assertTrue(beside("eGFR (CKD-EPI 2021)\n58 ml/min/1,73m²", "58", "eGFR"), "nor a year in the name")
+        assertTrue(beside("Cholesterin  < 200 mg/dl\n245 H", "245", "Cholesterin"), "nor a threshold reference")
+        // A line that continues the row starts with its value: the next test's row doesn't.
+        assertFalse(beside("Natrium  141 mmol/l\nKalium 5,6 mmol/l", "5,6", "Natrium"))
+        assertFalse(beside("Cholesterin  < 200 mg/dl\nHDL 52", "52", "Cholesterin"))
+        // Nor does a row two lines down.
+        assertFalse(beside("Cholesterin  < 200 mg/dl\n245\n52", "52", "Cholesterin"))
+    }
+
+    @Test
+    fun aReferenceRangeOnTheRowIsNoResult() {
+        // A range has no result in it: a row of names and ranges says nothing, the result being elsewhere.
+        assertTrue(beside("Hämoglobin  13,5 - 17,5 g/dl\nHämatokrit 40 - 52 %\n14,2\n44", "14,2", "Hämoglobin"))
+        // A limit of the range isn't the row's result.
+        assertFalse(beside("Kalium 5,6 H mmol/l 3,5 - 5,1", "5,1", "Kalium"))
+        assertFalse(beside("Kalium 5,6 H mmol/l 3,5–5,1", "3,5", "Kalium"))
+        assertTrue(beside("Kalium 5,6 H mmol/l 3,5 - 5,1", "5,6", "Kalium"))
+    }
+
+    @Test
+    fun theRowThatStartsWithTheNameIsItsRow() {
+        // "HDL Cholesterin" names Cholesterin too, but the row that starts with it is total cholesterol's.
+        val rows = "Cholesterin 200 mg/dl\nHDL Cholesterin 52 mg/dl"
+        assertFalse(beside(rows, "52", "Cholesterin"))
+        assertTrue(beside(rows, "200", "Cholesterin"))
+        assertTrue(beside(rows, "52", "HDL Cholesterin"))
+        assertFalse(beside("Kreatinin 1,12 mg/dl\nAlbumin/Kreatinin-Quotient 40,9 mg/g", "40,9", "Kreatinin"))
+        // Where no row starts with it, every row naming it counts.
+        assertTrue(beside("Gesamt Cholesterin 245\nHDL Cholesterin 52", "245", "Cholesterin"))
+    }
+
+    @Test
+    fun aUnitWithASuperscriptOrAnAbbreviationIsPrintedAsTheModelWritesIt() {
+        // The unit guide's own example is written "m2", reports print "m²".
+        assertTrue(printsUnit("eGFR 58 ml/min/1,73m² KOF", "ml/min/1,73m2KOF"))
+        assertTrue(printsUnit("eGFR 58 ml/min/1,73m2 KOF", "ml/min/1,73m²KOF"))
+        assertTrue(printsUnit("Leukozyten 6,8 10³/µl", "10^3/µl"))
+        assertTrue(printsUnit("Leukozyten 6,8 10^3/µl", "10³/µl"))
+        assertTrue(printsUnit("Leukozyten 6,8 Tsd./µl", "Tsd/µl"))
+        // Still whole units: a power's end is no unit, nor is a different power.
+        assertFalse(printsUnit("Leukozyten 6,8 10³/µl", "/µl"))
+        assertFalse(printsUnit("Leukozyten 6,8 10³/µl", "10^6/µl"))
+        assertFalse(printsUnit("eGFR 58 ml/min/1,73m²", "ml/min/1,73m3"))
+        assertFalse(printsUnit("Kalium 4,1 mmol/l", "mmol/l3"))
+    }
+
+    @Test
+    fun aPowerBehindATimesSignIsPrinted() {
+        assertTrue(printsUnit("WBC 6.8 x10^9/L", "10^9/L"))
+        assertTrue(printsUnit("WBC 6.8x10^9/L", "10^9/L"))
+        assertTrue(printsUnit("WBC 6.8 ×10^9/L", "10^9/L"))
+        assertTrue(printsUnit("WBC 6.8 x10E3/uL", "10E3/uL"), "LabCorp")
+        // A letter x that's part of a word isn't a times sign, and the power's end is still no unit.
+        assertFalse(printsUnit("Box10 g/dl", "10 g/dl"))
+        assertFalse(printsUnit("WBC 6.8 x10^9/L", "/L"))
+    }
+
+    @Test
+    fun postProcessingFlagsAWrongUnitAndAResultOnAnotherRow() {
+        val text = "Natrium 141 mmol/l\nKalium 5,6 mmol/l\nALT (GPT) 22 U/l < 35"
+        fun flagged(vararg entries: AiLabEntry) =
+            LabParsePipeline.postProcess(AiLabReport(entries.toList(), reportLanguage = "de"), text).values.map { it.needsSourceCheck }
+        assertEquals(listOf(true), flagged(AiLabEntry("ALT", "ALT", "22", "/l")))
+        assertEquals(listOf(false), flagged(AiLabEntry("ALT", "ALT", "22", "U/L")))
+        assertEquals(listOf(true, false), flagged(AiLabEntry("K", "Kalium", "141", "mmol/l"), AiLabEntry("NA", "Natrium", "141", "mmol/l")))
+        // No result claims nothing, not even a unit the report doesn't print.
+        assertEquals(listOf(false), flagged(AiLabEntry("MALB-U", "Albumin im Urin", "-", "mg/l")))
+        // A flag the model copied into the unit is no part of it.
+        assertEquals(listOf(false), flagged(AiLabEntry("K", "Kalium", "5,6", "H mmol/l")))
+    }
+
+    private fun sampleReports(): List<Pair<String, List<Triple<String, String, List<String>>>>> {
+        val reports = File("../evaluation/reports").listFiles { file -> file.name.endsWith(".txt") }!!.sortedBy { it.name }
+        assertEquals(9, reports.size)
+        return reports.map { report ->
+            val expected = Json.parseToJsonElement(File(report.parentFile, report.nameWithoutExtension + ".expected.json").readText())
+            report.readText() to expected.jsonObject.getValue("values").jsonArray.map { value ->
+                val fields = value.jsonObject
+                Triple(
+                    fields.getValue("value").jsonPrimitive.content,
+                    fields.getValue("unit").jsonPrimitive.content,
+                    fields.getValue("names").jsonArray.map { it.jsonPrimitive.content },
+                )
+            }
+        }
+    }
+
     /**
      * No model needed: everything the sample reports print, as the people who
-     * wrote them read it, must count as printed. A false alarm on most rows
-     * would teach people to ignore the badge.
+     * wrote them read it, must count as printed — the result, its unit, and on
+     * its test's row. A false alarm on most rows would teach people to ignore the badge.
      */
     @Test
     fun theSampleReportsRaiseNoFalseAlarm() {
-        val reports = File("../evaluation/reports").listFiles { file -> file.name.endsWith(".txt") }!!
-        assertEquals(9, reports.size)
-        for (report in reports) {
-            val source = ReportSourceText(report.readText())
-            val expected = Json.parseToJsonElement(File(report.parentFile, report.nameWithoutExtension + ".expected.json").readText())
-            for (value in expected.jsonObject.getValue("values").jsonArray) {
-                val number = value.jsonObject.getValue("value").jsonPrimitive.content
-                assertTrue(source.prints(number), "${report.name}: $number")
+        for ((text, values) in sampleReports()) {
+            val source = ReportSourceText(text)
+            for ((number, unit, names) in values) {
+                assertTrue(source.prints(number), "$number in ${names.first()}")
+                assertTrue(source.printsUnit(unit), "$unit of ${names.first()}")
+                assertTrue(source.printsBesideTest(number, names), "$number beside ${names.first()}")
+                assertTrue(source.backs(number, unit, names), "${names.first()}")
             }
         }
+    }
+
+    /** Each result of a sample report moved onto another test's row is caught; one row can't tell its tests apart. */
+    @Test
+    fun aResultMovedToAnotherTestOfASampleReportIsCaught() {
+        var moved = 0
+        for ((text, values) in sampleReports()) {
+            val source = ReportSourceText(text)
+            // The scorer's names are parts of words ("Triglycerid"); the check names a test by whole words only.
+            fun List<String>.namedIn(line: String) = any { Regex("(?<![\\p{L}\\p{N}])${Regex.escape(it)}(?![\\p{L}\\p{N}])", RegexOption.IGNORE_CASE) in line }
+            for ((number, _, names) in values) {
+                for ((otherNumber, _, otherNames) in values) {
+                    if (otherNumber.toDouble() == number.toDouble()) continue
+                    if (text.lines().none { otherNames.namedIn(it) }) continue
+                    // "KREA: 0,80 mg/dl; HARNS: 5,1 mg/dl" is one line.
+                    if (text.lines().any { line -> names.any { line.contains(it, ignoreCase = true) } && otherNames.namedIn(line) }) continue
+                    assertFalse(source.printsBesideTest(number, otherNames), "$number beside ${otherNames.first()}")
+                    moved++
+                }
+            }
+        }
+        assertTrue(moved > 500, "$moved")
     }
 }

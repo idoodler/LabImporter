@@ -26,7 +26,6 @@
     <string name="onboarding_hc_message">Salva i tuoi referti in Health Connect per tenerli insieme al resto dei tuoi dati sanitari. I risultati di laboratorio vengono archiviati come record medici standard su questo dispositivo.</string>
     <string name="onboarding_hc_connected">Connesso. I tuoi referti verranno salvati in Health Connect come risultati di laboratorio.</string>
     <string name="onboarding_hc_unavailable">Le cartelle cliniche di Health Connect non sono disponibili su questo dispositivo, quindi i tuoi referti vengono archiviati in modo privato in LabImporter su questo dispositivo. Puoi cambiare in seguito nelle Impostazioni.</string>
-    <string name="dashboard_empty_title">Nessun referto ancora</string>
     <string name="import_report">Importa referto</string>
     <string name="search_metrics">Cerca i tuoi valori di laboratorio</string>
     <string name="pinned">Fissati</string>

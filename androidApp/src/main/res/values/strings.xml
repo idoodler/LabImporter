@@ -39,7 +39,6 @@
     <string name="onboarding_hc_unavailable">Health Connect medical records aren\'t available on this device, so your reports are stored privately in LabImporter on this device. You can switch later in Settings.</string>
 
     <!-- Dashboard -->
-    <string name="dashboard_empty_title">No Reports Yet</string>
     <string name="import_report">Import Report</string>
     <string name="search_metrics">Search Your Lab Values</string>
     <string name="pinned">Pinned</string>
@@ -177,7 +176,6 @@
     <string name="search_loinc">Search lab tests</string>
     <string name="loinc_suggested">Suggested: %1$s</string>
     <string name="loinc_duplicate">Duplicate: %1$s</string>
-    <string name="engine_gemini" translatable="false">Gemini Nano</string>
     <string name="compare_with_report">Compare with report</string>
     <string name="compare_with_report_detail">This value wasn\'t found in the report text. Compare it with your report.</string>
     <plurals name="values_to_check">

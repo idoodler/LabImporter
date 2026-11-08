@@ -26,7 +26,6 @@
     <string name="onboarding_hc_message">Spremite izvješća u Health Connect kako bi bila uz ostale vaše zdravstvene podatke. Laboratorijski rezultati pohranjuju se kao standardni medicinski zapisi na ovom uređaju.</string>
     <string name="onboarding_hc_connected">Povezano. Vaša izvješća spremat će se u Health Connect kao laboratorijski rezultati.</string>
     <string name="onboarding_hc_unavailable">Medicinski zapisi Health Connecta nisu dostupni na ovom uređaju pa se vaša izvješća privatno pohranjuju u LabImporteru na ovom uređaju. Kasnije to možete promijeniti u Postavkama.</string>
-    <string name="dashboard_empty_title">Još nema izvješća</string>
     <string name="import_report">Uvezi izvješće</string>
     <string name="search_metrics">Pretražite svoje laboratorijske vrijednosti</string>
     <string name="pinned">Prikvačeno</string>

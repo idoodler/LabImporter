@@ -94,10 +94,7 @@ def lookup(catalogs: list[dict], english: str) -> dict | None:
     """The entry for an Android English text: exact, or with sequential
     positional specifiers dropped (Android "%1$s of %2$d" == iOS "%@ of %lld").
     Localizations from earlier catalogs win per language (Android overrides)."""
-    candidates = [to_ios(english)]
-    positions = re.findall(r"%(\d+)\$", english)
-    if positions and positions == [str(i) for i in range(1, len(positions) + 1)]:
-        candidates.append(to_ios(re.sub(r"%\d+\$", "%", english)))
+    candidates = candidates_for(english)
     merged: dict | None = None
     for catalog in catalogs:
         for key in candidates:
@@ -110,6 +107,41 @@ def lookup(catalogs: list[dict], english: str) -> dict | None:
                         merged["localizations"].setdefault(lang, loc)
                 break
     return merged
+
+
+def candidates_for(english: str) -> list[str]:
+    """The catalog keys an Android English text may be: as is, or without sequential positions."""
+    candidates = [to_ios(english)]
+    positions = re.findall(r"%(\d+)\$", english)
+    if positions and positions == [str(i) for i in range(1, len(positions) + 1)]:
+        candidates.append(to_ios(re.sub(r"%\d+\$", "%", english)))
+    return candidates
+
+
+def ios_keys_android_uses() -> set[str]:
+    """The iOS catalog keys Android takes a translation from: a translatable
+    Android string (or plural's "other" form) whose English text is the key, and
+    that Android.xcstrings doesn't override in every language. Swift may not use
+    such a key any more (Xcode then marks it stale), but deleting it would leave
+    the Android string untranslated."""
+    ios = json.load(open(CATALOG, encoding="utf-8"))["strings"]
+    android = json.load(open(ANDROID_CATALOG, encoding="utf-8"))["strings"] if os.path.exists(ANDROID_CATALOG) else {}
+    used: set[str] = set()
+    for node in ET.parse(SOURCE).getroot():
+        if node.get("translatable") == "false":
+            continue
+        if node.tag == "plurals":
+            english = {item.get("quantity"): unescape_android("".join(item.itertext())) for item in node}.get("other", "")
+        else:
+            english = unescape_android("".join(node.itertext()))
+        candidates = candidates_for(english)
+        key = next((k for k in candidates if k in ios), None)
+        if key is None:
+            continue
+        override = next((android[k] for k in candidates if k in android), {}).get("localizations", {})
+        if any(not (unit_value(override.get(lang, {})) or override.get(lang, {}).get("variations")) for lang in QUALIFIERS):
+            used.add(key)
+    return used
 
 
 INFLECTION = re.compile(r"\^\[[^\]]*\]\(inflect:")

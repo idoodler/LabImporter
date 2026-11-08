@@ -149,6 +149,6 @@ class ModelScreensTest {
         val draft = ReviewDraft(listOf(value), LocalDate(2026, 5, 6), "", "", AiEngine.GEMMA)
         compose.setContent { LabImporterTheme { ReviewScreen(draft, {}, { _, _ -> }, { "" }, {}, {}, {}) } }
         compose.onNodeWithText(GemmaModel.NAME).assertDoesNotExist()
-        compose.onNodeWithText(string(R.string.engine_gemini)).assertDoesNotExist()
+        compose.onNodeWithText(string(R.string.ai_title)).assertDoesNotExist()
     }
 }

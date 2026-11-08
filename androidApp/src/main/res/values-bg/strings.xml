@@ -26,7 +26,6 @@
     <string name="onboarding_hc_message">Запазвайте отчетите си в Health Connect, за да са заедно с останалите ви здравни данни. Лабораторните резултати се съхраняват като стандартни медицински записи на това устройство.</string>
     <string name="onboarding_hc_connected">Свързано. Отчетите ви ще се запазват в Health Connect като лабораторни резултати.</string>
     <string name="onboarding_hc_unavailable">Медицинските записи в Health Connect не са налични на това устройство, затова отчетите ви се съхраняват поверително в LabImporter на това устройство. Можете да превключите по-късно в Настройки.</string>
-    <string name="dashboard_empty_title">Все още няма отчети</string>
     <string name="import_report">Импортирай отчет</string>
     <string name="search_metrics">Търсете вашите лабораторни стойности</string>
     <string name="pinned">Закачени</string>

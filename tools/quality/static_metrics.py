@@ -137,26 +137,38 @@ def nothing_to_translate(key: str) -> bool:
     return key == APP_NAME or not any(ch.isalpha() for ch in FORMAT_SPECIFIER.sub("", key))
 
 
-def catalog(path: str, fallback: str | None = None) -> dict:
+def android_uses_ios_keys() -> set[str]:
+    """iOS catalog keys an Android string takes its translations from (tools/xcstrings_to_android.py)."""
+    sys.path.insert(0, str(ROOT / "tools"))
+    try:
+        import xcstrings_to_android
+    finally:
+        sys.path.pop(0)
+    return xcstrings_to_android.ios_keys_android_uses()
+
+
+def catalog(path: str, fallback: str | None = None, used_by_android: set[str] | None = None) -> dict:
     """Translation completeness of one String Catalog; `stale` keys are unused.
 
     With a [fallback] catalog, a language missing here counts only if that one lacks it
     too: Android.xcstrings may override single languages of the iOS wording (CLAUDE.md).
+    Xcode marks a key stale when no Swift source uses it; one in [used_by_android] still
+    translates an Android string, so it isn't stale (listed as `android_only_keys`).
     """
     strings = json.loads((ROOT / path).read_text(encoding="utf-8"))["strings"]
     shared = json.loads((ROOT / fallback).read_text(encoding="utf-8"))["strings"] if fallback else {}
-    missing, stale = [], []
+    missing, stale, android_only = [], [], []
     for key, entry in strings.items():
         if entry.get("shouldTranslate") is False or nothing_to_translate(key):
             continue
         if entry.get("extractionState") == "stale":
-            stale.append(key)
+            (android_only if key in (used_by_android or set()) else stale).append(key)
         localizations = {**shared.get(key, {}).get("localizations", {}), **entry.get("localizations", {})}
         # English is the source: a key without an `en` entry falls back to itself.
         absent = [language for language in LANGUAGES if language != "en" and language not in localizations]
         if absent:
             missing.append({"key": key, "languages": absent})
-    return {"keys": len(strings), "missing_translations": missing, "stale_keys": stale}
+    return {"keys": len(strings), "missing_translations": missing, "stale_keys": stale, "android_only_keys": android_only}
 
 
 def previews() -> dict:
@@ -457,7 +469,7 @@ def main() -> None:
         "complexity": complexity(),
         "duplication": duplication(),
         "file_lengths": file_lengths(),
-        "ios_strings": catalog("LabImporter/Localizable.xcstrings"),
+        "ios_strings": catalog("LabImporter/Localizable.xcstrings", used_by_android=android_uses_ios_keys()),
         "android_strings": catalog("androidApp/translations/Android.xcstrings", fallback="LabImporter/Localizable.xcstrings"),
         "previews": previews(),
         "design_tokens": design_tokens(),

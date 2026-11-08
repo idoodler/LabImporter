@@ -26,7 +26,6 @@
     <string name="onboarding_hc_message">Desa els teus informes a Health Connect perquè estiguin amb la resta de les teves dades de salut. Els resultats de laboratori es guarden com a registres mèdics estàndard en aquest dispositiu.</string>
     <string name="onboarding_hc_connected">Connectat. Els teus informes es desaran a Health Connect com a resultats de laboratori.</string>
     <string name="onboarding_hc_unavailable">Els registres mèdics de Health Connect no estan disponibles en aquest dispositiu, de manera que els teus informes es guarden de forma privada al LabImporter en aquest dispositiu. Pots canviar-ho més endavant a Ajustaments.</string>
-    <string name="dashboard_empty_title">Encara no hi ha informes</string>
     <string name="import_report">Importa l\'informe</string>
     <string name="search_metrics">Cerca els teus valors de laboratori</string>
     <string name="pinned">Fixats</string>

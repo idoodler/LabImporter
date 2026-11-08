@@ -26,7 +26,6 @@
     <string name="onboarding_hc_message">Ukládejte protokoly do Health Connect, aby byly spolu s ostatními zdravotními údaji. Laboratorní výsledky se ukládají jako standardní zdravotní záznamy v tomto zařízení.</string>
     <string name="onboarding_hc_connected">Připojeno. Vaše protokoly se budou ukládat do Health Connect jako laboratorní výsledky.</string>
     <string name="onboarding_hc_unavailable">Zdravotní záznamy Health Connect nejsou v tomto zařízení k dispozici, proto se vaše protokoly ukládají soukromě v LabImporteru v tomto zařízení. Později to můžete změnit v Nastavení.</string>
-    <string name="dashboard_empty_title">Zatím žádné protokoly</string>
     <string name="import_report">Importovat protokol</string>
     <string name="search_metrics">Hledejte své laboratorní hodnoty</string>
     <string name="pinned">Připnuté</string>

@@ -103,7 +103,7 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
      */
     private val candidateStatement = prepare(
         """
-        SELECT l.code, l.name, t.rank, t.property, t.scale, t.system, l.lang, t.method
+        SELECT l.code, l.name, t.rank, t.property, t.scale, t.system, l.lang, t.method, t.component, t.loinc_class
         FROM label_fts f
         JOIN label l ON l.rowid = f.rowid
         JOIN term t ON t.code = l.code
@@ -115,7 +115,7 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
     /** [candidateStatement] across every catalog language (the import resolver's fallback). */
     private val anyLanguageCandidateStatement = prepare(
         """
-        SELECT l.code, l.name, t.rank, t.property, t.scale, t.system, l.lang, t.method
+        SELECT l.code, l.name, t.rank, t.property, t.scale, t.system, l.lang, t.method, t.component, t.loinc_class
         FROM label_fts f
         JOIN label l ON l.rowid = f.rowid
         JOIN term t ON t.code = l.code
@@ -363,7 +363,8 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
                         terms[code] = LoincCandidate(
                             code, statement.getLong(2).toInt(), statement.text(3).orEmpty(),
                             statement.text(4).orEmpty(), statement.text(5).orEmpty(), emptyList(),
-                            method = statement.text(7).orEmpty(),
+                            method = statement.text(7).orEmpty(), component = statement.text(8).orEmpty(),
+                            loincClass = statement.text(9).orEmpty(),
                         )
                     }
                 }
