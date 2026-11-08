@@ -23,7 +23,7 @@
     <string name="disclaimer_title">No és un consell mèdic</string>
     <string name="disclaimer_body">LabImporter no és un dispositiu mèdic i no proporciona consells, diagnòstics ni tractaments mèdics. Els valors extrets poden ser inexactes o incomplets — verifica\'ls sempre amb el teu informe original. No prenguis mai decisions mèdiques basant-te en aquesta app; consulta un professional sanitari qualificat sobre els teus resultats.</string>
     <string name="disclaimer_accept">Ho entenc</string>
-    <string name="onboarding_hc_message">Desa els teus informes a Health Connect perquè estiguin amb la resta de les teves dades de salut. Els resultats de laboratori es guarden com a registres FHIR estàndard en aquest dispositiu.</string>
+    <string name="onboarding_hc_message">Desa els teus informes a Health Connect perquè estiguin amb la resta de les teves dades de salut. Els resultats de laboratori es guarden com a registres mèdics estàndard en aquest dispositiu.</string>
     <string name="onboarding_hc_connected">Connectat. Els teus informes es desaran a Health Connect com a resultats de laboratori.</string>
     <string name="onboarding_hc_unavailable">Els registres mèdics de Health Connect no estan disponibles en aquest dispositiu, de manera que els teus informes es guarden de forma privada al LabImporter en aquest dispositiu. Pots canviar-ho més endavant a Ajustaments.</string>
     <string name="dashboard_empty_title">Encara no hi ha informes</string>
@@ -66,7 +66,7 @@
     <string name="category_other">Altres</string>
     <string name="history_empty_title">Encara no hi ha informes</string>
     <string name="history_empty_message">Importa un informe de laboratori per veure\'l aquí.</string>
-    <string name="share_cda">Comparteix el fitxer CDA</string>
+    <string name="share_cda">Comparteix el fitxer de l\'informe</string>
     <string name="delete_report_title">Vols eliminar l\'informe?</string>
     <string name="delete_report_message">Aquest informe s\'eliminarà definitivament.</string>
     <string name="report_deleted">Informe eliminat</string>
@@ -220,6 +220,17 @@
     <string name="try_again">Torna-ho a provar</string>
     <string name="reports_load_failed_title">No s\'han pogut carregar els informes</string>
     <string name="reports_load_failed_message">Els informes desats no han canviat, però ara mateix no es poden llegir.</string>
+    <string name="reports_newer_title">Actualitza LabImporter per veure tots els informes</string>
+    <string name="reports_newer_message">Informes desats amb una versió més nova de LabImporter: %1$d. Estan segurs. Actualitza l\'app per veure\'ls.</string>
+    <string name="hc_access_off_title">L\'accés a Health Connect està desactivat</string>
+    <string name="hc_access_off_message">Sense accés, LabImporter no pot llegir els informes que has desat a Health Connect. Encara hi són. Permet l\'accés per veure\'ls o, d\'ara endavant, guarda els informes a l\'app.</string>
+    <string name="hc_allow_access">Permet l\'accés</string>
+    <string name="hc_needs_update_title">Cal actualitzar Health Connect</string>
+    <string name="hc_needs_update_message">Els informes encara són a Health Connect, però cal actualitzar-lo perquè LabImporter els pugui llegir.</string>
+    <string name="hc_update">Actualitza Health Connect</string>
+    <string name="hc_gone_title">Health Connect no està disponible</string>
+    <string name="hc_gone_message">LabImporter no pot accedir a Health Connect en aquest dispositiu, de manera que els informes desats allà no es mostren. LabImporter no els ha eliminat.</string>
+    <string name="hc_use_app_storage">Utilitza l\'emmagatzematge de l\'app</string>
     <string name="reports_unreadable_title">Alguns informes no es poden llegir</string>
     <string name="reports_unreadable_message">Informes que no es poden llegir: %1$d. Es queden en aquest dispositiu i no s\'han eliminat.</string>
     <string name="hc_connect_failed">No s\'ha pogut connectar amb Health Connect. Els informes es queden a LabImporter. Torna-ho a provar a Ajustaments.</string>
@@ -228,6 +239,13 @@
     <string name="transfer_export_detail">Desa tots els informes en un sol fitxer, per exemple per moure\'ls a un altre telèfon.</string>
     <string name="transfer_import">Importa informes</string>
     <string name="transfer_import_detail">Des d\'un fitxer del LabImporter exportat en un iPhone o un Android. Els informes que ja hi són s\'ometen.</string>
+    <string name="transfer_leaves_out_title">Alguns valors no es poden exportar</string>
+    <string name="transfer_leaves_out_message">Valors que queden fora del fitxer: %1$d. Es mantenen als teus informes.</string>
+    <string name="transfer_share_anyway">Comparteix igualment</string>
+    <string name="transfer_export_nothing">Cap dels teus valors s\'ha pogut escriure en un fitxer, així que no s\'ha exportat res. Torna-ho a provar.</string>
+    <string name="transfer_newer_version">Aquest fitxer prové d\'una versió més nova de LabImporter. Actualitza l\'app per importar-lo.</string>
+    <string name="transfer_newer_version_some">Informes d\'aquest fitxer que necessiten una versió més nova de LabImporter: %1$d.</string>
+    <string name="transfer_damaged_some">Informes malmesos en aquest fitxer: %1$d. Només s\'ha importat el que s\'ha pogut llegir.</string>
     <string name="transfer_unsupported">Aquest fitxer no conté informes de LabImporter.</string>
     <string name="transfer_summary">Informes nous: %1$d · Ja presents: %2$d</string>
     <string name="transfer_summary_failed">Informes nous: %1$d · Ja presents: %2$d · No desats: %3$d</string>
@@ -295,6 +313,7 @@
     <string name="pdf_trend_range">Interval de tendència</string>
     <string name="pdf_included_categories">Categories incloses</string>
     <string name="pdf_latest_subtitle">Lectura més recent de cada valor</string>
+    <string name="cda_language_code">ca</string>
     <string name="pdf_column_test">Prova</string>
     <string name="pdf_column_result">Resultat</string>
     <string name="pdf_column_reference">Referència</string>
@@ -317,6 +336,7 @@
     <string name="restore">Restaura</string>
     <string name="details">Detalls</string>
     <string name="hide">Amaga</string>
+    <string name="include_in_export">Inclou a l\'exportació</string>
     <string name="move_up">Mou amunt</string>
     <string name="move_down">Mou avall</string>
     <string name="settings_loinc">LOINC</string>
@@ -371,6 +391,7 @@
     <string name="show_latest_in_search">Mostrar el darrer valor a la cerca</string>
     <string name="show_latest_in_search_footer">Permet que la lectura més recent de cada valor aparegui a les dreceres del launcher i a la cerca. Quan està desactivat, només es mostra el nom del valor, mai una lectura.</string>
     <string name="chart_summary">Gràfic de %1$s: %2$s del %3$s al %4$s. Mínim %5$s, màxim %6$s, últim %7$s.</string>
+    <string name="chart_reading">%1$s: %2$s</string>
     <plurals name="chart_readings">
         <item quantity="one">%d lectura</item>
         <item quantity="many">%d de lectures</item>

@@ -27,6 +27,7 @@ final class ShareViewController: UIViewController {
             model.state = .failed(.noText)
             return
         }
+        // Either way the user sees that the text didn't arrive, which is all they can act on.
         guard let inbox = ShareInbox.shared, let item = try? inbox.store(text) else {
             model.state = .failed(.unavailable)
             return

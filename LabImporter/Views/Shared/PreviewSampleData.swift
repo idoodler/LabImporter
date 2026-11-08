@@ -209,6 +209,11 @@ extension CodeName {
     static var sampleCodes: [CodeName] {
         LabReport.sample.entries.map { CodeName(code: $0.code, name: $0.name) }
     }
+
+    /// Glucose by mass and by moles: two terms under one plain name.
+    static var sampleCodesSharingAName: [CodeName] {
+        ["2345-7", "14749-6", "4548-4"].map { CodeName(code: $0, name: LabMapping.displayName(for: $0)) }
+    }
 }
 
 extension CategoryCount {

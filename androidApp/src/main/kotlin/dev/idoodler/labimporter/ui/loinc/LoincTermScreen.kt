@@ -1,5 +1,6 @@
 package dev.idoodler.labimporter.ui.loinc
 
+import dev.idoodler.labimporter.ui.design.isLargeText
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -238,12 +239,15 @@ private fun LabeledRow(icon: ImageVector, category: LabCategory, label: String, 
 
 @Composable
 private fun Attribute(index: Int, count: Int, label: Int, value: String) {
+    // Beside a column of fixed width, large text breaks the label inside its words.
+    val text = @Composable { width: Modifier ->
+        Text(value, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = width)
+    }
     GroupedListItem(
         index, count,
         headline = { Text(stringResource(label)) },
-        trailing = {
-            Text(value, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.width(180.dp))
-        },
+        supporting = if (isLargeText) ({ text(Modifier) }) else null,
+        trailing = if (isLargeText) null else ({ text(Modifier.width(180.dp)) }),
     )
 }
 

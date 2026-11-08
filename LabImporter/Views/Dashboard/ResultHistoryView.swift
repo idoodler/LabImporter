@@ -21,7 +21,7 @@ struct ResultHistoryView: View {
                 ForEach(metric.results.reversed()) { result in
                     HStack {
                         Text(result.date.formatted(date: .long, time: .omitted))
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(.textSecondary)
                         Spacer()
                         Text(result.formatted)
                             .fontWeight(.medium)
@@ -33,6 +33,7 @@ struct ResultHistoryView: View {
         .scrollContentBackground(.hidden)
         .accessibilityIdentifier("result-history")
         .background { CategoryBackground(colors: [categoryColor]) }
+        .readableListText()
         .navigationTitle(metric.entry.resolvedName)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -53,17 +54,15 @@ struct ResultHistoryView: View {
                     .accessibilityHidden(true)
                 Text(metric.results.last?.date.formatted(date: .long, time: .omitted) ?? "")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
             }
             HStack(alignment: .firstTextBaseline, spacing: 4) {
                 Text(metric.entry.displayValue)
                     .font(.largeTitle.bold())
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.6)
                 if !metric.entry.unit.isEmpty {
                     Text(metric.entry.unit)
                         .font(.title3)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.textSecondary)
                 }
             }
         }

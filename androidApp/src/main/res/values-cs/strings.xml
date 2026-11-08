@@ -23,7 +23,7 @@
     <string name="disclaimer_title">Nejde o lékařskou radu</string>
     <string name="disclaimer_body">LabImporter není zdravotnický prostředek a neposkytuje lékařské poradenství, diagnózu ani léčbu. Extrahované hodnoty mohou být nepřesné nebo neúplné — vždy je porovnejte s původním protokolem. Nikdy nečiňte lékařská rozhodnutí na základě této aplikace; o svých výsledcích se poraďte s kvalifikovaným zdravotnickým pracovníkem.</string>
     <string name="disclaimer_accept">Rozumím</string>
-    <string name="onboarding_hc_message">Ukládejte protokoly do Health Connect, aby byly spolu s ostatními zdravotními údaji. Laboratorní výsledky se ukládají jako standardní záznamy FHIR v tomto zařízení.</string>
+    <string name="onboarding_hc_message">Ukládejte protokoly do Health Connect, aby byly spolu s ostatními zdravotními údaji. Laboratorní výsledky se ukládají jako standardní zdravotní záznamy v tomto zařízení.</string>
     <string name="onboarding_hc_connected">Připojeno. Vaše protokoly se budou ukládat do Health Connect jako laboratorní výsledky.</string>
     <string name="onboarding_hc_unavailable">Zdravotní záznamy Health Connect nejsou v tomto zařízení k dispozici, proto se vaše protokoly ukládají soukromě v LabImporteru v tomto zařízení. Později to můžete změnit v Nastavení.</string>
     <string name="dashboard_empty_title">Zatím žádné protokoly</string>
@@ -67,7 +67,7 @@
     <string name="category_other">Ostatní</string>
     <string name="history_empty_title">Zatím žádné protokoly</string>
     <string name="history_empty_message">Importujte laboratorní protokol a zobrazí se zde.</string>
-    <string name="share_cda">Sdílet soubor CDA</string>
+    <string name="share_cda">Sdílet soubor protokolu</string>
     <string name="delete_report_title">Smazat protokol?</string>
     <string name="delete_report_message">Tento protokol bude trvale odstraněn.</string>
     <string name="report_deleted">Protokol smazán</string>
@@ -228,6 +228,17 @@
     <string name="try_again">Zkusit znovu</string>
     <string name="reports_load_failed_title">Protokoly se nepodařilo načíst</string>
     <string name="reports_load_failed_message">Uložené protokoly se nezměnily, ale momentálně je nelze přečíst.</string>
+    <string name="reports_newer_title">Aktualizujte LabImporter, abyste viděli všechny protokoly</string>
+    <string name="reports_newer_message">Protokoly uložené novější verzí LabImporteru: %1$d. Jsou v bezpečí. Aktualizujte aplikaci, abyste je viděli.</string>
+    <string name="hc_access_off_title">Přístup k Health Connect je vypnutý</string>
+    <string name="hc_access_off_message">Bez přístupu nemůže LabImporter číst protokoly uložené v Health Connect. Stále tam jsou. Povolte přístup, abyste je viděli, nebo si protokoly od teď uchovávejte v aplikaci.</string>
+    <string name="hc_allow_access">Povolit přístup</string>
+    <string name="hc_needs_update_title">Health Connect potřebuje aktualizaci</string>
+    <string name="hc_needs_update_message">Vaše protokoly jsou stále v Health Connect, ale než je LabImporter bude moci číst, je třeba ho aktualizovat.</string>
+    <string name="hc_update">Aktualizovat Health Connect</string>
+    <string name="hc_gone_title">Health Connect není k dispozici</string>
+    <string name="hc_gone_message">LabImporter se na tomto zařízení nedostane k Health Connect, takže se tam uložené protokoly nezobrazují. LabImporter je nesmazal.</string>
+    <string name="hc_use_app_storage">Použít úložiště aplikace</string>
     <string name="reports_unreadable_title">Některé protokoly nelze přečíst</string>
     <string name="reports_unreadable_message">Protokoly, které nelze přečíst: %1$d. Zůstávají v tomto zařízení a nebyly smazány.</string>
     <string name="hc_connect_failed">K Health Connect se nepodařilo připojit. Protokoly zůstávají v LabImporteru. Zkuste to znovu v Nastavení.</string>
@@ -236,6 +247,13 @@
     <string name="transfer_export_detail">Uložte všechny protokoly do jednoho souboru, například pro přenos do jiného telefonu.</string>
     <string name="transfer_import">Importovat protokoly</string>
     <string name="transfer_import_detail">Ze souboru LabImporteru exportovaného na iPhonu nebo Androidu. Protokoly, které tu už jsou, se přeskočí.</string>
+    <string name="transfer_leaves_out_title">Některé hodnoty nelze exportovat</string>
+    <string name="transfer_leaves_out_message">Hodnoty vynechané ze souboru: %1$d. Zůstávají ve vašich protokolech.</string>
+    <string name="transfer_share_anyway">Přesto sdílet</string>
+    <string name="transfer_export_nothing">Žádnou z vašich hodnot se nepodařilo zapsat do souboru, takže se nic neexportovalo. Zkuste to znovu.</string>
+    <string name="transfer_newer_version">Tento soubor pochází z novější verze LabImporteru. Aktualizujte aplikaci, abyste ho mohli importovat.</string>
+    <string name="transfer_newer_version_some">Protokoly v tomto souboru, které vyžadují novější verzi LabImporteru: %1$d.</string>
+    <string name="transfer_damaged_some">Poškozené protokoly v tomto souboru: %1$d. Importováno bylo jen to, co se podařilo přečíst.</string>
     <string name="transfer_unsupported">Tento soubor neobsahuje protokoly z LabImporteru.</string>
     <string name="transfer_summary">Nové protokoly: %1$d · Již existující: %2$d</string>
     <string name="transfer_summary_failed">Nové protokoly: %1$d · Již přítomné: %2$d · Neuložené: %3$d</string>
@@ -303,6 +321,7 @@
     <string name="pdf_trend_range">Rozsah trendu</string>
     <string name="pdf_included_categories">Zahrnuté kategorie</string>
     <string name="pdf_latest_subtitle">Nejnovější naměřená hodnota u každého parametru</string>
+    <string name="cda_language_code">cs</string>
     <string name="pdf_column_test">Vyšetření</string>
     <string name="pdf_column_result">Výsledek</string>
     <string name="pdf_column_reference">Reference</string>
@@ -325,6 +344,7 @@
     <string name="restore">Obnovit</string>
     <string name="details">Podrobnosti</string>
     <string name="hide">Skrýt</string>
+    <string name="include_in_export">Zahrnout do exportu</string>
     <string name="move_up">Posunout nahoru</string>
     <string name="move_down">Posunout dolů</string>
     <string name="settings_loinc">LOINC</string>
@@ -382,6 +402,7 @@
     <string name="show_latest_in_search">Zobrazit poslední hodnotu ve vyhledávání</string>
     <string name="show_latest_in_search_footer">Nechte nejnovější naměřenou hodnotu každého ukazatele zobrazit ve zkratkách spouštěče a ve vyhledávání. Když je vypnuto, zobrazí se jen název ukazatele — nikdy hodnota.</string>
     <string name="chart_summary">Graf %1$s: %2$s od %3$s do %4$s. Nejnižší %5$s, nejvyšší %6$s, poslední %7$s.</string>
+    <string name="chart_reading">%1$s: %2$s</string>
     <plurals name="chart_readings">
         <item quantity="one">%d měření</item>
         <item quantity="few">%d měření</item>

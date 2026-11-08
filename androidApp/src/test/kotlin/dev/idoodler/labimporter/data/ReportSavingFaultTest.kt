@@ -7,6 +7,7 @@ import dev.idoodler.labimporter.TestApplication
 import dev.idoodler.labimporter.core.LabCore
 import dev.idoodler.labimporter.core.droppedEntryIds
 import dev.idoodler.labimporter.core.export.FhirLabCodec
+import dev.idoodler.labimporter.core.export.ReportSchema
 import dev.idoodler.labimporter.core.export.ReportEncodingException
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.core.model.LabReport
@@ -15,6 +16,9 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import org.junit.After
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertThrows
@@ -45,9 +49,16 @@ private class FhirHealthConnect : HealthConnectStore {
 
     override suspend fun hasPermissions() = true
 
+    override var unreadableReports = 0
+
+    override var newerVersionReports = 0
+
     override suspend fun loadReports(): List<LabReport> {
         if (failLoads) throw IOException("read failed")
-        return FhirLabCodec.decode(records.values.toList())
+        val stored = FhirLabCodec.decodeStored(records.values.toList())
+        unreadableReports = stored.unreadableReports
+        newerVersionReports = stored.newerVersionReports
+        return stored.reports
     }
 
     override suspend fun save(report: LabReport) {
@@ -527,6 +538,77 @@ class ReportSavingFaultTest {
         assertTrue(repository.reports.value.isEmpty())
         assertEquals(1, repository.unreadableReports.value)
         assertTrue(file.exists())
+    }
+
+    /** The store's file: a JSON list of FHIR resources, each itself a JSON string. */
+    private fun fileFromANewerVersion(file: String): String {
+        val resources = Json.decodeFromString(ListSerializer(String.serializer()), file)
+        return Json.encodeToString(ListSerializer(String.serializer()), resources.map(::fromANewerVersion))
+    }
+
+    private fun fromANewerVersion(json: String) = json.replace("\"code\":\"${ReportSchema.VERSION}\"", "\"code\":\"${ReportSchema.VERSION + 1}\"")
+
+    @Test
+    fun aFileFromANewerVersionIsCountedAndKept() = runTest {
+        local.save(report("good"))
+        local.save(report("later"))
+        val later = File(directory, "later.json")
+        later.writeText(fileFromANewerVersion(later.readText()))
+        val written = later.readText()
+        val repository = repository()
+
+        repository.reload()
+
+        assertEquals(listOf("good"), repository.reports.value.map { it.id })
+        assertEquals(1, repository.newerVersionReports.value)
+        assertEquals("It needs an update, not a repair", 0, repository.unreadableReports.value)
+        assertEquals(written, later.readText())
+    }
+
+    @Test
+    fun aMoveLeavesAFileFromANewerVersionWhereItIs() = runTest {
+        local.save(report("later"))
+        val later = File(directory, "later.json")
+        later.writeText(fileFromANewerVersion(later.readText()))
+        val repository = repository()
+
+        assertEquals(0, repository.enableHealthConnect())
+
+        assertTrue(later.exists())
+        assertTrue(healthConnect.records.isEmpty())
+    }
+
+    @Test
+    fun healthConnectReportsFromANewerVersionAreCountedAndKept() = runTest {
+        useHealthConnect()
+        val repository = repository()
+        repository.save(report("good"))
+        repository.save(report("later"))
+        val laterId = report("later").entries.single().id
+        healthConnect.records[laterId] = fromANewerVersion(healthConnect.records.getValue(laterId))
+
+        repository.reload()
+
+        assertEquals(listOf("good"), repository.reports.value.map { it.id })
+        assertEquals(1, repository.newerVersionReports.value)
+        assertTrue(laterId in healthConnect.records)
+
+        // Its count only means something while Health Connect's reports are the ones listed.
+        repository.useLocalStorage()
+        assertEquals(0, repository.newerVersionReports.value)
+    }
+
+    @Test
+    fun aDamagedHealthConnectRecordIsCounted() = runTest {
+        useHealthConnect()
+        val repository = repository()
+        repository.save(report("hurt", 1, entry("e1", "2160-0", 0.8), entry("e2", "2823-3", 4.1)))
+        healthConnect.records["e2"] = healthConnect.records.getValue("e2").replace("effectiveDateTime", "lostTheDate")
+
+        repository.reload()
+
+        assertEquals(1, repository.unreadableReports.value)
+        assertEquals(listOf("e1"), repository.reports.value.single().entries.map { it.id })
     }
 
     @Test

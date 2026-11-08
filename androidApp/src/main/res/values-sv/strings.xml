@@ -23,7 +23,7 @@
     <string name="disclaimer_title">Ingen medicinsk rådgivning</string>
     <string name="disclaimer_body">LabImporter är inte en medicinteknisk produkt och ger ingen medicinsk rådgivning, diagnos eller behandling. Extraherade värden kan vara felaktiga eller ofullständiga – kontrollera dem alltid mot din ursprungliga rapport. Fatta aldrig medicinska beslut baserat på den här appen; rådgör med kvalificerad vårdpersonal om dina resultat.</string>
     <string name="disclaimer_accept">Jag förstår</string>
-    <string name="onboarding_hc_message">Spara dina rapporter i Health Connect så att de finns tillsammans med resten av dina hälsodata. Labbresultat lagras som standardiserade FHIR-poster på den här enheten.</string>
+    <string name="onboarding_hc_message">Spara dina rapporter i Health Connect så att de finns tillsammans med resten av dina hälsodata. Labbresultat lagras som standardiserade medicinska poster på den här enheten.</string>
     <string name="onboarding_hc_connected">Ansluten. Dina rapporter sparas i Health Connect som labbresultat.</string>
     <string name="onboarding_hc_unavailable">Hälsojournaler i Health Connect är inte tillgängliga på den här enheten, så dina rapporter lagras privat i LabImporter på den här enheten. Du kan byta senare i Inställningar.</string>
     <string name="dashboard_empty_title">Inga rapporter ännu</string>
@@ -65,7 +65,7 @@
     <string name="category_other">Övrigt</string>
     <string name="history_empty_title">Inga rapporter ännu</string>
     <string name="history_empty_message">Importera en labbrapport för att se den här.</string>
-    <string name="share_cda">Dela CDA-fil</string>
+    <string name="share_cda">Dela rapportfil</string>
     <string name="delete_report_title">Radera rapport?</string>
     <string name="delete_report_message">Den här rapporten tas bort permanent.</string>
     <string name="report_deleted">Rapporten raderades</string>
@@ -212,6 +212,17 @@
     <string name="try_again">Försök igen</string>
     <string name="reports_load_failed_title">Det gick inte att läsa in dina rapporter</string>
     <string name="reports_load_failed_message">Dina sparade rapporter har inte ändrats, men de kan inte läsas just nu.</string>
+    <string name="reports_newer_title">Uppdatera LabImporter för att se alla rapporter</string>
+    <string name="reports_newer_message">Rapporter sparade av en nyare version av LabImporter: %1$d. De är i säkerhet. Uppdatera appen för att se dem.</string>
+    <string name="hc_access_off_title">Åtkomst till Health Connect är av</string>
+    <string name="hc_access_off_message">Utan åtkomst kan LabImporter inte läsa rapporterna du sparat i Health Connect. De finns kvar där. Tillåt åtkomst för att se dem, eller behåll dina rapporter i appen från och med nu.</string>
+    <string name="hc_allow_access">Tillåt åtkomst</string>
+    <string name="hc_needs_update_title">Health Connect behöver uppdateras</string>
+    <string name="hc_needs_update_message">Dina rapporter finns kvar i Health Connect, men det måste uppdateras innan LabImporter kan läsa dem.</string>
+    <string name="hc_update">Uppdatera Health Connect</string>
+    <string name="hc_gone_title">Health Connect är inte tillgängligt</string>
+    <string name="hc_gone_message">LabImporter når inte Health Connect på den här enheten, så rapporterna som sparats där visas inte. LabImporter har inte raderat dem.</string>
+    <string name="hc_use_app_storage">Använd appens lagring</string>
     <string name="reports_unreadable_title">Vissa rapporter kan inte läsas</string>
     <string name="reports_unreadable_message">Rapporter som inte kan läsas: %1$d. De finns kvar på den här enheten och har inte raderats.</string>
     <string name="hc_connect_failed">Det gick inte att ansluta till Health Connect. Dina rapporter finns kvar i LabImporter. Försök igen i Inställningar.</string>
@@ -220,6 +231,13 @@
     <string name="transfer_export_detail">Spara alla rapporter i en fil, till exempel för att flytta dem till en annan telefon.</string>
     <string name="transfer_import">Importera rapporter</string>
     <string name="transfer_import_detail">Från en LabImporter-fil som exporterats på iPhone eller Android. Rapporter som redan finns här hoppas över.</string>
+    <string name="transfer_leaves_out_title">Vissa värden kan inte exporteras</string>
+    <string name="transfer_leaves_out_message">Värden som inte kommer med i filen: %1$d. De finns kvar i dina rapporter.</string>
+    <string name="transfer_share_anyway">Dela ändå</string>
+    <string name="transfer_export_nothing">Inga av dina värden kunde skrivas till en fil, så inget exporterades. Försök igen.</string>
+    <string name="transfer_newer_version">Den här filen kommer från en nyare version av LabImporter. Uppdatera appen för att importera den.</string>
+    <string name="transfer_newer_version_some">Rapporter i den här filen som kräver en nyare version av LabImporter: %1$d.</string>
+    <string name="transfer_damaged_some">Skadade rapporter i den här filen: %1$d. Bara det som kunde läsas har importerats.</string>
     <string name="transfer_unsupported">Den här filen innehåller inga LabImporter-rapporter.</string>
     <string name="transfer_summary">Nya rapporter: %1$d · Fanns redan: %2$d</string>
     <string name="transfer_summary_failed">Nya rapporter: %1$d · Finns redan: %2$d · Inte sparade: %3$d</string>
@@ -287,6 +305,7 @@
     <string name="pdf_trend_range">Trendintervall</string>
     <string name="pdf_included_categories">Inkluderade kategorier</string>
     <string name="pdf_latest_subtitle">Senaste mätningen för varje värde</string>
+    <string name="cda_language_code">sv</string>
     <string name="pdf_column_test">Test</string>
     <string name="pdf_column_result">Resultat</string>
     <string name="pdf_column_reference">Referens</string>
@@ -309,6 +328,7 @@
     <string name="restore">Återställ</string>
     <string name="details">Detaljer</string>
     <string name="hide">Dölj</string>
+    <string name="include_in_export">Inkludera i export</string>
     <string name="move_up">Flytta upp</string>
     <string name="move_down">Flytta ned</string>
     <string name="settings_loinc">LOINC</string>
@@ -360,6 +380,7 @@
     <string name="show_latest_in_search">Visa senaste värdet i sökning</string>
     <string name="show_latest_in_search_footer">Låt det senaste värdet för varje mätvärde visas i genvägar på hemskärmen och i sökningen. När det är av visas bara värdets namn — aldrig ett mätvärde.</string>
     <string name="chart_summary">Diagram för %1$s: %2$s från %3$s till %4$s. Lägsta %5$s, högsta %6$s, senaste %7$s.</string>
+    <string name="chart_reading">%1$s: %2$s</string>
     <plurals name="chart_readings">
         <item quantity="one">%d mätning</item>
         <item quantity="other">%d mätningar</item>

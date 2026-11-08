@@ -41,6 +41,12 @@ open class MemoryStore : LabReportStore {
 class FakeHealthConnect : MemoryStore(), HealthConnectStore {
     var available = HealthConnectAvailability.AVAILABLE
     var granted = true
+    var loadError: Exception? = null
+
+    override suspend fun loadReports(): List<LabReport> {
+        loadError?.let { throw it }
+        return super.loadReports()
+    }
 
     override fun availability() = available
 
@@ -144,6 +150,57 @@ class ReportRepositoryTest {
         repository.reload()
         assertFalse(repository.loadFailed.value)
         assertEquals(3, repository.reports.value.size)
+    }
+
+    @Test
+    fun aFailedLoadSaysWhyAndChoosingAppStorageEndsIt() = runTest {
+        val repository = repository()
+        repository.enableHealthConnect()
+        assertEquals(null, repository.loadProblem.value)
+
+        healthConnect.granted = false
+        repository.reload()
+        assertEquals(ReportsLoadProblem.HEALTH_CONNECT_ACCESS_OFF, repository.loadProblem.value)
+
+        healthConnect.granted = true
+        healthConnect.available = HealthConnectAvailability.UPDATE_REQUIRED
+        repository.reload()
+        assertEquals(ReportsLoadProblem.HEALTH_CONNECT_UPDATE_REQUIRED, repository.loadProblem.value)
+
+        for (gone in listOf(HealthConnectAvailability.NOT_INSTALLED, HealthConnectAvailability.MEDICAL_RECORDS_UNSUPPORTED)) {
+            healthConnect.available = gone
+            repository.reload()
+            assertEquals(ReportsLoadProblem.HEALTH_CONNECT_UNAVAILABLE, repository.loadProblem.value)
+        }
+
+        // The way out when it never comes back: new saves go to the app, and nothing is deleted.
+        val inHealthConnect = healthConnect.reports.keys.toSet()
+        assertTrue(repository.wantsHealthConnect)
+        repository.useLocalStorage()
+        assertFalse(repository.wantsHealthConnect)
+        assertEquals(null, repository.loadProblem.value)
+        assertEquals(inHealthConnect, healthConnect.reports.keys.toSet())
+    }
+
+    @Test
+    fun aReadThatFailsIsNotBlamedOnAccess() = runTest {
+        val repository = repository()
+        repository.enableHealthConnect()
+
+        healthConnect.loadError = java.io.IOException("read failed")
+        repository.reload()
+        assertEquals(ReportsLoadProblem.READ_FAILED, repository.loadProblem.value)
+
+        // Access can go between the check and the read.
+        healthConnect.loadError = SecurityException("no permission")
+        repository.reload()
+        assertEquals(ReportsLoadProblem.HEALTH_CONNECT_ACCESS_OFF, repository.loadProblem.value)
+    }
+
+    @Test
+    fun anOfferToMoveReportsIsNotMadeToSomeoneWhoAlreadyChoseHealthConnect() {
+        val cutOff = HealthConnectState(HealthConnectAvailability.AVAILABLE, granted = false, inUse = false, chosen = true)
+        assertFalse(cutOff.offersMove(hasReports = true, dismissed = false))
     }
 
     @Test

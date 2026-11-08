@@ -39,4 +39,28 @@ struct ShareInboxTests {
         #expect(ShareInbox.itemID(from: URL(string: "https://share/\(UUID().uuidString)")!) == nil)
         #expect(DeepLink.metricCode(from: URL(string: "labimporter://metric/2160-0")!) == "2160-0")
     }
+
+    @Test func textThatCanNotBeReadRightNowIsNotLost() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("ShareInboxTests-\(UUID().uuidString)", isDirectory: true)
+        let inbox = ShareInbox(directory: directory)
+        let id = UUID()
+        // A folder can't be read as a file, like a protected item while the device is locked.
+        let locked = directory.appendingPathComponent("\(id.uuidString).json", isDirectory: true)
+        try FileManager.default.createDirectory(at: locked, withIntermediateDirectories: true)
+
+        #expect(inbox.take(id) == nil)
+        #expect(inbox.takeNext() == nil)
+        #expect(FileManager.default.fileExists(atPath: locked.path))
+    }
+
+    @Test func aDamagedItemIsThrownAway() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("ShareInboxTests-\(UUID().uuidString)", isDirectory: true)
+        let inbox = ShareInbox(directory: directory)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let damaged = directory.appendingPathComponent("\(UUID().uuidString).json")
+        try Data("not an item".utf8).write(to: damaged)
+
+        #expect(inbox.takeNext() == nil)
+        #expect(!FileManager.default.fileExists(atPath: damaged.path))
+    }
 }

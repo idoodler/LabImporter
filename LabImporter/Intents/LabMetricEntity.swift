@@ -27,8 +27,9 @@ struct LabMetricEntity: AppEntity {
     let id: String
     let name: String
 
+    // The subtitle tells terms apart that share a plain name (mass and moles of one analyte) when Siri asks which one.
     var displayRepresentation: DisplayRepresentation {
-        DisplayRepresentation(title: "\(name)")
+        DisplayRepresentation(title: "\(name)", subtitle: "\(LabMapping.catalogName(for: id))")
     }
 }
 

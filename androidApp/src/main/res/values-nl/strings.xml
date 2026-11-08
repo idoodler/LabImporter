@@ -23,7 +23,7 @@
     <string name="disclaimer_title">Geen medisch advies</string>
     <string name="disclaimer_body">LabImporter is geen medisch hulpmiddel en biedt geen medisch advies, diagnose of behandeling. Geëxtraheerde waarden kunnen onnauwkeurig of onvolledig zijn — controleer ze altijd aan de hand van je oorspronkelijke rapport. Neem nooit medische beslissingen op basis van deze app; raadpleeg een gekwalificeerde zorgverlener over je resultaten.</string>
     <string name="disclaimer_accept">Ik begrijp het</string>
-    <string name="onboarding_hc_message">Bewaar je rapporten in Health Connect, zodat ze bij de rest van je gezondheidsgegevens staan. Labuitslagen worden als standaard FHIR-records op dit apparaat opgeslagen.</string>
+    <string name="onboarding_hc_message">Bewaar je rapporten in Health Connect, zodat ze bij de rest van je gezondheidsgegevens staan. Labuitslagen worden als standaard medische dossiers op dit apparaat opgeslagen.</string>
     <string name="onboarding_hc_connected">Verbonden. Je rapporten worden als labuitslagen in Health Connect bewaard.</string>
     <string name="onboarding_hc_unavailable">Medische dossiers van Health Connect zijn niet beschikbaar op dit apparaat, dus je rapporten worden privé in LabImporter op dit apparaat bewaard. Je kunt later overschakelen in Instellingen.</string>
     <string name="dashboard_empty_title">Nog geen rapporten</string>
@@ -65,7 +65,7 @@
     <string name="category_other">Overig</string>
     <string name="history_empty_title">Nog geen rapporten</string>
     <string name="history_empty_message">Importeer een laboratoriumrapport om het hier te zien.</string>
-    <string name="share_cda">CDA-bestand delen</string>
+    <string name="share_cda">Rapportbestand delen</string>
     <string name="delete_report_title">Rapport verwijderen?</string>
     <string name="delete_report_message">Dit rapport wordt definitief verwijderd.</string>
     <string name="report_deleted">Rapport verwijderd</string>
@@ -212,6 +212,17 @@
     <string name="try_again">Opnieuw proberen</string>
     <string name="reports_load_failed_title">Je rapporten konden niet worden geladen</string>
     <string name="reports_load_failed_message">Je bewaarde rapporten zijn niet gewijzigd, maar kunnen nu niet worden gelezen.</string>
+    <string name="reports_newer_title">Werk LabImporter bij om alle rapporten te zien</string>
+    <string name="reports_newer_message">Rapporten opgeslagen door een nieuwere versie van LabImporter: %1$d. Ze zijn veilig. Werk de app bij om ze te zien.</string>
+    <string name="hc_access_off_title">Toegang tot Health Connect staat uit</string>
+    <string name="hc_access_off_message">Zonder toegang kan LabImporter de rapporten in Health Connect niet lezen. Ze staan er nog. Geef toegang om ze te zien, of bewaar je rapporten voortaan in de app.</string>
+    <string name="hc_allow_access">Toegang geven</string>
+    <string name="hc_needs_update_title">Health Connect moet worden bijgewerkt</string>
+    <string name="hc_needs_update_message">Je rapporten staan nog in Health Connect, maar het moet worden bijgewerkt voordat LabImporter ze kan lezen.</string>
+    <string name="hc_update">Health Connect bijwerken</string>
+    <string name="hc_gone_title">Health Connect is niet beschikbaar</string>
+    <string name="hc_gone_message">LabImporter kan Health Connect op dit apparaat niet bereiken, dus de rapporten die daar staan worden niet getoond. LabImporter heeft ze niet verwijderd.</string>
+    <string name="hc_use_app_storage">App-opslag gebruiken</string>
     <string name="reports_unreadable_title">Sommige rapporten kunnen niet worden gelezen</string>
     <string name="reports_unreadable_message">Rapporten die niet kunnen worden gelezen: %1$d. Ze blijven op dit apparaat en zijn niet verwijderd.</string>
     <string name="hc_connect_failed">Kan geen verbinding maken met Health Connect. Je rapporten blijven in LabImporter. Probeer het opnieuw via Instellingen.</string>
@@ -220,6 +231,13 @@
     <string name="transfer_export_detail">Bewaar alle rapporten in één bestand, bijvoorbeeld om ze naar een andere telefoon over te zetten.</string>
     <string name="transfer_import">Rapporten importeren</string>
     <string name="transfer_import_detail">Uit een LabImporter-bestand dat op een iPhone of Android is geëxporteerd. Rapporten die hier al staan, worden overgeslagen.</string>
+    <string name="transfer_leaves_out_title">Sommige waarden kunnen niet worden geëxporteerd</string>
+    <string name="transfer_leaves_out_message">Waarden die niet in het bestand komen: %1$d. Ze blijven in je rapporten.</string>
+    <string name="transfer_share_anyway">Toch delen</string>
+    <string name="transfer_export_nothing">Geen van je waarden kon naar een bestand worden geschreven, dus er is niets geëxporteerd. Probeer het opnieuw.</string>
+    <string name="transfer_newer_version">Dit bestand komt uit een nieuwere versie van LabImporter. Werk de app bij om het te importeren.</string>
+    <string name="transfer_newer_version_some">Rapporten in dit bestand die een nieuwere versie van LabImporter nodig hebben: %1$d.</string>
+    <string name="transfer_damaged_some">Beschadigde rapporten in dit bestand: %1$d. Alleen wat kon worden gelezen, is geïmporteerd.</string>
     <string name="transfer_unsupported">Dit bestand bevat geen LabImporter-rapporten.</string>
     <string name="transfer_summary">Nieuwe rapporten: %1$d · Al aanwezig: %2$d</string>
     <string name="transfer_summary_failed">Nieuwe rapporten: %1$d · Al aanwezig: %2$d · Niet bewaard: %3$d</string>
@@ -287,6 +305,7 @@
     <string name="pdf_trend_range">Trendperiode</string>
     <string name="pdf_included_categories">Opgenomen categorieën</string>
     <string name="pdf_latest_subtitle">Meest recente meting per waarde</string>
+    <string name="cda_language_code">nl</string>
     <string name="pdf_column_test">Test</string>
     <string name="pdf_column_result">Resultaat</string>
     <string name="pdf_column_reference">Referentie</string>
@@ -309,6 +328,7 @@
     <string name="restore">Herstellen</string>
     <string name="details">Details</string>
     <string name="hide">Verberg</string>
+    <string name="include_in_export">Opnemen in export</string>
     <string name="move_up">Omhoog</string>
     <string name="move_down">Omlaag</string>
     <string name="settings_loinc">LOINC</string>
@@ -360,6 +380,7 @@
     <string name="show_latest_in_search">Laatste waarde tonen in zoeken</string>
     <string name="show_latest_in_search_footer">Laat de meest recente meting van elke waarde verschijnen in snelkoppelingen op het startscherm en in zoeken. Wanneer uit, wordt alleen de naam van de waarde getoond — nooit een meting.</string>
     <string name="chart_summary">Grafiek %1$s: %2$s van %3$s tot %4$s. Laagste %5$s, hoogste %6$s, laatste %7$s.</string>
+    <string name="chart_reading">%1$s: %2$s</string>
     <plurals name="chart_readings">
         <item quantity="one">%d meting</item>
         <item quantity="other">%d metingen</item>

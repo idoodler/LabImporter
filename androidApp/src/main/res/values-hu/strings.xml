@@ -23,7 +23,7 @@
     <string name="disclaimer_title">Nem orvosi tanács</string>
     <string name="disclaimer_body">A LabImporter nem orvostechnikai eszköz, és nem nyújt orvosi tanácsot, diagnózist vagy kezelést. A kinyert értékek pontatlanok vagy hiányosak lehetnek – mindig vesd össze őket az eredeti leleteddel. Soha ne hozz orvosi döntéseket ezen alkalmazás alapján; az eredményeidről konzultálj képzett egészségügyi szakemberrel.</string>
     <string name="disclaimer_accept">Megértettem</string>
-    <string name="onboarding_hc_message">Mentsd a jelentéseidet a Health Connectbe, hogy a többi egészségügyi adatod mellett legyenek. A laboreredmények szabványos FHIR-rekordokként tárolódnak ezen az eszközön.</string>
+    <string name="onboarding_hc_message">Mentsd a jelentéseidet a Health Connectbe, hogy a többi egészségügyi adatod mellett legyenek. A laboreredmények szabványos orvosi rekordokként tárolódnak ezen az eszközön.</string>
     <string name="onboarding_hc_connected">Csatlakoztatva. A jelentéseid laboreredményként kerülnek a Health Connectbe.</string>
     <string name="onboarding_hc_unavailable">A Health Connect egészségügyi adatai nem érhetők el ezen az eszközön, ezért a jelentéseid privát módon, a LabImporterben tárolódnak ezen az eszközön. Később a Beállításokban válthatsz.</string>
     <string name="dashboard_empty_title">Még nincsenek jelentések</string>
@@ -65,7 +65,7 @@
     <string name="category_other">Egyéb</string>
     <string name="history_empty_title">Még nincsenek jelentések</string>
     <string name="history_empty_message">Importálj egy laborleletet, hogy itt lásd.</string>
-    <string name="share_cda">CDA-fájl megosztása</string>
+    <string name="share_cda">Jelentésfájl megosztása</string>
     <string name="delete_report_title">Törlöd a jelentést?</string>
     <string name="delete_report_message">Ez a jelentés véglegesen törlődik.</string>
     <string name="report_deleted">Jelentés törölve</string>
@@ -212,6 +212,17 @@
     <string name="try_again">Próbáld újra</string>
     <string name="reports_load_failed_title">Nem sikerült betölteni a jelentéseket</string>
     <string name="reports_load_failed_message">A mentett jelentéseid nem változtak, de most nem olvashatók.</string>
+    <string name="reports_newer_title">Frissítsd a LabImportert az összes jelentés megtekintéséhez</string>
+    <string name="reports_newer_message">A LabImporter újabb verziójával mentett jelentések: %1$d. Biztonságban vannak. Frissítsd az appot a megtekintésükhöz.</string>
+    <string name="hc_access_off_title">A Health Connect-hozzáférés ki van kapcsolva</string>
+    <string name="hc_access_off_message">Hozzáférés nélkül a LabImporter nem tudja olvasni a Health Connectbe mentett jelentéseket. Továbbra is ott vannak. Engedélyezd a hozzáférést a megtekintésükhöz, vagy mostantól tárold a jelentéseket az appban.</string>
+    <string name="hc_allow_access">Hozzáférés engedélyezése</string>
+    <string name="hc_needs_update_title">A Health Connect frissítésre szorul</string>
+    <string name="hc_needs_update_message">A jelentéseid továbbra is a Health Connectben vannak, de frissíteni kell, mielőtt a LabImporter olvasni tudná őket.</string>
+    <string name="hc_update">Health Connect frissítése</string>
+    <string name="hc_gone_title">A Health Connect nem érhető el</string>
+    <string name="hc_gone_message">A LabImporter nem éri el a Health Connectet ezen az eszközön, ezért az oda mentett jelentések nem jelennek meg. A LabImporter nem törölte őket.</string>
+    <string name="hc_use_app_storage">Az app tárhelyének használata</string>
     <string name="reports_unreadable_title">Néhány jelentés nem olvasható</string>
     <string name="reports_unreadable_message">Nem olvasható jelentések: %1$d. Ezen az eszközön maradnak, és nem törlődtek.</string>
     <string name="hc_connect_failed">Nem sikerült csatlakozni a Health Connecthez. A jelentéseid a LabImporterben maradnak. Próbáld újra a Beállításokban.</string>
@@ -220,6 +231,13 @@
     <string name="transfer_export_detail">Mentsd az összes jelentést egyetlen fájlba, például hogy átvidd őket egy másik telefonra.</string>
     <string name="transfer_import">Jelentések importálása</string>
     <string name="transfer_import_detail">iPhone-on vagy Androidon exportált LabImporter-fájlból. A már itt lévő jelentések kimaradnak.</string>
+    <string name="transfer_leaves_out_title">Néhány érték nem exportálható</string>
+    <string name="transfer_leaves_out_message">A fájlból kimaradó értékek: %1$d. A jelentéseidben megmaradnak.</string>
+    <string name="transfer_share_anyway">Megosztás így is</string>
+    <string name="transfer_export_nothing">Egyik értéket sem sikerült fájlba írni, ezért semmi sem lett exportálva. Próbáld újra.</string>
+    <string name="transfer_newer_version">Ez a fájl a LabImporter újabb verziójából származik. Az importáláshoz frissítsd az appot.</string>
+    <string name="transfer_newer_version_some">A fájl jelentései, amelyekhez újabb LabImporter-verzió kell: %1$d.</string>
+    <string name="transfer_damaged_some">Sérült jelentések ebben a fájlban: %1$d. Csak az olvasható részek lettek importálva.</string>
     <string name="transfer_unsupported">Ez a fájl nem tartalmaz LabImporter-jelentéseket.</string>
     <string name="transfer_summary">Új jelentések: %1$d · Már meglévők: %2$d</string>
     <string name="transfer_summary_failed">Új jelentések: %1$d · Már megvan: %2$d · Nincs mentve: %3$d</string>
@@ -287,6 +305,7 @@
     <string name="pdf_trend_range">Trendtartomány</string>
     <string name="pdf_included_categories">Tartalmazott kategóriák</string>
     <string name="pdf_latest_subtitle">Az egyes értékek legutóbbi mérése</string>
+    <string name="cda_language_code">hu</string>
     <string name="pdf_column_test">Vizsgálat</string>
     <string name="pdf_column_result">Eredmény</string>
     <string name="pdf_column_reference">Referencia</string>
@@ -309,6 +328,7 @@
     <string name="restore">Visszaállítás</string>
     <string name="details">Részletek</string>
     <string name="hide">Elrejtés</string>
+    <string name="include_in_export">Belefoglalás az exportba</string>
     <string name="move_up">Mozgatás fel</string>
     <string name="move_down">Mozgatás le</string>
     <string name="settings_loinc">LOINC</string>
@@ -360,6 +380,7 @@
     <string name="show_latest_in_search">Legutóbbi érték megjelenítése a keresésben</string>
     <string name="show_latest_in_search_footer">Engedélyezze, hogy minden érték legutóbbi mérése megjelenjen a kezdőképernyő parancsikonjaiban és a keresésben. Kikapcsolva csak az érték neve jelenik meg — mérés soha.</string>
     <string name="chart_summary">%1$s diagram: %2$s, %3$s – %4$s. Legalacsonyabb %5$s, legmagasabb %6$s, legutóbbi %7$s.</string>
+    <string name="chart_reading">%1$s: %2$s</string>
     <plurals name="chart_readings">
         <item quantity="one">%d mérés</item>
         <item quantity="other">%d mérés</item>

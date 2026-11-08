@@ -156,6 +156,7 @@ kotlin {
             "kotlin.time.ExperimentalTime",
             "androidx.compose.material3.ExperimentalMaterial3Api",
             "androidx.compose.material3.ExperimentalMaterial3ExpressiveApi",
+            "androidx.compose.foundation.layout.ExperimentalLayoutApi",
         )
     }
 }
@@ -178,6 +179,8 @@ tasks.withType<Test>().configureEach {
     // mode) can't load the bundled SQLite native library again, so the catalog would
     // silently fail to open there. Native graphics also let the PDF pages draw.
     systemProperty("robolectric.graphicsMode", "NATIVE")
+    // `-PqualityScreens=<folder>`: ScreenMatrixTest saves every screen there.
+    providers.gradleProperty("qualityScreens").orNull?.let { systemProperty("quality.screens", it) }
 }
 
 androidComponents {

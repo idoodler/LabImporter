@@ -114,34 +114,50 @@ object FhirLabCodec {
             FhirResource("Observation", entry.id, body.toString())
         }
 
-    /** Regroups stored Observations into reports, newest first. Foreign/unversioned resources are skipped. */
-    fun decode(resources: List<String>): List<LabReport> {
+    /** The reports in [resources]; see [decodeStored], for anything showing or moving them. */
+    fun decode(resources: List<String>): List<LabReport> = decodeStored(resources).reports
+
+    /**
+     * Regroups stored Observations into reports, newest first, and counts what it can't list.
+     * Resources of other apps and unversioned ones are skipped without a word.
+     */
+    fun decodeStored(resources: List<String>): StoredReports {
         data class Row(val reportId: String, val version: Int, val date: LocalDate, val patient: String,
                        val author: String, val entry: LabReport.Entry)
 
-        val rows = resources.mapNotNull { raw ->
-            runCatching {
+        val rows = mutableListOf<Row>()
+        val newer = hashSetOf<String>()
+        val damaged = hashSetOf<String>()
+        var damagedWithoutId = 0
+        for (raw in resources) {
+            var reportId: String? = null
+            try {
                 val obj = json.parseToJsonElement(raw).jsonObject
-                if (obj.string("resourceType") != "Observation") return@runCatching null
+                if (obj.string("resourceType") != "Observation") continue
                 val tags = obj["meta"]?.jsonObject?.get("tag")?.jsonArray.orEmpty().map { it.jsonObject }
-                val reportId = tags.firstOrNull { it.string("system") == REPORT_TAG_SYSTEM }?.string("code")
-                    ?: return@runCatching null
+                val id = tags.firstOrNull { it.string("system") == REPORT_TAG_SYSTEM }?.string("code") ?: continue
+                reportId = id
                 val version = tags.firstOrNull { it.string("system") == SCHEMA_TAG_SYSTEM }?.string("code")
-                    ?.toIntOrNull() ?: return@runCatching null
+                    ?.toIntOrNull() ?: continue
+                // Checked before anything else is read: a later version may have changed the rest.
+                if (ReportSchema.isNewer(version)) {
+                    newer += id
+                    continue
+                }
                 val coding = obj["code"]?.jsonObject?.get("coding")?.jsonArray.orEmpty().map { it.jsonObject }
-                    .firstOrNull { it.string("system") == LOINC_SYSTEM } ?: return@runCatching null
+                    .firstOrNull { it.string("system") == LOINC_SYSTEM } ?: error("No LOINC code")
                 val quantity = obj["valueQuantity"]?.jsonObject
                 val value = quantity?.get("value")?.jsonPrimitive?.doubleOrNull
                 val text = if (value == null) obj.string("valueString")?.takeIf { it.isNotBlank() }?.let(QualitativeResult::split) else null
-                val date = obj.string("effectiveDateTime")?.take(10)?.let(LocalDate::parse) ?: return@runCatching null
-                Row(
-                    reportId = reportId,
+                val date = obj.string("effectiveDateTime")?.take(10)?.let(LocalDate::parse) ?: error("No date")
+                rows += Row(
+                    reportId = id,
                     version = version,
                     date = date,
                     patient = obj["subject"]?.jsonObject?.string("display").orEmpty(),
                     author = (obj["performer"] as? JsonArray)?.firstOrNull()?.jsonObject?.string("display").orEmpty(),
                     entry = LabReport.Entry(
-                        id = obj.string("id") ?: reportId,
+                        id = obj.string("id") ?: id,
                         code = coding.string("code").orEmpty(),
                         name = obj["code"]?.jsonObject?.string("text") ?: coding.string("display").orEmpty(),
                         displayValue = value?.let(NumberFormatting::exactValue) ?: text?.first ?: "-",
@@ -149,10 +165,14 @@ object FhirLabCodec {
                         unit = text?.second ?: quantity?.string("unit").orEmpty(),
                     ),
                 )
-            }.getOrNull()
+            } catch (_: Exception) {
+                // Only counted: the exception's message would quote a health record.
+                if (reportId != null) damaged += reportId else damagedWithoutId++
+            }
         }
 
-        return rows.groupBy { it.reportId }.mapNotNull { (reportId, group) ->
+        // A report with any newer resource isn't listed at all: half of it can't be read, and edits would lose the rest.
+        val reports = rows.filter { it.reportId !in newer }.groupBy { it.reportId }.mapNotNull { (reportId, group) ->
             val first = group.first()
             val report = LabReport(
                 id = reportId, date = first.date, patientName = first.patient, authorName = first.author,
@@ -160,6 +180,7 @@ object FhirLabCodec {
             )
             ReportSchema.upgrade(report, group.minOf { it.version })
         }.sortedByDescending { it.date }
+        return StoredReports(reports, newer.size, (damaged - newer).size + damagedWithoutId)
     }
 
     private fun coding(system: String, code: String, display: String?) = buildJsonObject {

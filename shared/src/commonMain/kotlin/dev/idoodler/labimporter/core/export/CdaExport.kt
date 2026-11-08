@@ -10,6 +10,22 @@ import kotlinx.datetime.LocalDate
 import kotlin.uuid.Uuid
 
 /**
+ * The words of a document's human-readable part, in the language it declares.
+ * Apple Health shows them. They're the caller's, because they're the user's
+ * language; [CdaParser] reads none of them, so a report keeps working whatever
+ * language it was saved in.
+ *
+ * @param languageCode a BCP 47 tag, such as `de` or `pt-BR`.
+ */
+data class CdaNarrative(
+    val languageCode: String,
+    val documentTitle: String,
+    val sectionTitle: String,
+    val testHeader: String,
+    val resultHeader: String,
+)
+
+/**
  * Builds a C-CDA R2.1 Lab Report — the document format the iOS app stores in
  * Apple Health, and the share/export format on both platforms. Only values
  * that are selected, have a result and are LOINC-mapped are included: a
@@ -23,11 +39,14 @@ object CdaExport {
     /**
      * @param softwareIdentity provenance for `manufacturerModelName`, e.g.
      *   `LabImporter 1.0 (33)`.
+     * @param narrative the document's language and headings; the catalog names in its
+     *   table are already in the app's language.
      */
     fun generate(
         values: List<LabValue>,
         date: LocalDate,
         softwareIdentity: String,
+        narrative: CdaNarrative,
         patientName: String = "",
         authorName: String = "",
     ): String {
@@ -59,10 +78,10 @@ object CdaExport {
         displayName="Laboratory report"
         codeSystem="2.16.840.1.113883.6.1"
         codeSystemName="LOINC"/>
-  <title>Lab Results</title>
+  <title>${esc(narrative.documentTitle)}</title>
   <effectiveTime value="$dateStr"/>
   <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
-  <languageCode code="de-DE"/>
+  <languageCode code="${esc(narrative.languageCode)}"/>
   <recordTarget>
     <patientRole>
       <id nullFlavor="UNK"/>
@@ -102,10 +121,10 @@ object CdaExport {
                 displayName="Relevant diagnostic tests/laboratory data Narrative"
                 codeSystem="2.16.840.1.113883.6.1"
                 codeSystemName="LOINC"/>
-          <title>Laborwerte</title>
+          <title>${esc(narrative.sectionTitle)}</title>
           <text>
             <table border="1" width="100%">
-              <thead><tr><th>Test</th><th>Ergebnis</th></tr></thead>
+              <thead><tr><th>${esc(narrative.testHeader)}</th><th>${esc(narrative.resultHeader)}</th></tr></thead>
               <tbody>
               $narrativeRows
               </tbody>

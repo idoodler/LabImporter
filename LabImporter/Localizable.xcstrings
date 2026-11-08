@@ -22200,150 +22200,150 @@
         }
       }
     },
-    "Imported lab values are written as clinical CDA records into Apple Health." : {
+    "Imported lab values are written as clinical documents into Apple Health." : {
       "localizations" : {
         "bg" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Импортираните лабораторни стойности се записват като клинични CDA записи в Apple Здраве."
+            "value" : "Импортираните лабораторни стойности се записват като клинични документи в Apple Здраве."
           }
         },
         "ca" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Els valors de laboratori importats es desen com a registres clínics CDA a Apple Salut."
+            "value" : "Els valors de laboratori importats es desen com a documents clínics a Apple Salut."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Importované laboratorní hodnoty se zapisují jako klinické záznamy CDA do Apple Zdraví."
+            "value" : "Importované laboratorní hodnoty se zapisují jako klinické dokumenty do Apple Zdraví."
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Importerede laboratorieværdier gemmes som kliniske CDA-poster i Apple Helbred."
+            "value" : "Importerede laboratorieværdier gemmes som kliniske dokumenter i Apple Helbred."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Importierte Laborwerte werden als klinische CDA-Dokumente in Apple Health gespeichert."
+            "value" : "Importierte Laborwerte werden als klinische Dokumente in Apple Health gespeichert."
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Οι εισαγόμενες εργαστηριακές τιμές καταγράφονται ως κλινικές εγγραφές CDA στο Apple Υγεία."
+            "value" : "Οι εισαγόμενες εργαστηριακές τιμές καταγράφονται ως κλινικά έγγραφα στο Apple Υγεία."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Los valores de laboratorio importados se guardan como registros clínicos CDA en Apple Salud."
+            "value" : "Los valores de laboratorio importados se guardan como documentos clínicos en Apple Salud."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tuodut laboratorioarvot kirjoitetaan kliinisinä CDA-tietueina Apple Terveyteen."
+            "value" : "Tuodut laboratorioarvot kirjoitetaan kliinisinä asiakirjoina Apple Terveyteen."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les valeurs de laboratoire importées sont enregistrées comme documents cliniques CDA dans Apple Santé."
+            "value" : "Les valeurs de laboratoire importées sont enregistrées comme documents cliniques dans Apple Santé."
           }
         },
         "hr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Uvezene laboratorijske vrijednosti zapisuju se kao klinički CDA zapisi u Apple Zdravlje."
+            "value" : "Uvezene laboratorijske vrijednosti zapisuju se kao klinički dokumenti u Apple Zdravlje."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Az importált laborértékek klinikai CDA-rekordként kerülnek az Apple Egészségbe."
+            "value" : "Az importált laborértékek klinikai dokumentumként kerülnek az Apple Egészségbe."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "I valori di laboratorio importati vengono salvati come documenti clinici CDA in Apple Salute."
+            "value" : "I valori di laboratorio importati vengono salvati come documenti clinici in Apple Salute."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "取り込んだ検査値は、臨床CDA文書としてAppleヘルスケアに保存されます。"
+            "value" : "取り込んだ検査値は、臨床文書としてAppleヘルスケアに保存されます。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Geïmporteerde labwaarden worden als klinische CDA-records in Apple Gezondheid opgeslagen."
+            "value" : "Geïmporteerde labwaarden worden als klinische documenten in Apple Gezondheid opgeslagen."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zaimportowane wyniki są zapisywane jako kliniczne dokumenty CDA w Apple Zdrowiu."
+            "value" : "Zaimportowane wyniki są zapisywane jako dokumenty kliniczne w Apple Zdrowiu."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Os valores laboratoriais importados são gravados como registros clínicos CDA no Apple Saúde."
+            "value" : "Os valores laboratoriais importados são gravados como documentos clínicos no Apple Saúde."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Os valores laboratoriais importados são guardados como registos clínicos CDA na Apple Saúde."
+            "value" : "Os valores laboratoriais importados são guardados como documentos clínicos na Apple Saúde."
           }
         },
         "ro" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Valorile de laborator importate sunt scrise ca înregistrări clinice CDA în Apple Sănătate."
+            "value" : "Valorile de laborator importate sunt scrise ca documente clinice în Apple Sănătate."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Импортированные лабораторные значения сохраняются как клинические CDA-документы в Apple Здоровье."
+            "value" : "Импортированные лабораторные значения сохраняются как клинические документы в Apple Здоровье."
           }
         },
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Importované laboratórne hodnoty sa zapisujú do Apple Zdravie ako klinické záznamy CDA."
+            "value" : "Importované laboratórne hodnoty sa zapisujú do Apple Zdravie ako klinické dokumenty."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Importerade labbvärden skrivs som kliniska CDA-poster till Apple Hälsa."
+            "value" : "Importerade labbvärden skrivs som kliniska dokument till Apple Hälsa."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "İçe aktarılan laboratuvar değerleri, Apple Sağlık’a klinik CDA kayıtları olarak yazılır."
+            "value" : "İçe aktarılan laboratuvar değerleri, Apple Sağlık’a klinik belgeler olarak yazılır."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Імпортовані лабораторні значення зберігаються в Apple Здоров’я як клінічні CDA-записи."
+            "value" : "Імпортовані лабораторні значення зберігаються в Apple Здоров’я як клінічні документи."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "导入的化验数值将作为临床 CDA 记录写入 Apple 健康。"
+            "value" : "导入的化验数值将作为临床文档写入 Apple 健康。"
           }
         }
       }
@@ -31163,150 +31163,150 @@
         }
       }
     },
-    "No LOINC code — excluded from CDA export" : {
+    "No LOINC code — won't be saved or shared" : {
       "localizations" : {
         "bg" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Без LOINC код — изключено от експорта в CDA"
+            "value" : "Без LOINC код — няма да се запази или сподели"
           }
         },
         "ca" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sense codi LOINC — exclòs de l'exportació CDA"
+            "value" : "Sense codi LOINC — no es desarà ni es compartirà"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bez kódu LOINC — vyloučeno z exportu CDA"
+            "value" : "Bez kódu LOINC — nebude uloženo ani sdíleno"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ingen LOINC-kode – udelukket fra CDA-eksport"
+            "value" : "Ingen LOINC-kode – gemmes og deles ikke"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kein LOINC-Code – vom CDA-Export ausgeschlossen"
+            "value" : "Kein LOINC-Code – wird weder gespeichert noch geteilt"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Χωρίς κωδικό LOINC — εξαιρείται από την εξαγωγή CDA"
+            "value" : "Χωρίς κωδικό LOINC — δεν θα αποθηκευτεί ούτε θα κοινοποιηθεί"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sin código LOINC — excluido del export CDA"
+            "value" : "Sin código LOINC — no se guardará ni compartirá"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ei LOINC-koodia – jätetty pois CDA-viennistä"
+            "value" : "Ei LOINC-koodia – ei tallenneta eikä jaeta"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pas de code LOINC — exclu de l'export CDA"
+            "value" : "Pas de code LOINC — ne sera ni enregistré ni partagé"
           }
         },
         "hr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nema LOINC kôda — isključeno iz CDA izvoza"
+            "value" : "Nema LOINC kôda — neće se spremiti ni podijeliti"
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nincs LOINC-kód – kizárva a CDA-exportból"
+            "value" : "Nincs LOINC-kód – nem lesz mentve és megosztva"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nessun codice LOINC — escluso dall'export CDA"
+            "value" : "Nessun codice LOINC — non verrà salvato né condiviso"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "LOINCコードなし — CDA書き出しから除外"
+            "value" : "LOINCコードなし — 保存も共有もされません"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Geen LOINC-code — uitgesloten van CDA-export"
+            "value" : "Geen LOINC-code — wordt niet bewaard of gedeeld"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Brak kodu LOINC — wyłączony z eksportu CDA"
+            "value" : "Brak kodu LOINC — nie zostanie zapisany ani udostępniony"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sem código LOINC — excluído da exportação CDA"
+            "value" : "Sem código LOINC — não será salvo nem compartilhado"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sem código LOINC — excluído da exportação CDA"
+            "value" : "Sem código LOINC — não será guardado nem partilhado"
           }
         },
         "ro" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fără cod LOINC — exclus din exportul CDA"
+            "value" : "Fără cod LOINC — nu va fi salvat sau partajat"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Нет кода LOINC — исключено из экспорта CDA"
+            "value" : "Нет кода LOINC — не будет сохранено и передано"
           }
         },
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bez kódu LOINC — vylúčené z exportu CDA"
+            "value" : "Bez kódu LOINC — neuloží sa ani nezdieľa"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ingen LOINC-kod – utesluten från CDA-export"
+            "value" : "Ingen LOINC-kod – sparas och delas inte"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "LOINC kodu yok — CDA dışa aktarımından hariç tutuldu"
+            "value" : "LOINC kodu yok — kaydedilmeyecek ve paylaşılmayacak"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Немає коду LOINC — виключено з експорту CDA"
+            "value" : "Немає коду LOINC — не буде збережено чи поширено"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无 LOINC 代码 — 已从 CDA 导出中排除"
+            "value" : "无 LOINC 代码 — 不会保存或分享"
           }
         }
       }
@@ -36790,150 +36790,150 @@
         }
       }
     },
-    "Reports are stored as clinical CDA records directly in Apple Health." : {
+    "Reports are stored as clinical documents directly in Apple Health." : {
       "localizations" : {
         "bg" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Отчетите се съхраняват като клинични CDA записи направо в Apple Здраве."
+            "value" : "Отчетите се съхраняват като клинични документи направо в Apple Здраве."
           }
         },
         "ca" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Els informes es desen com a registres clínics CDA directament a Apple Salut."
+            "value" : "Els informes es desen com a documents clínics directament a Apple Salut."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Protokoly se ukládají jako klinické záznamy CDA přímo do Apple Zdraví."
+            "value" : "Protokoly se ukládají jako klinické dokumenty přímo do Apple Zdraví."
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rapporter gemmes som kliniske CDA-poster direkte i Apple Helbred."
+            "value" : "Rapporter gemmes som kliniske dokumenter direkte i Apple Helbred."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Berichte werden als klinische CDA-Datensätze direkt in Apple Health gespeichert."
+            "value" : "Berichte werden als klinische Dokumente direkt in Apple Health gespeichert."
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Οι αναφορές αποθηκεύονται ως κλινικές εγγραφές CDA απευθείας στο Apple Υγεία."
+            "value" : "Οι αναφορές αποθηκεύονται ως κλινικά έγγραφα απευθείας στο Apple Υγεία."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Los informes se almacenan como registros CDA clínicos directamente en Apple Salud."
+            "value" : "Los informes se almacenan como documentos clínicos directamente en Apple Salud."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Raportit tallennetaan kliinisinä CDA-tietueina suoraan Apple Terveyteen."
+            "value" : "Raportit tallennetaan kliinisinä asiakirjoina suoraan Apple Terveyteen."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les rapports sont stockés en tant qu'enregistrements CDA cliniques directement dans Apple Santé."
+            "value" : "Les rapports sont stockés en tant que documents cliniques directement dans Apple Santé."
           }
         },
         "hr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Izvješća se pohranjuju kao klinički CDA zapisi izravno u Apple Zdravlje."
+            "value" : "Izvješća se pohranjuju kao klinički dokumenti izravno u Apple Zdravlje."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A jelentések klinikai CDA-rekordként, közvetlenül az Apple Egészségben tárolódnak."
+            "value" : "A jelentések klinikai dokumentumként, közvetlenül az Apple Egészségben tárolódnak."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "I referti sono archiviati come record CDA clinici direttamente in Apple Salute."
+            "value" : "I referti sono archiviati come documenti clinici direttamente in Apple Salute."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "レポートは臨床CDA記録としてAppleヘルスケアに直接保存されます。"
+            "value" : "レポートは臨床文書としてAppleヘルスケアに直接保存されます。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rapporten worden opgeslagen als klinische CDA-records rechtstreeks in Apple Gezondheid."
+            "value" : "Rapporten worden als klinische documenten rechtstreeks in Apple Gezondheid opgeslagen."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Raporty są przechowywane jako kliniczne dokumenty CDA bezpośrednio w Apple Zdrowiu."
+            "value" : "Raporty są przechowywane jako dokumenty kliniczne bezpośrednio w Apple Zdrowiu."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Os laudos são armazenados como registros CDA clínicos diretamente no Apple Saúde."
+            "value" : "Os laudos são armazenados como documentos clínicos diretamente no Apple Saúde."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Os relatórios são guardados como registos clínicos CDA diretamente na Apple Saúde."
+            "value" : "Os relatórios são guardados como documentos clínicos diretamente na Apple Saúde."
           }
         },
         "ro" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rapoartele sunt stocate ca înregistrări clinice CDA direct în Apple Sănătate."
+            "value" : "Rapoartele sunt stocate ca documente clinice direct în Apple Sănătate."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Отчёты хранятся как клинические документы CDA непосредственно в Apple Здоровье."
+            "value" : "Отчёты хранятся как клинические документы непосредственно в Apple Здоровье."
           }
         },
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Správy sa ukladajú ako klinické záznamy CDA priamo do Apple Zdravie."
+            "value" : "Správy sa ukladajú ako klinické dokumenty priamo do Apple Zdravie."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rapporter lagras som kliniska CDA-poster direkt i Apple Hälsa."
+            "value" : "Rapporter lagras som kliniska dokument direkt i Apple Hälsa."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Raporlar, klinik CDA kayıtları olarak doğrudan Apple Sağlık'ta depolanır."
+            "value" : "Raporlar, klinik belgeler olarak doğrudan Apple Sağlık'ta depolanır."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Звіти зберігаються як клінічні документи CDA безпосередньо в Apple Здоров'ї."
+            "value" : "Звіти зберігаються як клінічні документи безпосередньо в Apple Здоров'ї."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "报告作为临床 CDA 记录直接存储在 Apple 健康中。"
+            "value" : "报告作为临床文档直接存储在 Apple 健康中。"
           }
         }
       }
@@ -40641,150 +40641,150 @@
         }
       }
     },
-    "Share CDA File" : {
+    "Share Report File" : {
       "localizations" : {
         "bg" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Сподели CDA файл"
+            "value" : "Сподели файла с отчета"
           }
         },
         "ca" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Comparteix el fitxer CDA"
+            "value" : "Comparteix el fitxer de l'informe"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sdílet soubor CDA"
+            "value" : "Sdílet soubor protokolu"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Del CDA-arkiv"
+            "value" : "Del rapportfil"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "CDA-Datei teilen"
+            "value" : "Berichtsdatei teilen"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Κοινή χρήση αρχείου CDA"
+            "value" : "Κοινή χρήση αρχείου αναφοράς"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Compartir archivo CDA"
+            "value" : "Compartir archivo del informe"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jaa CDA-tiedosto"
+            "value" : "Jaa raporttitiedosto"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Partager le fichier CDA"
+            "value" : "Partager le fichier du rapport"
           }
         },
         "hr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Podijeli CDA datoteku"
+            "value" : "Podijeli datoteku izvješća"
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "CDA-fájl megosztása"
+            "value" : "Jelentésfájl megosztása"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Condividi file CDA"
+            "value" : "Condividi file del referto"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "CDAファイルを共有"
+            "value" : "レポートファイルを共有"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "CDA-bestand delen"
+            "value" : "Rapportbestand delen"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Udostępnij plik CDA"
+            "value" : "Udostępnij plik raportu"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Compartilhar arquivo CDA"
+            "value" : "Compartilhar arquivo do laudo"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Partilhar ficheiro CDA"
+            "value" : "Partilhar ficheiro do relatório"
           }
         },
         "ro" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Partajează fișierul CDA"
+            "value" : "Partajează fișierul raportului"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Поделиться файлом CDA"
+            "value" : "Поделиться файлом отчёта"
           }
         },
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zdieľať súbor CDA"
+            "value" : "Zdieľať súbor správy"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dela CDA-fil"
+            "value" : "Dela rapportfil"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "CDA Dosyasını Paylaş"
+            "value" : "Rapor Dosyasını Paylaş"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Поділитися файлом CDA"
+            "value" : "Поділитися файлом звіту"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "分享 CDA 文件"
+            "value" : "分享报告文件"
           }
         }
       }
@@ -43158,151 +43158,150 @@
         }
       }
     },
-    "The lab report has been saved as a CDA document in Apple Health." : {
-      "extractionState" : "stale",
+    "The lab report has been saved in Apple Health." : {
       "localizations" : {
         "bg" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Лабораторният отчет е запазен като CDA документ в Apple Здраве."
+            "value" : "Лабораторният отчет е запазен в Apple Здраве."
           }
         },
         "ca" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L'informe de laboratori s'ha desat com a document CDA a Apple Salut."
+            "value" : "L'informe de laboratori s'ha desat a Apple Salut."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Laboratorní protokol byl uložen jako dokument CDA v Apple Zdraví."
+            "value" : "Laboratorní protokol byl uložen do Apple Zdraví."
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Laboratorierapporten er gemt som et CDA-dokument i Apple Helbred."
+            "value" : "Laboratorierapporten er gemt i Apple Helbred."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Der Laborbericht wurde als CDA-Dokument in Apple Health gespeichert."
+            "value" : "Der Laborbericht wurde in Apple Health gespeichert."
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Η εργαστηριακή αναφορά αποθηκεύτηκε ως έγγραφο CDA στο Apple Υγεία."
+            "value" : "Η εργαστηριακή αναφορά αποθηκεύτηκε στο Apple Υγεία."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El informe de laboratorio se ha guardado como documento CDA en Apple Salud."
+            "value" : "El informe de laboratorio se ha guardado en Apple Salud."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Laboratorioraportti on tallennettu CDA-asiakirjana Apple Terveyteen."
+            "value" : "Laboratorioraportti on tallennettu Apple Terveyteen."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le rapport de laboratoire a été enregistré en tant que document CDA dans Apple Santé."
+            "value" : "Le rapport de laboratoire a été enregistré dans Apple Santé."
           }
         },
         "hr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Laboratorijski nalaz spremljen je kao CDA dokument u Apple Zdravlje."
+            "value" : "Laboratorijski nalaz spremljen je u Apple Zdravlje."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A laborlelet CDA-dokumentumként elmentve az Apple Egészségbe."
+            "value" : "A laborlelet elmentve az Apple Egészségbe."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il referto è stato salvato come documento CDA in Apple Salute."
+            "value" : "Il referto è stato salvato in Apple Salute."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "検査レポートがCDAドキュメントとしてAppleヘルスケアに保存されました。"
+            "value" : "検査レポートがAppleヘルスケアに保存されました。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Het labrapport is opgeslagen als CDA-document in Apple Gezondheid."
+            "value" : "Het labrapport is opgeslagen in Apple Gezondheid."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Raport z badań został zapisany jako dokument CDA w Apple Zdrowiu."
+            "value" : "Raport z badań został zapisany w Apple Zdrowiu."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O laudo foi salvo como documento CDA no Apple Saúde."
+            "value" : "O laudo foi salvo no Apple Saúde."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O relatório laboratorial foi guardado como documento CDA na Apple Saúde."
+            "value" : "O relatório laboratorial foi guardado na Apple Saúde."
           }
         },
         "ro" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Raportul de laborator a fost salvat ca document CDA în Apple Sănătate."
+            "value" : "Raportul de laborator a fost salvat în Apple Sănătate."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Лабораторный отчёт сохранён как документ CDA в Apple Здоровье."
+            "value" : "Лабораторный отчёт сохранён в Apple Здоровье."
           }
         },
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Laboratórna správa bola uložená ako dokument CDA do Apple Zdravie."
+            "value" : "Laboratórna správa bola uložená do Apple Zdravie."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Labbrapporten har sparats som ett CDA-dokument i Apple Hälsa."
+            "value" : "Labbrapporten har sparats i Apple Hälsa."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Laboratuvar raporu Apple Sağlık'ta CDA belgesi olarak kaydedildi."
+            "value" : "Laboratuvar raporu Apple Sağlık'a kaydedildi."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Лабораторний звіт збережено як документ CDA в Apple Здоров'ї."
+            "value" : "Лабораторний звіт збережено в Apple Здоров'ї."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "检验报告已作为 CDA 文档保存到 Apple 健康。"
+            "value" : "检验报告已保存到 Apple 健康。"
           }
         }
       }
@@ -61652,6 +61651,2078 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法按此写法保存。请更正或取消选择。"
+          }
+        }
+      }
+    },
+    "Update LabImporter to See All Reports" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Обновете LabImporter, за да виждате всички отчети"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualitza LabImporter per veure tots els informes"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktualizujte LabImporter, abyste viděli všechny protokoly"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opdater LabImporter for at se alle rapporter"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktualisiere LabImporter, um alle Berichte zu sehen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ενημερώστε το LabImporter για να δείτε όλες τις αναφορές"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualiza LabImporter para ver todos los informes"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Päivitä LabImporter nähdäksesi kaikki raportit"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mettez à jour LabImporter pour voir tous les rapports"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ažurirajte LabImporter da biste vidjeli sva izvješća"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frissítsd a LabImportert az összes jelentés megtekintéséhez"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aggiorna LabImporter per vedere tutti i referti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべてのレポートを見るにはLabImporterをアップデートしてください"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Werk LabImporter bij om alle rapporten te zien"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zaktualizuj LabImporter, aby zobaczyć wszystkie raporty"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atualize o LabImporter para ver todos os laudos"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atualize o LabImporter para ver todos os relatórios"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizează LabImporter ca să vezi toate rapoartele"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Обновите LabImporter, чтобы увидеть все отчёты"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktualizujte LabImporter, aby ste videli všetky správy"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uppdatera LabImporter för att se alla rapporter"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tüm raporları görmek için LabImporter'ı güncelleyin"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Оновіть LabImporter, щоб побачити всі звіти"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新 LabImporter 以查看所有报告"
+          }
+        }
+      }
+    },
+    "Reports saved by a newer version of LabImporter: %lld. They're safe. Update the app to see them." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отчети, запазени от по-нова версия на LabImporter: %lld. Те са на сигурно място. Обновете приложението, за да ги видите."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informes desats amb una versió més nova de LabImporter: %lld. Estan segurs. Actualitza l'app per veure'ls."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protokoly uložené novější verzí LabImporteru: %lld. Jsou v bezpečí. Aktualizujte aplikaci, abyste je viděli."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapporter gemt af en nyere version af LabImporter: %lld. De er i sikkerhed. Opdater appen for at se dem."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Von einer neueren LabImporter-Version gespeicherte Berichte: %lld. Sie sind sicher. Aktualisiere die App, um sie zu sehen."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αναφορές που αποθηκεύτηκαν από νεότερη έκδοση του LabImporter: %lld. Είναι ασφαλείς. Ενημερώστε την εφαρμογή για να τις δείτε."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informes guardados con una versión más reciente de LabImporter: %lld. Están a salvo. Actualiza la app para verlos."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uudemmalla LabImporter-versiolla tallennetut raportit: %lld. Ne ovat tallessa. Päivitä sovellus nähdäksesi ne."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapports enregistrés par une version plus récente de LabImporter : %lld. Ils sont en sécurité. Mettez à jour l'app pour les voir."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Izvješća spremljena novijom verzijom LabImportera: %lld. Na sigurnom su. Ažurirajte aplikaciju da biste ih vidjeli."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A LabImporter újabb verziójával mentett jelentések: %lld. Biztonságban vannak. Frissítsd az appot a megtekintésükhöz."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Referti salvati da una versione più recente di LabImporter: %lld. Sono al sicuro. Aggiorna l'app per vederli."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新しいバージョンのLabImporterで保存されたレポート：%lld件。データは安全です。表示するにはアプリをアップデートしてください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapporten opgeslagen door een nieuwere versie van LabImporter: %lld. Ze zijn veilig. Werk de app bij om ze te zien."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raporty zapisane przez nowszą wersję LabImporter: %lld. Są bezpieczne. Zaktualizuj aplikację, aby je zobaczyć."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laudos salvos por uma versão mais recente do LabImporter: %lld. Eles estão seguros. Atualize o app para vê-los."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relatórios guardados por uma versão mais recente do LabImporter: %lld. Estão seguros. Atualize a app para os ver."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapoarte salvate de o versiune mai nouă de LabImporter: %lld. Sunt în siguranță. Actualizează aplicația ca să le vezi."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отчёты, сохранённые более новой версией LabImporter: %lld. Они в безопасности. Обновите приложение, чтобы их увидеть."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Správy uložené novšou verziou LabImportera: %lld. Sú v bezpečí. Aktualizujte aplikáciu, aby ste ich videli."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapporter sparade av en nyare version av LabImporter: %lld. De är i säkerhet. Uppdatera appen för att se dem."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter'ın daha yeni bir sürümüyle kaydedilen raporlar: %lld. Güvendeler. Görmek için uygulamayı güncelleyin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Звіти, збережені новішою версією LabImporter: %lld. Вони в безпеці. Оновіть застосунок, щоб їх побачити."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "由较新版本的 LabImporter 保存的报告：%lld 份。它们是安全的。请更新应用以查看。"
+          }
+        }
+      }
+    },
+    "Some Values Can't Be Exported" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Някои стойности не могат да се експортират"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alguns valors no es poden exportar"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Některé hodnoty nelze exportovat"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nogle værdier kan ikke eksporteres"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einige Werte können nicht exportiert werden"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ορισμένες τιμές δεν μπορούν να εξαχθούν"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Algunos valores no se pueden exportar"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Joitakin arvoja ei voi viedä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Certaines valeurs ne peuvent pas être exportées"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neke se vrijednosti ne mogu izvesti"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Néhány érték nem exportálható"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alcuni valori non possono essere esportati"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "書き出せない値があります"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sommige waarden kunnen niet worden geëxporteerd"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niektórych wartości nie można wyeksportować"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alguns valores não podem ser exportados"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alguns valores não podem ser exportados"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unele valori nu pot fi exportate"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Некоторые значения нельзя экспортировать"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niektoré hodnoty nemožno exportovať"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vissa värden kan inte exporteras"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bazı değerler dışa aktarılamıyor"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Деякі значення не можна експортувати"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分数值无法导出"
+          }
+        }
+      }
+    },
+    "Values left out of the file: %lld. They stay in your reports." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Стойности, оставени извън файла: %lld. Те остават в отчетите ви."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valors que queden fora del fitxer: %lld. Es mantenen als teus informes."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hodnoty vynechané ze souboru: %lld. Zůstávají ve vašich protokolech."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Værdier, der er udeladt af filen: %lld. De bliver i dine rapporter."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Werte, die in der Datei fehlen: %lld. Sie bleiben in deinen Berichten."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Τιμές που μένουν εκτός αρχείου: %lld. Παραμένουν στις αναφορές σας."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valores que quedan fuera del archivo: %lld. Siguen en tus informes."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiedostosta pois jäävät arvot: %lld. Ne säilyvät raporteissasi."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valeurs laissées hors du fichier : %lld. Elles restent dans vos rapports."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vrijednosti izostavljene iz datoteke: %lld. Ostaju u vašim izvješćima."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A fájlból kimaradó értékek: %lld. A jelentéseidben megmaradnak."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valori esclusi dal file: %lld. Restano nei tuoi referti."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ファイルに含まれない値：%lld件。レポートには残ります。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waarden die niet in het bestand komen: %lld. Ze blijven in je rapporten."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wartości pominięte w pliku: %lld. Pozostają w Twoich raportach."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valores deixados de fora do arquivo: %lld. Eles continuam nos seus laudos."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valores deixados de fora do ficheiro: %lld. Mantêm-se nos seus relatórios."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valori lăsate în afara fișierului: %lld. Rămân în rapoartele tale."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Значения, не вошедшие в файл: %lld. Они остаются в ваших отчётах."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hodnoty vynechané zo súboru: %lld. Zostávajú vo vašich správach."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Värden som inte kommer med i filen: %lld. De finns kvar i dina rapporter."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosyanın dışında kalan değerler: %lld. Raporlarınızda kalırlar."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Значення, що не ввійшли у файл: %lld. Вони залишаються у ваших звітах."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未包含在文件中的数值：%lld 个。它们仍保留在你的报告中。"
+          }
+        }
+      }
+    },
+    "Share Anyway" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сподели въпреки това"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comparteix igualment"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Přesto sdílet"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Del alligevel"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trotzdem teilen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Κοινή χρήση ούτως ή άλλως"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartir de todos modos"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jaa silti"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partager quand même"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ipak podijeli"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Megosztás így is"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Condividi comunque"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このまま共有"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toch delen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Udostępnij mimo to"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartilhar mesmo assim"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partilhar mesmo assim"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partajează oricum"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Всё равно поделиться"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Napriek tomu zdieľať"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dela ändå"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yine de Paylaş"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Усе одно поділитися"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仍然分享"
+          }
+        }
+      }
+    },
+    "None of your values could be written to a file, so nothing was exported. Please try again." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нито една стойност не можа да се запише във файл, затова нищо не е експортирано. Опитайте отново."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cap dels teus valors s'ha pogut escriure en un fitxer, així que no s'ha exportat res. Torna-ho a provar."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Žádnou z vašich hodnot se nepodařilo zapsat do souboru, takže se nic neexportovalo. Zkuste to znovu."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingen af dine værdier kunne skrives til en fil, så intet blev eksporteret. Prøv igen."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keiner deiner Werte konnte in eine Datei geschrieben werden, daher wurde nichts exportiert. Bitte versuche es erneut."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Καμία από τις τιμές σας δεν ήταν δυνατό να γραφτεί σε αρχείο, οπότε δεν εξήχθη τίποτα. Δοκιμάστε ξανά."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguno de tus valores se pudo escribir en un archivo, así que no se exportó nada. Inténtalo de nuevo."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yhtään arvoa ei voitu kirjoittaa tiedostoon, joten mitään ei viety. Yritä uudelleen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune de vos valeurs n'a pu être écrite dans un fichier : rien n'a été exporté. Veuillez réessayer."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nijedna se vrijednost nije mogla zapisati u datoteku pa ništa nije izvezeno. Pokušajte ponovno."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Egyik értéket sem sikerült fájlba írni, ezért semmi sem lett exportálva. Próbáld újra."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nessuno dei tuoi valori può essere scritto in un file, quindi non è stato esportato nulla. Riprova."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "値をファイルに書き込めなかったため、何も書き出されませんでした。もう一度お試しください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geen van je waarden kon naar een bestand worden geschreven, dus er is niets geëxporteerd. Probeer het opnieuw."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Żadnej wartości nie udało się zapisać do pliku, więc nic nie wyeksportowano. Spróbuj ponownie."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum dos seus valores pôde ser gravado em um arquivo, então nada foi exportado. Tente novamente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum dos seus valores pôde ser escrito num ficheiro, por isso nada foi exportado. Tente novamente."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niciuna dintre valori nu a putut fi scrisă într-un fișier, așa că nu s-a exportat nimic. Încearcă din nou."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ни одно значение не удалось записать в файл, поэтому ничего не экспортировано. Повторите попытку."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Žiadnu z vašich hodnôt sa nepodarilo zapísať do súboru, takže sa nič neexportovalo. Skúste to znova."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inga av dina värden kunde skrivas till en fil, så inget exporterades. Försök igen."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Değerlerinizin hiçbiri bir dosyaya yazılamadı, bu yüzden hiçbir şey dışa aktarılmadı. Lütfen tekrar deneyin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Жодне значення не вдалося записати у файл, тому нічого не експортовано. Спробуйте ще раз."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有任何数值能写入文件，因此未导出任何内容。请重试。"
+          }
+        }
+      }
+    },
+    "This file comes from a newer version of LabImporter. Update the app to import it." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Този файл е от по-нова версия на LabImporter. Обновете приложението, за да го импортирате."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aquest fitxer prové d'una versió més nova de LabImporter. Actualitza l'app per importar-lo."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tento soubor pochází z novější verze LabImporteru. Aktualizujte aplikaci, abyste ho mohli importovat."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denne fil stammer fra en nyere version af LabImporter. Opdater appen for at importere den."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese Datei stammt aus einer neueren LabImporter-Version. Aktualisiere die App, um sie zu importieren."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αυτό το αρχείο προέρχεται από νεότερη έκδοση του LabImporter. Ενημερώστε την εφαρμογή για να το εισαγάγετε."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este archivo procede de una versión más reciente de LabImporter. Actualiza la app para importarlo."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tämä tiedosto on peräisin uudemmasta LabImporter-versiosta. Päivitä sovellus tuodaksesi sen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce fichier provient d'une version plus récente de LabImporter. Mettez à jour l'app pour l'importer."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ova datoteka potječe iz novije verzije LabImportera. Ažurirajte aplikaciju da biste je uvezli."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ez a fájl a LabImporter újabb verziójából származik. Az importáláshoz frissítsd az appot."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questo file proviene da una versione più recente di LabImporter. Aggiorna l'app per importarlo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このファイルは新しいバージョンのLabImporterで作成されました。読み込むにはアプリをアップデートしてください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dit bestand komt uit een nieuwere versie van LabImporter. Werk de app bij om het te importeren."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ten plik pochodzi z nowszej wersji LabImporter. Zaktualizuj aplikację, aby go zaimportować."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este arquivo vem de uma versão mais recente do LabImporter. Atualize o app para importá-lo."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este ficheiro vem de uma versão mais recente do LabImporter. Atualize a app para o importar."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acest fișier provine dintr-o versiune mai nouă de LabImporter. Actualizează aplicația ca să îl imporți."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Этот файл создан более новой версией LabImporter. Обновите приложение, чтобы импортировать его."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tento súbor pochádza z novšej verzie LabImportera. Aktualizujte aplikáciu, aby ste ho mohli importovať."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den här filen kommer från en nyare version av LabImporter. Uppdatera appen för att importera den."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu dosya LabImporter'ın daha yeni bir sürümünden geliyor. İçe aktarmak için uygulamayı güncelleyin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Цей файл створено новішою версією LabImporter. Оновіть застосунок, щоб імпортувати його."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此文件来自较新版本的 LabImporter。请更新应用后再导入。"
+          }
+        }
+      }
+    },
+    "Reports in this file that need a newer version of LabImporter: %lld." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отчети в този файл, които изискват по-нова версия на LabImporter: %lld."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informes d'aquest fitxer que necessiten una versió més nova de LabImporter: %lld."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protokoly v tomto souboru, které vyžadují novější verzi LabImporteru: %lld."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapporter i denne fil, der kræver en nyere version af LabImporter: %lld."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Berichte in dieser Datei, die eine neuere LabImporter-Version brauchen: %lld."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αναφορές σε αυτό το αρχείο που χρειάζονται νεότερη έκδοση του LabImporter: %lld."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informes de este archivo que necesitan una versión más reciente de LabImporter: %lld."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tämän tiedoston raportit, jotka vaativat uudemman LabImporter-version: %lld."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapports de ce fichier nécessitant une version plus récente de LabImporter : %lld."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Izvješća u ovoj datoteci kojima treba novija verzija LabImportera: %lld."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A fájl jelentései, amelyekhez újabb LabImporter-verzió kell: %lld."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Referti in questo file che richiedono una versione più recente di LabImporter: %lld."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新しいバージョンのLabImporterが必要なレポート：%lld件。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapporten in dit bestand die een nieuwere versie van LabImporter nodig hebben: %lld."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raporty w tym pliku wymagające nowszej wersji LabImporter: %lld."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laudos neste arquivo que precisam de uma versão mais recente do LabImporter: %lld."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relatórios neste ficheiro que precisam de uma versão mais recente do LabImporter: %lld."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapoarte din acest fișier care necesită o versiune mai nouă de LabImporter: %lld."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отчёты в этом файле, которым нужна более новая версия LabImporter: %lld."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Správy v tomto súbore, ktoré vyžadujú novšiu verziu LabImportera: %lld."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapporter i den här filen som kräver en nyare version av LabImporter: %lld."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu dosyada LabImporter'ın daha yeni bir sürümünü gerektiren raporlar: %lld."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Звіти в цьому файлі, яким потрібна новіша версія LabImporter: %lld."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此文件中需要较新版本 LabImporter 的报告：%lld 份。"
+          }
+        }
+      }
+    },
+    "Reports that can't be read: %lld. They stay in Apple Health and weren't deleted." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отчети, които не могат да се прочетат: %lld. Те остават в Apple Здраве и не са изтрити."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informes que no es poden llegir: %lld. Es queden a Apple Salut i no s'han eliminat."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protokoly, které nelze přečíst: %lld. Zůstávají v Apple Zdraví a nebyly smazány."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapporter, der ikke kan læses: %lld. De bliver i Apple Helbred og er ikke slettet."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Berichte, die nicht gelesen werden können: %lld. Sie bleiben in Apple Health und wurden nicht gelöscht."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αναφορές που δεν είναι δυνατό να διαβαστούν: %lld. Παραμένουν στο Apple Υγεία και δεν διαγράφηκαν."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informes que no se pueden leer: %lld. Siguen en Apple Salud y no se han eliminado."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raportit, joita ei voi lukea: %lld. Ne säilyvät Apple Terveydessä, eikä niitä poistettu."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapports illisibles : %lld. Ils restent dans Apple Santé et n'ont pas été supprimés."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Izvješća koja se ne mogu pročitati: %lld. Ostaju u Apple Zdravlju i nisu izbrisana."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nem olvasható jelentések: %lld. Az Apple Egészségben maradnak, és nem törlődtek."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Referti che non possono essere letti: %lld. Restano in Apple Salute e non sono stati eliminati."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "読み取れないレポート：%lld件。Appleヘルスケアに残っており、削除されていません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapporten die niet kunnen worden gelezen: %lld. Ze blijven in Apple Gezondheid en zijn niet verwijderd."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raporty, których nie można odczytać: %lld. Pozostają w Apple Zdrowiu i nie zostały usunięte."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laudos que não podem ser lidos: %lld. Eles continuam no Apple Saúde e não foram apagados."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relatórios que não podem ser lidos: %lld. Permanecem na Apple Saúde e não foram apagados."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapoarte care nu pot fi citite: %lld. Rămân în Apple Sănătate și nu au fost șterse."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отчёты, которые не удаётся прочитать: %lld. Они остаются в Apple Здоровье и не удалены."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Správy, ktoré nemožno prečítať: %lld. Zostávajú v Apple Zdravie a neboli vymazané."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapporter som inte kan läsas: %lld. De finns kvar i Apple Hälsa och har inte raderats."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Okunamayan raporlar: %lld. Apple Sağlık'ta kalır ve silinmedi."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Звіти, які не вдається прочитати: %lld. Вони залишаються в Apple Здоров'ї й не видалені."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法读取的报告：%lld 份。它们仍保留在 Apple 健康中，并未删除。"
+          }
+        }
+      }
+    },
+    "Couldn't Load Your Reports" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отчетите не можаха да се заредят"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No s'han pogut carregar els informes"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protokoly se nepodařilo načíst"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dine rapporter kunne ikke indlæses"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Berichte konnten nicht geladen werden"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Δεν ήταν δυνατή η φόρτωση των αναφορών σας"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se han podido cargar tus informes"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raportteja ei voitu ladata"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de charger vos rapports"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Izvješća nije moguće učitati"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nem sikerült betölteni a jelentéseket"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossibile caricare i referti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レポートを読み込めませんでした"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je rapporten konden niet worden geladen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie udało się wczytać raportów"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível carregar seus relatórios"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível carregar os relatórios"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapoartele nu au putut fi încărcate"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось загрузить отчёты"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Správy sa nepodarilo načítať"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Det gick inte att läsa in dina rapporter"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raporlarınız yüklenemedi"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не вдалося завантажити звіти"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法载入报告"
+          }
+        }
+      }
+    },
+    "Your saved reports weren't changed, but they can't be read right now." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запазените отчети не са променени, но в момента не могат да се прочетат."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Els informes desats no han canviat, però ara mateix no es poden llegir."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uložené protokoly se nezměnily, ale momentálně je nelze přečíst."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dine gemte rapporter er ikke ændret, men de kan ikke læses lige nu."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine gespeicherten Berichte wurden nicht verändert, können aber gerade nicht gelesen werden."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Οι αποθηκευμένες αναφορές σας δεν άλλαξαν, αλλά δεν είναι δυνατή η ανάγνωσή τους αυτή τη στιγμή."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tus informes guardados no han cambiado, pero ahora mismo no se pueden leer."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tallennetut raporttisi eivät muuttuneet, mutta niitä ei voi lukea juuri nyt."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vos rapports enregistrés n'ont pas été modifiés, mais ils ne peuvent pas être lus pour le moment."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spremljena izvješća nisu promijenjena, ali se trenutačno ne mogu pročitati."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A mentett jelentéseid nem változtak, de most nem olvashatók."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I referti salvati non sono stati modificati, ma al momento non possono essere letti."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存済みのレポートは変更されていませんが、現在は読み取れません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je bewaarde rapporten zijn niet gewijzigd, maar kunnen nu niet worden gelezen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zapisane raporty nie zostały zmienione, ale w tej chwili nie można ich odczytać."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seus relatórios salvos não foram alterados, mas não podem ser lidos agora."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os relatórios guardados não foram alterados, mas não podem ser lidos neste momento."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapoartele salvate nu au fost modificate, dar nu pot fi citite acum."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранённые отчёты не изменились, но сейчас их не удаётся прочитать."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uložené správy sa nezmenili, ale momentálne ich nemožno prečítať."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dina sparade rapporter har inte ändrats, men de kan inte läsas just nu."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kayıtlı raporlarınız değişmedi ancak şu anda okunamıyor."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Збережені звіти не змінилися, але зараз їх не вдається прочитати."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已保存的报告没有更改，但目前无法读取。"
+          }
+        }
+      }
+    },
+    "Some Reports Can't Be Read" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Някои отчети не могат да се прочетат"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alguns informes no es poden llegir"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Některé protokoly nelze přečíst"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nogle rapporter kan ikke læses"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einige Berichte können nicht gelesen werden"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ορισμένες αναφορές δεν είναι δυνατό να διαβαστούν"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Algunos informes no se pueden leer"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Joitakin raportteja ei voi lukea"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Certains rapports sont illisibles"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neka se izvješća ne mogu pročitati"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Néhány jelentés nem olvasható"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alcuni referti non possono essere letti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "読み取れないレポートがあります"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sommige rapporten kunnen niet worden gelezen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niektórych raportów nie można odczytać"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alguns relatórios não podem ser lidos"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alguns relatórios não podem ser lidos"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unele rapoarte nu pot fi citite"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Некоторые отчёты не удаётся прочитать"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niektoré správy nemožno prečítať"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vissa rapporter kan inte läsas"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bazı raporlar okunamıyor"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Деякі звіти не вдається прочитати"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分报告无法读取"
+          }
+        }
+      }
+    },
+    "Your saved reports can't be read right now, so nothing was imported. Try again in a moment." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запазените отчети не могат да се прочетат в момента, затова нищо не е импортирано. Опитайте отново след малко."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ara mateix no es poden llegir els informes desats, de manera que no s'ha importat res. Torna-ho a provar d'aquí a una estona."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uložené protokoly teď nelze přečíst, takže se nic neimportovalo. Zkuste to za chvíli znovu."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dine gemte rapporter kan ikke læses lige nu, så intet er importeret. Prøv igen om lidt."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine gespeicherten Berichte können gerade nicht gelesen werden, daher wurde nichts importiert. Versuche es gleich noch einmal."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Δεν είναι δυνατή η ανάγνωση των αποθηκευμένων αναφορών σας αυτή τη στιγμή, οπότε δεν εισήχθη τίποτα. Δοκιμάστε ξανά σε λίγο."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tus informes guardados no se pueden leer ahora mismo, así que no se ha importado nada. Inténtalo de nuevo en un momento."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tallennettuja raporttejasi ei voi lukea juuri nyt, joten mitään ei tuotu. Yritä hetken kuluttua uudelleen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vos rapports enregistrés ne peuvent pas être lus pour le moment : rien n'a été importé. Réessayez dans un instant."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spremljena izvješća trenutačno se ne mogu pročitati pa ništa nije uvezeno. Pokušajte ponovno za trenutak."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A mentett jelentéseid most nem olvashatók, ezért semmi sem lett importálva. Próbáld újra egy kis idő múlva."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al momento i referti salvati non possono essere letti, quindi non è stato importato nulla. Riprova tra poco."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存済みのレポートを現在読み取れないため、何も読み込まれませんでした。しばらくしてからもう一度お試しください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je bewaarde rapporten kunnen nu niet worden gelezen, dus er is niets geïmporteerd. Probeer het zo meteen opnieuw."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zapisanych raportów nie można teraz odczytać, więc nic nie zostało zaimportowane. Spróbuj ponownie za chwilę."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seus relatórios salvos não podem ser lidos agora, então nada foi importado. Tente novamente em instantes."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os relatórios guardados não podem ser lidos neste momento, por isso nada foi importado. Tente novamente daqui a pouco."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapoartele salvate nu pot fi citite acum, așa că nu s-a importat nimic. Încearcă din nou peste puțin timp."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранённые отчёты сейчас не удаётся прочитать, поэтому ничего не импортировано. Повторите попытку чуть позже."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uložené správy sa teraz nedajú prečítať, takže sa nič neimportovalo. Skúste to o chvíľu znova."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dina sparade rapporter kan inte läsas just nu, så inget har importerats. Försök igen om en stund."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kayıtlı raporlarınız şu anda okunamıyor, bu yüzden hiçbir şey içe aktarılmadı. Birazdan tekrar deneyin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Збережені звіти зараз не вдається прочитати, тому нічого не імпортовано. Спробуйте ще раз трохи згодом."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目前无法读取已保存的报告，因此未导入任何内容。请稍后重试。"
+          }
+        }
+      }
+    },
+    "Damaged reports in this file: %lld. Only what could be read was imported." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Повредени отчети в този файл: %lld. Импортирано е само това, което можа да се прочете."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informes malmesos en aquest fitxer: %lld. Només s'ha importat el que s'ha pogut llegir."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Poškozené protokoly v tomto souboru: %lld. Importováno bylo jen to, co se podařilo přečíst."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beskadigede rapporter i denne fil: %lld. Kun det, der kunne læses, er importeret."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beschädigte Berichte in dieser Datei: %lld. Nur was gelesen werden konnte, wurde importiert."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Κατεστραμμένες αναφορές σε αυτό το αρχείο: %lld. Εισήχθη μόνο ό,τι μπόρεσε να διαβαστεί."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informes dañados en este archivo: %lld. Solo se ha importado lo que se ha podido leer."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vioittuneita raportteja tässä tiedostossa: %lld. Vain luettavissa olleet tiedot tuotiin."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapports endommagés dans ce fichier : %lld. Seul ce qui a pu être lu a été importé."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oštećena izvješća u ovoj datoteci: %lld. Uvezeno je samo ono što se moglo pročitati."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sérült jelentések ebben a fájlban: %lld. Csak az olvasható részek lettek importálva."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Referti danneggiati in questo file: %lld. È stato importato solo ciò che è stato possibile leggere."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このファイル内の破損したレポート：%lld件。読み取れた内容のみ読み込まれました。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beschadigde rapporten in dit bestand: %lld. Alleen wat kon worden gelezen, is geïmporteerd."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uszkodzone raporty w tym pliku: %lld. Zaimportowano tylko to, co udało się odczytać."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laudos danificados neste arquivo: %lld. Só foi importado o que pôde ser lido."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relatórios danificados neste ficheiro: %lld. Só foi importado o que foi possível ler."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapoarte deteriorate în acest fișier: %lld. S-a importat doar ce a putut fi citit."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Повреждённые отчёты в этом файле: %lld. Импортировано только то, что удалось прочитать."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Poškodené správy v tomto súbore: %lld. Importovalo sa len to, čo sa podarilo prečítať."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skadade rapporter i den här filen: %lld. Bara det som kunde läsas har importerats."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu dosyadaki hasarlı raporlar: %lld. Yalnızca okunabilenler içe aktarıldı."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пошкоджені звіти в цьому файлі: %lld. Імпортовано лише те, що вдалося прочитати."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此文件中已损坏的报告：%lld 份。仅导入了可读取的内容。"
           }
         }
       }

@@ -143,6 +143,12 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
         """,
     )
     private val classificationStatement = prepare("SELECT loinc_class, component FROM term WHERE code = ?1")
+    private val plainNameStatement = prepare(
+        """
+        SELECT (SELECT name FROM label WHERE code = ?1 AND lang = ?2), t.english, t.system, t.property
+        FROM term t WHERE t.code = ?1
+        """,
+    )
     /** Every name of a term the matching sees: in a language, in English, and its synonyms. */
     private val namesStatement = prepare("SELECT name FROM label WHERE code = ?1 AND lang IN (?2, 'en', 'long', 'syn')")
 
@@ -187,6 +193,24 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
     }
 
     fun isKnownLoinc(code: String): Boolean = term(code) != null
+
+    /** The term's plain clinical name in the display language (see [LoincPlainName]), or null for an unknown code. */
+    fun plainName(code: String): String? {
+        val trimmed = code.trim()
+        val statement = plainNameStatement ?: return null
+        return lock.withLock {
+            statement.use(trimmed, language) {
+                if (!statement.step()) return@use null
+                val localized = statement.text(0)
+                LoincPlainName.of(
+                    label = localized ?: statement.text(1) ?: trimmed,
+                    language = if (localized != null) language else "en",
+                    system = statement.text(2).orEmpty(),
+                    property = statement.text(3).orEmpty(),
+                )
+            }
+        }
+    }
 
     /** LOINC class + component for a code, used to derive a display category. */
     fun classification(code: String): Pair<String, String>? {
@@ -356,7 +380,7 @@ class LoincDirectory(databasePath: String, appLanguage: String) : AutoCloseable 
         lock.withLock {
             listOf(
                 termStatement, searchStatement, candidateStatement, anyLanguageCandidateStatement, topStatement, detailStatement,
-                classificationStatement, namesStatement,
+                classificationStatement, namesStatement, plainNameStatement,
             )
                 .forEach { it?.close() }
             connection?.close()

@@ -23,7 +23,7 @@
     <string name="disclaimer_title">Keine medizinische Beratung</string>
     <string name="disclaimer_body">LabImporter ist kein Medizinprodukt und bietet keine medizinische Beratung, Diagnose oder Behandlung. Erfasste Werte können ungenau oder unvollständig sein – überprüfe sie immer anhand deines Originalbefunds. Triff niemals medizinische Entscheidungen auf Grundlage dieser App; wende dich bezüglich deiner Werte an qualifiziertes medizinisches Fachpersonal.</string>
     <string name="disclaimer_accept">Ich habe verstanden</string>
-    <string name="onboarding_hc_message">Speichere deine Berichte in Health Connect, damit sie bei deinen übrigen Gesundheitsdaten liegen. Laborergebnisse werden als standardisierte FHIR-Einträge auf diesem Gerät gespeichert.</string>
+    <string name="onboarding_hc_message">Speichere deine Berichte in Health Connect, damit sie bei deinen übrigen Gesundheitsdaten liegen. Laborergebnisse werden als standardisierte medizinische Einträge auf diesem Gerät gespeichert.</string>
     <string name="onboarding_hc_connected">Verbunden. Deine Berichte werden als Laborergebnisse in Health Connect gespeichert.</string>
     <string name="onboarding_hc_unavailable">Gesundheitsakten in Health Connect sind auf diesem Gerät nicht verfügbar. Deine Berichte werden daher privat in LabImporter auf diesem Gerät gespeichert. Du kannst das später in den Einstellungen ändern.</string>
     <string name="dashboard_empty_title">Noch keine Berichte</string>
@@ -65,7 +65,7 @@
     <string name="category_other">Divers</string>
     <string name="history_empty_title">Noch keine Berichte</string>
     <string name="history_empty_message">Importiere einen Laborbefund, um ihn hier zu sehen.</string>
-    <string name="share_cda">CDA-Datei teilen</string>
+    <string name="share_cda">Berichtsdatei teilen</string>
     <string name="delete_report_title">Bericht löschen?</string>
     <string name="delete_report_message">Dieser Bericht wird dauerhaft entfernt.</string>
     <string name="report_deleted">Bericht gelöscht</string>
@@ -212,6 +212,17 @@
     <string name="try_again">Erneut versuchen</string>
     <string name="reports_load_failed_title">Berichte konnten nicht geladen werden</string>
     <string name="reports_load_failed_message">Deine gespeicherten Berichte wurden nicht verändert, können aber gerade nicht gelesen werden.</string>
+    <string name="reports_newer_title">Aktualisiere LabImporter, um alle Berichte zu sehen</string>
+    <string name="reports_newer_message">Von einer neueren LabImporter-Version gespeicherte Berichte: %1$d. Sie sind sicher. Aktualisiere die App, um sie zu sehen.</string>
+    <string name="hc_access_off_title">Zugriff auf Health Connect ist deaktiviert</string>
+    <string name="hc_access_off_message">Ohne Zugriff kann LabImporter die in Health Connect gespeicherten Berichte nicht lesen. Sie sind noch da. Erlaube den Zugriff, um sie zu sehen, oder bewahre deine Berichte ab jetzt in der App auf.</string>
+    <string name="hc_allow_access">Zugriff erlauben</string>
+    <string name="hc_needs_update_title">Health Connect muss aktualisiert werden</string>
+    <string name="hc_needs_update_message">Deine Berichte sind noch in Health Connect, aber es muss aktualisiert werden, bevor LabImporter sie lesen kann.</string>
+    <string name="hc_update">Health Connect aktualisieren</string>
+    <string name="hc_gone_title">Health Connect ist nicht verfügbar</string>
+    <string name="hc_gone_message">LabImporter erreicht Health Connect auf diesem Gerät nicht, daher werden die dort gespeicherten Berichte nicht angezeigt. LabImporter hat sie nicht gelöscht.</string>
+    <string name="hc_use_app_storage">App-Speicher verwenden</string>
     <string name="reports_unreadable_title">Einige Berichte können nicht gelesen werden</string>
     <string name="reports_unreadable_message">Berichte, die nicht gelesen werden können: %1$d. Sie bleiben auf diesem Gerät und wurden nicht gelöscht.</string>
     <string name="hc_connect_failed">Verbindung zu Health Connect fehlgeschlagen. Deine Berichte bleiben in LabImporter. Versuche es in den Einstellungen noch einmal.</string>
@@ -220,6 +231,13 @@
     <string name="transfer_export_detail">Speichere alle Berichte in einer Datei, zum Beispiel um sie auf ein anderes Smartphone zu übertragen.</string>
     <string name="transfer_import">Berichte importieren</string>
     <string name="transfer_import_detail">Aus einer LabImporter-Datei, die auf einem iPhone oder Android-Gerät exportiert wurde. Bereits vorhandene Berichte werden übersprungen.</string>
+    <string name="transfer_leaves_out_title">Einige Werte können nicht exportiert werden</string>
+    <string name="transfer_leaves_out_message">Werte, die in der Datei fehlen: %1$d. Sie bleiben in deinen Berichten.</string>
+    <string name="transfer_share_anyway">Trotzdem teilen</string>
+    <string name="transfer_export_nothing">Keiner deiner Werte konnte in eine Datei geschrieben werden, daher wurde nichts exportiert. Bitte versuche es erneut.</string>
+    <string name="transfer_newer_version">Diese Datei stammt aus einer neueren LabImporter-Version. Aktualisiere die App, um sie zu importieren.</string>
+    <string name="transfer_newer_version_some">Berichte in dieser Datei, die eine neuere LabImporter-Version brauchen: %1$d.</string>
+    <string name="transfer_damaged_some">Beschädigte Berichte in dieser Datei: %1$d. Nur was gelesen werden konnte, wurde importiert.</string>
     <string name="transfer_unsupported">Diese Datei enthält keine LabImporter-Berichte.</string>
     <string name="transfer_summary">Neue Berichte: %1$d · Bereits vorhanden: %2$d</string>
     <string name="transfer_summary_failed">Neue Berichte: %1$d · Bereits vorhanden: %2$d · Nicht gespeichert: %3$d</string>
@@ -287,6 +305,7 @@
     <string name="pdf_trend_range">Verlaufszeitraum</string>
     <string name="pdf_included_categories">Enthaltene Kategorien</string>
     <string name="pdf_latest_subtitle">Neueste Messung für jeden Wert</string>
+    <string name="cda_language_code">de</string>
     <string name="pdf_column_test">Test</string>
     <string name="pdf_column_result">Ergebnis</string>
     <string name="pdf_column_reference">Referenz</string>
@@ -309,6 +328,7 @@
     <string name="restore">Wiederherstellen</string>
     <string name="details">Details</string>
     <string name="hide">Ausblenden</string>
+    <string name="include_in_export">In Export einschließen</string>
     <string name="move_up">Nach oben</string>
     <string name="move_down">Nach unten</string>
     <string name="settings_loinc">LOINC</string>
@@ -360,6 +380,7 @@
     <string name="show_latest_in_search">Letzten Wert in der Suche anzeigen</string>
     <string name="show_latest_in_search_footer">Lass den neuesten Messwert jedes Werts in den Verknüpfungen des Startbildschirms und in der Suche erscheinen. Wenn aus, wird nur der Name des Werts angezeigt – niemals ein Messwert.</string>
     <string name="chart_summary">Diagramm %1$s: %2$s vom %3$s bis %4$s. Niedrigster %5$s, höchster %6$s, letzter %7$s.</string>
+    <string name="chart_reading">%1$s: %2$s</string>
     <plurals name="chart_readings">
         <item quantity="one">%d Messwert</item>
         <item quantity="other">%d Messwerte</item>

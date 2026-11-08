@@ -23,7 +23,7 @@
     <string name="disclaimer_title">To nie porada medyczna</string>
     <string name="disclaimer_body">LabImporter nie jest wyrobem medycznym i nie zapewnia porad medycznych, diagnozy ani leczenia. Odczytane wartości mogą być niedokładne lub niekompletne — zawsze porównuj je z oryginalnym wynikiem. Nigdy nie podejmuj decyzji medycznych na podstawie tej aplikacji; skonsultuj swoje wyniki z wykwalifikowanym pracownikiem ochrony zdrowia.</string>
     <string name="disclaimer_accept">Rozumiem</string>
-    <string name="onboarding_hc_message">Zapisuj raporty w Health Connect, aby były razem z pozostałymi danymi o zdrowiu. Wyniki badań są przechowywane na tym urządzeniu jako standardowe rekordy FHIR.</string>
+    <string name="onboarding_hc_message">Zapisuj raporty w Health Connect, aby były razem z pozostałymi danymi o zdrowiu. Wyniki badań są przechowywane na tym urządzeniu jako standardowe rekordy medyczne.</string>
     <string name="onboarding_hc_connected">Połączono. Raporty będą zapisywane w Health Connect jako wyniki badań.</string>
     <string name="onboarding_hc_unavailable">Dokumentacja medyczna Health Connect nie jest dostępna na tym urządzeniu, więc raporty są przechowywane prywatnie w LabImporterze na tym urządzeniu. Możesz to zmienić później w Ustawieniach.</string>
     <string name="dashboard_empty_title">Brak raportów</string>
@@ -67,7 +67,7 @@
     <string name="category_other">Inna</string>
     <string name="history_empty_title">Brak raportów</string>
     <string name="history_empty_message">Zaimportuj wynik badań, aby go tu zobaczyć.</string>
-    <string name="share_cda">Udostępnij plik CDA</string>
+    <string name="share_cda">Udostępnij plik raportu</string>
     <string name="delete_report_title">Usunąć raport?</string>
     <string name="delete_report_message">Ten raport zostanie trwale usunięty.</string>
     <string name="report_deleted">Usunięto raport</string>
@@ -228,6 +228,17 @@
     <string name="try_again">Spróbuj ponownie</string>
     <string name="reports_load_failed_title">Nie udało się wczytać raportów</string>
     <string name="reports_load_failed_message">Zapisane raporty nie zostały zmienione, ale w tej chwili nie można ich odczytać.</string>
+    <string name="reports_newer_title">Zaktualizuj LabImporter, aby zobaczyć wszystkie raporty</string>
+    <string name="reports_newer_message">Raporty zapisane przez nowszą wersję LabImporter: %1$d. Są bezpieczne. Zaktualizuj aplikację, aby je zobaczyć.</string>
+    <string name="hc_access_off_title">Dostęp do Health Connect jest wyłączony</string>
+    <string name="hc_access_off_message">Bez dostępu LabImporter nie może odczytać raportów zapisanych w Health Connect. Nadal tam są. Zezwól na dostęp, aby je zobaczyć, lub od teraz przechowuj raporty w aplikacji.</string>
+    <string name="hc_allow_access">Zezwól na dostęp</string>
+    <string name="hc_needs_update_title">Health Connect wymaga aktualizacji</string>
+    <string name="hc_needs_update_message">Raporty nadal są w Health Connect, ale trzeba go zaktualizować, aby LabImporter mógł je odczytać.</string>
+    <string name="hc_update">Zaktualizuj Health Connect</string>
+    <string name="hc_gone_title">Health Connect jest niedostępny</string>
+    <string name="hc_gone_message">LabImporter nie może połączyć się z Health Connect na tym urządzeniu, więc zapisane tam raporty nie są wyświetlane. LabImporter ich nie usunął.</string>
+    <string name="hc_use_app_storage">Użyj pamięci aplikacji</string>
     <string name="reports_unreadable_title">Niektórych raportów nie można odczytać</string>
     <string name="reports_unreadable_message">Raporty, których nie można odczytać: %1$d. Pozostają na tym urządzeniu i nie zostały usunięte.</string>
     <string name="hc_connect_failed">Nie udało się połączyć z Health Connect. Raporty pozostają w LabImporterze. Spróbuj ponownie w Ustawieniach.</string>
@@ -236,6 +247,13 @@
     <string name="transfer_export_detail">Zapisz wszystkie raporty w jednym pliku, na przykład aby przenieść je na inny telefon.</string>
     <string name="transfer_import">Importuj raporty</string>
     <string name="transfer_import_detail">Z pliku LabImporter wyeksportowanego na iPhonie lub Androidzie. Raporty, które już tu są, zostaną pominięte.</string>
+    <string name="transfer_leaves_out_title">Niektórych wartości nie można wyeksportować</string>
+    <string name="transfer_leaves_out_message">Wartości pominięte w pliku: %1$d. Pozostają w Twoich raportach.</string>
+    <string name="transfer_share_anyway">Udostępnij mimo to</string>
+    <string name="transfer_export_nothing">Żadnej wartości nie udało się zapisać do pliku, więc nic nie wyeksportowano. Spróbuj ponownie.</string>
+    <string name="transfer_newer_version">Ten plik pochodzi z nowszej wersji LabImporter. Zaktualizuj aplikację, aby go zaimportować.</string>
+    <string name="transfer_newer_version_some">Raporty w tym pliku wymagające nowszej wersji LabImporter: %1$d.</string>
+    <string name="transfer_damaged_some">Uszkodzone raporty w tym pliku: %1$d. Zaimportowano tylko to, co udało się odczytać.</string>
     <string name="transfer_unsupported">Ten plik nie zawiera raportów LabImporter.</string>
     <string name="transfer_summary">Nowe raporty: %1$d · Już istniejące: %2$d</string>
     <string name="transfer_summary_failed">Nowe raporty: %1$d · Już istnieją: %2$d · Niezapisane: %3$d</string>
@@ -303,6 +321,7 @@
     <string name="pdf_trend_range">Okres trendu</string>
     <string name="pdf_included_categories">Uwzględnione kategorie</string>
     <string name="pdf_latest_subtitle">Najnowszy odczyt dla każdej wartości</string>
+    <string name="cda_language_code">pl</string>
     <string name="pdf_column_test">Badanie</string>
     <string name="pdf_column_result">Wynik</string>
     <string name="pdf_column_reference">Norma</string>
@@ -325,6 +344,7 @@
     <string name="restore">Przywróć</string>
     <string name="details">Szczegóły</string>
     <string name="hide">Ukryj</string>
+    <string name="include_in_export">Uwzględnij w eksporcie</string>
     <string name="move_up">Przenieś w górę</string>
     <string name="move_down">Przenieś w dół</string>
     <string name="settings_loinc">LOINC</string>
@@ -382,6 +402,7 @@
     <string name="show_latest_in_search">Pokaż ostatni wynik w wyszukiwaniu</string>
     <string name="show_latest_in_search_footer">Pozwól, aby najnowszy wynik każdego parametru pojawiał się w skrótach na ekranie głównym i w wyszukiwaniu. Po wyłączeniu pokazywana jest tylko nazwa parametru — nigdy wynik.</string>
     <string name="chart_summary">Wykres %1$s: %2$s od %3$s do %4$s. Najniższy %5$s, najwyższy %6$s, ostatni %7$s.</string>
+    <string name="chart_reading">%1$s: %2$s</string>
     <plurals name="chart_readings">
         <item quantity="one">%d pomiar</item>
         <item quantity="few">%d pomiary</item>

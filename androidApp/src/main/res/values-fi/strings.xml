@@ -23,7 +23,7 @@
     <string name="disclaimer_title">Ei lääketieteellinen neuvo</string>
     <string name="disclaimer_body">LabImporter ei ole lääkinnällinen laite eikä se tarjoa lääkärin neuvoja, diagnooseja tai hoitoa. Poimitut arvot voivat olla epätarkkoja tai puutteellisia – tarkista ne aina alkuperäisestä raportistasi. Älä koskaan tee lääketieteellisiä päätöksiä tämän sovelluksen perusteella; keskustele tuloksistasi pätevän terveydenhuollon ammattilaisen kanssa.</string>
     <string name="disclaimer_accept">Ymmärrän</string>
-    <string name="onboarding_hc_message">Tallenna raporttisi Health Connectiin, jotta ne ovat muiden terveystietojesi kanssa. Laboratoriotulokset tallennetaan tähän laitteeseen standardinmukaisina FHIR-tietueina.</string>
+    <string name="onboarding_hc_message">Tallenna raporttisi Health Connectiin, jotta ne ovat muiden terveystietojesi kanssa. Laboratoriotulokset tallennetaan tähän laitteeseen standardinmukaisina terveystietueina.</string>
     <string name="onboarding_hc_connected">Yhdistetty. Raporttisi tallennetaan Health Connectiin laboratoriotuloksina.</string>
     <string name="onboarding_hc_unavailable">Health Connectin terveystiedot eivät ole käytettävissä tällä laitteella, joten raporttisi tallennetaan yksityisesti LabImporteriin tälle laitteelle. Voit vaihtaa myöhemmin Asetuksissa.</string>
     <string name="dashboard_empty_title">Ei vielä raportteja</string>
@@ -65,7 +65,7 @@
     <string name="category_other">Muu</string>
     <string name="history_empty_title">Ei vielä raportteja</string>
     <string name="history_empty_message">Tuo laboratorioraportti nähdäksesi sen täällä.</string>
-    <string name="share_cda">Jaa CDA-tiedosto</string>
+    <string name="share_cda">Jaa raporttitiedosto</string>
     <string name="delete_report_title">Poistetaanko raportti?</string>
     <string name="delete_report_message">Tämä raportti poistetaan pysyvästi.</string>
     <string name="report_deleted">Raportti poistettu</string>
@@ -212,6 +212,17 @@
     <string name="try_again">Yritä uudelleen</string>
     <string name="reports_load_failed_title">Raportteja ei voitu ladata</string>
     <string name="reports_load_failed_message">Tallennetut raporttisi eivät muuttuneet, mutta niitä ei voi lukea juuri nyt.</string>
+    <string name="reports_newer_title">Päivitä LabImporter nähdäksesi kaikki raportit</string>
+    <string name="reports_newer_message">Uudemmalla LabImporter-versiolla tallennetut raportit: %1$d. Ne ovat tallessa. Päivitä sovellus nähdäksesi ne.</string>
+    <string name="hc_access_off_title">Health Connect -käyttöoikeus on pois päältä</string>
+    <string name="hc_access_off_message">Ilman käyttöoikeutta LabImporter ei voi lukea Health Connectiin tallentamiasi raportteja. Ne ovat yhä siellä. Salli käyttö nähdäksesi ne tai säilytä raportit tästä lähtien sovelluksessa.</string>
+    <string name="hc_allow_access">Salli käyttö</string>
+    <string name="hc_needs_update_title">Health Connect on päivitettävä</string>
+    <string name="hc_needs_update_message">Raporttisi ovat yhä Health Connectissa, mutta se on päivitettävä, ennen kuin LabImporter voi lukea ne.</string>
+    <string name="hc_update">Päivitä Health Connect</string>
+    <string name="hc_gone_title">Health Connect ei ole käytettävissä</string>
+    <string name="hc_gone_message">LabImporter ei tavoita Health Connectia tällä laitteella, joten sinne tallennettuja raportteja ei näytetä. LabImporter ei poistanut niitä.</string>
+    <string name="hc_use_app_storage">Käytä sovelluksen tallennustilaa</string>
     <string name="reports_unreadable_title">Joitakin raportteja ei voi lukea</string>
     <string name="reports_unreadable_message">Raportit, joita ei voi lukea: %1$d. Ne säilyvät tällä laitteella, eikä niitä poistettu.</string>
     <string name="hc_connect_failed">Yhteyttä Health Connectiin ei voitu muodostaa. Raporttisi säilyvät LabImporterissa. Yritä uudelleen asetuksissa.</string>
@@ -220,6 +231,13 @@
     <string name="transfer_export_detail">Tallenna kaikki raportit yhteen tiedostoon, esimerkiksi siirtääksesi ne toiseen puhelimeen.</string>
     <string name="transfer_import">Tuo raportteja</string>
     <string name="transfer_import_detail">iPhonessa tai Androidissa viedystä LabImporter-tiedostosta. Täällä jo olevat raportit ohitetaan.</string>
+    <string name="transfer_leaves_out_title">Joitakin arvoja ei voi viedä</string>
+    <string name="transfer_leaves_out_message">Tiedostosta pois jäävät arvot: %1$d. Ne säilyvät raporteissasi.</string>
+    <string name="transfer_share_anyway">Jaa silti</string>
+    <string name="transfer_export_nothing">Yhtään arvoa ei voitu kirjoittaa tiedostoon, joten mitään ei viety. Yritä uudelleen.</string>
+    <string name="transfer_newer_version">Tämä tiedosto on peräisin uudemmasta LabImporter-versiosta. Päivitä sovellus tuodaksesi sen.</string>
+    <string name="transfer_newer_version_some">Tämän tiedoston raportit, jotka vaativat uudemman LabImporter-version: %1$d.</string>
+    <string name="transfer_damaged_some">Vioittuneita raportteja tässä tiedostossa: %1$d. Vain luettavissa olleet tiedot tuotiin.</string>
     <string name="transfer_unsupported">Tämä tiedosto ei sisällä LabImporter-raportteja.</string>
     <string name="transfer_summary">Uusia raportteja: %1$d · Jo olemassa: %2$d</string>
     <string name="transfer_summary_failed">Uudet raportit: %1$d · Jo olemassa: %2$d · Ei tallennettu: %3$d</string>
@@ -287,6 +305,7 @@
     <string name="pdf_trend_range">Trendin aikaväli</string>
     <string name="pdf_included_categories">Mukana olevat kategoriat</string>
     <string name="pdf_latest_subtitle">Kunkin arvon viimeisin lukema</string>
+    <string name="cda_language_code">fi</string>
     <string name="pdf_column_test">Koe</string>
     <string name="pdf_column_result">Tulos</string>
     <string name="pdf_column_reference">Viite</string>
@@ -309,6 +328,7 @@
     <string name="restore">Palauta</string>
     <string name="details">Tiedot</string>
     <string name="hide">Piilota</string>
+    <string name="include_in_export">Sisällytä vientiin</string>
     <string name="move_up">Siirrä ylös</string>
     <string name="move_down">Siirrä alas</string>
     <string name="settings_loinc">LOINC</string>
@@ -360,6 +380,7 @@
     <string name="show_latest_in_search">Näytä viimeisin arvo haussa</string>
     <string name="show_latest_in_search_footer">Salli kunkin arvon viimeisimmän lukeman näkyä aloitusnäytön pikakuvakkeissa ja haussa. Kun pois päältä, näytetään vain arvon nimi — ei koskaan lukemaa.</string>
     <string name="chart_summary">Kaavio %1$s: %2$s %3$s–%4$s. Pienin %5$s, suurin %6$s, viimeisin %7$s.</string>
+    <string name="chart_reading">%1$s: %2$s</string>
     <plurals name="chart_readings">
         <item quantity="one">%d lukema</item>
         <item quantity="other">%d lukemaa</item>

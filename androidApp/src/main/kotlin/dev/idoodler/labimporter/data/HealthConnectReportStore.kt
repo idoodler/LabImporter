@@ -1,6 +1,7 @@
 package dev.idoodler.labimporter.data
 
 import android.content.Context
+import android.util.Log
 import androidx.core.net.toUri
 import androidx.health.connect.client.HealthConnectClient
 import kotlinx.coroutines.withContext
@@ -71,13 +72,22 @@ class HealthConnectReportStore(
 
     private val client: HealthConnectClient? by lazy { newClient(context) }
 
+    @Volatile
+    override var unreadableReports = 0
+        private set
+
+    @Volatile
+    override var newerVersionReports = 0
+        private set
+
     override fun availability(): HealthConnectAvailability {
         val sdk = HealthConnectClient.getSdkStatus(context)
         if (sdk == HealthConnectClient.SDK_UNAVAILABLE_PROVIDER_UPDATE_REQUIRED) return HealthConnectAvailability.UPDATE_REQUIRED
         if (sdk != HealthConnectClient.SDK_AVAILABLE) return HealthConnectAvailability.NOT_INSTALLED
         val medical = runCatching {
             client?.features?.getFeatureStatus(HealthConnectFeatures.FEATURE_PERSONAL_HEALTH_RECORD)
-        }.getOrNull()
+            // A failed check counts as unavailable: the repository says so and offers Try Again, and nothing is deleted.
+        }.onFailure { Log.w(TAG, "Couldn't check for Medical Records", it) }.getOrNull()
         return if (medical == HealthConnectFeatures.FEATURE_STATUS_AVAILABLE) {
             HealthConnectAvailability.AVAILABLE
         } else {
@@ -87,12 +97,19 @@ class HealthConnectReportStore(
 
     override suspend fun hasPermissions(): Boolean {
         val c = client ?: return false
-        return runCatching { c.permissionController.getGrantedPermissions().containsAll(permissions) }.getOrDefault(false)
+        return runCatching { c.permissionController.getGrantedPermissions().containsAll(permissions) }
+            .onFailure { Log.w(TAG, "Couldn't check the Health Connect permissions", it) }
+            // A failed check counts as no access: asking again is harmless, and the reports stay where they are.
+            .getOrDefault(false)
     }
 
     override suspend fun loadReports(): List<LabReport> {
         val c = requireClient()
-        val source = existingSource(c) ?: return emptyList()
+        val source = existingSource(c) ?: run {
+            unreadableReports = 0
+            newerVersionReports = 0
+            return emptyList()
+        }
         val resources = mutableListOf<String>()
         var pageToken: String? = null
         do {
@@ -107,7 +124,10 @@ class HealthConnectReportStore(
             pageToken = response.nextPageToken
         } while (pageToken != null)
         // Health Connect resumes on the caller's thread (often main); parsing every report isn't for it.
-        return withContext(Dispatchers.Default) { FhirLabCodec.decode(resources) }
+        val stored = withContext(Dispatchers.Default) { FhirLabCodec.decodeStored(resources) }
+        unreadableReports = stored.unreadableReports
+        newerVersionReports = stored.newerVersionReports
+        return stored.reports
     }
 
     override suspend fun save(report: LabReport) {
@@ -144,6 +164,7 @@ class HealthConnectReportStore(
         )
 
     private companion object {
+        const val TAG = "HealthConnectStore"
         const val PAGE_SIZE = 500
     }
 }

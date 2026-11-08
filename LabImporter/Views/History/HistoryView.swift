@@ -2,7 +2,10 @@ import SwiftUI
 
 struct HistoryView: View {
     @State private var reports: [LabReport]
-    @State private var loadError: String?
+    /// What the last read of Apple Health couldn't show.
+    @State private var status: ReportLoadStatus
+    /// A retry is running: an empty screen shows that, so one that fails again is seen to have run.
+    @State private var isRetrying = false
     @State private var deleteError: String?
     @State private var reportToEdit: LabReport?
     // Reports the user swiped to delete, awaiting confirmation. Deletion from
@@ -20,19 +23,29 @@ struct HistoryView: View {
     /// `.onAppear`; without this seed the view would mount empty and the
     /// trailing toolbar buttons would briefly vanish until that async load
     /// resolved.
-    init(initialReports: [LabReport] = []) {
+    init(initialReports: [LabReport] = [], initialStatus: ReportLoadStatus = ReportLoadStatus()) {
         _reports = State(initialValue: initialReports)
+        _status = State(initialValue: initialStatus)
     }
 
     var body: some View {
         Group {
-            if reports.isEmpty {
-                ContentUnavailableView {
-                    Label("No Reports Yet", systemImage: "doc.text.magnifyingglass")
-                } description: {
-                    Text("Import a lab report and save it to Apple Health to see it here.")
-                } actions: {
-                    NewReportImportButton(onSaved: { Task { await loadReports() } })
+            if reports.isEmpty && isRetrying {
+                ProgressView()
+                    .scaleEffect(1.4)
+            } else if reports.isEmpty && status.failed {
+                ReportsLoadFailedView(onTryAgain: tryLoadingAgain)
+            } else if reports.isEmpty {
+                VStack(spacing: 0) {
+                    ReportStatusCards(status: status, onTryAgain: tryLoadingAgain)
+                        .padding(.horizontal, 16)
+                    EmptyStateView(
+                        title: "No Reports Yet",
+                        systemImage: "doc.text.magnifyingglass",
+                        message: "Import a lab report and save it to Apple Health to see it here."
+                    ) {
+                        NewReportImportButton(onSaved: { Task { await loadReports() } })
+                    }
                 }
             } else {
                 reportList
@@ -67,11 +80,6 @@ struct HistoryView: View {
             }
             .interactiveDismissDisabled()
         })
-        .alert("Load Error", isPresented: .constant(loadError != nil)) {
-            Button("OK") { loadError = nil }
-        } message: {
-            Text(loadError ?? "")
-        }
         .alert("Delete Failed", isPresented: .constant(deleteError != nil)) {
             Button("OK") { deleteError = nil }
         } message: {
@@ -173,8 +181,18 @@ struct HistoryView: View {
 
     private var reportList: some View {
         List(selection: $selection) {
+            if status.hasNotice {
+                Section {
+                    ReportStatusCards(status: status, onTryAgain: tryLoadingAgain)
+                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                        .selectionDisabled()
+                }
+            }
+
             Section {
-                summaryCard
+                ReportsSummaryCard(reports: reports, categoryCount: distinctCategories.count)
                     .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
@@ -193,6 +211,7 @@ struct HistoryView: View {
                                 NavigationLink(destination: ReportDetailView(report: report, onDeleted: deleteReport)) {
                                     ReportRow(report: report)
                                 }
+                                .accessibilityIdentifier("history-report")
                             }
                         }
                         .listRowBackground(Rectangle().fill(.ultraThinMaterial))
@@ -212,51 +231,8 @@ struct HistoryView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .readableListText()
         .scrollContentBackground(.hidden)
-    }
-
-    // MARK: - Summary card
-
-    private var summaryCard: some View {
-        let totalValues = reports.reduce(0) { $0 + $1.entries.count }
-        let latest = reports.map(\.date).max()
-        return VStack(spacing: 14) {
-            HStack(spacing: 0) {
-                stat(value: "\(reports.count)", label: String(localized: "Reports"))
-                Divider().frame(height: 34)
-                stat(value: "\(totalValues)", label: String(localized: "Lab Values"))
-                Divider().frame(height: 34)
-                stat(value: "\(distinctCategories.count)", label: String(localized: "Categories"))
-            }
-
-            if let latest {
-                HStack(spacing: 6) {
-                    Image(systemName: "clock.arrow.circlepath")
-                        .font(.caption2)
-                    Text("Last updated \(latest.formatted(date: .abbreviated, time: .omitted))")
-                        .font(.caption)
-                }
-                .foregroundStyle(.secondary)
-            }
-        }
-        .padding(.vertical, 18)
-        .padding(.horizontal, 12)
-        .frame(maxWidth: .infinity)
-        .cardSurface(cornerRadius: 22)
-    }
-
-    private func stat(value: String, label: String) -> some View {
-        VStack(spacing: 3) {
-            Text(value)
-                .font(.title2.bold().monospacedDigit())
-                .foregroundStyle(.primary)
-            Text(label)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-        }
-        .frame(maxWidth: .infinity)
     }
 
     // MARK: - Grouping & derived data
@@ -308,17 +284,31 @@ struct HistoryView: View {
     private func loadReports() async {
         #if DEBUG
         if ScreenshotMode.isActive {
-            reports = ScreenshotMode.showsNoReportsInHistory ? [] : LabReport.sampleHistory
+            (reports, status) = ScreenshotMode.history
             return
         }
         #endif
         do {
-            reports = try await HealthKitService.shared.loadCDADocuments()
+            let stored = try await HealthKitService.shared.loadStoredReports()
+            reports = stored.reports
+            status = ReportLoadStatus(newerVersion: stored.newerVersion, unreadable: stored.unreadable)
             // Drop selections (and leave edit mode) once nothing is left to act on.
             selection.formIntersection(Set(reports.map(\.id)))
             if reports.isEmpty { exitEditing() }
         } catch {
-            loadError = error.localizedDescription
+            // What's on screen stays: it may be out of date, not gone.
+            status.failed = true
+        }
+    }
+
+    private func tryLoadingAgain() {
+        #if DEBUG
+        if ScreenshotMode.isActive { ScreenshotMode.retryLoading() }
+        #endif
+        isRetrying = true
+        Task {
+            await loadReports()
+            isRetrying = false
         }
     }
 
@@ -395,7 +385,7 @@ private struct ReportRow: View {
                         )
                     )
                 Image(systemName: "doc.text.fill")
-                    .font(.system(size: 18, weight: .semibold))
+                    .decorativeIcon(size: 18, weight: .semibold)
                     .foregroundStyle(.white)
             }
             .frame(width: 44, height: 44)
@@ -408,15 +398,14 @@ private struct ReportRow: View {
                 if !meta.isEmpty {
                     Text(meta)
                         .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
+                        .foregroundStyle(.textSecondary)
                 }
 
                 HStack(spacing: 6) {
                     CategoryDots(colors: categories.prefix(5).map(\.color))
                     Text("\(report.entries.count) values")
                         .font(.caption2)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.textSecondary)
                 }
             }
         }

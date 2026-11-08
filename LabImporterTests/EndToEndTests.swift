@@ -77,7 +77,7 @@ struct EndToEndTests {
         #expect(dashboard.metrics.first { $0.entry.code == "3084-1" }?.isQualitative == false)
 
         // 6. The iPhone ⇄ Android transfer file carries all of it and recognizes it again.
-        let file = ReportTransferService.exportContents(of: [saved])
+        let file = ReportTransferService.export(of: [saved]).contents
         let plan = try ReportTransferService.plan(contents: file, existing: [])
         let transferred = try #require(plan.reports.first)
         #expect(Set(transferred.entries.map(\.code)) == Set(saved.entries.map(\.code)))

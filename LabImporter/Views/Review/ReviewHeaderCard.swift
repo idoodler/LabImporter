@@ -38,10 +38,13 @@ struct ReviewActionBar: View {
     var valuesToCorrect: Int = 0
     let onSave: () -> Void
     let onShare: () -> Void
+    /// Pinned over the list, or a row in it (`ReviewView.pinsActionBar`).
+    var isPinned = true
 
     /// Short screens (iPhone and folded iPhone Duo in landscape) put the two
     /// buttons side by side so the pinned bar doesn't eat a third of the height.
     @Environment(\.verticalSizeClass) private var verticalSizeClass
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     /// Height of the top strip over which the material fades in. The buttons sit
     /// below it, so content scrolling underneath never shows through behind them.
@@ -61,46 +64,59 @@ struct ReviewActionBar: View {
                     systemImage: "exclamationmark.triangle.fill"
                 )
                 .font(.footnote)
-                .foregroundStyle(.orange)
+                .foregroundStyle(.statusWarning)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             if valuesToCorrect > 0 {
                 Label("\(valuesToCorrect) values to correct", systemImage: "exclamationmark.triangle.fill")
                     .font(.footnote)
-                    .foregroundStyle(.red)
+                    .foregroundStyle(.statusCritical)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             buttonLayout {
-                Button("Save to Health Records", action: onSave)
+                // White whatever the list around it sets (`readableListText`), when the bar is one of its rows.
+                Button(action: onSave) { buttonTitle("Save to Health Records").foregroundStyle(.white) }
                     .buttonStyle(.borderedProminent)
+                    .tint(.prominentFill)
                     .controlSize(.large)
                     .frame(maxWidth: .infinity)
 
-                Button("Share CDA File", action: onShare)
+                Button(action: onShare) { buttonTitle("Share Report File") }
                     .buttonStyle(.bordered)
                     .controlSize(.large)
                     .frame(maxWidth: .infinity)
             }
+            // A capsule around three lines of text is a circle that cuts them off.
+            .buttonBorderShape(dynamicTypeSize.isAccessibilitySize ? .roundedRectangle(radius: 20) : .automatic)
             .opacity(isEnabled ? 1 : 0.4)
             .allowsHitTesting(isEnabled)
         }
-        .padding(.horizontal)
-        .padding(.bottom)
-        .padding(.top, fadeHeight)
+        .padding(.horizontal, isPinned ? nil : 0)
+        .padding(.bottom, isPinned ? nil : 0)
+        .padding(.top, isPinned ? fadeHeight : 0)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("review-action-bar")
         .background {
-            Rectangle()
-                .fill(.regularMaterial)
-                .mask {
-                    VStack(spacing: 0) {
-                        LinearGradient(colors: [.clear, .black], startPoint: .top, endPoint: .bottom)
-                            .frame(height: fadeHeight)
-                        Rectangle()
+            if isPinned {
+                Rectangle()
+                    .fill(.regularMaterial)
+                    .mask {
+                        VStack(spacing: 0) {
+                            LinearGradient(colors: [.clear, .black], startPoint: .top, endPoint: .bottom)
+                                .frame(height: fadeHeight)
+                            Rectangle()
+                        }
                     }
-                }
-                .ignoresSafeArea(edges: .bottom)
+                    .ignoresSafeArea(edges: .bottom)
+            }
         }
+    }
+
+    private func buttonTitle(_ title: LocalizedStringKey) -> some View {
+        Text(title)
+            .frame(maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : nil)
     }
 }
 
@@ -151,8 +167,8 @@ struct SuggestionRow: View {
         HStack {
             Text(label)
                 .font(.footnote)
-                .foregroundStyle(.secondary)
-                .lineLimit(2)
+                .foregroundStyle(.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
             Spacer()
             Button("Use", action: onUse)
                 .buttonStyle(.plain)
@@ -200,7 +216,7 @@ struct ReviewHeaderCard: View {
                             )
                         )
                     Image(systemName: "checklist")
-                        .font(.system(size: 18, weight: .semibold))
+                        .decorativeIcon(size: 18, weight: .semibold)
                         .foregroundStyle(.white)
                 }
                 .frame(width: 44, height: 44)
@@ -233,7 +249,7 @@ struct ReviewHeaderCard: View {
                     systemImage: "exclamationmark.triangle.fill"
                 )
                 .font(.footnote.weight(.medium))
-                .foregroundStyle(.orange)
+                .foregroundStyle(.statusWarning)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
@@ -245,13 +261,13 @@ struct ReviewHeaderCard: View {
     @ViewBuilder
     private var statusBadge: some View {
         if valuesToCorrect > 0 {
-            badge("\(valuesToCorrect) values to correct", systemImage: "exclamationmark.triangle.fill", color: .red)
+            badge("\(valuesToCorrect) values to correct", systemImage: "exclamationmark.triangle.fill", color: .statusCritical)
                 .accessibilityIdentifier("review-values-to-correct")
         } else if valuesToCheck > 0 {
-            badge("\(valuesToCheck) values to check", systemImage: "exclamationmark.magnifyingglass", color: .orange)
+            badge("\(valuesToCheck) values to check", systemImage: "exclamationmark.magnifyingglass", color: .statusWarning)
                 .accessibilityIdentifier("review-values-to-check")
         } else if exportableCount > 0 {
-            badge("Ready to save", systemImage: "checkmark.circle.fill", color: .green)
+            badge("Ready to save", systemImage: "checkmark.circle.fill", color: .statusPositive)
         }
     }
 
@@ -285,7 +301,7 @@ struct CategoryChip: View {
                 .font(.caption.weight(.medium))
             Text("\(count)")
                 .font(.caption2.monospacedDigit())
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.textSecondary)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
@@ -322,7 +338,7 @@ struct UnsupportedValuesSection: View {
             HStack(spacing: 8) {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .font(.caption)
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(.statusWarning)
                 Text("Not supported for export")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.primary)
@@ -337,7 +353,7 @@ struct UnsupportedValuesSection: View {
         HStack(spacing: 12) {
             Image(systemName: "doc.badge.minus")
                 .font(.body)
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(.textTertiary)
                 .frame(width: 22)
                 .accessibilityHidden(true)
 
@@ -345,18 +361,18 @@ struct UnsupportedValuesSection: View {
                 Text(value.resolvedName).font(.body)
                 Text(value.code)
                     .font(.caption2)
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(.textTertiary)
                     .textCase(.uppercase)
             }
             Spacer()
             HStack(spacing: 6) {
                 Text(value.displayValue)
                     .font(.body.monospacedDigit())
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
                 if !value.unit.isEmpty {
                     Text(value.unit)
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.textSecondary)
                 }
             }
         }
@@ -381,7 +397,7 @@ struct CategorySectionHeader: View {
             Spacer()
             Text("\(count)")
                 .font(.caption.monospacedDigit())
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.textSecondary)
         }
         .textCase(nil)
         .accessibilityElement(children: .combine)

@@ -3,6 +3,13 @@ import Testing
 @testable import LabImporter
 
 struct MetricGridLayoutTests {
+    @Test("The largest text gets one column, on a phone and in an iPad's window; only a wide window keeps two")
+    func accessibilityTextTakesTheWholeWidth() {
+        #expect(MetricGridLayout(width: 370).columns(isRegularWidth: false, metricCount: 6, isAccessibilityText: true).count == 1)
+        #expect(MetricGridLayout(width: 660).columns(isRegularWidth: true, metricCount: 6, isAccessibilityText: true).count == 1)
+        #expect(MetricGridLayout(width: 1100).columns(isRegularWidth: true, metricCount: 6, isAccessibilityText: true).count > 1)
+    }
+
     private func widths(_ columns: [GridItem]) -> [CGFloat] {
         columns.compactMap { if case .fixed(let width) = $0.size { width } else { nil } }
     }

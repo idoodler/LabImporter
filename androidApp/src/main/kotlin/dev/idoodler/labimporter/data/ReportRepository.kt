@@ -17,6 +17,21 @@ enum class ReplaceOutcome {
     SAVED_WITH_LEFTOVERS,
 }
 
+/** Why the reports on screen may not be all there are. Each has its own way out; only the first is helped by trying again. */
+enum class ReportsLoadProblem {
+    /** Reading the store failed. */
+    READ_FAILED,
+
+    /** Health Connect is chosen, but LabImporter no longer has access. */
+    HEALTH_CONNECT_ACCESS_OFF,
+
+    /** Health Connect is chosen, but has to be updated first. */
+    HEALTH_CONNECT_UPDATE_REQUIRED,
+
+    /** Health Connect is chosen, but this device doesn't offer it (any more). */
+    HEALTH_CONNECT_UNAVAILABLE,
+}
+
 /**
  * The single source of saved reports for the UI. There is no app database of
  * record: reports are re-read from the active store (Health Connect or the
@@ -38,12 +53,23 @@ class ReportRepository(
     /** The last [reload] couldn't read the store: [reports] may be out of date, not empty. */
     val loadFailed: StateFlow<Boolean> = _loadFailed.asStateFlow()
 
+    private val _loadProblem = MutableStateFlow<ReportsLoadProblem?>(null)
+
+    /** Why [loadFailed], so the user can be told what actually helps. */
+    val loadProblem: StateFlow<ReportsLoadProblem?> = _loadProblem.asStateFlow()
+
     private val _unreadableReports = MutableStateFlow(0)
 
     /** Saved reports that exist but can't be read, so [reports] leaves them out. */
     val unreadableReports: StateFlow<Int> = _unreadableReports.asStateFlow()
 
-    private val wantsHealthConnect: Boolean get() = preferences.storageMode.value == StorageMode.HEALTH_CONNECT
+    private val _newerVersionReports = MutableStateFlow(0)
+
+    /** Saved reports only a newer version of the app can read, so [reports] leaves them out. */
+    val newerVersionReports: StateFlow<Int> = _newerVersionReports.asStateFlow()
+
+    /** Whether the user chose Health Connect, which isn't the same as it being in use right now. */
+    val wantsHealthConnect: Boolean get() = preferences.storageMode.value == StorageMode.HEALTH_CONNECT
 
     private suspend fun store(): LabReportStore =
         if (wantsHealthConnect &&
@@ -59,8 +85,10 @@ class ReportRepository(
 
     suspend fun reload() {
         _isLoading.value = true
+        var read: LabReportStore? = null
         try {
             val target = store()
+            read = target
             // Reports a move into Health Connect didn't get to — it stopped half-way, or Health
             // Connect was unavailable for a while and saves went to the app: move them now, and
             // list any still left, so no report seems lost while Health Connect is in use.
@@ -69,16 +97,31 @@ class ReportRepository(
             _reports.value = (stillLocal + target.loadReports()).distinctBy { it.id }.sortedByDescending { it.date }
             // Health Connect is chosen but out of reach (permission withdrawn, update required, a failed
             // check): saves can go to the app meanwhile, but what it holds isn't on this list.
-            _loadFailed.value = wantsHealthConnect && target !== healthConnect
+            report(if (wantsHealthConnect && target !== healthConnect) healthConnectProblem() else null)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
             Log.w(TAG, "Couldn't load the reports", e)
-            _loadFailed.value = true
+            // Access can go between the check and the read.
+            report(if (e is SecurityException) ReportsLoadProblem.HEALTH_CONNECT_ACCESS_OFF else ReportsLoadProblem.READ_FAILED)
         } finally {
-            _unreadableReports.value = local.unreadableReports
+            // Health Connect's counts only mean something while its reports are the ones listed.
+            val inHealthConnect = read === healthConnect
+            _unreadableReports.value = local.unreadableReports + if (inHealthConnect) healthConnect.unreadableReports else 0
+            _newerVersionReports.value = local.newerVersionReports + if (inHealthConnect) healthConnect.newerVersionReports else 0
             _isLoading.value = false
         }
+    }
+
+    private fun report(problem: ReportsLoadProblem?) {
+        _loadProblem.value = problem
+        _loadFailed.value = problem != null
+    }
+
+    private fun healthConnectProblem(): ReportsLoadProblem = when (healthConnect.availability()) {
+        HealthConnectAvailability.AVAILABLE -> ReportsLoadProblem.HEALTH_CONNECT_ACCESS_OFF
+        HealthConnectAvailability.UPDATE_REQUIRED -> ReportsLoadProblem.HEALTH_CONNECT_UPDATE_REQUIRED
+        HealthConnectAvailability.MEDICAL_RECORDS_UNSUPPORTED, HealthConnectAvailability.NOT_INSTALLED -> ReportsLoadProblem.HEALTH_CONNECT_UNAVAILABLE
     }
 
     /**

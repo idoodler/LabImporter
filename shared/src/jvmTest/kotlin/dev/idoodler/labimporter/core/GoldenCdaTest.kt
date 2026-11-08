@@ -1,6 +1,7 @@
 package dev.idoodler.labimporter.core
 
 import dev.idoodler.labimporter.core.export.CdaExport
+import dev.idoodler.labimporter.core.export.CdaNarrative
 import dev.idoodler.labimporter.core.model.LabValue
 import kotlinx.datetime.LocalDate
 import java.io.File
@@ -18,7 +19,7 @@ class GoldenCdaTest {
     @Test
     fun documentMatchesGolden() {
         startCatalog("en-US")
-        val actual = normalize(CdaExport.generate(GoldenCda.values, LocalDate(2026, 5, 6), "IDENTITY", "Max Mustermann", "Labor & Co"))
+        val actual = normalize(CdaExport.generate(GoldenCda.values, LocalDate(2026, 5, 6), "IDENTITY", GoldenCda.narrative, "Max Mustermann", "Labor & Co"))
         val golden = File(System.getProperty("golden.dir"), "report.cda.xml")
         if (System.getProperty("golden.record") == "true") golden.writeText(actual)
         assertEquals(golden.readText(), actual)
@@ -31,6 +32,9 @@ class GoldenCdaTest {
 }
 
 object GoldenCda {
+    /** The words every document had while they were fixed, so Apple Health's older documents stay pinned too. */
+    val narrative = CdaNarrative("de-DE", "Lab Results", "Laborwerte", "Test", "Ergebnis")
+
     val values = listOf(
         LabValue(code = "2160-0", name = "Creatinine", displayValue = "0,8", numericValue = 0.8, unit = "mg/dl"),
         LabValue(code = "2823-3", name = "Potassium", displayValue = "4,1", numericValue = 4.1, unit = "mmol/l"),

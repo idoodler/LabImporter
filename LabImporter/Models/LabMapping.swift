@@ -12,14 +12,19 @@ enum LabMapping {
     }
 
     // Display name for a LOINC code: a user's nickname (set in Sort &
-    // Visibility) wins, then the localized catalog name, finally the raw code
-    // (e.g. an as-yet-unmapped value). Nicknames are cosmetic only — CDA export
-    // keeps the standard LOINC English display (see `loincCode(for:)`).
+    // Visibility) wins, then the plain clinical name ("Glucose"), finally the
+    // raw code (e.g. an as-yet-unmapped value). Both are cosmetic only — CDA
+    // export keeps the standard LOINC English display (see `loincCode(for:)`).
     static func displayName(for code: String) -> String {
         core.displayName(code: code)
     }
 
-    // The catalog (non-overridden) display name for a code, ignoring any nickname.
+    // The plain clinical name for a code, ignoring any nickname (where the default must show).
+    static func plainName(for code: String) -> String {
+        core.plainName(code: code)
+    }
+
+    // The full LOINC label ("Glucose [Mass/Vol]"), for search keywords and wherever terms are told apart.
     static func catalogName(for code: String) -> String {
         core.catalogName(code: code)
     }

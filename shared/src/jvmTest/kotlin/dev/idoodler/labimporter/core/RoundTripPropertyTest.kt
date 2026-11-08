@@ -41,7 +41,7 @@ class RoundTripPropertyTest {
 
     @Test
     fun theTransferFileKeepsEveryReportExactly() {
-        val read = assertIs<ReportTransfer.ReadResult.Reports>(ReportTransfer.read(ReportTransfer.export(reports, "LabImporter test")))
+        val read = assertIs<ReportTransfer.ReadResult.Reports>(ReportTransfer.read(ReportTransfer.export(reports, "LabImporter test").contents))
         assertEquals(reports.associateBy { it.id }, read.reports.associateBy { it.id })
         // Importing the same file again would add nothing.
         assertEquals(0, ReportTransfer.plan(reports, read.reports).toImport.size)
@@ -72,7 +72,7 @@ class RoundTripPropertyTest {
     }
 
     private fun throughCda(report: LabReport): LabReport {
-        val xml = CdaExport.generate(report.asLabValues, report.date, "LabImporter test", report.patientName, report.authorName)
+        val xml = CdaExport.generate(report.asLabValues, report.date, "LabImporter test", GoldenCda.narrative, report.patientName, report.authorName)
         return assertNotNull(CdaParser.parse(xml, report.id), "unreadable document for ${report.id}")
     }
 

@@ -18,6 +18,7 @@ struct LabSortEditor: View {
     /// metric and sets its reference range. `nil` until they tap a row's info
     /// button.
     @State private var detailCode: String?
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     init(prefs: Binding<LabDisplayPreferences>, allCodes: [CodeName]) {
         _prefs = prefs
@@ -35,6 +36,7 @@ struct LabSortEditor: View {
             hiddenSection
         }
         .environment(\.editMode, .constant(.active))
+        .readableListText()
         .navigationTitle("Sort & Visibility")
         .navigationBarTitleDisplayMode(.inline)
         .onChange(of: state) { save() }
@@ -77,49 +79,94 @@ struct LabSortEditor: View {
         }
     }
 
+    @ViewBuilder
     private func row(for item: CodeName) -> some View {
-        HStack(spacing: 12) {
-            Button { togglePin(item.code) } label: {
-                Image(systemName: state.pinned.contains(item.code) ? "pin.fill" : "pin")
-                    .foregroundStyle(state.pinned.contains(item.code) ? Color.yellow : Color.secondary)
-                    .frame(width: 20)
-            }
-            .buttonStyle(.plain)
-            Circle()
-                .fill(LabCategory.forCode(item.code).color.gradient)
-                .frame(width: 9, height: 9)
-            // Resolve live (not the captured `item.name`) so a rename updates the
-            // row immediately; show the catalog default beneath a nickname.
-            VStack(alignment: .leading, spacing: 1) {
-                Text(LabMapping.displayName(for: item.code))
-                if prefs.nickname(for: item.code) != nil {
-                    Text(LabMapping.catalogName(for: item.code))
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
+        // The largest text leaves a name beside four controls one letter per line.
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 12) {
+                    categoryDot(item)
+                    rowName(item)
                 }
-                if let range = prefs.referenceRange(for: item.code) {
-                    Label(range.formatted(), systemImage: "ruler")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
+                HStack(spacing: 20) {
+                    pinButton(item)
+                    detailButton(item)
+                    hideButton(item)
                 }
             }
-            Spacer()
-            // The catalog detail screen hosts renaming and reference-range
-            // editing; only LOINC codes the catalog knows have one.
-            if LoincDirectory.shared.term(for: item.code) != nil {
-                Button { showDetail(item.code) } label: {
-                    Image(systemName: "info.circle")
-                        .foregroundStyle(Color.secondary)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Details")
+        } else {
+            HStack(spacing: 12) {
+                pinButton(item)
+                categoryDot(item)
+                rowName(item)
+                Spacer()
+                detailButton(item)
+                hideButton(item)
             }
-            Button { hideCode(item.code) } label: {
-                Image(systemName: "eye.slash")
-                    .foregroundStyle(Color.secondary)
-            }
-            .buttonStyle(.plain)
         }
+    }
+
+    private func categoryDot(_ item: CodeName) -> some View {
+        Circle()
+            .fill(LabCategory.forCode(item.code).color.gradient)
+            .frame(width: 9, height: 9)
+    }
+
+    // Resolve live (not the captured `item.name`) so a rename updates the
+    // row immediately; show the default name beneath a nickname.
+    private func rowName(_ item: CodeName) -> some View {
+        VStack(alignment: .leading, spacing: 1) {
+            Text(LabMapping.displayName(for: item.code))
+            if prefs.nickname(for: item.code) != nil {
+                Text(LabMapping.plainName(for: item.code))
+                    .font(.caption2)
+                    .foregroundStyle(Color.textSecondary)
+            }
+            if let range = prefs.referenceRange(for: item.code) {
+                Label(range.formatted(), systemImage: "ruler")
+                    .font(.caption2)
+                    .foregroundStyle(Color.textSecondary)
+            }
+        }
+    }
+
+    /// "Glucose, Hide": VoiceOver walks the buttons on their own, so each says whose it is.
+    private func spoken(_ action: String, _ item: CodeName) -> Text {
+        Text(verbatim: "\(LabMapping.displayName(for: item.code)), \(action)")
+    }
+
+    private func pinButton(_ item: CodeName) -> some View {
+        let isPinned = state.pinned.contains(item.code)
+        return Button { togglePin(item.code) } label: {
+            Image(systemName: isPinned ? "pin.fill" : "pin")
+                .foregroundStyle(isPinned ? Color.pinnedMark : Color.textSecondary)
+        }
+        .tapTargetButton()
+        .accessibilityLabel(spoken(String(localized: "Pinned"), item))
+        .accessibilityAddTraits(isPinned ? .isSelected : [])
+    }
+
+    // The catalog detail screen hosts renaming and reference-range
+    // editing; only LOINC codes the catalog knows have one.
+    @ViewBuilder
+    private func detailButton(_ item: CodeName) -> some View {
+        if LoincDirectory.shared.term(for: item.code) != nil {
+            Button { showDetail(item.code) } label: {
+                Image(systemName: "info.circle")
+                    .foregroundStyle(Color.textSecondary)
+            }
+            .tapTargetButton()
+            .accessibilityLabel(spoken(String(localized: "Details"), item))
+        }
+    }
+
+    private func hideButton(_ item: CodeName) -> some View {
+        Button { hideCode(item.code) } label: {
+            Image(systemName: "eye.slash")
+                .foregroundStyle(Color.textSecondary)
+        }
+        .tapTargetButton()
+        .accessibilityLabel(spoken(String(localized: "Hide"), item))
     }
 
     @ViewBuilder
@@ -133,10 +180,10 @@ struct LabSortEditor: View {
                             .fill(LabCategory.forCode(item.code).color.opacity(0.4))
                             .frame(width: 9, height: 9)
                         Text(item.name)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(.textSecondary)
                         Spacer()
                         Button("Restore") { restoreCode(item.code) }
-                            .buttonStyle(.plain)
+                            .tapTargetButton()
                             .foregroundStyle(Color.accentColor)
                             .fontWeight(.medium)
                     }

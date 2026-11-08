@@ -18,7 +18,7 @@ extension View {
             set: { if !$0 { code.wrappedValue = nil } }
         )
         return alert("Rename", isPresented: isPresented, presenting: code.wrappedValue) { code in
-            TextField(LabMapping.catalogName(for: code), text: draft)
+            TextField(LabMapping.plainName(for: code), text: draft)
             Button("Save") { prefs.wrappedValue.setNickname(draft.wrappedValue, for: code) }
             if prefs.wrappedValue.nickname(for: code) != nil {
                 Button("Reset to Default", role: .destructive) {
@@ -27,7 +27,7 @@ extension View {
             }
             Button("Cancel", role: .cancel) {}
         } message: { code in
-            Text("Choose a nickname to show everywhere instead of “\(LabMapping.catalogName(for: code))”.")
+            Text("Choose a nickname to show everywhere instead of “\(LabMapping.plainName(for: code))”.")
         }
     }
 }

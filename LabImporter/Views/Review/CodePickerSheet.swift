@@ -53,6 +53,7 @@ private struct LabTestPickerList: View {
             }
         }
         .listStyle(.insetGrouped)
+        .readableListText()
         .scrollContentBackground(.hidden)
         .background { CategoryBackground(colors: backgroundColors) }
         .overlay {
@@ -106,12 +107,11 @@ private struct LabTestPickerList: View {
                     if let subtitle, !subtitle.isEmpty {
                         Text(subtitle)
                             .font(.caption2)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(2)
+                            .foregroundStyle(.textSecondary)
                     }
                     Text(rowCode)
                         .font(.caption2)
-                        .foregroundStyle(.tertiary)
+                        .foregroundStyle(.textTertiary)
                         .textCase(.uppercase)
                 }
                 Spacer(minLength: 0)
@@ -157,7 +157,7 @@ struct CategoryIcon: View {
                     )
                 )
             Image(systemName: "testtube.2")
-                .font(.system(size: size * 0.42, weight: .semibold))
+                .decorativeIcon(size: size * 0.42, weight: .semibold)
                 .foregroundStyle(.white)
         }
         .frame(width: size, height: size)

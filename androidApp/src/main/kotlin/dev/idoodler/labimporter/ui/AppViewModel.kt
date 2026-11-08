@@ -15,6 +15,7 @@ import dev.idoodler.labimporter.ai.AiEngine
 import dev.idoodler.labimporter.ai.AiException
 import dev.idoodler.labimporter.ai.messageRes
 import dev.idoodler.labimporter.core.export.CdaExport
+import dev.idoodler.labimporter.core.export.CdaNarrative
 import dev.idoodler.labimporter.core.export.PdfReport
 import dev.idoodler.labimporter.core.export.ReportEncodingException
 import dev.idoodler.labimporter.core.model.Dashboard
@@ -32,6 +33,7 @@ import kotlinx.coroutines.withContext
 import dev.idoodler.labimporter.data.HealthConnectAvailability
 import dev.idoodler.labimporter.data.HealthConnectUnavailableException
 import dev.idoodler.labimporter.data.ReplaceOutcome
+import dev.idoodler.labimporter.data.ReportsLoadProblem
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,6 +52,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 import java.io.File
+import java.io.IOException
 import kotlin.time.Clock
 
 /** A report being reviewed before it's saved (new import or edit). */
@@ -88,11 +91,24 @@ sealed interface ImportState {
     data class Failed(val message: String) : ImportState
 }
 
+/** How asking for the transfer file went. */
+sealed interface ReportsExport {
+    data class Ready(val uri: Uri) : ReportsExport
+
+    /** Nothing was written: the user decides whether a file without these [results] values is what they want. */
+    data class LeavesOut(val results: Int) : ReportsExport
+
+    /** No file: why is already in the snackbar. */
+    data object Failed : ReportsExport
+}
+
 /** Health Connect status as shown in Settings/onboarding. */
 data class HealthConnectState(
     val availability: HealthConnectAvailability = HealthConnectAvailability.NOT_INSTALLED,
     val granted: Boolean = false,
     val inUse: Boolean = false,
+    /** The user chose Health Connect. Without [inUse] that means it went away, and they need a way out. */
+    val chosen: Boolean = false,
 ) {
     /**
      * Whether to offer moving reports here: Health Connect works but was never
@@ -100,7 +116,7 @@ data class HealthConnectState(
      * again), there's something to move, and the offer wasn't turned down.
      */
     fun offersMove(hasReports: Boolean, dismissed: Boolean): Boolean =
-        availability == HealthConnectAvailability.AVAILABLE && !granted && !inUse && hasReports && !dismissed
+        availability == HealthConnectAvailability.AVAILABLE && !granted && !inUse && !chosen && hasReports && !dismissed
 }
 
 /**
@@ -120,10 +136,13 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     val isLoading: StateFlow<Boolean> = repository.isLoading
 
     /** The last load failed: "no reports" would be wrong, so the dashboard says that instead. */
-    val loadFailed: StateFlow<Boolean> = repository.loadFailed
+    val loadProblem: StateFlow<ReportsLoadProblem?> = repository.loadProblem
 
     /** Saved reports that exist but can't be read. */
     val unreadableReports: StateFlow<Int> = repository.unreadableReports
+
+    /** Saved reports only a newer version of the app can read. */
+    val newerVersionReports: StateFlow<Int> = repository.newerVersionReports
     val displayPreferences: StateFlow<LabDisplayPreferences> = preferences.displayPreferences
     val hasSeenWelcome: StateFlow<Boolean> = preferences.hasSeenWelcome
     val patientName: StateFlow<String> = preferences.patientName
@@ -156,8 +175,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     val launchRequest: StateFlow<LaunchRequest?> = _launchRequest.asStateFlow()
 
     init {
-        // Whatever a share sheet was given last time has been read by now; it's a health record.
-        viewModelScope.launch(Dispatchers.IO) { clearExports() }
+        removeExpiredExports()
         refresh()
         // Launcher shortcuts follow the dashboard: one per visible value, names only unless opted in.
         viewModelScope.launch {
@@ -224,7 +242,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         val hc = container.healthConnect
         val availability = hc.availability()
         val granted = availability == HealthConnectAvailability.AVAILABLE && hc.hasPermissions()
-        _healthConnect.value = HealthConnectState(availability, granted, repository.isUsingHealthConnect())
+        _healthConnect.value = HealthConnectState(availability, granted, repository.isUsingHealthConnect(), repository.wantsHealthConnect)
     }
 
     fun consumeMessage() { _message.value = null }
@@ -473,12 +491,29 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     // region Transfer (iPhone ⇄ Android)
 
-    /** Every report as the transfer file (shared `ReportTransfer`: a FHIR Bundle), ready to share. */
-    fun exportAllReports(): Uri? {
-        val all = reports.value.takeIf { it.isNotEmpty() } ?: return null
+    /**
+     * Every report as the transfer file (shared `ReportTransfer`: a FHIR Bundle), ready to share.
+     * It's never quietly smaller than what's on screen: with [allowLeavingOut] off, values that
+     * can't be written stop it and come back as [ReportsExport.LeavesOut] for the user to decide.
+     */
+    fun exportAllReports(allowLeavingOut: Boolean = false): ReportsExport {
+        val all = reports.value
+        val export = ReportTransfer.export(all, softwareIdentity)
+        if (export.writtenResults == 0) {
+            _message.value = context.getString(R.string.transfer_export_nothing)
+            return ReportsExport.Failed
+        }
+        if (export.leftOutResults > 0 && !allowLeavingOut) return ReportsExport.LeavesOut(export.leftOutResults)
         val file = newExportFile(ReportTransfer.fileName(today()))
-        file.writeText(ReportTransfer.export(all, softwareIdentity))
-        return FileProvider.getUriForFile(context, "${context.packageName}.files", file)
+        try {
+            file.writeText(export.contents)
+        } catch (e: IOException) {
+            Log.w(TAG, "Couldn't write the transfer file: ${e::class.simpleName}")
+            file.delete()
+            _message.value = context.getString(R.string.error_save_storage)
+            return ReportsExport.Failed
+        }
+        return ReportsExport.Ready(FileProvider.getUriForFile(context, "${context.packageName}.files", file))
     }
 
     /**
@@ -497,7 +532,12 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 Log.w(TAG, "Couldn't read the transfer file", e)
                 null
             } ?: return@launch run { _message.value = context.getString(R.string.error_read_document) }
-            val read = ReportTransfer.read(contents) as? ReportTransfer.ReadResult.Reports
+            val parsed = ReportTransfer.read(contents)
+            if (parsed is ReportTransfer.ReadResult.NewerVersion) {
+                _message.value = context.getString(R.string.transfer_newer_version)
+                return@launch
+            }
+            val read = parsed as? ReportTransfer.ReadResult.Reports
                 ?: return@launch run { _message.value = context.getString(R.string.transfer_unsupported) }
             // Skipping what's already here needs the whole list. Everything imported gets fresh ids,
             // so nothing would merge the duplicates once the saved reports can be read again.
@@ -509,11 +549,16 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             val plan = ReportTransfer.plan(reports.value, read.reports)
             val failed = repository.saveAll(plan.toImport.map(::withFreshIds))
             val imported = plan.toImport.size - failed
-            _message.value = if (failed > 0) {
+            val summary = if (failed > 0) {
                 context.getString(R.string.transfer_summary_failed, imported, plan.alreadyPresent, failed)
             } else {
                 context.getString(R.string.transfer_summary, imported, plan.alreadyPresent)
             }
+            _message.value = listOfNotNull(
+                summary,
+                context.getString(R.string.transfer_newer_version_some, read.newerVersionReports).takeIf { read.newerVersionReports > 0 },
+                context.getString(R.string.transfer_damaged_some, read.unreadableReports).takeIf { read.unreadableReports > 0 },
+            ).joinToString(" ")
         }
     }
 
@@ -558,6 +603,17 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         exportsDirectory().listFiles().orEmpty().forEach { it.delete() }
     }
 
+    /**
+     * Each export is a copy of the user's health data, but nothing says when a share target is
+     * done with one: a mail draft left open may read it only when sent, however often the user
+     * came back here (or this process was restarted) meanwhile. So age decides, not the app's
+     * own lifecycle; and it's checked on every launch and return, there being no other chance.
+     */
+    fun removeExpiredExports(): Job = viewModelScope.launch(Dispatchers.IO) {
+        val oldestKept = System.currentTimeMillis() - EXPORT_LIFETIME_MILLIS
+        exportsDirectory().listFiles().orEmpty().filter { it.lastModified() < oldestKept }.forEach { it.delete() }
+    }
+
     /** Where to write an export. Only the latest one stays: each is a copy of the user's health data. */
     private fun newExportFile(name: String): File {
         clearExports()
@@ -568,13 +624,23 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     /** Writes the report as a C-CDA document (shared generator) and returns a shareable Uri. */
     fun exportCda(report: LabReport): Uri {
-        val xml = CdaExport.generate(report.asLabValues, report.date, softwareIdentity, report.patientName, report.authorName)
+        val xml = CdaExport.generate(report.asLabValues, report.date, softwareIdentity, cdaNarrative(), report.patientName, report.authorName)
         val file = newExportFile("LabResults-${report.date}.xml").apply { writeText(xml) }
         return FileProvider.getUriForFile(context, "${context.packageName}.files", file)
     }
 
+    /** The document in the language the app is showing, whose words the catalog already translates. */
+    private fun cdaNarrative() = CdaNarrative(
+        languageCode = context.getString(R.string.cda_language_code),
+        documentTitle = context.getString(R.string.dashboard_title),
+        sectionTitle = context.getString(R.string.lab_values),
+        testHeader = context.getString(R.string.pdf_column_test),
+        resultHeader = context.getString(R.string.pdf_column_result),
+    )
+
     private companion object {
         const val TAG = "AppViewModel"
+        const val EXPORT_LIFETIME_MILLIS = 24 * 60 * 60 * 1000L
     }
 
     private fun blankValue() = LabValue(code = "", name = "", displayValue = "", numericValue = null, unit = "")

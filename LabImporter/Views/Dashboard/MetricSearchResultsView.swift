@@ -56,6 +56,7 @@ struct MetricSearchResultsView: View {
                 }
             }
             .searchable(text: $query, prompt: Text("Search Your Values"))
+            .readableListText()
             .navigationTitle("Search Your Values")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -75,7 +76,7 @@ struct MetricSearchResultsView: View {
             Spacer()
             if result.entry.numericValue != nil {
                 Text(result.entry.unit.isEmpty ? result.entry.displayValue : "\(result.entry.displayValue) \(result.entry.unit)")
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
             }
         }
     }

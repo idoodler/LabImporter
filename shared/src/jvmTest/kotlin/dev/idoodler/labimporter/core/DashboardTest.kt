@@ -118,9 +118,17 @@ class DashboardTest {
             report("b", LocalDate(2026, 2, 1), "2160-0" to 1.0, "LOCAL-1" to 2.0),
         )
         assertEquals(
-            listOf(CodeName("4548-4", LabMapping.catalogName("4548-4")), CodeName("2160-0", "Kreatinin"), CodeName("LOCAL-1", "LOCAL-1")),
+            listOf(CodeName("4548-4", "HbA1c"), CodeName("2160-0", "Kreatinin"), CodeName("LOCAL-1", "LOCAL-1")),
             Dashboard.codeNames(reports),
         )
+    }
+
+    @Test
+    fun aTrendOpensOnEveryReading() {
+        val metric = Dashboard.metrics(
+            listOf(report("a", LocalDate(2024, 1, 10), "2160-0" to 1.0), report("b", LocalDate(2026, 5, 28), "2160-0" to 2.0)),
+        ).single()
+        assertEquals(2, Dashboard.openingTrendWindow.visible(metric.points).size, "a two-year gap still opens on a line")
     }
 
     @Test

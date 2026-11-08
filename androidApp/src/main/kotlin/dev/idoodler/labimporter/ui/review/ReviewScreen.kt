@@ -1,5 +1,6 @@
 package dev.idoodler.labimporter.ui.review
 
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -210,12 +211,12 @@ fun ReviewScreen(
                     }
                 }
                 item(key = "values-title") {
-                    Row(verticalAlignment = Alignment.Bottom) {
-                        SectionTitle(stringResource(R.string.lab_values), Modifier.weight(1f))
+                    FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, itemVerticalAlignment = Alignment.Bottom) {
+                        SectionTitle(stringResource(R.string.lab_values))
                         Text(
                             pluralStringResource(R.plurals.exportable_count, exportable, exportable, draft.values.size),
                             style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(bottom = 8.dp, end = 8.dp),
+                            modifier = Modifier.padding(start = 8.dp, bottom = 8.dp, end = 8.dp),
                         )
                     }
                 }
@@ -261,7 +262,7 @@ fun ReviewScreen(
             onPick = { term ->
                 onUpdateValue(id) {
                     // A hand-entered row has no unit yet: start from LOINC's example unit.
-                    it.copy(code = term.code, name = term.name, isSuggestedCode = false, unit = it.unit.ifBlank { term.ucum })
+                    it.copy(code = term.code, name = LabMapping.plainName(term.code), isSuggestedCode = false, unit = it.unit.ifBlank { term.ucum })
                 }
                 pickingFor = null
             },
@@ -442,6 +443,7 @@ private fun ValueCard(
 ) {
     val mapped = LabMapping.loincCode(value.code) != null
     val compareDetail = stringResource(R.string.compare_with_report_detail)
+    val includeLabel = "${value.resolvedName}, ${stringResource(R.string.include_in_export)}"
     val correctDetail = stringResource(R.string.correct_or_deselect)
     val category = if (mapped) LabCategory.forCode(value.code) else null
     // As printed, like iOS. A grouped "263,000" would read as 263.5 once edited to "263,500".
@@ -456,7 +458,10 @@ private fun ValueCard(
     Card(modifier = modifier, colors = CardDefaults.cardColors(containerColor = container), shape = MaterialTheme.shapes.extraLarge) {
         Column(Modifier.padding(start = 6.dp, end = 10.dp, top = 8.dp, bottom = 14.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(checked = value.isSelected, onCheckedChange = { checked -> onUpdate { it.copy(isSelected = checked) } })
+                Checkbox(
+                    checked = value.isSelected, onCheckedChange = { checked -> onUpdate { it.copy(isSelected = checked) } },
+                    modifier = Modifier.semantics { contentDescription = includeLabel },
+                )
                 if (category != null) {
                     CategoryBadge(category, size = 30.dp)
                     Spacer(Modifier.width(10.dp))
@@ -472,9 +477,9 @@ private fun ValueCard(
                 }
                 IconButton(onClick = onRemove) { Icon(Icons.Rounded.DeleteOutline, stringResource(R.string.remove)) }
             }
-            Row(
+            FlowRow(
                 Modifier.padding(start = 12.dp), horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                itemVerticalAlignment = Alignment.CenterVertically,
             ) {
                 CodeChip(value, mapped, isDuplicate, onPickCode)
                 if (value.isSuggestedCode && mapped) {
@@ -499,7 +504,11 @@ private fun ValueCard(
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = keyboard),
                     shape = MaterialTheme.shapes.large, colors = fieldColors,
-                    modifier = Modifier.weight(1f).semantics { if (value.needsSourceCheck) stateDescription = compareDetail },
+                    modifier = Modifier.weight(1f).semantics {
+                        // Every row's field says "Value" otherwise: TalkBack has to say which test it is.
+                        contentDescription = value.resolvedName
+                        if (value.needsSourceCheck) stateDescription = compareDetail
+                    },
                 )
                 OutlinedTextField(
                     value = value.unit, onValueChange = { text -> onUpdate { it.copy(unit = text) } },

@@ -23,7 +23,7 @@
     <string name="disclaimer_title">Не є медичною порадою</string>
     <string name="disclaimer_body">LabImporter не є медичним пристроєм і не надає медичних консультацій, діагнозів чи лікування. Розпізнані значення можуть бути неточними або неповними — завжди звіряйте їх з оригінальним результатом аналізу. Ніколи не ухвалюйте медичних рішень на основі цього застосунку; щодо своїх результатів зверніться до кваліфікованого медичного фахівця.</string>
     <string name="disclaimer_accept">Я розумію</string>
-    <string name="onboarding_hc_message">Зберігайте звіти в Health Connect, щоб вони були разом з іншими даними про здоров\'я. Результати аналізів зберігаються на цьому пристрої як стандартні записи FHIR.</string>
+    <string name="onboarding_hc_message">Зберігайте звіти в Health Connect, щоб вони були разом з іншими даними про здоров\'я. Результати аналізів зберігаються на цьому пристрої як стандартні медичні записи.</string>
     <string name="onboarding_hc_connected">Під\'єднано. Ваші звіти зберігатимуться в Health Connect як результати аналізів.</string>
     <string name="onboarding_hc_unavailable">Медичні записи Health Connect недоступні на цьому пристрої, тож ваші звіти зберігаються приватно в LabImporter на цьому пристрої. Пізніше це можна змінити в Налаштуваннях.</string>
     <string name="dashboard_empty_title">Звітів поки немає</string>
@@ -67,7 +67,7 @@
     <string name="category_other">Інший</string>
     <string name="history_empty_title">Звітів поки немає</string>
     <string name="history_empty_message">Імпортуйте лабораторний звіт, щоб побачити його тут.</string>
-    <string name="share_cda">Поділитися файлом CDA</string>
+    <string name="share_cda">Поділитися файлом звіту</string>
     <string name="delete_report_title">Видалити звіт?</string>
     <string name="delete_report_message">Цей звіт буде остаточно видалено.</string>
     <string name="report_deleted">Звіт видалено</string>
@@ -228,6 +228,17 @@
     <string name="try_again">Спробувати ще раз</string>
     <string name="reports_load_failed_title">Не вдалося завантажити звіти</string>
     <string name="reports_load_failed_message">Збережені звіти не змінилися, але зараз їх не вдається прочитати.</string>
+    <string name="reports_newer_title">Оновіть LabImporter, щоб побачити всі звіти</string>
+    <string name="reports_newer_message">Звіти, збережені новішою версією LabImporter: %1$d. Вони в безпеці. Оновіть застосунок, щоб їх побачити.</string>
+    <string name="hc_access_off_title">Доступ до Health Connect вимкнено</string>
+    <string name="hc_access_off_message">Без доступу LabImporter не може читати звіти, збережені в Health Connect. Вони все ще там. Надайте доступ, щоб їх побачити, або відтепер зберігайте звіти в застосунку.</string>
+    <string name="hc_allow_access">Надати доступ</string>
+    <string name="hc_needs_update_title">Health Connect потрібно оновити</string>
+    <string name="hc_needs_update_message">Ваші звіти все ще в Health Connect, але його потрібно оновити, щоб LabImporter міг їх прочитати.</string>
+    <string name="hc_update">Оновити Health Connect</string>
+    <string name="hc_gone_title">Health Connect недоступний</string>
+    <string name="hc_gone_message">LabImporter не може підключитися до Health Connect на цьому пристрої, тому збережені там звіти не показуються. LabImporter їх не видаляв.</string>
+    <string name="hc_use_app_storage">Використовувати сховище застосунку</string>
     <string name="reports_unreadable_title">Деякі звіти не вдається прочитати</string>
     <string name="reports_unreadable_message">Звіти, які не вдається прочитати: %1$d. Вони залишаються на цьому пристрої й не видалені.</string>
     <string name="hc_connect_failed">Не вдалося підключитися до Health Connect. Звіти залишаються в LabImporter. Спробуйте ще раз у налаштуваннях.</string>
@@ -236,6 +247,13 @@
     <string name="transfer_export_detail">Збережіть усі звіти в один файл, наприклад щоб перенести їх на інший телефон.</string>
     <string name="transfer_import">Імпортувати звіти</string>
     <string name="transfer_import_detail">З файлу LabImporter, експортованого на iPhone чи Android. Звіти, які тут уже є, пропускаються.</string>
+    <string name="transfer_leaves_out_title">Деякі значення не можна експортувати</string>
+    <string name="transfer_leaves_out_message">Значення, що не ввійшли у файл: %1$d. Вони залишаються у ваших звітах.</string>
+    <string name="transfer_share_anyway">Усе одно поділитися</string>
+    <string name="transfer_export_nothing">Жодне значення не вдалося записати у файл, тому нічого не експортовано. Спробуйте ще раз.</string>
+    <string name="transfer_newer_version">Цей файл створено новішою версією LabImporter. Оновіть застосунок, щоб імпортувати його.</string>
+    <string name="transfer_newer_version_some">Звіти в цьому файлі, яким потрібна новіша версія LabImporter: %1$d.</string>
+    <string name="transfer_damaged_some">Пошкоджені звіти в цьому файлі: %1$d. Імпортовано лише те, що вдалося прочитати.</string>
     <string name="transfer_unsupported">Цей файл не містить звітів LabImporter.</string>
     <string name="transfer_summary">Нові звіти: %1$d · Уже є: %2$d</string>
     <string name="transfer_summary_failed">Нові звіти: %1$d · Уже є: %2$d · Не збережено: %3$d</string>
@@ -303,6 +321,7 @@
     <string name="pdf_trend_range">Період динаміки</string>
     <string name="pdf_included_categories">Включені категорії</string>
     <string name="pdf_latest_subtitle">Останнє вимірювання для кожного значення</string>
+    <string name="cda_language_code">uk</string>
     <string name="pdf_column_test">Аналіз</string>
     <string name="pdf_column_result">Результат</string>
     <string name="pdf_column_reference">Норма</string>
@@ -325,6 +344,7 @@
     <string name="restore">Відновити</string>
     <string name="details">Деталі</string>
     <string name="hide">Приховати</string>
+    <string name="include_in_export">Включити в експорт</string>
     <string name="move_up">Перемістити вгору</string>
     <string name="move_down">Перемістити вниз</string>
     <string name="settings_loinc">LOINC</string>
@@ -382,6 +402,7 @@
     <string name="show_latest_in_search">Показувати останній показник у пошуку</string>
     <string name="show_latest_in_search_footer">Дозвольте показувати останній показник кожного значення в ярликах головного екрана та в пошуку. Коли вимкнено, відображається лише назва значення — без показника.</string>
     <string name="chart_summary">Графік «%1$s»: %2$s з %3$s по %4$s. Мінімум %5$s, максимум %6$s, останнє %7$s.</string>
+    <string name="chart_reading">%1$s: %2$s</string>
     <plurals name="chart_readings">
         <item quantity="one">%d вимірювання</item>
         <item quantity="few">%d вимірювання</item>

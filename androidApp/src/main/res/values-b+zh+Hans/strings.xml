@@ -23,7 +23,7 @@
     <string name="disclaimer_title">非医疗建议</string>
     <string name="disclaimer_body">LabImporter 不是医疗设备，也不提供医疗建议、诊断或治疗。提取的数值可能不准确或不完整——请务必与原始报告核对。切勿根据本 App 做出医疗决定；请就您的结果咨询合格的医疗专业人员。</string>
     <string name="disclaimer_accept">我已了解</string>
-    <string name="onboarding_hc_message">将报告保存到 Health Connect，与你的其他健康数据放在一起。化验结果会以标准 FHIR 记录的形式存储在此设备上。</string>
+    <string name="onboarding_hc_message">将报告保存到 Health Connect，与你的其他健康数据放在一起。化验结果会以标准医疗记录的形式存储在此设备上。</string>
     <string name="onboarding_hc_connected">已连接。你的报告将作为化验结果保存到 Health Connect。</string>
     <string name="onboarding_hc_unavailable">此设备不支持 Health Connect 医疗记录，因此你的报告会私密地存储在此设备的 LabImporter 中。你之后可以在“设置”中切换。</string>
     <string name="dashboard_empty_title">暂无报告</string>
@@ -64,7 +64,7 @@
     <string name="category_other">其他</string>
     <string name="history_empty_title">暂无报告</string>
     <string name="history_empty_message">导入化验报告后即可在此查看。</string>
-    <string name="share_cda">分享 CDA 文件</string>
+    <string name="share_cda">分享报告文件</string>
     <string name="delete_report_title">删除报告？</string>
     <string name="delete_report_message">此报告将被永久移除。</string>
     <string name="report_deleted">报告已删除</string>
@@ -204,6 +204,17 @@
     <string name="try_again">重试</string>
     <string name="reports_load_failed_title">无法载入报告</string>
     <string name="reports_load_failed_message">已保存的报告没有更改，但目前无法读取。</string>
+    <string name="reports_newer_title">更新 LabImporter 以查看所有报告</string>
+    <string name="reports_newer_message">由较新版本的 LabImporter 保存的报告：%1$d 份。它们是安全的。请更新应用以查看。</string>
+    <string name="hc_access_off_title">Health Connect 访问权限已关闭</string>
+    <string name="hc_access_off_message">没有访问权限，LabImporter 无法读取你保存在 Health Connect 中的报告。它们仍在那里。请允许访问以查看报告，或从现在起将报告保存在应用中。</string>
+    <string name="hc_allow_access">允许访问</string>
+    <string name="hc_needs_update_title">Health Connect 需要更新</string>
+    <string name="hc_needs_update_message">你的报告仍在 Health Connect 中，但需要先更新它，LabImporter 才能读取。</string>
+    <string name="hc_update">更新 Health Connect</string>
+    <string name="hc_gone_title">Health Connect 不可用</string>
+    <string name="hc_gone_message">LabImporter 无法在此设备上访问 Health Connect，因此不会显示保存在其中的报告。LabImporter 并未删除它们。</string>
+    <string name="hc_use_app_storage">使用应用存储</string>
     <string name="reports_unreadable_title">部分报告无法读取</string>
     <string name="reports_unreadable_message">无法读取的报告：%1$d 份。它们仍保留在此设备上，并未删除。</string>
     <string name="hc_connect_failed">无法连接到 Health Connect。报告仍保留在 LabImporter 中。请在设置中重试。</string>
@@ -212,6 +223,13 @@
     <string name="transfer_export_detail">将所有报告保存为一个文件，例如用于迁移到另一部手机。</string>
     <string name="transfer_import">导入报告文件</string>
     <string name="transfer_import_detail">来自在 iPhone 或 Android 上导出的 LabImporter 文件。已存在的报告会被跳过。</string>
+    <string name="transfer_leaves_out_title">部分数值无法导出</string>
+    <string name="transfer_leaves_out_message">未包含在文件中的数值：%1$d 个。它们仍保留在你的报告中。</string>
+    <string name="transfer_share_anyway">仍然分享</string>
+    <string name="transfer_export_nothing">没有任何数值能写入文件，因此未导出任何内容。请重试。</string>
+    <string name="transfer_newer_version">此文件来自较新版本的 LabImporter。请更新应用后再导入。</string>
+    <string name="transfer_newer_version_some">此文件中需要较新版本 LabImporter 的报告：%1$d 份。</string>
+    <string name="transfer_damaged_some">此文件中已损坏的报告：%1$d 份。仅导入了可读取的内容。</string>
     <string name="transfer_unsupported">此文件不包含 LabImporter 报告。</string>
     <string name="transfer_summary">新报告：%1$d · 已存在：%2$d</string>
     <string name="transfer_summary_failed">新报告：%1$d · 已存在：%2$d · 未保存：%3$d</string>
@@ -279,6 +297,7 @@
     <string name="pdf_trend_range">趋势时段</string>
     <string name="pdf_included_categories">包含的类别</string>
     <string name="pdf_latest_subtitle">每项数值的最新读数</string>
+    <string name="cda_language_code">zh-Hans</string>
     <string name="pdf_column_test">检验项目</string>
     <string name="pdf_column_result">结果</string>
     <string name="pdf_column_reference">参考范围</string>
@@ -301,6 +320,7 @@
     <string name="restore">恢复</string>
     <string name="details">详细信息</string>
     <string name="hide">隐藏</string>
+    <string name="include_in_export">包含在导出中</string>
     <string name="move_up">上移</string>
     <string name="move_down">下移</string>
     <string name="settings_loinc">LOINC</string>
@@ -349,6 +369,7 @@
     <string name="show_latest_in_search">在搜索中显示最新值</string>
     <string name="show_latest_in_search_footer">让每项数值的最新读数显示在启动器快捷方式和搜索中。关闭时仅显示数值名称，绝不显示读数。</string>
     <string name="chart_summary">%1$s图表：%3$s至%4$s共%2$s。最低 %5$s，最高 %6$s，最新 %7$s。</string>
+    <string name="chart_reading">%1$s：%2$s</string>
     <plurals name="chart_readings">
         <item quantity="other">%d 次读数</item>
     </plurals>

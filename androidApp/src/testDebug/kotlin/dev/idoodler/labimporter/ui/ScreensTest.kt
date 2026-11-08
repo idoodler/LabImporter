@@ -4,7 +4,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -27,6 +30,7 @@ import androidx.compose.ui.test.performTextInput
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dev.idoodler.labimporter.R
+import org.robolectric.Shadows.shadowOf
 import dev.idoodler.labimporter.TestApplication
 import dev.idoodler.labimporter.ai.AiAvailability
 import dev.idoodler.labimporter.ai.AiEngine
@@ -35,12 +39,19 @@ import dev.idoodler.labimporter.ai.DevelopmentStandIn
 import dev.idoodler.labimporter.core.loinc.LoincTerm
 import dev.idoodler.labimporter.core.model.CodeName
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
+import dev.idoodler.labimporter.core.model.LabReport
+import dev.idoodler.labimporter.core.model.ReferenceRange
 import dev.idoodler.labimporter.ui.dashboard.DashboardScreen
+import dev.idoodler.labimporter.ui.dashboard.LoadProblemActions
+import dev.idoodler.labimporter.ui.dashboard.NewerVersionReportsCard
+import dev.idoodler.labimporter.ui.dashboard.ReportsLoadFailedCard
 import dev.idoodler.labimporter.ui.dashboard.TrendScreen
 import dev.idoodler.labimporter.ui.dashboard.UnreadableReportsCard
 import dev.idoodler.labimporter.ui.importflow.ImportActions
 import dev.idoodler.labimporter.core.model.LabValue
+import dev.idoodler.labimporter.data.HealthConnectAvailability
 import dev.idoodler.labimporter.data.PatientDetails
+import dev.idoodler.labimporter.data.ReportsLoadProblem
 import dev.idoodler.labimporter.data.PatientSex
 import dev.idoodler.labimporter.export.PdfOptions
 import dev.idoodler.labimporter.ui.export.PdfExportScreen
@@ -53,6 +64,7 @@ import dev.idoodler.labimporter.ui.review.ReviewScreen
 import dev.idoodler.labimporter.ui.settings.AiSettings
 import dev.idoodler.labimporter.ui.settings.PatientSettings
 import dev.idoodler.labimporter.ui.settings.SettingsScreen
+import dev.idoodler.labimporter.ui.settings.TransferSettings
 import dev.idoodler.labimporter.ui.settings.SortEditorScreen
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 import kotlinx.datetime.LocalDate
@@ -280,7 +292,7 @@ class ScreensTest {
             LabImporterTheme {
                 DashboardScreen(
                     emptyList(), LabDisplayPreferences(), {}, ImportActions({}, {}, {}, {}, {}),
-                    loadFailed = true, onTryLoadingAgain = { retries++ }, notices = { UnreadableReportsCard(2) },
+                    loadProblem = ReportsLoadProblem.READ_FAILED, loadProblemActions = LoadProblemActions(onTryAgain = { retries++ }), notices = { UnreadableReportsCard(2) },
                 )
             }
         }
@@ -295,7 +307,7 @@ class ScreensTest {
     fun aFailedLoadStaysOnScreenAboveReportsAlreadyShown() {
         compose.setContent {
             LabImporterTheme {
-                DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, ImportActions({}, {}, {}, {}, {}), loadFailed = true)
+                DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, ImportActions({}, {}, {}, {}, {}), loadProblem = ReportsLoadProblem.READ_FAILED)
             }
         }
         compose.onNodeWithText(string(R.string.reports_load_failed_title)).assertExists()
@@ -304,7 +316,7 @@ class ScreensTest {
     @Test
     fun aFailedLoadIsShownInsteadOfTheEmptyReportList() {
         var retries = 0
-        compose.setContent { LabImporterTheme { HistoryScreen(emptyList(), {}, loadFailed = true, onTryLoadingAgain = { retries++ }) } }
+        compose.setContent { LabImporterTheme { HistoryScreen(emptyList(), {}, loadProblem = ReportsLoadProblem.READ_FAILED, loadProblemActions = LoadProblemActions(onTryAgain = { retries++ })) } }
         compose.onNodeWithText(string(R.string.reports_load_failed_title)).assertIsDisplayed()
         compose.onNodeWithText(string(R.string.history_empty_title)).assertDoesNotExist()
         compose.onNodeWithText(string(R.string.try_again)).performClick()
@@ -313,8 +325,108 @@ class ScreensTest {
 
     @Test
     fun aFailedLoadStaysOnScreenAboveReportsInTheList() {
-        compose.setContent { LabImporterTheme { HistoryScreen(PreviewSamples.reports, {}, loadFailed = true) } }
+        compose.setContent { LabImporterTheme { HistoryScreen(PreviewSamples.reports, {}, loadProblem = ReportsLoadProblem.READ_FAILED) } }
         compose.onNodeWithText(string(R.string.reports_load_failed_title)).assertExists()
+    }
+
+    @Test
+    fun aWithdrawnPermissionOffersWhatHelpsInsteadOfTryAgain() {
+        var allowed = 0
+        var appStorage = 0
+        compose.setContent {
+            LabImporterTheme {
+                ReportsLoadFailedCard(
+                    ReportsLoadProblem.HEALTH_CONNECT_ACCESS_OFF,
+                    LoadProblemActions(onAllowAccess = { allowed++ }, onUseAppStorage = { appStorage++ }),
+                )
+            }
+        }
+        compose.onNodeWithText(string(R.string.hc_access_off_title)).assertIsDisplayed()
+        compose.onNodeWithText(string(R.string.try_again)).assertDoesNotExist()
+        compose.onNodeWithText(string(R.string.hc_allow_access)).performClick()
+        assertEquals(1, allowed)
+        compose.onNodeWithText(string(R.string.hc_use_app_storage)).performClick()
+        assertEquals(1, appStorage)
+    }
+
+    @Test
+    fun aRequiredUpdateOpensTheStore() {
+        compose.setContent { LabImporterTheme { ReportsLoadFailedCard(ReportsLoadProblem.HEALTH_CONNECT_UPDATE_REQUIRED, LoadProblemActions()) } }
+        compose.onNodeWithText(string(R.string.hc_needs_update_title)).assertIsDisplayed()
+        compose.onNodeWithText(string(R.string.try_again)).assertDoesNotExist()
+        compose.onNodeWithText(string(R.string.hc_update)).performClick()
+        compose.waitForIdle()
+        val opened = shadowOf(app).nextStartedActivity
+        assertEquals("market", opened.data?.scheme)
+        assertEquals("com.google.android.apps.healthdata", opened.data?.getQueryParameter("id"))
+    }
+
+    @Test
+    fun healthConnectGoneForGoodOffersAppStorageFirst() {
+        var appStorage = 0
+        compose.setContent {
+            LabImporterTheme { ReportsLoadFailedCard(ReportsLoadProblem.HEALTH_CONNECT_UNAVAILABLE, LoadProblemActions(onUseAppStorage = { appStorage++ })) }
+        }
+        compose.onNodeWithText(string(R.string.hc_gone_title)).assertIsDisplayed()
+        compose.onNodeWithText(string(R.string.hc_use_app_storage)).performClick()
+        assertEquals(1, appStorage)
+    }
+
+    @Test
+    fun settingsAreAWayBackToAppStorageWhenHealthConnectIsGone() {
+        var used: Boolean? = null
+        var state by mutableStateOf(HealthConnectState(HealthConnectAvailability.MEDICAL_RECORDS_UNSUPPORTED, chosen = true))
+        compose.setContent {
+            LabImporterTheme {
+                SettingsScreen(PatientSettings(), state, {}, { used = it }, AiSettings(AiAvailability.Ready), "LabImporter test")
+            }
+        }
+        compose.onNode(hasScrollAction()).performScrollToNode(hasText(string(R.string.hc_use_app_storage)))
+        compose.onNodeWithText(string(R.string.hc_gone_message)).assertExists()
+        compose.onNodeWithText(string(R.string.hc_use_app_storage)).performClick()
+        assertEquals(false, used)
+
+        // Without the choice standing, there's nothing to get back from.
+        state = HealthConnectState(HealthConnectAvailability.MEDICAL_RECORDS_UNSUPPORTED)
+        compose.onNodeWithText(string(R.string.hc_use_app_storage)).assertDoesNotExist()
+    }
+
+    @Test
+    fun anUpdateNoticeStaysAboveAnEmptyReportList() {
+        compose.setContent { LabImporterTheme { HistoryScreen(emptyList(), {}, notices = { NewerVersionReportsCard(2) }) } }
+        compose.onNodeWithText(string(R.string.reports_newer_title)).assertIsDisplayed()
+    }
+
+    @Test
+    fun aNoticeSaysReportsNeedAnUpdate() {
+        compose.setContent { LabImporterTheme { NewerVersionReportsCard(3) } }
+        compose.onNodeWithText(string(R.string.reports_newer_title)).assertIsDisplayed()
+        compose.onNodeWithText(app.getString(R.string.reports_newer_message, 3)).assertIsDisplayed()
+    }
+
+    @Test
+    fun anExportThatLeavesValuesOutAsksBeforeSharing() {
+        val asked = mutableListOf<Boolean>()
+        val uri = android.net.Uri.parse("content://example/file.json")
+        val transfer = TransferSettings(
+            hasReports = true,
+            onExport = { allow ->
+                asked += allow
+                if (allow) ReportsExport.Ready(uri) else ReportsExport.LeavesOut(2)
+            },
+        )
+        compose.setContent {
+            LabImporterTheme { SettingsScreen(PatientSettings(), HealthConnectState(), {}, {}, AiSettings(AiAvailability.Ready), "LabImporter test", transfer = transfer) }
+        }
+        compose.onNode(hasScrollAction()).performScrollToNode(hasText(string(R.string.transfer_export)))
+        compose.onNodeWithText(string(R.string.transfer_export)).performClick()
+        compose.onNodeWithText(app.getString(R.string.transfer_leaves_out_message, 2)).assertIsDisplayed()
+        assertEquals(listOf(false), asked)
+
+        compose.onNodeWithText(string(R.string.transfer_share_anyway)).performClick()
+        compose.waitForIdle()
+        assertEquals(listOf(false, true), asked)
+        assertEquals(android.content.Intent.ACTION_CHOOSER, shadowOf(app).nextStartedActivity.action)
     }
 
     @Test
@@ -359,6 +471,69 @@ class ScreensTest {
         compose.onAllNodesWithText("nicht reaktiv").assertCountEquals(2)
         compose.onNodeWithContentDescription(string(R.string.more)).performClick()
         compose.onNodeWithText(string(R.string.reference_range)).assertDoesNotExist()
+    }
+
+    /** Vitamin D, with gaps of two weeks, two years and four months. */
+    private val irregularVitaminD = listOf(
+        LocalDate(2024, 1, 10) to 32.0,
+        LocalDate(2024, 1, 24) to 35.0,
+        LocalDate(2026, 1, 24) to 33.0,
+        LocalDate(2026, 5, 28) to 34.0,
+    ).mapIndexed { index, (date, number) ->
+        LabReport("r$index", date, "", "", listOf(LabReport.Entry("e$index", "1989-3", "Vitamin D", number.toString(), number, "ng/mL")))
+    }
+
+    private fun trendChart(preferences: LabDisplayPreferences = LabDisplayPreferences()) {
+        compose.setContent { LabImporterTheme { TrendScreen("1989-3", irregularVitaminD, preferences, {}, {}) } }
+    }
+
+    private fun readingLabel(date: LocalDate, value: String) =
+        app.getString(R.string.chart_reading, formatDate(date, FormatStyle.LONG), value)
+
+    @Test
+    fun talkBackReadsEveryReadingOfTheChart() {
+        trendChart(LabDisplayPreferences().withReferenceRange(ReferenceRange(low = 33.0), "1989-3"))
+        val low = string(R.string.range_low)
+        irregularVitaminD.forEach { report ->
+            val number = report.entries.single().numericValue!!
+            val status = if (number < 33.0) ", $low" else ""
+            compose.onNodeWithContentDescription(readingLabel(report.date, "${number.toInt()} ng/mL$status")).assertExists()
+        }
+    }
+
+    @Test
+    fun theChartSpacesReadingsByDate() {
+        trendChart()
+        val lefts = irregularVitaminD.map { report ->
+            val number = report.entries.single().numericValue!!.toInt()
+            compose.onNodeWithContentDescription(readingLabel(report.date, "$number ng/mL")).fetchSemanticsNode().boundsInRoot.left
+        }
+        val twoWeeks = lefts[1] - lefts[0]
+        val twoYears = lefts[2] - lefts[1]
+        val fourMonths = lefts[3] - lefts[2]
+        // Whole pixels, so a little off 731 : 14 : 124.
+        assertEquals(731f / 124f, twoYears / fourMonths, 0.2f)
+        assertEquals(731f / 14f, twoYears / twoWeeks, 8f)
+    }
+
+    @Test
+    fun aFingerSelectsTheReadingUnderItByDate() {
+        trendChart()
+        val third = compose.onNodeWithContentDescription(readingLabel(irregularVitaminD[2].date, "33 ng/mL")).fetchSemanticsNode().boundsInRoot
+        val chart = compose.onNode(hasContentDescription(" chart: ", substring = true))
+        val origin = chart.fetchSemanticsNode().boundsInRoot
+        // By index the third of four readings sits two thirds along; by date, 86 % along.
+        chart.performTouchInput { down(Offset(third.center.x - origin.left, height / 2f)) }
+        compose.onNodeWithText("33").assertExists()
+        chart.performTouchInput { up() }
+    }
+
+    @Test
+    fun cardsNameValuesPlainly() {
+        compose.setContent { LabImporterTheme { DashboardScreen(irregularVitaminD, LabDisplayPreferences(), {}, ImportActions({}, {}, {}, {}, {})) } }
+        // Breakable after its hyphen: Android cuts the word at the edge otherwise.
+        compose.onAllNodesWithText("25-\u200Bhydroxyvitamin D3").onFirst().assertExists()
+        compose.onAllNodesWithText("[", substring = true).assertCountEquals(0)
     }
 
     @Test

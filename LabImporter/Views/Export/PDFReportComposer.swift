@@ -221,7 +221,7 @@ struct FlowLayout: Layout {
         var rows: [[CGSize]] = [[]]
         var lineWidth: CGFloat = 0
         for subview in subviews {
-            let size = subview.sizeThatFits(.unspecified)
+            let size = Self.size(of: subview, within: maxWidth)
             if lineWidth + size.width > maxWidth, !rows[rows.count - 1].isEmpty {
                 rows.append([])
                 lineWidth = 0
@@ -240,7 +240,7 @@ struct FlowLayout: Layout {
         var posY = bounds.minY
         var lineHeight: CGFloat = 0
         for subview in subviews {
-            let size = subview.sizeThatFits(.unspecified)
+            let size = Self.size(of: subview, within: bounds.width)
             if posX + size.width > bounds.maxX, posX > bounds.minX {
                 posX = bounds.minX
                 posY += lineHeight + lineSpacing
@@ -251,4 +251,70 @@ struct FlowLayout: Layout {
             lineHeight = max(lineHeight, size.height)
         }
     }
+
+    /// An item wider than a whole line (a chip at the largest text) wraps its text instead of running off the edge.
+    private static func size(of subview: LayoutSubview, within width: CGFloat) -> CGSize {
+        let ideal = subview.sizeThatFits(.unspecified)
+        return ideal.width <= width ? ideal : subview.sizeThatFits(ProposedViewSize(width: width, height: nil))
+    }
 }
+
+// MARK: - Previews
+
+#if DEBUG
+extension PDFReportData {
+    /// The export of the sample history, for the page previews.
+    static func sample(_ options: PDFExportOptions) -> PDFReportData {
+        PDFExportService.buildData(reports: LabReport.sampleHistory, options: options, patient: nil, fallbackPatientName: "Max Mustermann")
+    }
+}
+
+extension PDFExportOptions {
+    static var sample: PDFExportOptions {
+        PDFExportOptions(selectedCodes: Set(LabReport.sampleHistory.flatMap { $0.entries.map(\.code) }), pageFormat: .isoA4)
+    }
+}
+
+/// Every page of a sample export, one below the other, as `ImageRenderer` receives them.
+private struct PDFSamplePages: View {
+    let options: PDFExportOptions
+
+    var body: some View {
+        let pages = PDFPageComposer(data: .sample(options), options: options, theme: PDFTheme(mode: options.colorMode)).pages()
+        ScrollView([.vertical, .horizontal]) {
+            VStack(spacing: 16) {
+                ForEach(pages.indices, id: \.self) { pages[$0] }
+            }
+        }
+        .background(Color.gray)
+    }
+}
+
+#Preview("All Pages · Colour") {
+    PDFSamplePages(options: .sample)
+}
+
+#Preview("All Pages · Black & White") {
+    var options = PDFExportOptions.sample
+    options.colorMode = .monochrome
+    return PDFSamplePages(options: options)
+}
+
+#Preview("All Pages · Letter") {
+    var options = PDFExportOptions.sample
+    options.pageFormat = .usLetter
+    return PDFSamplePages(options: options)
+}
+
+#Preview("Without the Cover") {
+    var options = PDFExportOptions.sample
+    options.includeSummary = false
+    return PDFSamplePages(options: options)
+}
+
+#Preview("Dark Device") {
+    // A print page keeps its colours whatever the device's appearance.
+    PDFSamplePages(options: .sample)
+        .preferredColorScheme(.dark)
+}
+#endif

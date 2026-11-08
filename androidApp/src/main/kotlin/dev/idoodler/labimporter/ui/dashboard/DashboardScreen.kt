@@ -1,5 +1,8 @@
 package dev.idoodler.labimporter.ui.dashboard
 
+import dev.idoodler.labimporter.ui.design.isLargeText
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -45,6 +48,7 @@ import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -63,11 +67,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.Hyphens
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.idoodler.labimporter.data.ReportsLoadProblem
 import dev.idoodler.labimporter.R
 import dev.idoodler.labimporter.ai.AiAvailability
 import dev.idoodler.labimporter.ai.AiEngine
@@ -110,8 +121,8 @@ fun DashboardScreen(
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
     /** The reports couldn't be read: what's here may be out of date, and none doesn't mean there are none. */
-    loadFailed: Boolean = false,
-    onTryLoadingAgain: () -> Unit = {},
+    loadProblem: ReportsLoadProblem? = null,
+    loadProblemActions: LoadProblemActions = LoadProblemActions(),
     // Null where a navigation rail already offers Reports and Settings (wide windows).
     onOpenReports: (() -> Unit)? = {},
     onOpenSettings: (() -> Unit)? = {},
@@ -132,8 +143,8 @@ fun DashboardScreen(
         }
         return
     }
-    if (metrics.isEmpty() && loadFailed) {
-        DashboardLoadFailed(onTryLoadingAgain, onOpenSettings, notices, modifier)
+    if (metrics.isEmpty() && loadProblem != null) {
+        DashboardLoadFailed(loadProblem, loadProblemActions, onOpenSettings, notices, modifier)
         return
     }
     if (metrics.isEmpty()) {
@@ -172,14 +183,14 @@ fun DashboardScreen(
             },
         ) { padding ->
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 164.dp),
+                columns = GridCells.Adaptive(minSize = if (isLargeText) 300.dp else 164.dp),
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = padding.calculateTopPadding(), bottom = 112.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxSize(),
             ) {
-                if (loadFailed) {
-                    item(span = { GridItemSpan(maxLineSpan) }, key = "loadFailed") { ReportsLoadFailedCard(onTryLoadingAgain) }
+                if (loadProblem != null) {
+                    item(span = { GridItemSpan(maxLineSpan) }, key = "loadFailed") { ReportsLoadFailedCard(loadProblem, loadProblemActions) }
                 }
                 notices?.let { content ->
                     item(span = { GridItemSpan(maxLineSpan) }, key = "notices") { content() }
@@ -266,11 +277,7 @@ fun MetricCard(metric: Metric, onClick: () -> Unit, modifier: Modifier = Modifie
             Row(verticalAlignment = Alignment.Top) {
                 CategoryBadge(metric.category, size = 32.dp)
                 Spacer(Modifier.width(10.dp))
-                Text(
-                    metric.name, style = MaterialTheme.typography.titleSmall, maxLines = 2, minLines = 2,
-                    overflow = TextOverflow.Ellipsis, color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.weight(1f),
-                )
+                MetricCardName(metric.name, Modifier.weight(1f))
             }
             Spacer(Modifier.height(10.dp))
             ValueLine(metric, valueSize = 34)
@@ -284,11 +291,11 @@ fun MetricCard(metric: Metric, onClick: () -> Unit, modifier: Modifier = Modifie
             }
             Spacer(Modifier.height(10.dp))
             if (metric.isQualitative) {
-                RecentResults(metric, count = 3, Modifier.fillMaxWidth().height(64.dp))
+                RecentResults(metric, count = 3, Modifier.fillMaxWidth().heightIn(min = 64.dp))
             } else {
                 // Like iOS: the sparkline covers the year before the latest reading.
                 AreaChart(
-                    metric.history.map { it.value }, color, Modifier.fillMaxWidth().height(64.dp),
+                    metric.history, color, Modifier.fillMaxWidth().height(64.dp),
                     range = metric.range, strokeWidth = 2.5.dp, showPoints = metric.history.size <= 8,
                 )
             }
@@ -312,7 +319,7 @@ fun HeroMetricCard(metric: Metric, pinned: Boolean, onClick: () -> Unit, modifie
                 CategoryBadge(metric.category, size = 44.dp)
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
-                    Text(metric.name, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    Text(breakableAtHyphens(metric.name), style = MaterialTheme.typography.titleMedium.wrapsAtWords(), maxLines = 2, overflow = TextOverflow.Ellipsis)
                     Text(
                         stringResource(metric.category.labelRes), style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -334,7 +341,7 @@ fun HeroMetricCard(metric: Metric, pinned: Boolean, onClick: () -> Unit, modifie
                 RecentResults(metric, count = 6, Modifier.fillMaxWidth().padding(top = 12.dp))
             } else {
                 AreaChart(
-                    values, color, Modifier.fillMaxWidth().height(132.dp).padding(top = 12.dp),
+                    metric.history, color, Modifier.fillMaxWidth().height(132.dp).padding(top = 12.dp),
                     range = metric.range, showPoints = values.size <= 12,
                 )
             }
@@ -349,19 +356,57 @@ fun HeroMetricCard(metric: Metric, pinned: Boolean, onClick: () -> Unit, modifie
     }
 }
 
+/**
+ * The name in a narrow grid card, two lines. It shrinks a little rather than cut a word (the
+ * longest must fit a line, or Android breaks it at the edge) or lose its end (the D3 in
+ * "25-hydroxyvitamin D3" is the test); auto-size alone sees neither as overflow until the last line.
+ */
+@Composable
+private fun MetricCardName(name: String, modifier: Modifier = Modifier) {
+    val style = MaterialTheme.typography.titleSmall.wrapsAtWords()
+    val measurer = rememberTextMeasurer()
+    BoxWithConstraints(modifier) {
+        val available = constraints.maxWidth
+        val largest = remember(name, style, available) {
+            val words = name.split(WORD_BOUNDARY).filter { it.isNotEmpty() }
+            generateSequence(style.fontSize.value) { it - CARD_NAME_STEP }
+                .takeWhile { it > CARD_NAME_MIN_SIZE }
+                .firstOrNull { size -> words.all { measurer.measure(it, style.copy(fontSize = size.sp), softWrap = false).size.width <= available } }
+                ?: CARD_NAME_MIN_SIZE
+        }
+        Text(
+            breakableAtHyphens(name), style = style, maxLines = 2, minLines = 2,
+            overflow = TextOverflow.Ellipsis, color = MaterialTheme.colorScheme.onSurfaceVariant,
+            autoSize = TextAutoSize.StepBased(minFontSize = CARD_NAME_MIN_SIZE.sp, maxFontSize = largest.sp, stepSize = CARD_NAME_STEP.sp),
+        )
+    }
+}
+
+private const val CARD_NAME_MIN_SIZE = 11f
+private const val CARD_NAME_STEP = 0.5f
+private val WORD_BOUNDARY = Regex("\\s+|(?<=-)")
+
+/** Lines balanced, and no automatic hyphens: those would split "Choles-/terol in HDL" just to even them out. */
+private fun TextStyle.wrapsAtWords(): TextStyle = copy(lineBreak = LineBreak.Heading, hyphens = Hyphens.None)
+
+/**
+ * A name in a narrow card, breakable after its own hyphens. Android only breaks there with
+ * automatic hyphenation on; without it a word that fits no line is cut anywhere ("25-hydroxyvitami/n").
+ */
+private fun breakableAtHyphens(name: String): String = name.replace("-", "-\u200B")
+
 @Composable
 private fun ValueLine(metric: Metric, valueSize: Int) {
     // A result in words ("nicht reaktiv") is set smaller than a number so it fits the card.
     val size = if (metric.isQualitative) valueSize * 2 / 3 else valueSize
-    Row(verticalAlignment = Alignment.Bottom) {
+    // A value is never cut off: "0…" reads as a different result. The unit moves down a line instead.
+    FlowRow(itemVerticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
         Text(
             if (metric.isQualitative) metric.entry.displayValue else formatNumber(metric.value),
             style = MaterialTheme.typography.displaySmallEmphasized.tabular().copy(fontSize = size.sp, lineHeight = (size + 4).sp),
-            fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f, fill = false),
+            fontWeight = FontWeight.Bold,
             color = if (metric.rangeStatus?.isOutOfRange == true) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
         )
-        Spacer(Modifier.width(5.dp))
         Text(
             metric.entry.unit, style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = (size / 7).dp),
@@ -374,15 +419,13 @@ private fun ValueLine(metric: Metric, valueSize: Int) {
 private fun RecentResults(metric: Metric, count: Int, modifier: Modifier = Modifier) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
         metric.results.asReversed().take(count).forEach { result ->
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            // Side by side while both fit, whole; the result moves down a line when they don't.
+            FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, itemVerticalAlignment = Alignment.CenterVertically) {
                 Text(
                     formatDate(result.date, FormatStyle.MEDIUM), style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(end = 8.dp),
                 )
-                Text(
-                    "${result.text} ${result.unit}".trim(), style = MaterialTheme.typography.labelLarge,
-                    maxLines = 1, overflow = TextOverflow.Ellipsis,
-                )
+                Text("${result.text} ${result.unit}".trim(), style = MaterialTheme.typography.labelLarge)
             }
         }
     }
@@ -441,7 +484,8 @@ private fun DashboardEmpty(
 /** The reports couldn't be read: not a first run, so no invitation to import as if there were none. */
 @Composable
 private fun DashboardLoadFailed(
-    onTryAgain: () -> Unit,
+    problem: ReportsLoadProblem,
+    actions: LoadProblemActions,
     onOpenSettings: (() -> Unit)?,
     notices: (@Composable () -> Unit)?,
     modifier: Modifier = Modifier,
@@ -454,7 +498,7 @@ private fun DashboardLoadFailed(
             verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            ReportsLoadFailedCard(onTryAgain, Modifier.widthIn(max = 520.dp))
+            ReportsLoadFailedCard(problem, actions, Modifier.widthIn(max = 520.dp))
             notices?.let { content -> Box(Modifier.widthIn(max = 520.dp)) { content() } }
         }
         onOpenSettings?.let {
@@ -474,6 +518,18 @@ private fun DashboardPopulatedPreview() {
     LabImporterTheme(dynamicColor = false) {
         DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(pinnedCodes = listOf("4548-4")), {}, previewActions)
     }
+}
+
+@Preview(name = "Card name – narrow, long words", widthDp = 164, heightDp = 80)
+@Composable
+private fun MetricCardNameNarrowPreview() {
+    LabImporterTheme(dynamicColor = false) { Surface { MetricCardName("Alanin-Aminotransferase") } }
+}
+
+@Preview(name = "Card name – narrow, dark", widthDp = 120, heightDp = 80, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun MetricCardNameNarrowDarkPreview() {
+    LabImporterTheme(darkTheme = true, dynamicColor = false) { Surface { MetricCardName("25-hydroxyvitamin D3") } }
 }
 
 @Preview(name = "Dark", widthDp = 400, heightDp = 900, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
@@ -543,27 +599,27 @@ private fun DashboardEmptyDarkPreview() {
 @Preview(name = "Load failed", widthDp = 400, heightDp = 900)
 @Composable
 private fun DashboardLoadFailedPreview() {
-    LabImporterTheme(dynamicColor = false) { DashboardScreen(emptyList(), LabDisplayPreferences(), {}, previewActions, loadFailed = true) }
+    LabImporterTheme(dynamicColor = false) { DashboardScreen(emptyList(), LabDisplayPreferences(), {}, previewActions, loadProblem = ReportsLoadProblem.READ_FAILED) }
 }
 
 @Preview(name = "Load failed – dark", widthDp = 400, heightDp = 900, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun DashboardLoadFailedDarkPreview() {
-    LabImporterTheme(darkTheme = true, dynamicColor = false) { DashboardScreen(emptyList(), LabDisplayPreferences(), {}, previewActions, loadFailed = true) }
+    LabImporterTheme(darkTheme = true, dynamicColor = false) { DashboardScreen(emptyList(), LabDisplayPreferences(), {}, previewActions, loadProblem = ReportsLoadProblem.READ_FAILED) }
 }
 
 @Preview(name = "Load failed – unreadable reports", widthDp = 400, heightDp = 900)
 @Composable
 private fun DashboardLoadFailedUnreadablePreview() {
     LabImporterTheme(dynamicColor = false) {
-        DashboardScreen(emptyList(), LabDisplayPreferences(), {}, previewActions, loadFailed = true, notices = { UnreadableReportsCard(2) })
+        DashboardScreen(emptyList(), LabDisplayPreferences(), {}, previewActions, loadProblem = ReportsLoadProblem.READ_FAILED, notices = { UnreadableReportsCard(2) })
     }
 }
 
 @Preview(name = "Populated – load failed", widthDp = 400, heightDp = 900)
 @Composable
 private fun DashboardStaleReportsPreview() {
-    LabImporterTheme(dynamicColor = false) { DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, previewActions, loadFailed = true) }
+    LabImporterTheme(dynamicColor = false) { DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, previewActions, loadProblem = ReportsLoadProblem.READ_FAILED) }
 }
 
 @Preview(name = "Populated – unreadable reports", widthDp = 400, heightDp = 900)
@@ -579,5 +635,21 @@ private fun DashboardUnreadablePreview() {
 private fun DashboardTabletPreview() {
     LabImporterTheme(dynamicColor = false) {
         DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, previewActions)
+    }
+}
+
+@Preview(name = "Health Connect access off, no reports", widthDp = 400, heightDp = 800)
+@Composable
+private fun DashboardAccessOffPreview() {
+    LabImporterTheme(dynamicColor = false) {
+        DashboardScreen(emptyList(), LabDisplayPreferences(), {}, previewActions, loadProblem = ReportsLoadProblem.HEALTH_CONNECT_ACCESS_OFF)
+    }
+}
+
+@Preview(name = "Reports need an update", widthDp = 400, heightDp = 800)
+@Composable
+private fun DashboardNewerReportsPreview() {
+    LabImporterTheme(dynamicColor = false) {
+        DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, previewActions, notices = { NewerVersionReportsCard(2) })
     }
 }

@@ -66,7 +66,7 @@ struct DisclaimerView: View {
                     )
                     .frame(width: 180, height: 180)
                 Image(systemName: "exclamationmark.shield.fill")
-                    .font(.system(size: 92, weight: .semibold))
+                    .decorativeIcon(size: 92, weight: .semibold)
                     .symbolRenderingMode(.palette)
                     .foregroundStyle(.white, Color.orange.gradient)
                     .shadow(color: .orange.opacity(0.35), radius: 18, x: 0, y: 8)
@@ -75,12 +75,10 @@ struct DisclaimerView: View {
                 Text("Before You Start")
                     .font(.largeTitle.bold())
                     .multilineTextAlignment(.center)
-                    .lineLimit(nil)
-                    .minimumScaleFactor(0.8)
                     .fixedSize(horizontal: false, vertical: true)
                 Text("A quick note on how to use LabImporter safely.")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -113,6 +111,7 @@ struct DisclaimerView: View {
     private var footer: some View {
         Button("I Understand", action: onAcknowledge)
             .buttonStyle(.borderedProminent)
+            .tint(.prominentFill)
             .controlSize(.large)
             .frame(maxWidth: .infinity)
             .opacity(appeared ? 1 : 0)
@@ -132,7 +131,7 @@ private struct PointRow: View {
     let point: Point
 
     var body: some View {
-        HStack(alignment: .center, spacing: 18) {
+        AdaptiveRow(spacing: 18) {
             ZStack {
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
                     .fill(
@@ -154,7 +153,7 @@ private struct PointRow: View {
                     .font(.body.bold())
                 Text(point.description)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }

@@ -11,9 +11,10 @@ import dev.idoodler.labimporter.core.model.LabReport
  *
  * Whenever an export's meaning changes (a LOINC remap, a unit convention, …):
  * bump [VERSION] and register a [ReportMigration] from the old version.
- * Reports read back below [MINIMUM_SUPPORTED_VERSION], newer than this build,
- * or without any version stamp (legacy exports) are ignored — there is no
- * implicit data migration.
+ * Reports read back below [MINIMUM_SUPPORTED_VERSION] or without any version
+ * stamp (legacy exports) are ignored — there is no implicit data migration.
+ * Reports newer than this build aren't listed either, but are counted
+ * ([StoredReports]): updating the app brings them back, so the user is told.
  */
 object ReportSchema {
     const val VERSION: Int = 1
@@ -21,6 +22,9 @@ object ReportSchema {
 
     /** Ordered single-step migrations. Empty: version 1 is the baseline. */
     val migrations: List<ReportMigration> = emptyList()
+
+    /** Written by a later build: nothing here can read it, and updating the app will. */
+    fun isNewer(version: Int): Boolean = version > VERSION
 
     /** [report] upgraded to [VERSION], or null when the source version isn't supported. */
     fun upgrade(report: LabReport, fromVersion: Int?): LabReport? {
@@ -33,6 +37,21 @@ object ReportSchema {
         return current
     }
 }
+
+/**
+ * What reading stored reports found: the [reports] it can list, and how many it can't.
+ * Those stay stored; a store never deletes what it couldn't read.
+ */
+data class StoredReports(
+    val reports: List<LabReport>,
+    /** Saved by a newer version of the app, so updating it brings them back. */
+    val newerVersionReports: Int = 0,
+    /** Damaged in some way that a version of this schema can't explain. */
+    val unreadableReports: Int = 0,
+)
+
+/** Why a stored document of this app didn't become a report. */
+enum class ReportReadProblem { NEWER_VERSION, UNREADABLE }
 
 /** Upgrades a report written by [fromVersion] to `fromVersion + 1`. */
 interface ReportMigration {

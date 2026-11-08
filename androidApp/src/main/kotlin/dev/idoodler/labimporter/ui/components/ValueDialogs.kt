@@ -46,7 +46,7 @@ fun RenameValueDialog(
         text = {
             OutlinedTextField(
                 value = text, onValueChange = { text = it }, singleLine = true,
-                placeholder = { Text(LabMapping.catalogName(code)) },
+                placeholder = { Text(LabMapping.plainName(code)) },
                 supportingText = { Text(stringResource(R.string.rename_hint)) },
             )
         },

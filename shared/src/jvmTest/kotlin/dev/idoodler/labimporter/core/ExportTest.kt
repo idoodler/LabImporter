@@ -1,15 +1,24 @@
 package dev.idoodler.labimporter.core
 
 import dev.idoodler.labimporter.core.export.CdaExport
+import dev.idoodler.labimporter.core.export.CdaNarrative
 import dev.idoodler.labimporter.core.export.CdaParser
 import dev.idoodler.labimporter.core.export.FhirLabCodec
 import dev.idoodler.labimporter.core.export.ReportEncodingException
+import dev.idoodler.labimporter.core.export.ReportReadProblem
+import dev.idoodler.labimporter.core.export.ReportSchema
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
+import dev.idoodler.labimporter.core.model.LabMapping
 import dev.idoodler.labimporter.core.model.LabReport
 import dev.idoodler.labimporter.core.model.LabValue
 import dev.idoodler.labimporter.core.model.QualitativeResult
 import dev.idoodler.labimporter.core.transfer.ReportTransfer
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import java.io.File
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -32,7 +41,7 @@ class ExportTest {
 
     @Test
     fun cdaRoundTrip() {
-        val xml = CdaExport.generate(values, LocalDate(2026, 5, 6), "LabImporter test", "Max Mustermann", "Labor & Co")
+        val xml = CdaExport.generate(values, LocalDate(2026, 5, 6), "LabImporter test", GoldenCda.narrative, "Max Mustermann", "Labor & Co")
         assertTrue(xml.contains("<softwareName>LabImporter CDA v1</softwareName>"))
         assertTrue(xml.contains("value=\"0.8\" unit=\"mg/dL\""))
         assertTrue(xml.contains("<name>Labor &amp; Co</name>"))
@@ -48,7 +57,7 @@ class ExportTest {
 
     @Test
     fun cdaPlaceholdersAreIgnored() {
-        val xml = CdaExport.generate(values, LocalDate(2026, 5, 6), "LabImporter test")
+        val xml = CdaExport.generate(values, LocalDate(2026, 5, 6), "LabImporter test", GoldenCda.narrative)
         val report = assertNotNull(CdaParser.parse(xml))
         assertEquals("", report.patientName) // "Unknown" placeholder
         assertEquals("", report.authorName)
@@ -56,11 +65,73 @@ class ExportTest {
 
     @Test
     fun unversionedOrForeignCdaIsSkipped() {
-        val xml = CdaExport.generate(values, LocalDate(2026, 5, 6), "LabImporter test")
+        val xml = CdaExport.generate(values, LocalDate(2026, 5, 6), "LabImporter test", GoldenCda.narrative)
         assertNull(CdaParser.parse(xml.replace("LabImporter CDA v1", "Other App")))
         assertNull(CdaParser.parse(xml.replace("LabImporter CDA v1", "LabImporter CDA v99")))
         assertNull(CdaParser.parse("not xml at all"))
         assertNull(CdaParser.parse("<ClinicalDocument><broken"))
+    }
+
+    @Test
+    fun aDocumentDeclaresTheCallersLanguageAndHeadings() {
+        val french = CdaNarrative("fr", "Résultats d'analyses", "Valeurs <labo>", "Analyse", "Résultat")
+        val xml = CdaExport.generate(values, LocalDate(2026, 5, 6), "LabImporter test", french)
+        assertTrue(xml.contains("<languageCode code=\"fr\"/>"))
+        assertTrue(xml.contains("<title>Résultats d'analyses</title>"))
+        assertTrue(xml.contains("<title>Valeurs &lt;labo&gt;</title>"))
+        assertTrue(xml.contains("<th>Analyse</th><th>Résultat</th>"))
+        assertTrue("Laborwerte" !in xml && "Ergebnis" !in xml && "de-DE" !in xml)
+        assertEquals(listOf("2160-0", "2823-3"), assertNotNull(CdaParser.parse(xml)).entries.map { it.code })
+    }
+
+    @Test
+    fun documentsSavedWithTheGermanHeadingsStillReadBack() {
+        val german = File(System.getProperty("golden.dir"), "report.cda.xml").readText()
+        assertTrue("<languageCode code=\"de-DE\"/>" in german && "<th>Ergebnis</th>" in german)
+        val report = assertNotNull(CdaParser.parse(german.replace("root=\"UUID\"", "root=\"00000000-0000-0000-0000-000000000000\"")))
+        assertEquals(LocalDate(2026, 5, 6), report.date)
+        assertEquals("Labor & Co", report.authorName)
+        assertEquals(listOf("2160-0", "2823-3", "4548-4", "1742-6"), report.entries.map { it.code })
+    }
+
+    @Test
+    fun whyACdaDocumentWasRefused() {
+        val xml = CdaExport.generate(values, LocalDate(2026, 5, 6), "LabImporter test", GoldenCda.narrative)
+        val stamp = "LabImporter CDA v${ReportSchema.VERSION}"
+        assertEquals(ReportReadProblem.NEWER_VERSION, CdaParser.problem(xml.replace(stamp, "LabImporter CDA v${ReportSchema.VERSION + 1}")))
+        // Too damaged to parse, but it's still ours and worth saying so.
+        assertEquals(ReportReadProblem.UNREADABLE, CdaParser.problem(xml.substringBefore("</assignedAuthor>")))
+        assertNull(CdaParser.problem(xml.replace(stamp, "Other App")), "Unversioned documents are ignored by design")
+        assertNull(CdaParser.problem("not xml at all"))
+        // A name is escaped, so it can't pass for the version stamp.
+        val named = CdaExport.generate(values, LocalDate(2026, 5, 6), "x", GoldenCda.narrative, "<softwareName>LabImporter CDA v99")
+        assertEquals(ReportReadProblem.UNREADABLE, CdaParser.problem(named))
+    }
+
+    @Test
+    fun fhirCountsWhatItCanNotList() {
+        val current = "\"code\":\"${ReportSchema.VERSION}\""
+        val future = "\"code\":\"${ReportSchema.VERSION + 1}\""
+        fun report(id: String) = LabReport(
+            id, LocalDate(2026, 5, 6), "", "",
+            listOf(
+                LabReport.Entry("$id-1", "2160-0", "Creatinine", "0.8", 0.8, "mg/dl"),
+                LabReport.Entry("$id-2", "2823-3", "Potassium", "4.1", 4.1, "mmol/l"),
+            ),
+        )
+        fun resources(id: String) = FhirLabCodec.encodeForSaving(report(id), "x").map { it.json }
+
+        val mixed = resources("half").let { (first, second) -> listOf(first, second.replace(current, future)) }
+        val stored = FhirLabCodec.decodeStored(
+            resources("fine") +
+                resources("newer").map { it.replace(current, future) } +
+                mixed +
+                resources("hurt").let { (first, second) -> listOf(first, second.replace("\"effectiveDateTime\":\"2026-05-06\"", "\"effectiveDateTime\":\"soon\"")) } +
+                "{not json",
+        )
+        assertEquals(listOf("hurt", "fine"), stored.reports.map { it.id }.sorted().reversed())
+        assertEquals(2, stored.newerVersionReports, "A report with any newer value isn't shown in part")
+        assertEquals(2, stored.unreadableReports, "The report missing a value, and the resource that's no JSON")
     }
 
     @Test
@@ -77,6 +148,16 @@ class ExportTest {
         assertEquals(report.entries.map { it.code to it.numericValue }, decoded.entries.map { it.code to it.numericValue })
     }
 
+    @Test
+    fun fhirKeepsTheLoincDisplayInTheCodingWhateverTheAppCallsTheValue() {
+        startCatalog("pt-BR")
+        val shown = LabValue(code = "2160-0", name = LabMapping.displayName("2160-0"), displayValue = "1", numericValue = 1.0, unit = "mg/dL")
+        val report = LabReport.fromValues(listOf(shown), LocalDate(2026, 5, 6), "", "")
+        val code = Json.parseToJsonElement(FhirLabCodec.encode(report, "LabImporter test").single().json).jsonObject.getValue("code").jsonObject
+        assertEquals("Creat", code.getValue("text").jsonPrimitive.content, "the record's text is what the user saw")
+        assertEquals("Creatinine [Mass/Vol]", code.getValue("coding").jsonArray.single().jsonObject.getValue("display").jsonPrimitive.content)
+    }
+
     private val qualitative = listOf(
         LabValue(code = "2160-0", name = "Creatinin", displayValue = "0,8", numericValue = 0.8, unit = "mg/dl"),
         LabValue(code = "5196-1", name = "HBsAg", displayValue = "nicht reaktiv", numericValue = null, unit = ""),
@@ -91,7 +172,7 @@ class ExportTest {
     @Test
     fun qualitativeResultsAreExportedAsText() {
         assertEquals(listOf(true, true, true, true, true, false, false), qualitative.map { it.isExportable })
-        val xml = CdaExport.generate(qualitative, LocalDate(2026, 5, 6), "LabImporter test")
+        val xml = CdaExport.generate(qualitative, LocalDate(2026, 5, 6), "LabImporter test", GoldenCda.narrative)
         // Additive: the schema version stays, and older builds skip ST observations.
         assertTrue(xml.contains("<softwareName>LabImporter CDA v1</softwareName>"))
         assertTrue(xml.contains("<value xsi:type=\"ST\">nicht reaktiv</value>"))

@@ -23,7 +23,7 @@
     <string name="disclaimer_title">Δεν αποτελεί ιατρική συμβουλή</string>
     <string name="disclaimer_body">Το LabImporter δεν είναι ιατρική συσκευή και δεν παρέχει ιατρικές συμβουλές, διάγνωση ή θεραπεία. Οι εξαγόμενες τιμές μπορεί να είναι ανακριβείς ή ελλιπείς — επαληθεύετέ τες πάντα με την αρχική σας αναφορά. Μην λαμβάνετε ποτέ ιατρικές αποφάσεις με βάση αυτήν την εφαρμογή· συμβουλευτείτε εξειδικευμένο επαγγελματία υγείας σχετικά με τα αποτελέσματά σας.</string>
     <string name="disclaimer_accept">Κατάλαβα</string>
-    <string name="onboarding_hc_message">Αποθηκεύστε τις αναφορές σας στο Health Connect για να βρίσκονται μαζί με τα υπόλοιπα δεδομένα υγείας σας. Τα εργαστηριακά αποτελέσματα αποθηκεύονται ως τυπικές εγγραφές FHIR σε αυτήν τη συσκευή.</string>
+    <string name="onboarding_hc_message">Αποθηκεύστε τις αναφορές σας στο Health Connect για να βρίσκονται μαζί με τα υπόλοιπα δεδομένα υγείας σας. Τα εργαστηριακά αποτελέσματα αποθηκεύονται ως τυπικές ιατρικές εγγραφές σε αυτήν τη συσκευή.</string>
     <string name="onboarding_hc_connected">Συνδέθηκε. Οι αναφορές σας θα αποθηκεύονται στο Health Connect ως εργαστηριακά αποτελέσματα.</string>
     <string name="onboarding_hc_unavailable">Τα ιατρικά αρχεία του Health Connect δεν είναι διαθέσιμα σε αυτήν τη συσκευή, οπότε οι αναφορές σας αποθηκεύονται ιδιωτικά στο LabImporter σε αυτήν τη συσκευή. Μπορείτε να το αλλάξετε αργότερα στις Ρυθμίσεις.</string>
     <string name="dashboard_empty_title">Δεν υπάρχουν αναφορές ακόμη</string>
@@ -65,7 +65,7 @@
     <string name="category_other">Άλλο</string>
     <string name="history_empty_title">Δεν υπάρχουν αναφορές ακόμη</string>
     <string name="history_empty_message">Εισαγάγετε μια εργαστηριακή αναφορά για να εμφανιστεί εδώ.</string>
-    <string name="share_cda">Κοινή χρήση αρχείου CDA</string>
+    <string name="share_cda">Κοινή χρήση αρχείου αναφοράς</string>
     <string name="delete_report_title">Διαγραφή αναφοράς;</string>
     <string name="delete_report_message">Αυτή η αναφορά θα αφαιρεθεί οριστικά.</string>
     <string name="report_deleted">Η αναφορά διαγράφηκε</string>
@@ -212,6 +212,17 @@
     <string name="try_again">Δοκιμάστε ξανά</string>
     <string name="reports_load_failed_title">Δεν ήταν δυνατή η φόρτωση των αναφορών σας</string>
     <string name="reports_load_failed_message">Οι αποθηκευμένες αναφορές σας δεν άλλαξαν, αλλά δεν είναι δυνατή η ανάγνωσή τους αυτή τη στιγμή.</string>
+    <string name="reports_newer_title">Ενημερώστε το LabImporter για να δείτε όλες τις αναφορές</string>
+    <string name="reports_newer_message">Αναφορές που αποθηκεύτηκαν από νεότερη έκδοση του LabImporter: %1$d. Είναι ασφαλείς. Ενημερώστε την εφαρμογή για να τις δείτε.</string>
+    <string name="hc_access_off_title">Η πρόσβαση στο Health Connect είναι απενεργοποιημένη</string>
+    <string name="hc_access_off_message">Χωρίς πρόσβαση, το LabImporter δεν μπορεί να διαβάσει τις αναφορές που αποθηκεύσατε στο Health Connect. Είναι ακόμα εκεί. Επιτρέψτε την πρόσβαση για να τις δείτε ή διατηρείτε από εδώ και πέρα τις αναφορές στην εφαρμογή.</string>
+    <string name="hc_allow_access">Επιτρέψτε την πρόσβαση</string>
+    <string name="hc_needs_update_title">Το Health Connect χρειάζεται ενημέρωση</string>
+    <string name="hc_needs_update_message">Οι αναφορές σας βρίσκονται ακόμα στο Health Connect, αλλά πρέπει να ενημερωθεί για να μπορεί το LabImporter να τις διαβάσει.</string>
+    <string name="hc_update">Ενημέρωση Health Connect</string>
+    <string name="hc_gone_title">Το Health Connect δεν είναι διαθέσιμο</string>
+    <string name="hc_gone_message">Το LabImporter δεν μπορεί να συνδεθεί με το Health Connect σε αυτήν τη συσκευή, οπότε οι αναφορές που είναι αποθηκευμένες εκεί δεν εμφανίζονται. Το LabImporter δεν τις διέγραψε.</string>
+    <string name="hc_use_app_storage">Χρήση αποθήκευσης εφαρμογής</string>
     <string name="reports_unreadable_title">Ορισμένες αναφορές δεν είναι δυνατό να διαβαστούν</string>
     <string name="reports_unreadable_message">Αναφορές που δεν είναι δυνατό να διαβαστούν: %1$d. Παραμένουν σε αυτή τη συσκευή και δεν διαγράφηκαν.</string>
     <string name="hc_connect_failed">Δεν ήταν δυνατή η σύνδεση με το Health Connect. Οι αναφορές σας παραμένουν στο LabImporter. Δοκιμάστε ξανά στις Ρυθμίσεις.</string>
@@ -220,6 +231,13 @@
     <string name="transfer_export_detail">Αποθηκεύστε όλες τις αναφορές σε ένα αρχείο, για παράδειγμα για να τις μεταφέρετε σε άλλο τηλέφωνο.</string>
     <string name="transfer_import">Εισαγωγή αναφορών</string>
     <string name="transfer_import_detail">Από αρχείο LabImporter που εξήχθη σε iPhone ή Android. Οι αναφορές που υπάρχουν ήδη εδώ παραλείπονται.</string>
+    <string name="transfer_leaves_out_title">Ορισμένες τιμές δεν μπορούν να εξαχθούν</string>
+    <string name="transfer_leaves_out_message">Τιμές που μένουν εκτός αρχείου: %1$d. Παραμένουν στις αναφορές σας.</string>
+    <string name="transfer_share_anyway">Κοινή χρήση ούτως ή άλλως</string>
+    <string name="transfer_export_nothing">Καμία από τις τιμές σας δεν ήταν δυνατό να γραφτεί σε αρχείο, οπότε δεν εξήχθη τίποτα. Δοκιμάστε ξανά.</string>
+    <string name="transfer_newer_version">Αυτό το αρχείο προέρχεται από νεότερη έκδοση του LabImporter. Ενημερώστε την εφαρμογή για να το εισαγάγετε.</string>
+    <string name="transfer_newer_version_some">Αναφορές σε αυτό το αρχείο που χρειάζονται νεότερη έκδοση του LabImporter: %1$d.</string>
+    <string name="transfer_damaged_some">Κατεστραμμένες αναφορές σε αυτό το αρχείο: %1$d. Εισήχθη μόνο ό,τι μπόρεσε να διαβαστεί.</string>
     <string name="transfer_unsupported">Αυτό το αρχείο δεν περιέχει αναφορές LabImporter.</string>
     <string name="transfer_summary">Νέες αναφορές: %1$d · Υπήρχαν ήδη: %2$d</string>
     <string name="transfer_summary_failed">Νέες αναφορές: %1$d · Υπάρχουν ήδη: %2$d · Δεν αποθηκεύτηκαν: %3$d</string>
@@ -287,6 +305,7 @@
     <string name="pdf_trend_range">Διάστημα τάσης</string>
     <string name="pdf_included_categories">Συμπεριλαμβανόμενες κατηγορίες</string>
     <string name="pdf_latest_subtitle">Πιο πρόσφατη μέτρηση για κάθε τιμή</string>
+    <string name="cda_language_code">el</string>
     <string name="pdf_column_test">Εξέταση</string>
     <string name="pdf_column_result">Αποτέλεσμα</string>
     <string name="pdf_column_reference">Αναφορά</string>
@@ -309,6 +328,7 @@
     <string name="restore">Επαναφορά</string>
     <string name="details">Λεπτομέρειες</string>
     <string name="hide">Απόκρυψη</string>
+    <string name="include_in_export">Συμπερίληψη στην εξαγωγή</string>
     <string name="move_up">Μετακίνηση πάνω</string>
     <string name="move_down">Μετακίνηση κάτω</string>
     <string name="settings_loinc">LOINC</string>
@@ -360,6 +380,7 @@
     <string name="show_latest_in_search">Εμφάνιση τελευταίας τιμής στην αναζήτηση</string>
     <string name="show_latest_in_search_footer">Επιτρέψτε την εμφάνιση της πιο πρόσφατης μέτρησης κάθε τιμής στις συντομεύσεις της αρχικής οθόνης και στην αναζήτηση. Όταν είναι ανενεργό, εμφανίζεται μόνο το όνομα της τιμής — ποτέ μια μέτρηση.</string>
     <string name="chart_summary">Γράφημα %1$s: %2$s από %3$s έως %4$s. Χαμηλότερη %5$s, υψηλότερη %6$s, πιο πρόσφατη %7$s.</string>
+    <string name="chart_reading">%1$s: %2$s</string>
     <plurals name="chart_readings">
         <item quantity="one">%d μέτρηση</item>
         <item quantity="other">%d μετρήσεις</item>

@@ -13,6 +13,7 @@ struct SiriAccessEditor: View {
             capabilitiesSection
             valuesSection
         }
+        .readableListText()
         .navigationTitle("Siri & Shortcuts")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -70,18 +71,14 @@ struct SiriAccessEditor: View {
         } else if allCodes.isEmpty {
             Section {
                 Text("Import a report to choose which values Siri can access.")
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
             }
         } else {
             Section {
+                let sharingAName = allCodes.codesSharingAName
                 ForEach(allCodes.sorted { $0.name < $1.name }) { item in
                     Toggle(isOn: allowedBinding(for: item.code)) {
-                        HStack(spacing: 12) {
-                            Circle()
-                                .fill(LabCategory.forCode(item.code).color.gradient)
-                                .frame(width: 9, height: 9)
-                            Text(LabMapping.displayName(for: item.code))
-                        }
+                        SiriValueLabel(code: item.code, sharesItsName: sharingAName.contains(item.code))
                     }
                 }
             } header: {
@@ -100,6 +97,38 @@ struct SiriAccessEditor: View {
     }
 }
 
+/// A value's row in Siri's opt-in lists. Plain names can cover several terms (mass and moles,
+/// serum and whole blood), and turning one on is a privacy decision about that term alone: a
+/// name that isn't unique in the list carries the full catalog label too.
+struct SiriValueLabel: View {
+    let code: String
+    let sharesItsName: Bool
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Circle()
+                .fill(LabCategory.forCode(code).color.gradient)
+                .frame(width: 9, height: 9)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(LabMapping.displayName(for: code))
+                if sharesItsName {
+                    Text(LabMapping.catalogName(for: code))
+                        .font(.caption2)
+                        .foregroundStyle(.textSecondary)
+                }
+            }
+        }
+    }
+}
+
+extension [CodeName] {
+    /// The codes whose name, as a row shows it, another code here also has.
+    var codesSharingAName: Set<String> {
+        let byName = Dictionary(grouping: map(\.code)) { LabMapping.displayName(for: $0) }
+        return Set(byName.values.filter { $0.count > 1 }.joined())
+    }
+}
+
 // MARK: - Previews
 
 #if DEBUG
@@ -107,6 +136,13 @@ struct SiriAccessEditor: View {
     @Previewable @State var prefs = SiriExposurePreferences()
     NavigationStack {
         SiriAccessEditor(prefs: $prefs, allCodes: CodeName.sampleCodes)
+    }
+}
+
+#Preview("Two Values Sharing a Name") {
+    @Previewable @State var prefs = SiriExposurePreferences()
+    NavigationStack {
+        SiriAccessEditor(prefs: $prefs, allCodes: CodeName.sampleCodesSharingAName)
     }
 }
 

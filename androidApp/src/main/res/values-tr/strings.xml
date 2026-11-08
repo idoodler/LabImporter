@@ -23,7 +23,7 @@
     <string name="disclaimer_title">Tıbbi tavsiye değildir</string>
     <string name="disclaimer_body">LabImporter bir tıbbi cihaz değildir ve tıbbi tavsiye, teşhis veya tedavi sağlamaz. Çıkarılan değerler hatalı veya eksik olabilir; bunları her zaman orijinal raporunuzla karşılaştırın. Bu uygulamaya dayanarak asla tıbbi karar vermeyin; sonuçlarınız hakkında nitelikli bir sağlık uzmanına danışın.</string>
     <string name="disclaimer_accept">Anladım</string>
-    <string name="onboarding_hc_message">Raporlarınızı Health Connect\'e kaydedin; böylece diğer sağlık verilerinizle birlikte dururlar. Laboratuvar sonuçları bu cihazda standart FHIR kayıtları olarak saklanır.</string>
+    <string name="onboarding_hc_message">Raporlarınızı Health Connect\'e kaydedin; böylece diğer sağlık verilerinizle birlikte dururlar. Laboratuvar sonuçları bu cihazda standart tıbbi kayıtlar olarak saklanır.</string>
     <string name="onboarding_hc_connected">Bağlandı. Raporlarınız laboratuvar sonuçları olarak Health Connect\'e kaydedilecek.</string>
     <string name="onboarding_hc_unavailable">Health Connect tıbbi kayıtları bu cihazda kullanılamıyor; bu nedenle raporlarınız bu cihazda LabImporter\'da gizli olarak saklanır. Daha sonra Ayarlar\'dan değiştirebilirsiniz.</string>
     <string name="dashboard_empty_title">Henüz Rapor Yok</string>
@@ -65,7 +65,7 @@
     <string name="category_other">Diğer</string>
     <string name="history_empty_title">Henüz Rapor Yok</string>
     <string name="history_empty_message">Burada görmek için bir laboratuvar raporu içe aktarın.</string>
-    <string name="share_cda">CDA Dosyasını Paylaş</string>
+    <string name="share_cda">Rapor Dosyasını Paylaş</string>
     <string name="delete_report_title">Rapor silinsin mi?</string>
     <string name="delete_report_message">Bu rapor kalıcı olarak kaldırılacak.</string>
     <string name="report_deleted">Rapor silindi</string>
@@ -212,6 +212,17 @@
     <string name="try_again">Yeniden dene</string>
     <string name="reports_load_failed_title">Raporlarınız yüklenemedi</string>
     <string name="reports_load_failed_message">Kayıtlı raporlarınız değişmedi ancak şu anda okunamıyor.</string>
+    <string name="reports_newer_title">Tüm raporları görmek için LabImporter\'ı güncelleyin</string>
+    <string name="reports_newer_message">LabImporter\'ın daha yeni bir sürümüyle kaydedilen raporlar: %1$d. Güvendeler. Görmek için uygulamayı güncelleyin.</string>
+    <string name="hc_access_off_title">Health Connect erişimi kapalı</string>
+    <string name="hc_access_off_message">LabImporter, erişim olmadan Health Connect\'e kaydettiğiniz raporları okuyamaz. Raporlar hâlâ orada. Görmek için erişime izin verin veya bundan sonra raporlarınızı uygulamada saklayın.</string>
+    <string name="hc_allow_access">Erişime İzin Ver</string>
+    <string name="hc_needs_update_title">Health Connect\'in güncellenmesi gerekiyor</string>
+    <string name="hc_needs_update_message">Raporlarınız hâlâ Health Connect\'te, ancak LabImporter\'ın okuyabilmesi için güncellenmesi gerekiyor.</string>
+    <string name="hc_update">Health Connect\'i Güncelle</string>
+    <string name="hc_gone_title">Health Connect kullanılamıyor</string>
+    <string name="hc_gone_message">LabImporter bu cihazda Health Connect\'e ulaşamıyor, bu yüzden orada kayıtlı raporlar gösterilmiyor. LabImporter bunları silmedi.</string>
+    <string name="hc_use_app_storage">Uygulama Depolamasını Kullan</string>
     <string name="reports_unreadable_title">Bazı raporlar okunamıyor</string>
     <string name="reports_unreadable_message">Okunamayan raporlar: %1$d. Bu cihazda kalır ve silinmedi.</string>
     <string name="hc_connect_failed">Health Connect\'e bağlanılamadı. Raporlarınız LabImporter\'da kalır. Ayarlar\'dan tekrar deneyin.</string>
@@ -220,6 +231,13 @@
     <string name="transfer_export_detail">Tüm raporları tek bir dosyaya kaydedin; örneğin başka bir telefona taşımak için.</string>
     <string name="transfer_import">Raporları içe aktar</string>
     <string name="transfer_import_detail">iPhone\'da veya Android\'de dışa aktarılan bir LabImporter dosyasından. Zaten burada olan raporlar atlanır.</string>
+    <string name="transfer_leaves_out_title">Bazı değerler dışa aktarılamıyor</string>
+    <string name="transfer_leaves_out_message">Dosyanın dışında kalan değerler: %1$d. Raporlarınızda kalırlar.</string>
+    <string name="transfer_share_anyway">Yine de Paylaş</string>
+    <string name="transfer_export_nothing">Değerlerinizin hiçbiri bir dosyaya yazılamadı, bu yüzden hiçbir şey dışa aktarılmadı. Lütfen tekrar deneyin.</string>
+    <string name="transfer_newer_version">Bu dosya LabImporter\'ın daha yeni bir sürümünden geliyor. İçe aktarmak için uygulamayı güncelleyin.</string>
+    <string name="transfer_newer_version_some">Bu dosyada LabImporter\'ın daha yeni bir sürümünü gerektiren raporlar: %1$d.</string>
+    <string name="transfer_damaged_some">Bu dosyadaki hasarlı raporlar: %1$d. Yalnızca okunabilenler içe aktarıldı.</string>
     <string name="transfer_unsupported">Bu dosya LabImporter raporu içermiyor.</string>
     <string name="transfer_summary">Yeni raporlar: %1$d · Zaten var: %2$d</string>
     <string name="transfer_summary_failed">Yeni raporlar: %1$d · Zaten mevcut: %2$d · Kaydedilmedi: %3$d</string>
@@ -287,6 +305,7 @@
     <string name="pdf_trend_range">Eğilim Aralığı</string>
     <string name="pdf_included_categories">Dahil Edilen Kategoriler</string>
     <string name="pdf_latest_subtitle">Her değer için en son ölçüm</string>
+    <string name="cda_language_code">tr</string>
     <string name="pdf_column_test">Test</string>
     <string name="pdf_column_result">Sonuç</string>
     <string name="pdf_column_reference">Referans</string>
@@ -309,6 +328,7 @@
     <string name="restore">Geri Yükle</string>
     <string name="details">Ayrıntılar</string>
     <string name="hide">Gizle</string>
+    <string name="include_in_export">Dışa Aktarmaya Dahil Et</string>
     <string name="move_up">Yukarı taşı</string>
     <string name="move_down">Aşağı taşı</string>
     <string name="settings_loinc">LOINC</string>
@@ -360,6 +380,7 @@
     <string name="show_latest_in_search">Aramada son değeri göster</string>
     <string name="show_latest_in_search_footer">Her değerin en son ölçümünün ana ekran kısayollarında ve aramada görünmesine izin verin. Kapalıyken yalnızca değerin adı gösterilir — asla bir ölçüm.</string>
     <string name="chart_summary">%1$s grafiği: %3$s – %4$s arası %2$s. En düşük %5$s, en yüksek %6$s, en son %7$s.</string>
+    <string name="chart_reading">%1$s: %2$s</string>
     <plurals name="chart_readings">
         <item quantity="one">%d ölçüm</item>
         <item quantity="other">%d ölçüm</item>

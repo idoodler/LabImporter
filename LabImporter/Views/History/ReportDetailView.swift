@@ -5,6 +5,7 @@ struct ReportDetailView: View {
     let onDeleted: (UUID) -> Void
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var showEdit = false
     @State private var showDeleteAlert = false
     @State private var shareURL: IdentifiedURL?
@@ -33,6 +34,7 @@ struct ReportDetailView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .readableListText()
         .scrollContentBackground(.hidden)
         .background { CategoryBackground(colors: backgroundColors) }
         .navigationTitle(report.date.formatted(date: .abbreviated, time: .omitted))
@@ -44,7 +46,7 @@ struct ReportDetailView: View {
                         Label("Edit", systemImage: "pencil")
                     }
                     Button { shareCDA() } label: {
-                        Label("Share CDA File", systemImage: "square.and.arrow.up")
+                        Label("Share Report File", systemImage: "square.and.arrow.up")
                     }
                     Divider()
                     Button(role: .destructive) { showDeleteAlert = true } label: {
@@ -80,9 +82,9 @@ struct ReportDetailView: View {
             }
             .interactiveDismissDisabled()
         }
-        .sheet(item: $shareURL) { item in
+        .sheet(item: $shareURL, onDismiss: { ExportFiles.removeAll() }, content: { item in
             ShareSheet(url: item.url)
-        }
+        })
     }
 
     // MARK: - Header
@@ -100,7 +102,7 @@ struct ReportDetailView: View {
                             )
                         )
                     Image(systemName: "doc.text.fill")
-                        .font(.system(size: 22, weight: .semibold))
+                        .decorativeIcon(size: 22, weight: .semibold)
                         .foregroundStyle(.white)
                 }
                 .frame(width: 54, height: 54)
@@ -111,7 +113,7 @@ struct ReportDetailView: View {
                         .font(.headline)
                     Text("\(report.entries.count) values")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.textSecondary)
                 }
                 Spacer(minLength: 0)
             }
@@ -120,31 +122,28 @@ struct ReportDetailView: View {
                 Divider()
                 VStack(alignment: .leading, spacing: 8) {
                     ForEach(metaItems, id: \.label) { item in
-                        HStack(spacing: 8) {
+                        // One text that wraps, like Android's: a lab's name can be long and the text large.
+                        HStack(alignment: .firstTextBaseline, spacing: 8) {
                             Image(systemName: item.icon)
                                 .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .frame(width: 18)
-                            Text(item.label)
+                                .foregroundStyle(.textSecondary)
+                                .frame(minWidth: 18)
+                                .accessibilityHidden(true)
+                            Text(verbatim: "\(item.label): \(item.value)")
                                 .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                            Spacer()
-                            Text(item.value)
-                                .font(.subheadline)
+                            Spacer(minLength: 0)
                         }
                     }
                 }
             }
 
             if categoryGroups.count > 1 {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(categoryGroups, id: \.category) { group in
-                            categoryChip(group)
-                        }
+                // Wrapped, not scrolled sideways: this is the report's summary, and nothing here is waiting below it.
+                FlowLayout(spacing: 8) {
+                    ForEach(categoryGroups, id: \.category) { group in
+                        categoryChip(group)
                     }
                 }
-                .edgeFadeScroll()
             }
         }
         .padding(18)
@@ -161,7 +160,7 @@ struct ReportDetailView: View {
                 .font(.caption.weight(.medium))
             Text("\(group.entries.count)")
                 .font(.caption2.monospacedDigit())
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.textSecondary)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
@@ -184,7 +183,7 @@ struct ReportDetailView: View {
             Spacer()
             Text("\(group.entries.count)")
                 .font(.caption.monospacedDigit())
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.textSecondary)
         }
         .textCase(nil)
     }
@@ -208,37 +207,39 @@ struct ReportDetailView: View {
                 .fill(color)
                 .frame(width: 8, height: 8)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(entry.resolvedName)
-                    .font(.body)
-                Text(entry.code)
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
-                    .textCase(.uppercase)
+            AdaptiveRow(spacing: 12) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(entry.resolvedName)
+                        .font(.body)
+                    Text(entry.code)
+                        .font(.caption2)
+                        .foregroundStyle(.textTertiary)
+                        .textCase(.uppercase)
+                }
+
+                if !dynamicTypeSize.isAccessibilitySize { Spacer() }
+
+                let status = LabMapping.rangeStatus(for: entry.numericValue, code: entry.code)
+                if let status {
+                    RangeStatusBadge(status: status,
+                                     range: LabMapping.referenceRange(for: entry.code),
+                                     unit: entry.unit)
+                }
+
+                let valueText = entry.displayValue == "-"
+                    ? "–"
+                    : "\(entry.displayValue) \(entry.unit)".trimmingCharacters(in: .whitespaces)
+
+                Text(valueText)
+                    .font(.body.monospacedDigit().weight(.medium))
+                    .foregroundStyle(valueColor(for: entry, status: status))
             }
-
-            Spacer()
-
-            let status = LabMapping.rangeStatus(for: entry.numericValue, code: entry.code)
-            if let status {
-                RangeStatusBadge(status: status,
-                                 range: LabMapping.referenceRange(for: entry.code),
-                                 unit: entry.unit)
-            }
-
-            let valueText = entry.displayValue == "-"
-                ? "–"
-                : "\(entry.displayValue) \(entry.unit)".trimmingCharacters(in: .whitespaces)
-
-            Text(valueText)
-                .font(.body.monospacedDigit().weight(.medium))
-                .foregroundStyle(valueColor(for: entry, status: status))
         }
         .padding(.vertical, 2)
     }
 
     private func valueColor(for entry: LabReport.Entry, status: RangeStatus?) -> Color {
-        if entry.displayValue == "-" { return .secondary }
+        if entry.displayValue == "-" { return .textSecondary }
         if let status, status.isOutOfRange { return status.color }
         return .primary
     }
@@ -338,6 +339,13 @@ private struct ShareSheet: UIViewControllerRepresentable {
     NavigationStack {
         ReportDetailView(report: .sample, onDeleted: { _ in })
     }
+}
+
+#Preview("Largest Text") {
+    NavigationStack {
+        ReportDetailView(report: .sample, onDeleted: { _ in })
+    }
+    .dynamicTypeSize(.accessibility5)
 }
 
 #Preview("With Qualitative Results") {

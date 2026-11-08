@@ -23,7 +23,7 @@
     <string name="disclaimer_title">Nije medicinski savjet</string>
     <string name="disclaimer_body">LabImporter nije medicinski uređaj i ne pruža medicinske savjete, dijagnozu ni liječenje. Izvučene vrijednosti mogu biti netočne ili nepotpune — uvijek ih provjerite s izvornim nalazom. Nikada ne donosite medicinske odluke na temelju ove aplikacije; o svojim rezultatima posavjetujte se s kvalificiranim zdravstvenim djelatnikom.</string>
     <string name="disclaimer_accept">Razumijem</string>
-    <string name="onboarding_hc_message">Spremite izvješća u Health Connect kako bi bila uz ostale vaše zdravstvene podatke. Laboratorijski rezultati pohranjuju se kao standardni FHIR zapisi na ovom uređaju.</string>
+    <string name="onboarding_hc_message">Spremite izvješća u Health Connect kako bi bila uz ostale vaše zdravstvene podatke. Laboratorijski rezultati pohranjuju se kao standardni medicinski zapisi na ovom uređaju.</string>
     <string name="onboarding_hc_connected">Povezano. Vaša izvješća spremat će se u Health Connect kao laboratorijski rezultati.</string>
     <string name="onboarding_hc_unavailable">Medicinski zapisi Health Connecta nisu dostupni na ovom uređaju pa se vaša izvješća privatno pohranjuju u LabImporteru na ovom uređaju. Kasnije to možete promijeniti u Postavkama.</string>
     <string name="dashboard_empty_title">Još nema izvješća</string>
@@ -66,7 +66,7 @@
     <string name="category_other">Ostalo</string>
     <string name="history_empty_title">Još nema izvješća</string>
     <string name="history_empty_message">Uvezite laboratorijski nalaz da biste ga vidjeli ovdje.</string>
-    <string name="share_cda">Podijeli CDA datoteku</string>
+    <string name="share_cda">Podijeli datoteku izvješća</string>
     <string name="delete_report_title">Izbrisati izvješće?</string>
     <string name="delete_report_message">Ovo izvješće bit će trajno uklonjeno.</string>
     <string name="report_deleted">Izvješće izbrisano</string>
@@ -220,6 +220,17 @@
     <string name="try_again">Pokušaj ponovno</string>
     <string name="reports_load_failed_title">Izvješća nije moguće učitati</string>
     <string name="reports_load_failed_message">Spremljena izvješća nisu promijenjena, ali se trenutačno ne mogu pročitati.</string>
+    <string name="reports_newer_title">Ažurirajte LabImporter da biste vidjeli sva izvješća</string>
+    <string name="reports_newer_message">Izvješća spremljena novijom verzijom LabImportera: %1$d. Na sigurnom su. Ažurirajte aplikaciju da biste ih vidjeli.</string>
+    <string name="hc_access_off_title">Pristup Health Connectu je isključen</string>
+    <string name="hc_access_off_message">Bez pristupa LabImporter ne može čitati izvješća spremljena u Health Connect. I dalje su ondje. Dopustite pristup da biste ih vidjeli ili od sada čuvajte izvješća u aplikaciji.</string>
+    <string name="hc_allow_access">Dopusti pristup</string>
+    <string name="hc_needs_update_title">Health Connect treba ažuriranje</string>
+    <string name="hc_needs_update_message">Vaša su izvješća još uvijek u Health Connectu, ali ga treba ažurirati da bi ih LabImporter mogao čitati.</string>
+    <string name="hc_update">Ažuriraj Health Connect</string>
+    <string name="hc_gone_title">Health Connect nije dostupan</string>
+    <string name="hc_gone_message">LabImporter ne može pristupiti Health Connectu na ovom uređaju pa se ondje spremljena izvješća ne prikazuju. LabImporter ih nije izbrisao.</string>
+    <string name="hc_use_app_storage">Koristi pohranu aplikacije</string>
     <string name="reports_unreadable_title">Neka se izvješća ne mogu pročitati</string>
     <string name="reports_unreadable_message">Izvješća koja se ne mogu pročitati: %1$d. Ostaju na ovom uređaju i nisu izbrisana.</string>
     <string name="hc_connect_failed">Povezivanje s Health Connectom nije uspjelo. Izvješća ostaju u LabImporteru. Pokušajte ponovno u Postavkama.</string>
@@ -228,6 +239,13 @@
     <string name="transfer_export_detail">Spremite sva izvješća u jednu datoteku, primjerice da ih premjestite na drugi telefon.</string>
     <string name="transfer_import">Uvezi izvješća</string>
     <string name="transfer_import_detail">Iz LabImporter datoteke izvezene na iPhoneu ili Androidu. Izvješća koja su već ovdje preskaču se.</string>
+    <string name="transfer_leaves_out_title">Neke se vrijednosti ne mogu izvesti</string>
+    <string name="transfer_leaves_out_message">Vrijednosti izostavljene iz datoteke: %1$d. Ostaju u vašim izvješćima.</string>
+    <string name="transfer_share_anyway">Ipak podijeli</string>
+    <string name="transfer_export_nothing">Nijedna se vrijednost nije mogla zapisati u datoteku pa ništa nije izvezeno. Pokušajte ponovno.</string>
+    <string name="transfer_newer_version">Ova datoteka potječe iz novije verzije LabImportera. Ažurirajte aplikaciju da biste je uvezli.</string>
+    <string name="transfer_newer_version_some">Izvješća u ovoj datoteci kojima treba novija verzija LabImportera: %1$d.</string>
+    <string name="transfer_damaged_some">Oštećena izvješća u ovoj datoteci: %1$d. Uvezeno je samo ono što se moglo pročitati.</string>
     <string name="transfer_unsupported">Ova datoteka ne sadrži LabImporter izvješća.</string>
     <string name="transfer_summary">Nova izvješća: %1$d · Već postoje: %2$d</string>
     <string name="transfer_summary_failed">Nova izvješća: %1$d · Već postoje: %2$d · Nije spremljeno: %3$d</string>
@@ -295,6 +313,7 @@
     <string name="pdf_trend_range">Raspon trenda</string>
     <string name="pdf_included_categories">Uključene kategorije</string>
     <string name="pdf_latest_subtitle">Najnovije očitanje za svaku vrijednost</string>
+    <string name="cda_language_code">hr</string>
     <string name="pdf_column_test">Pretraga</string>
     <string name="pdf_column_result">Rezultat</string>
     <string name="pdf_column_reference">Referenca</string>
@@ -317,6 +336,7 @@
     <string name="restore">Vrati</string>
     <string name="details">Pojedinosti</string>
     <string name="hide">Sakrij</string>
+    <string name="include_in_export">Uključi u izvoz</string>
     <string name="move_up">Pomakni gore</string>
     <string name="move_down">Pomakni dolje</string>
     <string name="settings_loinc">LOINC</string>
@@ -371,6 +391,7 @@
     <string name="show_latest_in_search">Prikaži posljednju vrijednost u pretraživanju</string>
     <string name="show_latest_in_search_footer">Dopustite da se najnovije očitanje svake vrijednosti pojavi u prečacima početnog zaslona i u pretraživanju. Kada je isključeno, prikazuje se samo naziv vrijednosti — nikada očitanje.</string>
     <string name="chart_summary">Grafikon %1$s: %2$s od %3$s do %4$s. Najniža %5$s, najviša %6$s, posljednja %7$s.</string>
+    <string name="chart_reading">%1$s: %2$s</string>
     <plurals name="chart_readings">
         <item quantity="one">%d očitanje</item>
         <item quantity="few">%d očitanja</item>

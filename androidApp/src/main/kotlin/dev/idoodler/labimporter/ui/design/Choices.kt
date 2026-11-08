@@ -1,5 +1,8 @@
 package dev.idoodler.labimporter.ui.design
 
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -41,7 +44,10 @@ fun <T> ConnectedChoices(
                 colors = ToggleButtonDefaults.colors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.7f),
                 ),
-            ) { Text(label(option), maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                // Five buttons can't spare the default 24 dp a side: German "Alle" broke into "All"/"e",
+                // and large text needs nearly all of it ("3M" was "3…").
+                contentPadding = PaddingValues(horizontal = if (isLargeText) 2.dp else 8.dp, vertical = 8.dp),
+            ) { Text(label(option), maxLines = 2, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center) }
         }
     }
 }

@@ -20,7 +20,13 @@ import dev.idoodler.labimporter.ai.AiProblem
 import dev.idoodler.labimporter.ai.DevelopmentStandIn
 import dev.idoodler.labimporter.ai.FakeAi
 import dev.idoodler.labimporter.ai.UnsupportedReason
+import dev.idoodler.labimporter.core.export.ReportSchema
+import dev.idoodler.labimporter.core.model.LabReport
+import dev.idoodler.labimporter.data.LocalReportStore
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
+import java.io.File
+import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.LocalDate
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -55,6 +61,26 @@ class LabImporterRootTest {
         val viewModel = AppViewModel(app)
         compose.setContent { LabImporterTheme { LabImporterRoot(viewModel) } }
         return viewModel
+    }
+
+    @Test
+    fun theReportsScreenSaysWhichSavedReportsItCantList() {
+        ai.state.value = AiAvailability.Ready
+        val store = LocalReportStore(app, "test")
+        val report = { id: String -> LabReport(id, LocalDate(2026, 3, 1), "", "", listOf(LabReport.Entry("$id-a", "4548-4", "HbA1c", "6.5", 6.5, "%"))) }
+        runBlocking { listOf("good", "later", "damaged").forEach { store.save(report(it)) } }
+        val stored = File(app.noBackupFilesDir, "reports")
+        File(stored, "later.json").apply { writeText(readText().replace("\\\"code\\\":\\\"${ReportSchema.VERSION}\\\"", "\\\"code\\\":\\\"${ReportSchema.VERSION + 1}\\\"")) }
+        File(stored, "damaged.json").writeText("not a report")
+
+        val viewModel = launch()
+        waitFor { viewModel.reports.value.isNotEmpty() && viewModel.newerVersionReports.value == 1 && viewModel.unreadableReports.value == 1 }
+        compose.onNodeWithContentDescription(string(R.string.history_title)).performClick()
+        compose.waitForIdle()
+
+        compose.onNodeWithText(string(R.string.stat_categories)).assertExists()
+        compose.onNodeWithText(app.getString(R.string.reports_newer_message, 1)).assertExists()
+        compose.onNodeWithText(app.getString(R.string.reports_unreadable_message, 1)).assertExists()
     }
 
     @Test

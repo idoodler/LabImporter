@@ -59,7 +59,10 @@ extension ReviewView {
                     addValueSection
                     unsupportedSection
                     detailsSection
+                    actionBarRow
                 }
+                // On the lists, not around them: it would turn the bar's prominent button's label dark too.
+                .readableListText()
                 .safeAreaInset(edge: .bottom, spacing: 0) {
                     actionBar
                 }
@@ -78,6 +81,7 @@ extension ReviewView {
             patientSection
             authorSection
         }
+        .readableListText()
     }
 
     private var valuesPane: some View {
@@ -85,7 +89,9 @@ extension ReviewView {
             valuesSection
             addValueSection
             unsupportedSection
+            actionBarRow
         }
+        .readableListText()
         .safeAreaInset(edge: .bottom, spacing: 0) {
             actionBar
         }

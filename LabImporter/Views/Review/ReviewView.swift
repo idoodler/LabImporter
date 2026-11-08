@@ -41,6 +41,7 @@ struct ReviewView: View {
 
     @FocusState var anyFieldFocused: Bool
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     private let cdaService = CDAExportService()
 
@@ -139,12 +140,12 @@ struct ReviewView: View {
         .sheet(isPresented: Binding(
             get: { cdaShareURL != nil },
             set: { if !$0 { cdaShareURL = nil } }
-        )) {
+        ), onDismiss: { ExportFiles.removeAll() }, content: {
             if let url = cdaShareURL {
                 CDAShareSheet(url: url)
                     .ignoresSafeArea()
             }
-        }
+        })
         .sheet(isPresented: $showAddValue) {
             AddValueSheet { labValues.append($0) }
         }
@@ -157,8 +158,26 @@ struct ReviewView: View {
         } message: { Text(replaceWarning ?? "") }
     }
 
+    /// Pinned, the Save/Share bar would fill the screen at accessibility text sizes and
+    /// hide the values it's there to save; it follows them as the list's last row instead.
+    var pinsActionBar: Bool { !dynamicTypeSize.isAccessibilitySize }
+
     /// The Save/Share bar, for the layout in ReviewView+FoldLayout.
-    var actionBar: some View { bottomButtons.hiddenWhileKeyboardVisible() }
+    @ViewBuilder
+    var actionBar: some View {
+        if pinsActionBar { bottomButtons().hiddenWhileKeyboardVisible() }
+    }
+
+    @ViewBuilder
+    var actionBarRow: some View {
+        if !pinsActionBar {
+            Section {
+                bottomButtons(isPinned: false)
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
+            }
+        }
+    }
 
     // MARK: - Sections
 
@@ -205,7 +224,7 @@ struct ReviewView: View {
                         Text("No date found in the report. Check that this date is right.")
                     }
                     .font(.footnote)
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(.statusWarning)
                     .accessibilityElement(children: .combine)
                     .accessibilityIdentifier("review-date-missing")
                 }
@@ -243,7 +262,7 @@ struct ReviewView: View {
             if group.category == valueGroups.first?.category {
                 Text("Lab Values — tap values to correct them")
                     .font(.footnote)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
                     .textCase(nil)
             }
             CategorySectionHeader(category: group.category, count: group.indices.count)
@@ -308,13 +327,14 @@ private extension ReviewView {
         .foregroundStyle(Color.accentColor)
     }
 
-    var bottomButtons: some View {
+    func bottomButtons(isPinned: Bool = true) -> some View {
         ReviewActionBar(
             isEnabled: exportableCount > 0 && duplicateLoincCodes.isEmpty && labValues.valuesToCorrectCount() == 0,
             hasDuplicates: !duplicateLoincCodes.isEmpty,
             valuesToCorrect: labValues.valuesToCorrectCount(),
             onSave: { Task { await performCDAImport() } },
-            onShare: { shareCDA() }
+            onShare: { shareCDA() },
+            isPinned: isPinned
         )
     }
 

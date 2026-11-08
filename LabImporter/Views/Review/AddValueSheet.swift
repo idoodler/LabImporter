@@ -91,14 +91,13 @@ struct AddValueSheet: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(LabMapping.displayName(for: code))
                         .font(.headline)
-                        .lineLimit(2)
                     HStack(spacing: 8) {
                         if let category {
                             categoryChip(category)
                         }
                         Text(code)
                             .font(.caption2)
-                            .foregroundStyle(.tertiary)
+                            .foregroundStyle(.textTertiary)
                             .textCase(.uppercase)
                     }
                 }
@@ -118,7 +117,7 @@ struct AddValueSheet: View {
                     style: StrokeStyle(lineWidth: 1.5, dash: [4, 3])
                 )
             Image(systemName: "magnifyingglass")
-                .font(.system(size: 18, weight: .semibold))
+                .decorativeIcon(size: 18, weight: .semibold)
                 .foregroundStyle(Color.accentColor)
         }
         .frame(width: 44, height: 44)

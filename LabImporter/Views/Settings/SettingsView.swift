@@ -10,11 +10,13 @@ struct SettingsView: View {
     /// when hosted as the detail pane of the iPad sidebar, where the split view
     /// owns dismissal and a Close button would be out of place.
     var isModal = true
-    /// Every saved report, for exporting them to another device (and to skip
-    /// what's already here when importing).
+    /// Every saved report, for exporting them to another device.
     var reports: [LabReport] = []
     @Environment(\.dismiss) private var dismiss
     @State private var showTransferImporter = false
+    /// An export that can't hold every value, waiting for the user to accept that.
+    @State private var exportLeavingValuesOut: ReportTransferService.Export?
+    @State private var exportedFile: IdentifiedURL?
     @State private var transferResult: TransferResult?
     @State private var browserURL: IdentifiedURL?
     @AppStorage(CloudSyncService.enabledKey) private var iCloudSyncEnabled = false
@@ -37,6 +39,7 @@ struct SettingsView: View {
                         SettingsRowLabel("Sort & Visibility",
                                          systemImage: "arrow.up.arrow.down", color: .blue)
                     }
+                    .accessibilityIdentifier("settings-sort")
                 }
 
                 transferSection
@@ -155,6 +158,7 @@ struct SettingsView: View {
                     """)
                 }
             }
+            .readableListText()
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
@@ -175,6 +179,19 @@ struct SettingsView: View {
             .alert(item: $transferResult) { result in
                 Alert(title: Text(result.title), message: Text(result.message))
             }
+            .alert(
+                "Some Values Can't Be Exported",
+                isPresented: Binding(get: { exportLeavingValuesOut != nil }, set: { if !$0 { exportLeavingValuesOut = nil } }),
+                presenting: exportLeavingValuesOut
+            ) { export in
+                Button("Share Anyway") { share(export) }
+                Button("Cancel", role: .cancel) {}
+            } message: { export in
+                Text("Values left out of the file: \(export.leftOut). They stay in your reports.")
+            }
+            .sheet(item: $exportedFile, onDismiss: { ExportFiles.removeAll() }, content: { file in
+                CDAShareSheet(url: file.url)
+            })
         }
     }
 
@@ -182,15 +199,17 @@ struct SettingsView: View {
 
     private var transferSection: some View {
         Section {
-            ShareLink(item: ReportArchive(reports: reports), preview: SharePreview("LabImporter Reports")) {
+            Button(action: exportAllReports) {
                 SettingsRowLabel("Export All Reports", systemImage: "square.and.arrow.up", color: .green)
             }
+            .foregroundStyle(reports.isEmpty ? Color.textSecondary : Color.accentColor)
             .disabled(reports.isEmpty)
             Button {
                 showTransferImporter = true
             } label: {
                 SettingsRowLabel("Import Reports", systemImage: "square.and.arrow.down", color: .green)
             }
+            .foregroundStyle(Color.accentColor)
         } header: {
             Text("Transfer")
         } footer: {
@@ -201,13 +220,35 @@ struct SettingsView: View {
         }
     }
 
+    /// A file that's smaller than what's on screen is the user's call, never a surprise.
+    private func exportAllReports() {
+        let export = ReportTransferService.export(of: reports)
+        if export.leftOut > 0 && export.written > 0 {
+            exportLeavingValuesOut = export
+        } else {
+            share(export)
+        }
+    }
+
+    private func share(_ export: ReportTransferService.Export) {
+        do {
+            exportedFile = IdentifiedURL(url: try ReportTransferService.writeFile(export))
+        } catch {
+            transferResult = TransferResult(title: String(localized: "Export Error"), message: error.localizedDescription)
+        }
+    }
+
     private func importReports(from url: URL) async {
         do {
-            let summary = try await ReportTransferService.importFile(at: url, existing: reports)
-            transferResult = TransferResult(
-                title: String(localized: "Reports Imported"),
-                message: String(localized: "New reports: \(summary.imported) · Already present: \(summary.alreadyPresent)")
-            )
+            let summary = try await ReportTransferService.importFile(at: url)
+            var message = String(localized: "New reports: \(summary.imported) · Already present: \(summary.alreadyPresent)")
+            if summary.needingNewerVersion > 0 {
+                message += " " + String(localized: "Reports in this file that need a newer version of LabImporter: \(summary.needingNewerVersion).")
+            }
+            if summary.damaged > 0 {
+                message += " " + String(localized: "Damaged reports in this file: \(summary.damaged). Only what could be read was imported.")
+            }
+            transferResult = TransferResult(title: String(localized: "Reports Imported"), message: message)
         } catch {
             transferResult = TransferResult(title: String(localized: "Import Failed"), message: error.localizedDescription)
         }
@@ -233,7 +274,7 @@ struct SettingsView: View {
                 Spacer()
                 Image(systemName: "arrow.up.right")
                     .font(.caption.weight(.semibold))
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(.textTertiary)
             }
             // Make the whole row (including the gap the Spacer opens up)
             // tappable, not just the label and trailing glyph.
@@ -272,7 +313,7 @@ struct SettingsRowLabel: View {
             title
         } icon: {
             Image(systemName: systemImage)
-                .font(.system(size: 13, weight: .semibold))
+                .decorativeIcon(size: 13, weight: .semibold)
                 .foregroundStyle(.white)
                 .frame(width: 28, height: 28)
                 .background(color.gradient, in: RoundedRectangle(cornerRadius: 7, style: .continuous))

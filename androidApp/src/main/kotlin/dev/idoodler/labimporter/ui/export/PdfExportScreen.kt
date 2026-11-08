@@ -199,7 +199,7 @@ fun PdfExportScreen(
                         leading = { Box(Modifier.size(10.dp).background(metric.category.color, CircleShape)) },
                         headline = { Text(metric.name) },
                         trailing = { Checkbox(checked = checked, onCheckedChange = null) },
-                        modifier = Modifier.toggleable(checked, role = Role.Checkbox, onValueChange = toggle),
+                        action = Modifier.toggleable(checked, role = Role.Checkbox, onValueChange = toggle),
                     )
                 }
                 item(key = "values-footer") {
@@ -240,7 +240,7 @@ private fun SectionSwitch(index: Int, title: String, checked: Boolean, onChange:
         index, 3,
         headline = { Text(title) },
         trailing = { Switch(checked = checked, onCheckedChange = null) },
-        modifier = Modifier.toggleable(checked, role = Role.Switch, onValueChange = onChange),
+        action = Modifier.toggleable(checked, role = Role.Switch, onValueChange = onChange),
     )
 }
 

@@ -1,5 +1,6 @@
 package dev.idoodler.labimporter.ui.design
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
@@ -58,21 +60,21 @@ fun GroupedListItem(
     leading: (@Composable () -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null,
     containerColor: Color = groupContainerColor(),
+    /** What the row does (`toggleable`, custom actions), beyond [onClick]. */
+    action: Modifier = Modifier,
 ) {
     val shape = groupShape(index, count)
-    val item = @Composable {
+    Surface(shape = shape, color = containerColor, modifier = modifier) {
+        // On the ListItem, not the Surface: it merges its own content for TalkBack, so
+        // anywhere further out the action would have no name and the name no action.
         ListItem(
             headlineContent = headline,
             supportingContent = supporting,
             leadingContent = leading,
             trailingContent = trailing,
             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+            modifier = Modifier.clip(shape).then(action).then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
         )
-    }
-    if (onClick != null) {
-        Surface(onClick = onClick, shape = shape, color = containerColor, modifier = modifier) { item() }
-    } else {
-        Surface(shape = shape, color = containerColor, modifier = modifier) { item() }
     }
     if (index < count - 1) Spacer(Modifier.height(2.dp))
 }

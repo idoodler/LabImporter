@@ -19,6 +19,11 @@ enum Fixtures {
         Calendar.current.date(from: DateComponents(year: year, month: month, day: day))!
     }
 
+    /// Same fixture as `GoldenCda.narrative` in the Kotlin tests.
+    static let goldenNarrative = CDAExportService.Narrative(
+        languageCode: "de-DE", documentTitle: "Lab Results", sectionTitle: "Laborwerte", testHeader: "Test", resultHeader: "Ergebnis"
+    )
+
     /// Same fixture as `GoldenCda.values` in the Kotlin tests.
     static let goldenValues: [LabValue] = [
         LabValue(code: "2160-0", name: "Creatinine", displayValue: "0,8", numericValue: 0.8, unit: "mg/dl"),

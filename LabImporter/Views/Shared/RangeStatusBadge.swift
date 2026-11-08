@@ -7,9 +7,9 @@ extension RangeStatus {
     /// has no dedicated colour (it is never badged) and falls back to secondary.
     var color: Color {
         switch self {
-        case .high: return .orange
-        case .low: return .blue
-        case .normal: return .secondary
+        case .high: return .statusWarning
+        case .low: return .statusLow
+        case .normal: return .textSecondary
         }
     }
 

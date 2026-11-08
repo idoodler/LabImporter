@@ -129,7 +129,8 @@ struct PDFExportService {
 
     // MARK: Rendering
 
-    /// Renders the pages to a temporary PDF file and returns its URL for sharing.
+    /// Renders the pages to a temporary PDF file and returns its URL for sharing;
+    /// the share sheet's dismissal removes it (`ExportFiles`).
     /// Runs on the main actor because `ImageRenderer` rasterises SwiftUI views.
     @MainActor
     func export(data: PDFReportData, options: PDFExportOptions) throws -> URL {
@@ -141,7 +142,7 @@ struct PDFExportService {
 
         let size = options.pageFormat.size
         var mediaBox = CGRect(origin: .zero, size: size)
-        let url = Self.outputURL(for: data)
+        let url = try Self.outputURL(for: data)
 
         guard let consumer = CGDataConsumer(url: url as CFURL),
               let context = CGContext(consumer: consumer, mediaBox: &mediaBox, nil) else {
@@ -167,11 +168,11 @@ struct PDFExportService {
         return url
     }
 
-    private static func outputURL(for data: PDFReportData) -> URL {
+    private static func outputURL(for data: PDFReportData) throws -> URL {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         let datePart = data.latestDate.map { formatter.string(from: $0) } ?? formatter.string(from: data.generatedAt)
         let name = "LabReport-\(datePart).pdf"
-        return FileManager.default.temporaryDirectory.appendingPathComponent(name)
+        return try ExportFiles.url(named: name)
     }
 }

@@ -24,7 +24,7 @@ struct WelcomeView: View {
                 icon: "heart.text.square.fill",
                 color: LabCategory.cardiac.color,
                 title: "Saved to Apple Health",
-                description: "Reports are stored as clinical CDA records directly in Apple Health."
+                description: "Reports are stored as clinical documents directly in Apple Health."
             ),
             Feature(
                 icon: "chart.line.uptrend.xyaxis",
@@ -58,7 +58,7 @@ struct WelcomeView: View {
             VStack(spacing: 4) {
                 Text("Welcome to")
                     .font(.title3)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
                 Text(verbatim: "LabImporter")
                     .font(.largeTitle.bold())
             }
@@ -108,6 +108,7 @@ struct WelcomeView: View {
     private var footer: some View {
         Button("Get Started", action: onDismiss)
             .buttonStyle(.borderedProminent)
+            .tint(.prominentFill)
             .controlSize(.large)
             .frame(maxWidth: .infinity)
             .opacity(appeared ? 1 : 0)
@@ -127,7 +128,7 @@ private struct FeatureRow: View {
     let feature: Feature
 
     var body: some View {
-        HStack(alignment: .center, spacing: 18) {
+        AdaptiveRow(spacing: 18) {
             ZStack {
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
                     .fill(
@@ -149,7 +150,7 @@ private struct FeatureRow: View {
                     .font(.body.bold())
                 Text(feature.description)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }

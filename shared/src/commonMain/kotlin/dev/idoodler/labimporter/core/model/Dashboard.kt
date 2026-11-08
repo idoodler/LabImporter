@@ -136,6 +136,12 @@ object Dashboard {
     fun trendMetrics(reports: List<LabReport>, preferences: LabDisplayPreferences): List<Metric> =
         ordered(metrics(reports), preferences)
 
+    /**
+     * What a trend opens on, in both apps: every reading. A shorter window would open a history
+     * with a long gap on a lone dot, with nothing on screen saying there is more.
+     */
+    val openingTrendWindow: TrendWindow = TrendWindow.ALL
+
     private fun ordered(metrics: List<Metric>, preferences: LabDisplayPreferences): List<Metric> {
         val pinned = preferences.pinnedSet
         val order = mutableMapOf<String, Int>()

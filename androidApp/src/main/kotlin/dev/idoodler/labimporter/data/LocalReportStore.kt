@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import dev.idoodler.labimporter.core.LabReportStore
 import dev.idoodler.labimporter.core.export.FhirLabCodec
+import dev.idoodler.labimporter.core.export.StoredReports
 import dev.idoodler.labimporter.core.model.LabReport
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -35,28 +36,34 @@ class LocalReportStore(
     override var unreadableReports = 0
         private set
 
+    @Volatile
+    override var newerVersionReports = 0
+        private set
+
     override suspend fun loadReports(): List<LabReport> = withContext(Dispatchers.IO) {
         val files = directory.listFiles { f -> f.extension == "json" }.orEmpty().map(::read)
-        unreadableReports = files.count { it == null }
-        files.filterNotNull().flatten()
+        unreadableReports = files.sumOf { it.unreadableReports }
+        newerVersionReports = files.sumOf { it.newerVersionReports }
+        files.flatMap { it.reports }
     }
 
-    /** The reports in [file], or null when it can't be read. It stays: a later version may read it. */
-    private fun read(file: File): List<LabReport>? {
+    /** What [file] holds. One that can't be read isn't listed, but stays: a later version may read it. */
+    private fun read(file: File): StoredReports {
         val resources = try {
             Json.decodeFromString(serializer, file.readText())
         } catch (e: Exception) {
             // Only the type: a parse error's message quotes the file, and that's a health record.
             Log.w(TAG, "Couldn't read a saved report: ${e::class.simpleName}")
-            return null
+            return StoredReports(emptyList(), unreadableReports = 1)
         }
-        val reports = FhirLabCodec.decode(resources)
-        if (reports.sumOf { it.entries.size } < resources.size) {
+        val stored = FhirLabCodec.decodeStored(resources)
+        if (stored.newerVersionReports > 0) return StoredReports(emptyList(), newerVersionReports = stored.newerVersionReports)
+        if (stored.reports.sumOf { it.entries.size } < resources.size) {
             // Showing what's left would let a move into Health Connect delete the rest.
             Log.w(TAG, "Couldn't read every value of a saved report")
-            return null
+            return StoredReports(emptyList(), unreadableReports = 1)
         }
-        return reports
+        return stored
     }
 
     override suspend fun save(report: LabReport) = withContext(Dispatchers.IO) {

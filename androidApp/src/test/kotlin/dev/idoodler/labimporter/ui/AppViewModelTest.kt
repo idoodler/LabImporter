@@ -15,6 +15,9 @@ import dev.idoodler.labimporter.ai.AiProblem
 import dev.idoodler.labimporter.ai.FakeAi
 import dev.idoodler.labimporter.ai.UnsupportedReason
 import dev.idoodler.labimporter.core.export.CdaExport
+import dev.idoodler.labimporter.core.export.CdaNarrative
+import dev.idoodler.labimporter.core.export.FhirLabCodec
+import dev.idoodler.labimporter.core.export.ReportSchema
 import dev.idoodler.labimporter.core.model.LabReport
 import dev.idoodler.labimporter.core.model.LabValue
 import dev.idoodler.labimporter.core.transfer.ReportTransfer
@@ -23,6 +26,9 @@ import dev.idoodler.labimporter.data.StorageMode
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -179,7 +185,7 @@ class AppViewModelTest {
         await(viewModel.message) { it != null } // "Saved 1 value"
         viewModel.consumeMessage()
 
-        assertTrue(viewModel.exportAllReports() != null)
+        assertTrue(viewModel.exportAllReports() is ReportsExport.Ready)
         val exported = File(app.cacheDir, "exports").listFiles().orEmpty().single { it.extension == "json" }
         viewModel.importReports(Uri.fromFile(exported))
         assertEquals(app.getString(R.string.transfer_summary, 0, 1), await(viewModel.message) { it != null })
@@ -189,7 +195,7 @@ class AppViewModelTest {
     @Test
     fun aCdaDocumentFromTheOtherAppImports() {
         val values = listOf(LabValue(code = "4548-4", name = "HbA1c", displayValue = "6,5", numericValue = 6.5, unit = "%"))
-        val cda = CdaExport.generate(values, LocalDate(2026, 3, 1), "LabImporter iOS")
+        val cda = CdaExport.generate(values, LocalDate(2026, 3, 1), "LabImporter iOS", narrative)
         viewModel.importReports(file("report.xml", cda))
         assertEquals(app.getString(R.string.transfer_summary, 1, 0), await(viewModel.message) { it != null })
         assertEquals(listOf("4548-4"), await(viewModel.reports) { it.isNotEmpty() }.single().entries.map { it.code })
@@ -202,10 +208,12 @@ class AppViewModelTest {
         assertTrue(viewModel.reports.value.isEmpty())
     }
 
+    private val narrative = CdaNarrative("en", "Lab Results", "Lab Values", "Test", "Result")
+
     private val cda: String
         get() = CdaExport.generate(
             listOf(LabValue(code = "4548-4", name = "HbA1c", displayValue = "6,5", numericValue = 6.5, unit = "%")),
-            LocalDate(2026, 3, 1), "LabImporter iOS",
+            LocalDate(2026, 3, 1), "LabImporter iOS", narrative,
         )
 
     /** The real store's directory is gone and can't be made again: a full or failing disk. */
@@ -258,7 +266,7 @@ class AppViewModelTest {
             "report", LocalDate(2026, 3, 1), "", "",
             listOf(LabReport.Entry("entry", "4548-4", "HbA1c", "6.5", 6.5, "%")),
         )
-        viewModel.importReports(file("transfer.json", ReportTransfer.export(listOf(source), "test")))
+        viewModel.importReports(file("transfer.json", ReportTransfer.export(listOf(source), "test").contents))
         val imported = await(viewModel.reports) { it.isNotEmpty() }.single()
         assertEquals(source.entries.single().numericValue, imported.entries.single().numericValue)
         assertFalse(imported.id == source.id)
@@ -292,8 +300,12 @@ class AppViewModelTest {
     private val exports: File get() = File(app.cacheDir, "exports")
 
     @Test
-    fun exportsLeftFromAnEarlierRunAreRemovedOnLaunch() {
-        val stale = File(exports.apply { mkdirs() }, "LabResults-2020-01-01.xml").apply { writeText("<health record/>") }
+    fun oldExportsAreRemovedOnLaunchButNotOneStillBeingSent() {
+        val directory = exports.apply { mkdirs() }
+        val stale = File(directory, "LabResults-2020-01-01.xml").apply { writeText("<health record/>") }
+        stale.setLastModified(System.currentTimeMillis() - 25 * 60 * 60 * 1000L)
+        // This process may have been killed while the mail app the file went to stayed open.
+        val recent = File(directory, "LabResults-2020-01-02.xml").apply { writeText("<health record/>") }
         AppViewModel(app)
         val deadline = System.currentTimeMillis() + 10_000
         while (stale.exists() && System.currentTimeMillis() < deadline) {
@@ -301,6 +313,7 @@ class AppViewModelTest {
             Thread.sleep(10)
         }
         assertFalse(stale.exists())
+        assertTrue(recent.exists())
     }
 
     @Test
@@ -315,5 +328,98 @@ class AppViewModelTest {
         viewModel.exportAllReports()
         assertEquals(1, exports.listFiles().orEmpty().size)
         assertEquals("json", exports.listFiles().orEmpty().single().extension)
+    }
+
+    @Test
+    fun anExportOutlivesTheUsersReturnToTheApp() {
+        reviewAReport()
+        viewModel.saveDraft()
+        await(viewModel.reports) { it.size == 1 }
+        viewModel.exportCda(viewModel.reports.value.single())
+        val shared = exports.listFiles().orEmpty().single()
+
+        // The user sends the file to a mail app, and checks a value here before sending the mail.
+        runBlocking { viewModel.removeExpiredExports().join() }
+        assertTrue("A target reading the file only when it sends would find nothing", shared.exists())
+
+        // Coming back the next day, whatever had to send it has.
+        shared.setLastModified(System.currentTimeMillis() - 25 * 60 * 60 * 1000L)
+        runBlocking { viewModel.removeExpiredExports().join() }
+        assertFalse(shared.exists())
+    }
+
+    @Test
+    fun aDamagedTransferFileSaysItCouldntCarryEverything() {
+        val source = FhirLabCodec.encodeForSaving(
+            LabReport(
+                "report", LocalDate(2026, 3, 1), "", "",
+                listOf(
+                    LabReport.Entry("a", "4548-4", "HbA1c", "6.5", 6.5, "%"),
+                    LabReport.Entry("b", "2160-0", "Creatinine", "0.8", 0.8, "mg/dl"),
+                ),
+            ),
+            "test",
+        ).map { it.json }
+        val damaged = listOf(source.first().replace("effectiveDateTime", "lost"), source.last())
+        val bundle = "{\"resourceType\":\"Bundle\",\"entry\":[" + damaged.joinToString(",") { "{\"resource\":$it}" } + "]}"
+
+        viewModel.importReports(file("damaged.json", bundle))
+
+        val summary = await(viewModel.message) { it != null }
+        assertEquals(app.getString(R.string.transfer_summary, 1, 0) + " " + app.getString(R.string.transfer_damaged_some, 1), summary)
+        assertEquals(1, viewModel.reports.value.single().entries.size)
+    }
+
+    @Test
+    fun aSharedDocumentSpeaksTheAppsLanguage() {
+        reviewAReport()
+        viewModel.saveDraft()
+        await(viewModel.reports) { it.size == 1 }
+        viewModel.exportCda(viewModel.reports.value.single())
+        val xml = exports.listFiles().orEmpty().single().readText()
+        assertTrue(xml.contains("<languageCode code=\"en\"/>"))
+        assertTrue(xml.contains("<th>Test</th><th>Result</th>"))
+    }
+
+    @Test
+    fun aFileFromANewerVersionAsksForAnUpdate() {
+        viewModel.importReports(file("newer.xml", cda.replace("LabImporter CDA v${ReportSchema.VERSION}", "LabImporter CDA v${ReportSchema.VERSION + 1}")))
+        assertEquals(app.getString(R.string.transfer_newer_version), await(viewModel.message) { it != null })
+        assertTrue(viewModel.reports.value.isEmpty())
+    }
+
+    /** A stored report with a code no build can write: older files can hold one, and only a save checks. */
+    private fun storeAReportWithAnUnknownCode(vararg entries: LabReport.Entry) {
+        val resources = FhirLabCodec.encode(LabReport("a", LocalDate(2026, 3, 1), "", "", entries.toList()), "test").map { it.json.replace("2823-3", "NOT-A-CODE") }
+        val json = Json.encodeToString(ListSerializer(String.serializer()), resources)
+        File(app.noBackupFilesDir, "reports").apply { mkdirs() }.resolve("a.json").writeText(json)
+        viewModel.refresh()
+        await(viewModel.reports) { it.size == 1 }
+    }
+
+    @Test
+    fun anExportThatWouldLeaveValuesOutAsksFirst() {
+        storeAReportWithAnUnknownCode(
+            LabReport.Entry("a1", "2160-0", "Creatinine", "0.8", 0.8, "mg/dl"),
+            LabReport.Entry("a2", "2823-3", "Potassium", "4.1", 4.1, "mmol/l"),
+        )
+
+        assertEquals(ReportsExport.LeavesOut(1), viewModel.exportAllReports())
+        assertTrue("Nothing is written until the user decides", exports.listFiles().orEmpty().isEmpty())
+
+        assertTrue(viewModel.exportAllReports(allowLeavingOut = true) is ReportsExport.Ready)
+        val file = exports.listFiles().orEmpty().single().readText()
+        assertTrue("2160-0" in file)
+        assertFalse("NOT-A-CODE" in file)
+    }
+
+    @Test
+    fun anExportWithNothingToWriteFailsOutLoud() {
+        storeAReportWithAnUnknownCode(LabReport.Entry("a1", "2823-3", "Potassium", "4.1", 4.1, "mmol/l"))
+
+        assertEquals(ReportsExport.Failed, viewModel.exportAllReports(allowLeavingOut = true))
+
+        assertEquals(app.getString(R.string.transfer_export_nothing), viewModel.message.value)
+        assertTrue(exports.listFiles().orEmpty().isEmpty())
     }
 }

@@ -51,6 +51,7 @@ LabImporter/
 │   ├── CDAExportService.swift  # struct; thin wrapper over the shared CdaExport (C-CDA R2.1 + UCUM)
 │   ├── LoincDirectory.swift    # Swift face of the shared LOINC catalog (LabImporterCore)
 │   ├── SharedCore.swift        # starts LabImporterCore; Swift ⇄ Kotlin conversions at the boundary
+│   ├── ExportFiles.swift       # where exports wait for a share sheet; removed when it closes and at launch
 │   ├── ShareInbox.swift        # App Group inbox: share extension → app (also compiled into the extension)
 │   └── ReportTransferService.swift  # iPhone ⇄ Android transfer file (shared ReportTransfer) + Transferable
 ├── Intents/                    # App Intents — Siri's only integration path (SiriKit is retired)
@@ -74,7 +75,7 @@ LabImporter/
     ├── History/                # HistoryView (saved reports list), ReportDetailView
     ├── Settings/               # SettingsView (patient metadata + display prefs), LabSortEditor, RenameLabAlert,
     │                           #   SiriAccessEditor (per-metric + per-capability Siri opt-in)
-    └── Shared/                 # MorphingCategoryBackground, PreviewSampleData,
+    └── Shared/                 # MorphingCategoryBackground, PreviewSampleData, ReportProblemViews (failed read, newer reports),
                                 #   UnsupportedDeviceView (also defines enum DeviceSupport.isSupported)
 
 LabImporterShare/   # share extension (text only): hands shared text to the app via ShareInbox
@@ -135,10 +136,20 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
 - **`LabMapping`** is a thin, data-driven adapter over `LoincDirectory` (no curated
   tables of its own):
   - `displayName(for:)` — the user's nickname for a code if they set one (in
-    Sort & Visibility), else the localized catalog name, else the raw code. The
+    Sort & Visibility), else the plain clinical name, else the raw code. The
     nickname is a cosmetic display preference (`LabDisplayPreferences.nicknames`,
     persisted under the legacy JSON key `customNames`, synced via iCloud) — it
     never reaches the exported CDA.
+  - The plain name ("Protein in Urin", not "Protein [Masse/Volumen] in Urin")
+    comes from the shared `LoincPlainName`: a rule over each language's label
+    template and the term's LOINC system, with no table of tests. Blood, serum
+    and plasma go; every other specimen and every method stays; a property goes
+    only if the unit or the result says it anyway (mg/dL, "negativ"), so colour,
+    morphology and pCO2 keep theirs. Only places that tell terms apart (code
+    picker, browser, term screen, "About this value", a name Siri's lists would
+    show twice) show the full label, `catalogName(for:)`. Exports keep LOINC's
+    English display in the coding; a FHIR record's human `code.text` is what the
+    user saw, which storage round-trips exactly (`RoundTripPropertyTest`).
   - `loincCode(for:)` — validates the code + returns an English display for CDA
     export; **returns nil → value is not exportable** (unknown/unmapped code).
   - `loincURL(for:)` — the loinc.org details page for a code.
@@ -214,7 +225,8 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   (provenance) and `softwareName` = `LabImporter CDA v<N>` where `N` is the shared
   `ReportSchema.VERSION` (the Android FHIR records carry the same number). On
   read-back, `CdaParser` parses `N`; `ReportSchema.upgrade` **ignores** documents
-  with no recognized version (legacy exports) and chains migrations up to the
+  with no recognized version (legacy exports), counts newer ones so the app can
+  ask for an update (`StoredReports`, `CdaParser.problem`), and chains migrations up to the
   current schema. See "Migrating the exported CDA" below before changing the export.
 
 ### UI patterns
@@ -252,7 +264,9 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   Unicode private-use characters (`OCRService.hasPrivateUseCharacters`: some
   fonts draw "<" or "(" that way, so "<1.0" would read as an exact 1.0) —
   those pages are OCR'd from their render; pages keep their order.
-  Narrative CDA labels are German.
+  A CDA document's headings and `languageCode` are the caller's (`CdaNarrative`):
+  the app's current language. Read-back ignores them, so documents with the
+  German headings all older versions wrote keep working.
 - Preferences (`labDisplayPrefs`, `patientName`, `hasSeenWelcome`, etc.) are read
   via `@AppStorage`. `LabDisplayPreferences` is `RawRepresentable` over the shared
   JSON codec (`LabImporterCore.LabDisplayPreferences.encode/decode`) — the same
@@ -271,6 +285,22 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   the variation is obvious (`#Preview("Dark")`, `#Preview("Empty")`). Drive them
   from `PreviewSampleData` / the model `sample*` fixtures rather than ad-hoc data.
   New or edited views are not done until their previews cover every variation.
+
+- **Accessibility is measured, on every screen.** `AccessibilityAuditUITests` runs Apple's
+  audit over `QualityScreen.all` (`LabImporterUITests/QualityScreens.swift`) at the
+  largest text, and the screens marked `hasTints` again in dark (kept under 15 minutes for
+  CI); Dynamic Type is measured as each text's height at both sizes. An issue fails it unless
+  `AuditExemption` names it — screen, condition, audit type and element — with why it's a
+  false positive; `TEST_RUNNER_QUALITY_AUDIT_EVIDENCE=<folder>` saves what it found. New screens and states go in that list (`--ss-data`, `--ss-onboarding`,
+  `--ss-screen` in `ScreenshotMode`). Text goes in `.textSecondary`/`.textTertiary` and
+  the `status*` colours, not `.secondary` or `.orange`: the system's are 3.4:1 on white,
+  less over a wash, and a `List` takes `.readableListText()` for its headers and footers. Text
+  is never cut or shrunk to fit: `AdaptiveRow` stacks at accessibility sizes, `FittingRow`
+  when the parts don't fit, and a tile's glyph uses `decorativeIcon(size:)`. Android:
+  `AccessibilityAuditTest` walks the semantics of `qualityScreens`, `DesignContrastTest`
+  computes the token pairs, `isLargeText` stacks. Evidence: `ScreenshotMatrixUITests`
+  with `TEST_RUNNER_QUALITY_SCREENSHOT_DIR=<folder>` (env for `xcodebuild`), and
+  `ScreenMatrixTest` with `-PqualityScreens=<folder>`.
 
 - **iPhone Duo (foldable).** Layouts follow size classes, never the device:
   regular × regular (unfolded inner display, full-screen iPad) gets the
@@ -349,7 +379,8 @@ shared/        # Kotlin Multiplatform (android, iosArm64, iosSimulatorArm64, jvm
                          #   read in overlapping parts, replies merged)
     transfer/            # ReportTransfer: iPhone ⇄ Android file (FHIR Bundle; also reads CDA)
     export/PdfReport.kt  # PDF content + pagination (PdfReport, PdfLayout) — both apps' PDFs
-    model/               # … also ChartAxis (rounded chart ticks), SortEditorState (Sort & Visibility rules)
+    model/               # … also ChartAxis (rounded ticks; `scale`: one rule for both apps' trend charts and
+                         #   sparklines, zero-based y and time-proportional x), SortEditorState (Sort & Visibility rules)
     about/               # About: FUNDING.yml links, repository URL, "Report an Issue" link
     platform/            # NumberFormatting (printf-exact on both platforms), SQLite, locks
   src/jvmTest/           # the shared tests (+ golden/report.cda.xml, also used by the Swift tests)

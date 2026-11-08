@@ -43,6 +43,7 @@ struct PDFExportView: View {
                 valuesSection
             }
             .listStyle(.insetGrouped)
+            .readableListText()
             .navigationTitle("Export PDF")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -71,9 +72,9 @@ struct PDFExportView: View {
             } message: {
                 Text(errorMessage ?? "")
             }
-            .sheet(item: $shareURL) { item in
+            .sheet(item: $shareURL, onDismiss: { ExportFiles.removeAll() }, content: { item in
                 PDFShareSheet(url: item.url)
-            }
+            })
         }
     }
 
@@ -141,12 +142,15 @@ struct PDFExportView: View {
                 }
             }
         } header: {
-            HStack {
+            // Side by side at the largest text, both wrap at single letters ("Includ-ed").
+            AdaptiveRow(spacing: 0) {
                 Text("Included Values")
-                Spacer()
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 Button(allSelected ? "Deselect All" : "Select All") {
                     options.selectedCodes = allSelected ? [] : Set(available.map(\.code))
                 }
+                .tapTargetButton(vertical: 12, horizontal: 0)
+                .foregroundStyle(Color.accentColor)
                 .font(.caption.weight(.medium))
                 .textCase(nil)
             }
@@ -197,6 +201,8 @@ struct PDFExportView: View {
                 let url = try await MainActor.run { try PDFExportService().export(data: data, options: options) }
                 shareURL = IdentifiedURL(url: url)
             } catch {
+                // Rendering may have stopped half-way through the file.
+                ExportFiles.removeAll()
                 errorMessage = error.localizedDescription
             }
             isGenerating = false
@@ -226,3 +232,30 @@ struct PDFShareSheet: UIViewControllerRepresentable {
         }
     }
 }
+
+// MARK: - Previews
+
+#if DEBUG
+#Preview("Reports") {
+    PDFExportView(reports: LabReport.sampleHistory)
+}
+
+#Preview("Dark") {
+    PDFExportView(reports: LabReport.sampleHistory)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Nothing to Select") {
+    PDFExportView(reports: [])
+}
+
+#Preview("Largest Text") {
+    PDFExportView(reports: LabReport.sampleHistory)
+        .dynamicTypeSize(.accessibility5)
+}
+
+#Preview("RTL") {
+    PDFExportView(reports: LabReport.sampleHistory)
+        .environment(\.layoutDirection, .rightToLeft)
+}
+#endif

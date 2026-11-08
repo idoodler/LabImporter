@@ -37,8 +37,7 @@ extension ReviewView {
                     Text("Patient and Lab")
                     Text(detailsSummary)
                         .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
+                        .foregroundStyle(.textSecondary)
                 }
                 .accessibilityElement(children: .combine)
             }
@@ -95,7 +94,7 @@ extension ReviewView {
                 Button { birthdateInterval = 0 } label: {
                     Image(systemName: "xmark.circle.fill")
                 }
-                .foregroundStyle(Color.secondary)
+                .foregroundStyle(Color.textSecondary)
                 .buttonStyle(.plain).accessibilityLabel("Clear Birthday")
             }
         }

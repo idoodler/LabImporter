@@ -23,7 +23,7 @@
     <string name="disclaimer_title">Nu este consultanță medicală</string>
     <string name="disclaimer_body">LabImporter nu este un dispozitiv medical și nu oferă consultanță, diagnostic sau tratament medical. Valorile extrase pot fi inexacte sau incomplete — verifică-le întotdeauna în raportul tău original. Nu lua niciodată decizii medicale pe baza acestei aplicații; consultă un profesionist din domeniul sănătății calificat în legătură cu rezultatele tale.</string>
     <string name="disclaimer_accept">Am înțeles</string>
-    <string name="onboarding_hc_message">Salvează rapoartele în Health Connect ca să stea alături de restul datelor tale de sănătate. Rezultatele de laborator sunt stocate ca înregistrări FHIR standard pe acest dispozitiv.</string>
+    <string name="onboarding_hc_message">Salvează rapoartele în Health Connect ca să stea alături de restul datelor tale de sănătate. Rezultatele de laborator sunt stocate ca înregistrări medicale standard pe acest dispozitiv.</string>
     <string name="onboarding_hc_connected">Conectat. Rapoartele tale vor fi salvate în Health Connect ca rezultate de laborator.</string>
     <string name="onboarding_hc_unavailable">Dosarele medicale Health Connect nu sunt disponibile pe acest dispozitiv, așa că rapoartele tale sunt stocate privat în LabImporter pe acest dispozitiv. Poți schimba mai târziu din Configurări.</string>
     <string name="dashboard_empty_title">Niciun raport încă</string>
@@ -66,7 +66,7 @@
     <string name="category_other">Altele</string>
     <string name="history_empty_title">Niciun raport încă</string>
     <string name="history_empty_message">Importă un raport de laborator ca să-l vezi aici.</string>
-    <string name="share_cda">Partajează fișierul CDA</string>
+    <string name="share_cda">Partajează fișierul raportului</string>
     <string name="delete_report_title">Ștergi raportul?</string>
     <string name="delete_report_message">Acest raport va fi eliminat definitiv.</string>
     <string name="report_deleted">Raport șters</string>
@@ -220,6 +220,17 @@
     <string name="try_again">Încearcă din nou</string>
     <string name="reports_load_failed_title">Rapoartele nu au putut fi încărcate</string>
     <string name="reports_load_failed_message">Rapoartele salvate nu au fost modificate, dar nu pot fi citite acum.</string>
+    <string name="reports_newer_title">Actualizează LabImporter ca să vezi toate rapoartele</string>
+    <string name="reports_newer_message">Rapoarte salvate de o versiune mai nouă de LabImporter: %1$d. Sunt în siguranță. Actualizează aplicația ca să le vezi.</string>
+    <string name="hc_access_off_title">Accesul la Health Connect este dezactivat</string>
+    <string name="hc_access_off_message">Fără acces, LabImporter nu poate citi rapoartele salvate în Health Connect. Sunt încă acolo. Permite accesul ca să le vezi sau păstrează de acum rapoartele în aplicație.</string>
+    <string name="hc_allow_access">Permite accesul</string>
+    <string name="hc_needs_update_title">Health Connect trebuie actualizat</string>
+    <string name="hc_needs_update_message">Rapoartele tale sunt încă în Health Connect, dar acesta trebuie actualizat ca LabImporter să le poată citi.</string>
+    <string name="hc_update">Actualizează Health Connect</string>
+    <string name="hc_gone_title">Health Connect nu este disponibil</string>
+    <string name="hc_gone_message">LabImporter nu poate accesa Health Connect pe acest dispozitiv, așa că rapoartele salvate acolo nu sunt afișate. LabImporter nu le-a șters.</string>
+    <string name="hc_use_app_storage">Folosește stocarea aplicației</string>
     <string name="reports_unreadable_title">Unele rapoarte nu pot fi citite</string>
     <string name="reports_unreadable_message">Rapoarte care nu pot fi citite: %1$d. Rămân pe acest dispozitiv și nu au fost șterse.</string>
     <string name="hc_connect_failed">Conectarea la Health Connect nu a reușit. Rapoartele tale rămân în LabImporter. Încearcă din nou în Configurări.</string>
@@ -228,6 +239,13 @@
     <string name="transfer_export_detail">Salvează toate rapoartele într-un singur fișier, de exemplu ca să le muți pe alt telefon.</string>
     <string name="transfer_import">Importă rapoarte</string>
     <string name="transfer_import_detail">Dintr-un fișier LabImporter exportat pe iPhone sau Android. Rapoartele care există deja aici sunt omise.</string>
+    <string name="transfer_leaves_out_title">Unele valori nu pot fi exportate</string>
+    <string name="transfer_leaves_out_message">Valori lăsate în afara fișierului: %1$d. Rămân în rapoartele tale.</string>
+    <string name="transfer_share_anyway">Partajează oricum</string>
+    <string name="transfer_export_nothing">Niciuna dintre valori nu a putut fi scrisă într-un fișier, așa că nu s-a exportat nimic. Încearcă din nou.</string>
+    <string name="transfer_newer_version">Acest fișier provine dintr-o versiune mai nouă de LabImporter. Actualizează aplicația ca să îl imporți.</string>
+    <string name="transfer_newer_version_some">Rapoarte din acest fișier care necesită o versiune mai nouă de LabImporter: %1$d.</string>
+    <string name="transfer_damaged_some">Rapoarte deteriorate în acest fișier: %1$d. S-a importat doar ce a putut fi citit.</string>
     <string name="transfer_unsupported">Acest fișier nu conține rapoarte LabImporter.</string>
     <string name="transfer_summary">Rapoarte noi: %1$d · Deja existente: %2$d</string>
     <string name="transfer_summary_failed">Rapoarte noi: %1$d · Deja prezente: %2$d · Nesalvate: %3$d</string>
@@ -295,6 +313,7 @@
     <string name="pdf_trend_range">Interval de tendință</string>
     <string name="pdf_included_categories">Categorii incluse</string>
     <string name="pdf_latest_subtitle">Cea mai recentă citire pentru fiecare valoare</string>
+    <string name="cda_language_code">ro</string>
     <string name="pdf_column_test">Analiză</string>
     <string name="pdf_column_result">Rezultat</string>
     <string name="pdf_column_reference">Referință</string>
@@ -317,6 +336,7 @@
     <string name="restore">Restaurează</string>
     <string name="details">Detalii</string>
     <string name="hide">Ascunde</string>
+    <string name="include_in_export">Include în export</string>
     <string name="move_up">Mută în sus</string>
     <string name="move_down">Mută în jos</string>
     <string name="settings_loinc">LOINC</string>
@@ -371,6 +391,7 @@
     <string name="show_latest_in_search">Afișează ultima valoare în căutare</string>
     <string name="show_latest_in_search_footer">Permite ca cea mai recentă valoare măsurată pentru fiecare parametru să apară în comenzile rapide de pe ecranul de pornire și în căutare. Când este dezactivat, se afișează doar numele parametrului — niciodată o valoare.</string>
     <string name="chart_summary">Grafic %1$s: %2$s între %3$s și %4$s. Minim %5$s, maxim %6$s, cel mai recent %7$s.</string>
+    <string name="chart_reading">%1$s: %2$s</string>
     <plurals name="chart_readings">
         <item quantity="one">%d măsurătoare</item>
         <item quantity="few">%d măsurători</item>

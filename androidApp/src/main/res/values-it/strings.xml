@@ -23,7 +23,7 @@
     <string name="disclaimer_title">Non è un parere medico</string>
     <string name="disclaimer_body">LabImporter non è un dispositivo medico e non fornisce pareri medici, diagnosi o trattamenti. I valori estratti possono essere imprecisi o incompleti: verificali sempre con il referto originale. Non prendere mai decisioni mediche basandoti su questa app; consulta un professionista sanitario qualificato riguardo ai tuoi risultati.</string>
     <string name="disclaimer_accept">Ho capito</string>
-    <string name="onboarding_hc_message">Salva i tuoi referti in Health Connect per tenerli insieme al resto dei tuoi dati sanitari. I risultati di laboratorio vengono archiviati come record FHIR standard su questo dispositivo.</string>
+    <string name="onboarding_hc_message">Salva i tuoi referti in Health Connect per tenerli insieme al resto dei tuoi dati sanitari. I risultati di laboratorio vengono archiviati come record medici standard su questo dispositivo.</string>
     <string name="onboarding_hc_connected">Connesso. I tuoi referti verranno salvati in Health Connect come risultati di laboratorio.</string>
     <string name="onboarding_hc_unavailable">Le cartelle cliniche di Health Connect non sono disponibili su questo dispositivo, quindi i tuoi referti vengono archiviati in modo privato in LabImporter su questo dispositivo. Puoi cambiare in seguito nelle Impostazioni.</string>
     <string name="dashboard_empty_title">Nessun referto ancora</string>
@@ -66,7 +66,7 @@
     <string name="category_other">Altro</string>
     <string name="history_empty_title">Nessun referto ancora</string>
     <string name="history_empty_message">Importa un referto di laboratorio per vederlo qui.</string>
-    <string name="share_cda">Condividi file CDA</string>
+    <string name="share_cda">Condividi file del referto</string>
     <string name="delete_report_title">Eliminare il referto?</string>
     <string name="delete_report_message">Questo referto verrà rimosso definitivamente.</string>
     <string name="report_deleted">Referto eliminato</string>
@@ -220,6 +220,17 @@
     <string name="try_again">Riprova</string>
     <string name="reports_load_failed_title">Impossibile caricare i referti</string>
     <string name="reports_load_failed_message">I referti salvati non sono stati modificati, ma al momento non possono essere letti.</string>
+    <string name="reports_newer_title">Aggiorna LabImporter per vedere tutti i referti</string>
+    <string name="reports_newer_message">Referti salvati da una versione più recente di LabImporter: %1$d. Sono al sicuro. Aggiorna l\'app per vederli.</string>
+    <string name="hc_access_off_title">L\'accesso a Health Connect è disattivato</string>
+    <string name="hc_access_off_message">Senza accesso, LabImporter non può leggere i referti salvati in Health Connect. Sono ancora lì. Consenti l\'accesso per vederli, oppure d\'ora in poi conserva i referti nell\'app.</string>
+    <string name="hc_allow_access">Consenti l\'accesso</string>
+    <string name="hc_needs_update_title">Health Connect deve essere aggiornato</string>
+    <string name="hc_needs_update_message">I tuoi referti sono ancora in Health Connect, ma deve essere aggiornato perché LabImporter possa leggerli.</string>
+    <string name="hc_update">Aggiorna Health Connect</string>
+    <string name="hc_gone_title">Health Connect non è disponibile</string>
+    <string name="hc_gone_message">LabImporter non riesce ad accedere a Health Connect su questo dispositivo, quindi i referti salvati lì non vengono mostrati. LabImporter non li ha eliminati.</string>
+    <string name="hc_use_app_storage">Usa lo spazio dell\'app</string>
     <string name="reports_unreadable_title">Alcuni referti non possono essere letti</string>
     <string name="reports_unreadable_message">Referti che non possono essere letti: %1$d. Restano su questo dispositivo e non sono stati eliminati.</string>
     <string name="hc_connect_failed">Impossibile connettersi a Health Connect. I referti restano in LabImporter. Riprova in Impostazioni.</string>
@@ -228,6 +239,13 @@
     <string name="transfer_export_detail">Salva tutti i referti in un unico file, ad esempio per spostarli su un altro telefono.</string>
     <string name="transfer_import">Importa referti</string>
     <string name="transfer_import_detail">Da un file di LabImporter esportato su iPhone o Android. I referti già presenti vengono saltati.</string>
+    <string name="transfer_leaves_out_title">Alcuni valori non possono essere esportati</string>
+    <string name="transfer_leaves_out_message">Valori esclusi dal file: %1$d. Restano nei tuoi referti.</string>
+    <string name="transfer_share_anyway">Condividi comunque</string>
+    <string name="transfer_export_nothing">Nessuno dei tuoi valori può essere scritto in un file, quindi non è stato esportato nulla. Riprova.</string>
+    <string name="transfer_newer_version">Questo file proviene da una versione più recente di LabImporter. Aggiorna l\'app per importarlo.</string>
+    <string name="transfer_newer_version_some">Referti in questo file che richiedono una versione più recente di LabImporter: %1$d.</string>
+    <string name="transfer_damaged_some">Referti danneggiati in questo file: %1$d. È stato importato solo ciò che è stato possibile leggere.</string>
     <string name="transfer_unsupported">Questo file non contiene referti di LabImporter.</string>
     <string name="transfer_summary">Nuovi referti: %1$d · Già presenti: %2$d</string>
     <string name="transfer_summary_failed">Nuovi referti: %1$d · Già presenti: %2$d · Non salvati: %3$d</string>
@@ -295,6 +313,7 @@
     <string name="pdf_trend_range">Periodo andamento</string>
     <string name="pdf_included_categories">Categorie incluse</string>
     <string name="pdf_latest_subtitle">Misurazione più recente per ogni valore</string>
+    <string name="cda_language_code">it</string>
     <string name="pdf_column_test">Esame</string>
     <string name="pdf_column_result">Risultato</string>
     <string name="pdf_column_reference">Riferimento</string>
@@ -317,6 +336,7 @@
     <string name="restore">Ripristina</string>
     <string name="details">Dettagli</string>
     <string name="hide">Nascondi</string>
+    <string name="include_in_export">Includi nell\'esportazione</string>
     <string name="move_up">Sposta su</string>
     <string name="move_down">Sposta giù</string>
     <string name="settings_loinc">LOINC</string>
@@ -371,6 +391,7 @@
     <string name="show_latest_in_search">Mostra l’ultimo valore nella ricerca</string>
     <string name="show_latest_in_search_footer">Consenti che la misurazione più recente di ogni valore compaia nelle scorciatoie della schermata Home e nella ricerca. Quando è disattivato, viene mostrato solo il nome del valore, mai una misurazione.</string>
     <string name="chart_summary">Grafico di %1$s: %2$s dal %3$s al %4$s. Minimo %5$s, massimo %6$s, ultimo %7$s.</string>
+    <string name="chart_reading">%1$s: %2$s</string>
     <plurals name="chart_readings">
         <item quantity="one">%d misurazione</item>
         <item quantity="many">%d di misurazioni</item>

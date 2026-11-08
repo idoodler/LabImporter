@@ -59,7 +59,7 @@ struct OnboardingExtrasView: View {
                     )
                     .frame(width: 180, height: 180)
                 Image(systemName: "switch.2")
-                    .font(.system(size: 84, weight: .semibold))
+                    .decorativeIcon(size: 84, weight: .semibold)
                     .foregroundStyle(.white, Color.indigo.gradient)
                     .shadow(color: .indigo.opacity(0.35), radius: 18, x: 0, y: 8)
             }
@@ -69,7 +69,7 @@ struct OnboardingExtrasView: View {
                     .multilineTextAlignment(.center)
                 Text("All optional, and all changeable later in Settings.")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -139,10 +139,10 @@ struct OnboardingExtrasView: View {
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: "info.circle")
                         .font(.footnote)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.textSecondary)
                     Text("Some Siri intelligence features may arrive later in the EU under regional requirements.")
                         .font(.footnote)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.textSecondary)
                         .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -155,6 +155,7 @@ struct OnboardingExtrasView: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
+            .tint(.prominentFill)
             .controlSize(.large)
             .opacity(appeared ? 1 : 0)
         }
@@ -199,7 +200,7 @@ private struct ExtraToggleRow: View {
 
     var body: some View {
         Toggle(isOn: $isOn) {
-            HStack(alignment: .center, spacing: 18) {
+            AdaptiveRow(spacing: 18) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 14, style: .continuous)
                         .fill(
@@ -221,7 +222,7 @@ private struct ExtraToggleRow: View {
                         .font(.body.bold())
                     Text(description)
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }

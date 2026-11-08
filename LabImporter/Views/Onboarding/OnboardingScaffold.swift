@@ -79,25 +79,24 @@ struct OnboardingScaffold<Hero: View, Card: View, Footer: View>: View {
     private var progressRow: some View {
         if step != nil || onBack != nil {
             HStack {
-                Group {
-                    if let onBack {
-                        Button(action: onBack) {
-                            Image(systemName: "chevron.backward")
-                                .font(.body.weight(.semibold))
-                        }
-                        .accessibilityLabel("Back")
-                    } else {
-                        Color.clear
+                if let onBack {
+                    Button(action: onBack) {
+                        Image(systemName: "chevron.backward")
+                            .font(.body.weight(.semibold))
+                            .frame(width: 44, height: 44)
+                            .contentShape(Rectangle())
                     }
+                    .accessibilityLabel("Back")
+                } else {
+                    Color.clear.frame(width: 44, height: 44)
                 }
-                .frame(width: 44, height: 44)
 
                 Spacer(minLength: 0)
 
                 if let step {
                     Text("Step \(step) of \(totalSteps)")
                         .font(.caption.weight(.medium))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.textSecondary)
                 }
 
                 Spacer(minLength: 0)
@@ -169,3 +168,60 @@ struct OnboardingScaffold<Hero: View, Card: View, Footer: View>: View {
         .frame(maxWidth: .infinity)
     }
 }
+
+// MARK: - Previews
+
+#if DEBUG
+private struct ScaffoldSample: View {
+    var step: Int?
+    var onBack: (() -> Void)?
+
+    var body: some View {
+        OnboardingScaffold(step: step, totalSteps: 4, onBack: onBack) {
+            Text(verbatim: "Hero")
+                .font(.largeTitle.bold())
+        } card: {
+            Text(verbatim: "A card of benefit rows, which scrolls with the rest once it no longer fits.")
+                .padding(24)
+                .cardSurface(cornerRadius: 28)
+        } footer: {
+            Button {} label: {
+                Text(verbatim: "Continue")
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(.prominentFill)
+        }
+    }
+}
+
+#Preview("First Step") {
+    ScaffoldSample(step: 1)
+}
+
+#Preview("With Back Button") {
+    ScaffoldSample(step: 2, onBack: {})
+}
+
+#Preview("No Step or Back") {
+    ScaffoldSample()
+}
+
+#Preview("Dark") {
+    ScaffoldSample(step: 2, onBack: {})
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Landscape", traits: .landscapeLeft) {
+    ScaffoldSample(step: 2, onBack: {})
+}
+
+#Preview("Largest Text") {
+    ScaffoldSample(step: 2, onBack: {})
+        .dynamicTypeSize(.accessibility5)
+}
+
+#Preview("RTL") {
+    ScaffoldSample(step: 2, onBack: {})
+        .environment(\.layoutDirection, .rightToLeft)
+}
+#endif

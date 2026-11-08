@@ -58,6 +58,7 @@ struct NewReportImportButton: View {
             Text("Import Report")
         }
         .buttonStyle(.borderedProminent)
+        .tint(.prominentFill)
         .labImport(engine: engine)
         .onAppear {
             engine.onParsed = { result in
@@ -93,11 +94,11 @@ struct NewReportImportButton: View {
 // MARK: - Preview
 
 #Preview {
-    ContentUnavailableView {
-        Label("No Reports Yet", systemImage: "doc.text.magnifyingglass")
-    } description: {
-        Text("Import a lab report and save it to Apple Health to see it here.")
-    } actions: {
+    EmptyStateView(
+        title: "No Reports Yet",
+        systemImage: "doc.text.magnifyingglass",
+        message: "Import a lab report and save it to Apple Health to see it here."
+    ) {
         NewReportImportButton(onSaved: {})
     }
 }

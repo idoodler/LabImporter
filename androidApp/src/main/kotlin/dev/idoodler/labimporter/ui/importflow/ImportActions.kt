@@ -1,5 +1,6 @@
 package dev.idoodler.labimporter.ui.importflow
 
+import dev.idoodler.labimporter.ui.design.isLargeText
 import android.app.Activity
 import android.net.Uri
 import androidx.activity.compose.BackHandler
@@ -175,9 +176,14 @@ fun ImportOptionCards(actions: ImportActions, modifier: Modifier = Modifier) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
         OptionCard(all[0].first, Modifier.fillMaxWidth()) { all[0].second(actions) }
         OptionCard(all[1].first, Modifier.fillMaxWidth()) { all[1].second(actions) }
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            OptionCard(all[2].first, Modifier.weight(1f)) { all[2].second(actions) }
-            OptionCard(all[3].first, Modifier.weight(1f)) { all[3].second(actions) }
+        if (isLargeText) {
+            OptionCard(all[2].first, Modifier.fillMaxWidth()) { all[2].second(actions) }
+            OptionCard(all[3].first, Modifier.fillMaxWidth()) { all[3].second(actions) }
+        } else {
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                OptionCard(all[2].first, Modifier.weight(1f)) { all[2].second(actions) }
+                OptionCard(all[3].first, Modifier.weight(1f)) { all[3].second(actions) }
+            }
         }
     }
 }

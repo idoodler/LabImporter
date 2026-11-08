@@ -22,6 +22,9 @@ interface LabReportStore {
 
     /** Saved reports the last [loadReports] couldn't read. They stay stored and aren't listed. */
     val unreadableReports: Int get() = 0
+
+    /** Saved reports the last [loadReports] left out because only a newer version of the app reads them. */
+    val newerVersionReports: Int get() = 0
 }
 
 /** The entries of [old] that [updated] no longer has, for stores that keep one record per entry. */
