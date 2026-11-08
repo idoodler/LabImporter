@@ -21,10 +21,14 @@ where the right code is unambiguous.
 ```
 
 Arguments: model file, `gpu`|`cpu`, `schema` (constrained JSON) | `text`, and
-optionally `think`. Model replies land in `evaluation/build/replies/`.
+optionally `think`. Model replies land in `evaluation/replies/`, which is
+committed: commit them with the run's result below.
 `--args="replay"` re-scores those saved replies without the model — quick when
 only the shared post-processing (LOINC lookup, dates) changed; add
-`-Pverbose=true` to list the LOINC every value resolved to.
+`-Pverbose=true` to list the LOINC every value resolved to, and
+`-Psummary=build/quality/evaluation.json` to also write the totals as JSON.
+CI's quality workflow replays them on every pull request and fails below a floor
+(`.github/workflows/quality.yml`).
 
 Run it before changing the prompt (`LabParsePrompt`), the LOINC lookup or the
 model the app downloads.

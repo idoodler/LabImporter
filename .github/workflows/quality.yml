@@ -1,0 +1,88 @@
+name: Quality
+run-name: Quality gates (${{ github.ref_name }})
+
+# The gates of docs/quality/RUBRIC.md that hold today, so they can't erode
+# unnoticed: tools/quality/static_metrics.py --gate, and the evaluation replay
+# above its floor (tools/quality/evaluation_floor.json). Coverage is reported as
+# an artifact, never gated (RUBRIC.md: it's for orientation). No secrets needed.
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static:
+    name: Static gates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+
+      # Fails on: a swallowed error in a storage path without a stated reason, a
+      # missing translation, an iOS network API, a missing or wrong privacy
+      # manifest (an API its bundle's sources call left undeclared), a function over complexity 15 or 100 lines that isn't in
+      # tools/quality/complexity_allowlist.txt, a SwiftUI view file without previews,
+      # an action or container image not pinned to a commit SHA or digest.
+      - name: Static gates
+        run: |
+          python3 -m venv build/quality/venv
+          build/quality/venv/bin/pip install --quiet -r tools/quality/requirements.txt
+          build/quality/venv/bin/python3 tools/quality/static_metrics.py --gate
+          build/quality/venv/bin/python3 tools/quality/static_metrics.py > build/quality/static.json
+
+      - name: Upload static metrics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: static-metrics
+          path: build/quality/static.json
+          if-no-files-found: ignore
+
+  kotlin:
+    name: Evaluation replay and coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+
+      - name: Set up JDK
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+
+      # The committed model replies (evaluation/replies) through today's shared
+      # post-processing: no model needed, and the same numbers every run.
+      - name: Evaluation replay
+        run: ./gradlew :evaluation:run --args=replay -Psummary=build/quality/evaluation.json
+
+      - name: Evaluation floor
+        run: python3 tools/quality/scorecard.py --check-evaluation build/quality/evaluation.json
+
+      - name: Tests with coverage
+        run: ./gradlew :shared:jvmTest :shared:koverXmlReportJvm :androidApp:testDebugUnitTest :androidApp:koverXmlReportDebug
+
+      - name: Coverage summary
+        if: always()
+        run: |
+          python3 tools/quality/reports.py kover shared=shared/build/reports/kover/reportJvm.xml \
+            android=androidApp/build/reports/kover/reportDebug.xml | tee build/quality/coverage.json
+
+      - name: Upload coverage and evaluation
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: coverage-and-evaluation
+          path: |
+            shared/build/reports/kover/reportJvm.xml
+            androidApp/build/reports/kover/reportDebug.xml
+            build/quality/coverage.json
+            build/quality/evaluation.json
+          if-no-files-found: ignore

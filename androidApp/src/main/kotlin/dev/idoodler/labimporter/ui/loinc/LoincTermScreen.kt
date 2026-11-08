@@ -20,9 +20,9 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.Label
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Label
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Straighten
 import androidx.compose.material3.Card
@@ -194,7 +194,7 @@ private fun Header(code: String, category: LabCategory, detail: LoincDetail?, pr
             }
             preferences.nickname(code)?.let { nickname ->
                 HorizontalDivider()
-                LabeledRow(Icons.Rounded.Label, category, stringResource(R.string.nickname), nickname)
+                LabeledRow(Icons.AutoMirrored.Rounded.Label,category, stringResource(R.string.nickname), nickname)
             }
             preferences.referenceRange(code)?.let { range ->
                 HorizontalDivider()

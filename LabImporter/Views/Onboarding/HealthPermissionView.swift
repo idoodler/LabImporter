@@ -1,4 +1,3 @@
-import HealthKit
 import SwiftUI
 import UIKit
 

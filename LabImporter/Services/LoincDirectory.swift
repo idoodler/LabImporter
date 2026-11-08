@@ -1,4 +1,3 @@
-import Foundation
 import LabImporterCore
 
 // A common laboratory LOINC term resolved for the active app language.

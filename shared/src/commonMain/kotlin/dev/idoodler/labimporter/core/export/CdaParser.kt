@@ -37,8 +37,10 @@ object CdaParser {
         // Not XML at all: null is this function's answer, and problem() tells callers what it means.
         val reader = runCatching { xmlStreaming.newGenericReader(xml, true) }.getOrNull() ?: return null
         val ok = try {
+            // Malformed XML is no report: null again, and problem() tells callers why.
             runCatching { read(reader, state) }.isSuccess
         } finally {
+            // Reading is done either way; a reader over a string holds nothing a failed close could leak.
             runCatching { reader.close() }
         }
         if (!ok) return null

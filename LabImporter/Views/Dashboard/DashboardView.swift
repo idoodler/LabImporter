@@ -1,6 +1,5 @@
 import LabImporterCore
 import SwiftUI
-import Charts
 
 // MARK: - Dashboard
 

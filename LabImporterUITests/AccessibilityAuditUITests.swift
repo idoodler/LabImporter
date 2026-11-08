@@ -2,8 +2,8 @@ import XCTest
 
 /// Runs Apple's own accessibility audit (contrast, hit regions, element descriptions,
 /// traits, clipped text) over every screen with the sample data at the largest
-/// accessibility text, and again in dark at the standard size for the screens whose
-/// tinted cards, badges, chips or buttons take other colours there. An issue fails the
+/// accessibility text and in light at the standard size, and in dark at the standard size
+/// too for the screens whose tinted cards, badges, chips or buttons take other colours there. An issue fails the
 /// test unless `AuditExemption` names it, each entry with its reason.
 ///
 /// Dynamic Type is measured, not probed: the audit's probe loses rows that its larger
@@ -48,17 +48,20 @@ final class AccessibilityAuditUITests: XCTestCase {
                     XCTAssertGreaterThan(valueFields, 0, "No value field was on screen at the largest size")
                 }
 
-                // Every screen at the standard size too, for Dynamic Type. Audited there in dark, where
-                // tinted surfaces take other colours; the others in light are measured only.
-                let standardApp = launch(screen, size: .standard, dark: screen.hasTints)
+                // Every screen at the standard size too: measured for Dynamic Type and audited in light, and
+                // again in dark where tinted surfaces take other colours.
+                let standardApp = launch(screen, size: .standard, dark: false)
                 assertTextsGrow(from: try textHeights(in: standardApp), to: largest, on: screen)
                 if screen.name == "review-planted-errors" {
                     assertEveryValueFieldSpeaksItsTest(in: standardApp)
                 }
-                if screen.hasTints {
-                    try audit(standardApp, of: screen, label: "\(screen.name)/dark/standard/1")
-                }
+                try audit(standardApp, of: screen, label: "\(screen.name)/light/standard/1")
                 standardApp.terminate()
+                if screen.hasTints {
+                    let darkApp = launch(screen, size: .standard, dark: true)
+                    try audit(darkApp, of: screen, label: "\(screen.name)/dark/standard/1")
+                    darkApp.terminate()
+                }
             }
         }
     }
@@ -144,12 +147,24 @@ final class AccessibilityAuditUITests: XCTestCase {
             measured.forEach { print("AUDIT faint \(label) \($0)") }
             faint = measured
         }
-        var page = AuditExemption.Page(label: label, visibleArea: visible, everyTextReadable: faint?.isEmpty ?? true)
+        // Where a row's chips fade out at its ends: only asked for when there's a contrast issue it could explain.
+        let pointsAtText = found.issues.contains { $0.element != nil && $0.issue.auditType == .contrast }
+        let sideways = pointsAtText ? SidewaysRow.all(in: app) : []
+        sideways.forEach { print("AUDIT sideways \(label) \($0.frame) content \($0.content) fades left \($0.fadesLeft) right \($0.fadesRight)") }
+        // What issues without an element are budgeted by: only counted when there's one.
+        let unpointedHits = found.issues.contains { $0.element == nil && $0.issue.auditType == .hitRegion }
+        let onScreen = unpointedHits ? AuditExemption.countOnScreen(in: app) : [:]
+        onScreen.forEach { print("AUDIT on screen \(label) \($0.key): \($0.value)") }
+        var page = AuditExemption.Page(
+            label: label, visibleArea: visible, everyTextReadable: faint?.isEmpty ?? true, sidewaysRows: sideways, onScreen: onScreen
+        )
         for (issue, element) in found.issues {
             let exemption = AuditExemption.reason(for: issue, element: element, on: &page)
             let name = element?.label ?? ""
             let frame = element.map { "\($0.frame)" } ?? "no element"
-            let verdict = exemption.map { "exempt (\($0))" } ?? "issue"
+            // What its pixels measure says whether the audit or the colour is wrong.
+            let measured = exemption == nil && issue.auditType == .contrast ? element.flatMap(AuditExemption.measuredContrast(of:)) : nil
+            let verdict = exemption.map { "exempt (\($0))" } ?? "issue" + (measured.map { String(format: " (measures %.1f:1)", $0) } ?? "")
             print("AUDIT \(verdict) \(label) [\(issue.auditType.rawValue)] \(issue.compactDescription) — \(name) @ \(frame)")
             if let evidence, exemption == nil, let element {
                 let file = evidence.appendingPathComponent("\(label.replacingOccurrences(of: "/", with: "-"))-\(name.prefix(24)).png")
@@ -163,9 +178,12 @@ final class AccessibilityAuditUITests: XCTestCase {
     }
 
     /// The audit gives up on a long screen ("failed to complete in time"): asked again it gives up
-    /// again, so it's asked for one kind of issue at a time.
+    /// again, so it's asked for one kind of issue at a time. One kind gets one more go: a page's audit
+    /// takes about 3 s, and the one that once gave up (the dashboard's second page at the largest text)
+    /// had hung for its whole 30 s, with nothing on screen still moving.
     private func runAudit(
-        of app: XCUIApplication, label: String, evidence: URL?, types: XCUIAccessibilityAuditType = AccessibilityAuditUITests.auditTypes
+        of app: XCUIApplication, label: String, evidence: URL?, types: XCUIAccessibilityAuditType = AccessibilityAuditUITests.auditTypes,
+        isRetry: Bool = false
     ) -> FoundIssues? {
         let found = FoundIssues()
         do {
@@ -182,6 +200,10 @@ final class AccessibilityAuditUITests: XCTestCase {
                 }
                 found.issues += part.issues
             }
+        } catch let error as NSError where error.code == -56 && !isRetry {
+            print("AUDIT retry \(label) [\(types.rawValue)] after \(error.localizedDescription)")
+            waitUntilSettled(app)
+            return runAudit(of: app, label: label, evidence: evidence, types: types, isRetry: true)
         } catch {
             XCTFail("\(label): the audit didn't finish: \(error)")
             return nil
@@ -202,6 +224,9 @@ private enum AuditExemption {
         let element: String?
         /// How many issues of a page it covers, for one nothing re-measures each run: the number its screenshots were checked for.
         var limit = Int.max
+        /// The identifier of what each issue comes from, when that's countable: then the limit is how many of
+        /// those are on screen on this device and page, not a number calibrated on another simulator.
+        var perElement: String?
         let reason: String
     }
 
@@ -211,8 +236,17 @@ private enum AuditExemption {
         let visibleArea: CGRect
         /// Whether `faintTexts` found every text readable.
         let everyTextReadable: Bool
+        /// The rows on screen that scroll sideways (`edgeFadeScroll`).
+        let sidewaysRows: [SidewaysRow]
+        /// How many elements with each `Entry.perElement` identifier are on screen.
+        let onScreen: [String: Int]
         fileprivate var used: [Int: Int] = [:]
     }
+
+    /// Every Review value row has one LOINC code button (a row without a value has no value field)
+    /// and one swipe-to-delete button.
+    static let valueRow = "review-code-button"
+    static let compareBadgeID = "review-compare-badge"
 
     // The audit's contrast check fails text whose screenshot shows plain black on white or
     // white on near-black (black "Couldn't Load Your Reports" on white, white "2026" on the dark
@@ -227,6 +261,17 @@ private enum AuditExemption {
     // The texts of the rows a swipe brings in at the largest size, read as one element per row: their
     // screenshots show each wrapped in full, cut by nothing but the screen's edge.
     private static let rowTexts = "texts of rows read as one element; the screenshots show none cut off but by the screen's edge"
+    // On these pages the audit points at a different row's text each run (a LOINC code, a count, a unit,
+    // "Suggested") and on a busy simulator at none: any of them, but each is measured and must be 4.5:1.
+    private static let rowText = "a row's text, a different one each run; " + measured
+    // A Review row's Delete, which a swipe brings in: the system keeps its button folded to nothing until
+    // then, and it opens as tall as the row. Built without the swipe action (or with `onDelete`) the rows
+    // raise none; every row control on screen measures 44 pt or more. Its count is the rows on screen.
+    private static let swipeDelete = "a row's swipe-to-delete button, folded away until the row is swiped open"
+    // Review's "Compare with report" badge, 17 pt tall: text with no action (hidden from accessibility, it
+    // raises nothing; as static text or combined it still does), and the LOINC code's and Confirm's targets
+    // above it keep clear of it (`badgeSpacing`).
+    private static let compareBadge = "the \"Compare with report\" badge, which is text, not a control"
 
     private static let entries: [Entry] = [
         Entry(condition: "dashboard/dark/standard/1", type: .contrast, element: "25-hydroxyvitamin D3", reason: measured),
@@ -236,6 +281,7 @@ private enum AuditExemption {
         Entry(condition: "dashboard/light/ax5", type: .contrast, element: "", reason: measured),
         Entry(condition: "dashboard-qualitative/light/ax5", type: .contrast, element: "188", reason: measured),
         Entry(condition: "dashboard-notices/light/ax5", type: .contrast, element: "25-hydroxyvitamin D3", reason: measured),
+        Entry(condition: "dashboard-notices/light/ax5", type: .contrast, element: "Update LabImporter to See All Reports", reason: measured),
         Entry(condition: "dashboard-load-failed-stale/light/ax5", type: .contrast, element: "ALT", reason: measured),
         Entry(condition: "dashboard-load-failed-stale/light/ax5", type: .contrast, element: "Cholesterol", reason: measured),
         Entry(condition: "trends/light/ax5", type: .contrast, element: "32", reason: measured),
@@ -245,26 +291,81 @@ private enum AuditExemption {
         Entry(condition: "report-detail/dark/standard/1", type: .contrast, element: "4", reason: measured),
         Entry(condition: "report-detail/dark/standard/1", type: .contrast, element: nil, reason: unpointed),
         Entry(condition: "report-detail/light/ax5/2", type: .contrast, element: nil, reason: unpointed),
+        Entry(condition: "report-detail/light/ax5/2", type: .contrast, element: "", reason: rowText),
         Entry(condition: "report-detail/light/ax5/2", type: .textClipped, element: nil, limit: 9, reason: rowTexts),
         Entry(condition: "sort-editor/light/ax5/1", type: .textClipped, element: nil, limit: 4, reason: rowTexts),
         Entry(condition: "settings/light/ax5", type: .contrast, element: nil, reason: unpointed),
+        Entry(condition: "settings/light/ax5/1", type: .contrast, element: "Version", reason: measured),
+        // The build card's branch, which is another one on every build.
+        Entry(condition: "settings/light/ax5/1", type: .contrast, element: "", limit: 1, reason: measured),
+        Entry(condition: "settings/light/ax5/2", type: .contrast, element: "Search", reason: measured),
+        // The About section's LOINC release ("2.82"), black on white: measured 21:1 when the audit flagged it.
+        Entry(condition: "settings/light/ax5/5", type: .contrast, element: "2.82", reason: measured),
+        // Rows the audit flags on one run and not the next, on whichever page they land: "Browse Catalog" measured
+        // 21:1 and "About" 18.8:1 when it did, black on white.
+        Entry(condition: "settings/light/ax5", type: .contrast, element: "Browse Catalog", reason: measured),
+        Entry(condition: "settings/light/ax5", type: .contrast, element: "About", reason: measured),
         Entry(condition: "empty/dark/standard/1", type: .contrast, element: nil, reason: unpointed),
         Entry(condition: "review-planted-errors/light/ax5/1", type: .contrast, element: nil, reason: unpointed),
         Entry(condition: "review-planted-errors/light/ax5/2", type: .contrast, element: nil, reason: unpointed),
+        Entry(condition: "review-planted-errors/light/ax5", type: .contrast, element: "", reason: rowText),
         Entry(condition: "review-planted-errors/dark/standard/1", type: .contrast, element: nil, reason: unpointed),
-        // The checkbox, LOINC code, Confirm and value field of the rows on screen: each draws smaller than
-        // 44 pt and takes taps 44 pt tall, reaching over the row's spacing (`tapTargetButton`, `valueField`).
-        // At the largest size they're taller than 44 pt and reach over nothing, and the audit finds none there.
-        Entry(
-            condition: "review-planted-errors/dark/standard/1", type: .hitRegion, element: nil, limit: 5,
-            reason: "a row control whose 44 pt tap target reaches over the row's spacing"
-        ),
+        Entry(condition: "review-planted-errors/dark/standard/1", type: .contrast, element: "", reason: rowText),
+        Entry(condition: "review-planted-errors/dark/standard/1", type: .hitRegion, element: nil, perElement: valueRow, reason: swipeDelete),
+        Entry(condition: "review-planted-errors/dark/standard/1", type: .hitRegion, element: nil, perElement: compareBadgeID, reason: compareBadge),
         Entry(condition: "empty/dark/standard", type: .contrast, element: "Choose File", reason: measured),
         Entry(condition: "empty/dark/standard", type: .contrast, element: "Create Report Manually", reason: measured),
         Entry(condition: "onboarding-welcome/dark/standard", type: .contrast, element: "Apple Intelligence reads your report", reason: measured),
         Entry(condition: "onboarding-welcome/dark/standard", type: .contrast, element: "Reports are stored as clinical documents", reason: measured),
         Entry(condition: "onboarding-welcome/light/ax5", type: .contrast, element: "Import Any Lab Report", reason: measured),
+        Entry(condition: "onboarding-welcome/light/ax5/2", type: .contrast, element: "Welcome to", reason: measured),
+        Entry(condition: "onboarding-welcome/light/ax5/2", type: .contrast, element: "LabImporter", reason: measured),
         Entry(condition: "unsupported/light/ax5", type: .contrast, element: "LabImporter needs Apple Intelligence", reason: measured),
+        // Light at the standard size: plain black, grey `.textSecondary` (6:1) or blue on white, each screenshot checked.
+        Entry(condition: "dashboard/light/standard/1", type: .contrast, element: "25-hydroxyvitamin D3", reason: measured),
+        Entry(condition: "dashboard/light/standard/1", type: .contrast, element: "%", reason: measured),
+        Entry(condition: "dashboard-qualitative/light/standard/1", type: .contrast, element: "25-hydroxyvitamin D3", reason: measured),
+        Entry(condition: "dashboard-qualitative/light/standard/1", type: .contrast, element: "May 28, 2026", reason: measured),
+        Entry(condition: "dashboard-qualitative/light/standard/1", type: .contrast, element: nil, reason: unpointed),
+        Entry(condition: "dashboard-notices/light/standard/1", type: .contrast, element: "Reports saved by a newer version", reason: measured),
+        Entry(condition: "dashboard-notices/light/standard/1", type: .contrast, element: "25-hydroxyvitamin D3", reason: measured),
+        Entry(condition: "dashboard-load-failed-stale/light/standard/1", type: .contrast, element: "Try Again", reason: measured),
+        Entry(condition: "dashboard-load-failed-stale/light/standard/1", type: .contrast, element: "25-hydroxyvitamin D3", reason: measured),
+        Entry(condition: "dashboard-load-failed-stale/light/standard/1", type: .contrast, element: "Cholesterol in LDL Calc", reason: measured),
+        // What it finds is the x axis's dates: the first and last readings', which VoiceOver reads on those
+        // points and in the chart's Audio Graph. Drawn without the axis labels, the chart raises nothing.
+        Entry(
+            condition: "trends/light/standard/1", type: .elementDetection, element: nil, limit: 1,
+            reason: "the chart's x-axis dates, which are its first and last points' labels"
+        ),
+        Entry(condition: "history/light/standard/1", type: .contrast, element: "2026", reason: measured),
+        Entry(condition: "history/light/standard/1", type: .contrast, element: "2025", reason: measured),
+        Entry(condition: "history/light/standard/1", type: .contrast, element: "13 values", reason: measured),
+        Entry(condition: "history/light/standard/1", type: .contrast, element: nil, reason: unpointed),
+        Entry(condition: "history-load-failed/light/standard/1", type: .contrast, element: "Your saved reports weren't changed", reason: measured),
+        Entry(condition: "report-detail/light/standard/1", type: .contrast, element: "1", reason: measured),
+        Entry(condition: "report-detail/light/standard/1", type: .contrast, element: "2", reason: measured),
+        Entry(condition: "report-detail/light/standard/1", type: .contrast, element: nil, reason: unpointed),
+        Entry(condition: "review/light/standard/1", type: .contrast, element: nil, reason: unpointed),
+        Entry(condition: "review/light/standard/1", type: .contrast, element: "", reason: rowText),
+        Entry(condition: "review/light/standard/1", type: .hitRegion, element: nil, perElement: valueRow, reason: swipeDelete),
+        Entry(condition: "review-planted-errors/light/standard/1", type: .contrast, element: nil, reason: unpointed),
+        Entry(condition: "review-planted-errors/light/standard/1", type: .contrast, element: "", reason: rowText),
+        Entry(condition: "review-planted-errors/light/standard/1", type: .hitRegion, element: nil, perElement: valueRow, reason: swipeDelete),
+        Entry(condition: "review-planted-errors/light/standard/1", type: .hitRegion, element: nil, perElement: compareBadgeID, reason: compareBadge),
+        Entry(condition: "empty/light/standard/1", type: .contrast, element: nil, reason: unpointed),
+        Entry(condition: "empty/light/standard/1", type: .contrast, element: "Choose File", reason: measured),
+        Entry(condition: "empty/light/standard/1", type: .contrast, element: "Create Report Manually", reason: measured),
+        Entry(condition: "onboarding-welcome/light/standard/1", type: .contrast, element: "Apple Intelligence reads your report", reason: measured),
+        Entry(condition: "onboarding-welcome/light/standard/1", type: .contrast, element: "Saved to Apple Health", reason: measured),
+        Entry(condition: "onboarding-welcome/light/standard/1", type: .contrast, element: "Reports are stored as clinical documents", reason: measured),
+        Entry(condition: "onboarding-disclaimer/light/standard/1", type: .contrast, element: "Values are extracted by on-device AI", reason: measured),
+        Entry(condition: "onboarding-disclaimer/light/standard/1", type: .contrast, element: "Check every value against", reason: measured),
+        Entry(condition: "onboarding-health/light/standard/1", type: .contrast, element: "Save Reports to Health", reason: measured),
+        Entry(condition: "onboarding-health/light/standard/1", type: .contrast, element: "Imported lab values are written", reason: measured),
+        Entry(condition: "onboarding-health/light/standard/1", type: .contrast, element: "Past reports are loaded back", reason: measured),
+        Entry(condition: "onboarding-health/light/standard/1", type: .contrast, element: "Date of birth and biological sex", reason: measured),
+        Entry(condition: "unsupported/light/standard/1", type: .contrast, element: "An iPhone with A17 Pro", reason: measured),
     ]
 
     static func reason(
@@ -276,14 +377,20 @@ private enum AuditExemption {
                 return "partly scrolled under a bar or off screen, so the pixels measured aren't the element's"
             }
             if !element.isEnabled { return "WCAG 1.4.3 excepts a control that's disabled" }
+            // Only an end with content hidden past it fades: a chip resting at the row's start is drawn crisp and still counts.
+            if page.sidewaysRows.contains(where: { $0.fades(element.frame) }) {
+                return "faded out or cut off at the end of a row that scrolls sideways; scrolled in, it's drawn in full"
+            }
         }
         let name = element?.label
-        guard let index = entries.firstIndex(where: { entry in
-            (label + "/").hasPrefix(entry.condition + "/") && entry.type == issue.auditType
+        // An entry that has let go all it may on this page hands on to the next that matches.
+        guard let index = entries.indices.first(where: { index in
+            let entry = entries[index]
+            return (label + "/").hasPrefix(entry.condition + "/") && entry.type == issue.auditType
                 && (entry.element.map { name?.hasPrefix($0) ?? false } ?? (name == nil))
+                && page.used[index, default: 0] < entry.perElement.map { page.onScreen[$0, default: 0] } ?? entry.limit
         }) else { return nil }
         let entry = entries[index]
-        guard page.used[index, default: 0] < entry.limit else { return nil }
         if let element, entry.type == .contrast {
             guard let ratio = measuredContrast(of: element), ratio >= 4.5 else { return nil }
             page.used[index, default: 0] += 1
@@ -307,14 +414,15 @@ private enum AuditExemption {
             if kinds.contains(element.elementType), element.isEnabled, !element.label.isEmpty,
                frame.width >= 4, frame.height >= 4, area.contains(frame),
                let crop = image.cropping(to: CGRect(x: frame.minX * scale, y: frame.minY * scale, width: frame.width * scale, height: frame.height * scale)),
-               let ratio = contrast(of: crop) {
+               let ratio = PixelContrast.of(crop) {
                 let needed = frame.height >= 24 ? 3.0 : 4.5
                 if ratio < needed { faint.append("\(element.label.prefix(40)) \(String(format: "%.1f", ratio)):1 @ \(frame)") }
             }
-            // A row that scrolls sideways fades its ends out (`edgeFadeScroll`): what's there is scrolled in to be read.
+            // A row that scrolls sideways fades out the ends that have more past them (`edgeFadeScroll`):
+            // what's there is scrolled in to be read. An end with nothing past it is crisp and measured.
             var inner = area
-            if element.elementType == .scrollView, element.children.map(\.frame).reduce(CGRect.null, { $0.union($1) }).width > frame.width + 1 {
-                inner = area.intersection(frame.insetBy(dx: 24, dy: 0))
+            if let row = SidewaysRow(element) {
+                inner = area.intersection(row.unfaded)
             }
             element.children.forEach { visit($0, within: inner) }
         }
@@ -322,43 +430,28 @@ private enum AuditExemption {
         return faint
     }
 
+    /// How many of the elements entries budget by (`Entry.perElement`) reach into the window: a row
+    /// partly on screen counts, as its folded button may be too.
+    @MainActor
+    static func countOnScreen(in app: XCUIApplication) -> [String: Int] {
+        guard let snapshot = try? app.snapshot() else { return [:] }
+        let window = app.windows.firstMatch.frame
+        let counted = Set(entries.compactMap(\.perElement))
+        var counts: [String: Int] = [:]
+        func visit(_ element: XCUIElementSnapshot) {
+            if counted.contains(element.identifier), element.frame.intersection(window).height > 1 {
+                counts[element.identifier, default: 0] += 1
+            }
+            element.children.forEach(visit)
+        }
+        visit(snapshot)
+        return counts
+    }
+
     /// WCAG contrast between the element's background (its median pixel) and its ink, the
     /// percentile furthest from it: what a person's eye gets.
-    private static func measuredContrast(of element: XCUIElement) -> Double? {
-        element.screenshot().image.cgImage.flatMap(contrast(of:))
-    }
-
-    private static func contrast(of image: CGImage) -> Double? {
-        let width = image.width
-        let height = image.height
-        guard width > 0, height > 0 else { return nil }
-        var pixels = [UInt8](repeating: 0, count: width * height * 4)
-        let drawn: Void? = pixels.withUnsafeMutableBytes { buffer in
-            CGContext(
-                data: buffer.baseAddress, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4,
-                space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue
-            )?.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
-        }
-        guard drawn != nil else { return nil }
-        let luminances = stride(from: 0, to: pixels.count, by: 4).map { index in
-            relativeLuminance(red: pixels[index], green: pixels[index + 1], blue: pixels[index + 2])
-        }.sorted()
-        let background = luminances[luminances.count / 2]
-        let darkest = luminances[luminances.count / 500]
-        let lightest = luminances[luminances.count - 1 - luminances.count / 500]
-        return max(ratio(background, darkest), ratio(background, lightest))
-    }
-
-    private static func ratio(_ first: Double, _ second: Double) -> Double {
-        (max(first, second) + 0.05) / (min(first, second) + 0.05)
-    }
-
-    private static func relativeLuminance(red: UInt8, green: UInt8, blue: UInt8) -> Double {
-        func linear(_ value: UInt8) -> Double {
-            let channel = Double(value) / 255
-            return channel <= 0.03928 ? channel / 12.92 : pow((channel + 0.055) / 1.055, 2.4)
-        }
-        return 0.2126 * linear(red) + 0.7152 * linear(green) + 0.0722 * linear(blue)
+    static func measuredContrast(of element: XCUIElement) -> Double? {
+        element.screenshot().image.cgImage.flatMap(PixelContrast.of)
     }
 
     /// Between the navigation bar and Review's pinned action bar: content scrolled under their glass is blurred on purpose.

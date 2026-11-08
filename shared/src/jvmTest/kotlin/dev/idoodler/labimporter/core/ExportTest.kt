@@ -23,6 +23,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -249,5 +250,79 @@ class ExportTest {
     fun fhirWithoutOurTagsIsIgnored() {
         val foreign = """{"resourceType":"Observation","id":"x","status":"final","code":{"coding":[{"system":"http://loinc.org","code":"2160-0"}]},"effectiveDateTime":"2026-01-01","valueQuantity":{"value":1}}"""
         assertTrue(FhirLabCodec.decode(listOf(foreign)).isEmpty())
+    }
+
+    // The tests below came from mutation testing (tools/quality/mutation.sh): each pins a rule
+    // whose opposite the other tests let through.
+
+    @Test
+    fun onlyASelectedMappedResultMakesADocumentWorthWriting() {
+        assertTrue(CdaExport.hasExportableValues(values))
+        assertFalse(CdaExport.hasExportableValues(values.filter { it.code == "KREA" || !it.isSelected }))
+        assertFalse(CdaExport.hasExportableValues(emptyList()))
+    }
+
+    /** The observations of [xml], in order: each is replaced by what [change] makes of it. */
+    private fun editObservations(xml: String, change: (index: Int, observation: String) -> String): String {
+        var index = 0
+        return Regex("<observation classCode=\"OBS\".*?</observation>", RegexOption.DOT_MATCHES_ALL).replace(xml) { change(index++, it.value) }
+    }
+
+    @Test
+    fun anObservationNeverBorrowsTheValueOrCodeOfTheOneBefore() {
+        val xml = CdaExport.generate(values, LocalDate(2026, 5, 6), "LabImporter test", GoldenCda.narrative)
+        // The second observation's number is unreadable (its unit is still there): it's no potassium
+        // of 0.8, it's no value at all. And the same without its value element.
+        val unreadable = editObservations(xml) { index, it -> if (index == 1) it.replace("value=\"4.1\"", "value=\"\"") else it }
+        assertEquals(listOf("2160-0" to 0.8), assertNotNull(CdaParser.parse(unreadable)).entries.map { it.code to it.numericValue })
+        val noValue = editObservations(xml) { index, it -> if (index == 1) it.replace(Regex("<value [^>]*/>"), "") else it }
+        assertEquals(listOf("2160-0" to 0.8), assertNotNull(CdaParser.parse(noValue)).entries.map { it.code to it.numericValue })
+        // Nor does a value without its own LOINC code belong to the test before it.
+        val noCode = editObservations(xml) { index, it -> if (index == 1) it.replace("codeSystem=\"2.16.840.1.113883.6.1\"", "codeSystem=\"other\"") else it }
+        assertEquals(listOf("2160-0" to 0.8), assertNotNull(CdaParser.parse(noCode)).entries.map { it.code to it.numericValue })
+        // A text result doesn't carry over to a number that lost its value.
+        val text = LabValue(code = "5196-1", name = "HBsAg", displayValue = "negativ", numericValue = null, unit = "")
+        val mixed = CdaExport.generate(listOf(text, values[1]), LocalDate(2026, 5, 6), "LabImporter test", GoldenCda.narrative)
+        val textThenNothing = editObservations(mixed) { index, it -> if (index == 1) it.replace(Regex("<value [^>]*/>"), "") else it }
+        assertEquals(listOf("5196-1" to "negativ"), assertNotNull(CdaParser.parse(textThenNothing)).entries.map { it.code to it.displayValue })
+    }
+
+    @Test
+    fun theReportDateIsTheDocumentsNotTheLastObservations() {
+        val xml = CdaExport.generate(values, LocalDate(2026, 5, 6), "LabImporter test", GoldenCda.narrative)
+        val documentDate = "<effectiveTime value=\"20260506\"/>"
+        val end = xml.indexOf(documentDate) + documentDate.length
+        val laterDates = xml.substring(0, end) + xml.substring(end).replace("value=\"20260506\"", "value=\"20250101\"")
+        assertEquals(LocalDate(2026, 5, 6), assertNotNull(CdaParser.parse(laterDates)).date)
+    }
+
+    @Test
+    fun theVersionStampIsReadWhereverItStands() {
+        assertEquals(12, CdaParser.schemaVersion("LabImporter CDA v12"))
+        assertEquals(2, CdaParser.schemaVersion("CDA v2"))
+        assertNull(CdaParser.schemaVersion("LabImporter"))
+        // A stamp at the very start of the text is still a stamp.
+        assertEquals(ReportReadProblem.UNREADABLE, CdaParser.problem("<softwareName>LabImporter CDA v${ReportSchema.VERSION}</softwareName>"))
+    }
+
+    @Test
+    fun fhirListsTheNewestReportFirstAndCountsADamagedReportOnce() {
+        fun resources(id: String, date: String, damaged: Boolean = false) = FhirLabCodec.encodeForSaving(
+            LabReport(
+                id, LocalDate.parse(date), "", "",
+                listOf(
+                    LabReport.Entry("$id-1", "2160-0", "Creatinine", "0.8", 0.8, "mg/dl"),
+                    LabReport.Entry("$id-2", "2823-3", "Potassium", "4.1", 4.1, "mmol/l"),
+                ),
+            ),
+            "x",
+        ).map { if (damaged) it.json.replace("\"effectiveDateTime\":\"$date\"", "\"effectiveDateTime\":\"soon\"") else it.json }
+
+        val stored = FhirLabCodec.decodeStored(
+            resources("old", "2025-01-02") + resources("new", "2026-05-06") + resources("mid", "2025-09-30") +
+                resources("hurt", "2026-01-01", damaged = true),
+        )
+        assertEquals(listOf("new", "mid", "old"), stored.reports.map { it.id })
+        assertEquals(1, stored.unreadableReports, "Both of its resources are damaged, but it's one report")
     }
 }

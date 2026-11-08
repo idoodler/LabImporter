@@ -54,4 +54,24 @@ class NumberFormattingTest {
         assertEquals("0.8333", NumberFormatting.display(0.83333))
         assertEquals("120", NumberFormatting.display(120.0))
     }
+
+    /** From mutation testing (tools/quality/mutation.sh): the edges the tests above never reached. */
+    @Test
+    fun fixedKeepsTheSignRoundsWholeAndHandlesTheExtremes() {
+        assertEquals("-6.5", NumberFormatting.fixed(-6.5, 2))
+        assertEquals("-2.1", NumberFormatting.display(-2.1))
+        assertEquals("0", NumberFormatting.fixed(-0.001, 2), "no minus on a reading that rounds to zero")
+        assertEquals("7", NumberFormatting.fixed(6.5, 0))
+        assertEquals("-2", NumberFormatting.fixed(-2.4, 0))
+        assertEquals("0.123456789012", NumberFormatting.fixed(0.1234567890123, 20), "at most 12 places")
+        assertEquals("10000000000000000", NumberFormatting.fixed(1e16, 2))
+        assertEquals("NaN", NumberFormatting.fixed(Double.NaN, 2))
+        assertEquals("Infinity", NumberFormatting.fixed(Double.POSITIVE_INFINITY, 2))
+    }
+
+    @Test
+    fun parseKeepsTheLargestFiniteNumberAndRefusesInfinity() {
+        assertEquals(Double.MAX_VALUE, NumberFormatting.parse("1.7976931348623157e308"))
+        assertNull(NumberFormatting.parse("1e999"))
+    }
 }

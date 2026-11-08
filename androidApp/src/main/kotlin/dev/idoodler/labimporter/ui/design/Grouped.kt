@@ -68,12 +68,12 @@ fun GroupedListItem(
         // On the ListItem, not the Surface: it merges its own content for TalkBack, so
         // anywhere further out the action would have no name and the name no action.
         ListItem(
-            headlineContent = headline,
             supportingContent = supporting,
             leadingContent = leading,
             trailingContent = trailing,
             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
             modifier = Modifier.clip(shape).then(action).then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
+            content = headline,
         )
     }
     if (index < count - 1) Spacer(Modifier.height(2.dp))

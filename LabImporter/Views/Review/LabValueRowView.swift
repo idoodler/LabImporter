@@ -28,6 +28,16 @@ struct LabValueRowView: View {
         LabMapping.rangeStatus(for: value.numericValue, code: value.code)
     }
 
+    /// How far the LOINC code's and Confirm's 44 pt targets reach over what's above and below them.
+    private static let codeTargetReach: CGFloat = 14
+    private static let nameColumnSpacing: CGFloat = 2
+
+    /// A badge under the code keeps out of its targets' reach: lying over their lower 9 pt, it was what a
+    /// touch there found, and left them 35 pt tall. They reach over nothing at the accessibility sizes.
+    private var badgeSpacing: CGFloat {
+        dynamicTypeSize.isAccessibilitySize ? 3 : Self.codeTargetReach - Self.nameColumnSpacing
+    }
+
     var body: some View {
         // The largest text leaves the name and the value too narrow side by side.
         HStack(alignment: dynamicTypeSize.isAccessibilitySize ? .top : .center, spacing: 12) {
@@ -59,7 +69,7 @@ struct LabValueRowView: View {
     }
 
     private var nameColumn: some View {
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: Self.nameColumnSpacing) {
                 // The badges move under a name they'd squeeze: German names broke at every syllable beside "Vorschlag".
                 FittingRow(alignment: .center, spacing: 4) {
                     Text(value.resolvedName)
@@ -112,7 +122,7 @@ struct LabValueRowView: View {
                         // The button speaks for what's in it: left alone, its 7 pt chevron counts as a tiny target of its own.
                         .accessibilityElement(children: .ignore)
                     }
-                    .tapTargetButton(vertical: 14, horizontal: 0)
+                    .tapTargetButton(vertical: Self.codeTargetReach, horizontal: 0)
                     .accessibilityLabel(spoken(String(localized: "LOINC Code")))
                     .accessibilityValue(Text(verbatim: value.code))
                     .accessibilityIdentifier("review-code-button")
@@ -120,7 +130,7 @@ struct LabValueRowView: View {
                     // Like Android's row: a suggestion stands until it's confirmed or another test is chosen.
                     if value.isSuggestedCode {
                         Button("Confirm") { value.isSuggestedCode = false }
-                            .tapTargetButton(vertical: 14, horizontal: 0)
+                            .tapTargetButton(vertical: Self.codeTargetReach, horizontal: 0)
                             .font(.caption2.weight(.semibold))
                             .foregroundStyle(Color.accentColor)
                             .accessibilityLabel(spoken(String(localized: "Confirm")))
@@ -130,12 +140,12 @@ struct LabValueRowView: View {
 
                 if value.needsSourceCheck {
                     compareBadge
-                        .padding(.top, 3)
+                        .padding(.top, badgeSpacing)
                 }
 
                 if value.needsCorrection {
                     correctBadge
-                        .padding(.top, 3)
+                        .padding(.top, value.needsSourceCheck ? 3 : badgeSpacing)
                 }
             }
             // The name gets all the width the value doesn't need: long catalog names otherwise run to six lines.

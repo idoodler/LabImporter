@@ -1,4 +1,3 @@
-import Accessibility
 import LabImporterCore
 import SwiftUI
 import Charts

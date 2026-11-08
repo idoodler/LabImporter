@@ -111,7 +111,6 @@ fun ModelStatusCard(
                         Text(stringResource(availability.problem.messageRes), style = MaterialTheme.typography.bodyMedium)
                         Button(onClick = onTryAgain) { Text(stringResource(R.string.try_again)) }
                     }
-                    else -> Unit
                 }
             }
         }

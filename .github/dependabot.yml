@@ -1,0 +1,15 @@
+# Weekly update pull requests for the pinned CI actions (their SHAs, with the tag
+# in the comment) and the Gradle dependencies (gradle/libs.versions.toml). Each
+# still goes through the same checks as any pull request, including the quality
+# gates and, for the AI libraries, a look at evaluation/ before merging.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: weekly

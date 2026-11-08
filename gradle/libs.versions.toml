@@ -2,6 +2,8 @@
 agp = "9.4.1"
 kotlin = "2.4.20"
 skie = "0.10.15"
+kover = "0.9.11"
+pitest = "1.30.2"
 coroutines = "1.11.0"
 serialization = "1.12.0"
 datetime = "0.8.0"
@@ -60,6 +62,8 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
 compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 mlkit-document-scanner = { module = "com.google.android.gms:play-services-mlkit-document-scanner", version.ref = "documentScanner" }
+# Build tooling only (tools/quality/mutation.sh), never on an app classpath.
+pitest-command-line = { module = "org.pitest:pitest-command-line", version.ref = "pitest" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -69,3 +73,4 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 skie = { id = "co.touchlab.skie", version.ref = "skie" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }

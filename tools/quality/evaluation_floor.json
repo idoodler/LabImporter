@@ -1,0 +1,12 @@
+{
+  "_comment": "CI's floor for the evaluation replay (quality.yml): the committed replies replay deterministically, so these are today's numbers and any change to the shared post-processing that reads them worse fails. Raise them when a change reads better; lower one only with the reason in the pull request.",
+  "valuesCorrect": {"min": 76},
+  "extraNumbers": {"max": 1},
+  "loincRight": {"min": 62},
+  "textKept": {"min": 13},
+  "datesRight": {"min": 7},
+  "datesWrong": {"max": 0},
+  "invalidReplies": {"max": 0},
+  "wrongValuesNotFlagged": {"max": 2},
+  "falseFlags": {"max": 0}
+}

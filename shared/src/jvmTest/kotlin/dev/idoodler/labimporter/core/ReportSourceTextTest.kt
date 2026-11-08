@@ -232,6 +232,54 @@ class ReportSourceTextTest {
         assertTrue(prints("Protein 2 +", "2+"))
     }
 
+    // From mutation testing (tools/quality/mutation.sh): each pins a rule whose opposite the
+    // tests above let through.
+
+    @Test
+    fun aNumberIsNotItsOwnFractionNorAZeroBehindAThreshold() {
+        // Off by a factor of 100: 22 doesn't print 0.22.
+        assertFalse(prints("ALT 22 U/l", "0.22"))
+        assertFalse(prints("Kalium 4,1 mmol/l", "0.4"))
+        // A threshold prints no number at all, not even a 0 the model made of it.
+        assertFalse(prints("CRP <0,5 mg/dl", "0"))
+        assertFalse(prints("GFR >= 90 ml/min", "0"))
+        // A one-digit titer is a titer too.
+        assertFalse(prints("Titer 1:8", "8"))
+        assertFalse(prints("Titer 1:8", "1"))
+    }
+
+    @Test
+    fun aTextMayStartWithItsResult() {
+        assertTrue(prints("22 U/l", "22"))
+        assertTrue(prints(" 5,1 mmol/l", "5.1"))
+        assertTrue(prints("  Negativ", "negativ"))
+        assertTrue(prints("<0,5 mg/dl", "<0.5"))
+    }
+
+    @Test
+    fun aResultInExponentNotationIsComparedAsPrinted() {
+        assertTrue(prints("Leukocytes 1.2e5 /ul", "1.2e5"))
+        assertFalse(prints("Leukocytes 1.2e5 /ul", "1.3e5"))
+        assertFalse(prints("Leukocytes 1.2e5 /ul", "2e5"), "not the end of another number")
+    }
+
+    @Test
+    fun aThresholdIsNotPrintedByALongerOne() {
+        assertFalse(prints("CRP <1.5 mg/l", "<1"))
+        assertTrue(prints("CRP <1.", "<1"), "a full stop isn't a decimal")
+    }
+
+    @Test
+    fun theDecimalNotationComesFromTheReportsOwnReadings() {
+        fun platelets(text: String) = ReportSourceText(text).numberFrom("263,000")
+        // One decimal comma, or a number that can only be one ("1.234,5"), makes 263,000 a decimal.
+        assertEquals(263.0, platelets("Kalium 4,1 mmol/l\nThrombozyten 263,000 /nl"))
+        assertEquals(263.0, platelets("Leukozyten 1.234,5 /ul\nThrombozyten 263,000 /nl"))
+        // A version or a number glued to a label says nothing: these reports still write decimal commas.
+        assertEquals(263.0, platelets("Analyzer v1.2\nKalium 4,1 mmol/l\nThrombozyten 263,000 /nl"))
+        assertEquals(263000.0, platelets("Hb14,5 g/dl\nGlucose 5.1 mmol/l\nPlatelets 263,000 /ul"))
+    }
+
     @Test
     fun noResultClaimsNothing() {
         assertTrue(prints("", "-"))

@@ -235,7 +235,20 @@ Requires JDK 17+ and the Android SDK (platform 37); no Mac needed. From the repo
 ./gradlew :androidApp:assembleRelease
 ```
 
-The APKs land in `androidApp/build/outputs/apk/release/`: `arm64-v8a` for phones and Apple-silicon emulators, `x86_64` for Intel/AMD PCs and emulators (e.g. Waydroid), and a universal APK with both. Release test builds are signed with the debug key.
+The APKs land in `androidApp/build/outputs/apk/release/`: `arm64-v8a` for phones and Apple-silicon emulators, `x86_64` for Intel/AMD PCs and emulators (e.g. Waydroid), and a universal APK with both. Without a release key they are test builds signed with the debug key, and the build prints a warning saying so.
+
+### Android release signing
+
+A real release is signed with your own key. Set these as environment variables (CI) or as Gradle properties in `~/.gradle/gradle.properties` (never in the repository):
+
+| Name | Value |
+|---|---|
+| `LABIMPORTER_RELEASE_STORE_FILE` | Path to the keystore (`.jks` or `.p12`) |
+| `LABIMPORTER_RELEASE_STORE_PASSWORD` | The keystore's password |
+| `LABIMPORTER_RELEASE_KEY_ALIAS` | The key's alias in it |
+| `LABIMPORTER_RELEASE_KEY_PASSWORD` | The key's password (optional: defaults to the store password) |
+
+With `LABIMPORTER_RELEASE_STORE_FILE` set, the other values are required and the build stops if one is missing, rather than quietly falling back to the debug key. Without it, `assembleRelease` and `bundleRelease` still work, sign with the debug key and warn — fine for testing, never for distribution: an app signed with the debug key can't be updated by one signed with the release key.
 
 **Emulators have no Gemini Nano**, so the release APK offers the Gemma download there, just as on a phone without it (2.6 GB; it then reads reports on the emulator's CPU, about a minute each). For a quicker look, install a **debug** build (`./gradlew :androidApp:assembleDebug`) and tap **Use Development Stand-in** on that screen: imports then return clearly labelled *sample* values (not read from your document) so review, saving and the dashboard can be exercised. The stand-in exists only in debug builds.
 

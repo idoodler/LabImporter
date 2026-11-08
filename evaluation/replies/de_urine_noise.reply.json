@@ -1,0 +1,80 @@
+{"entries":
+[{"code":
+"Leukozyten",
+"name":
+"Leukozyten",
+"rawValue":
+"negativ",
+"unit":
+"",
+"reportLanguage":
+"de"},
+{"code":
+"Nitrit",
+"name":
+"Nitrit",
+"rawValue":
+"negativ",
+"unit":
+"",
+"reportLanguage":
+"de"},
+{"code":
+"Eiweiß",
+"name":
+"Eiweiß",
+"rawValue":
+"positiv (+)",
+"unit":
+"",
+"reportLanguage":
+"de"},
+{"code":
+"Glucose",
+"name":
+"Glucose",
+"rawValue":
+"negativ",
+"unit":
+"",
+"reportLanguage":
+"de"},
+{"code":
+"Albumin im Urin",
+"name":
+"Albumin im Urin",
+"rawValue":
+"45",
+"unit":
+"mg/l",
+"reportLanguage":
+"de"},
+{"code":
+"Kreatinin im Urin",
+"name":
+"Kreatinin im Urin",
+"rawValue":
+"1,1",
+"unit":
+"g/l",
+"reportLanguage":
+"de"},
+{"code":
+"Albumin/Kreatinin-Quotient",
+"name":
+"Albumin/Kreatinin-Quotient",
+"rawValue":
+"40,9",
+"unit":
+"mg/g",
+"reportLanguage":
+"de"}]
+,
+"reportDate":
+"2026-10-02",
+"patientName":
+"Thomas Becker",
+"authorName":
+"Gemeinschaftspraxis Dr. Huber & Kollegen",
+"reportLanguage":
+"de"}

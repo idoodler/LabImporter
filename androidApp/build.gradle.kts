@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kover)
 }
 
 /**
@@ -71,6 +72,35 @@ val appVersionCode: Int = appVersion.split('.').map(String::toInt).let { (major,
     major * 10_000 + minor * 100 + patch
 }
 
+/** The key a real release is signed with. Never committed: see README, "Android release signing". */
+class ReleaseKey(val storeFile: String, val storePassword: String, val keyAlias: String, val keyPassword: String)
+
+/** An environment variable (CI) or else a Gradle property (`~/.gradle/gradle.properties`); blank counts as unset. */
+fun signingSetting(name: String): String? =
+    providers.environmentVariable(name).orElse(providers.gradleProperty(name)).orNull?.takeIf { it.isNotBlank() }
+
+val releaseKey: ReleaseKey? = signingSetting("LABIMPORTER_RELEASE_STORE_FILE")?.let { storeFile ->
+    // Half a configuration is a mistake, not a reason to fall back to the debug key silently.
+    fun required(name: String) = signingSetting(name) ?: error("LABIMPORTER_RELEASE_STORE_FILE is set, but $name isn't")
+    ReleaseKey(
+        storeFile,
+        required("LABIMPORTER_RELEASE_STORE_PASSWORD"),
+        required("LABIMPORTER_RELEASE_KEY_ALIAS"),
+        signingSetting("LABIMPORTER_RELEASE_KEY_PASSWORD") ?: required("LABIMPORTER_RELEASE_STORE_PASSWORD"),
+    )
+}
+
+if (releaseKey == null) {
+    tasks.matching { it.name == "packageRelease" || it.name == "signReleaseBundle" }.configureEach {
+        doFirst {
+            logger.warn(
+                "WARNING: This release is signed with the DEBUG key — a test build only. " +
+                    "Set LABIMPORTER_RELEASE_STORE_FILE and friends (README, \"Android release signing\") to sign a real one.",
+            )
+        }
+    }
+}
+
 // The shared module's JVM tests read the catalog from the root build dir.
 val copyLoincForTests = tasks.register<Copy>("copyLoincForTests") {
     from(buildLoincDb)
@@ -93,14 +123,26 @@ android {
         buildConfigField("String", "GIT_COMMIT", "\"${git("rev-parse", "--short", "HEAD").ifEmpty { "unknown" }}\"")
     }
 
+    signingConfigs {
+        if (releaseKey != null) {
+            create("release") {
+                storeFile = file(releaseKey.storeFile)
+                storePassword = releaseKey.storePassword
+                keyAlias = releaseKey.keyAlias
+                keyPassword = releaseKey.keyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            // Test builds only: signed with the debug key so the APK installs
-            // directly. Real releases need their own release key.
-            signingConfig = signingConfigs.getByName("debug")
+            // The release key when one is configured (README, "Android release signing").
+            // Without one — CI, a checkout — it's a test build signed with the debug key,
+            // so the APK still installs directly; the packaging tasks warn about it.
+            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
         }
     }
 
@@ -151,6 +193,8 @@ android {
 kotlin {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_17)
+        // Main and test sources alike: a deprecation left as a warning is a migration nobody schedules.
+        allWarningsAsErrors.set(true)
         optIn.addAll(
             "kotlin.uuid.ExperimentalUuidApi",
             "kotlin.time.ExperimentalTime",
@@ -181,6 +225,19 @@ tasks.withType<Test>().configureEach {
     systemProperty("robolectric.graphicsMode", "NATIVE")
     // `-PqualityScreens=<folder>`: ScreenMatrixTest saves every screen there.
     providers.gradleProperty("qualityScreens").orNull?.let { systemProperty("quality.screens", it) }
+}
+
+// Line and branch coverage of the debug unit tests (`koverXmlReportDebug`), for orientation
+// only: docs/quality/RUBRIC.md scores mutations, not coverage, so there is no minimum.
+kover {
+    reports {
+        filters {
+            excludes {
+                // Generated: resources, build facts, serializers and Compose's lambda holders.
+                classes("*.R", "*.R\$*", "*.BuildConfig", "*\$\$serializer", "*.ComposableSingletons*")
+            }
+        }
+    }
 }
 
 androidComponents {

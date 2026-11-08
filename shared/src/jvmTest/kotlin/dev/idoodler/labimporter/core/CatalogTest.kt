@@ -10,6 +10,7 @@ import dev.idoodler.labimporter.core.model.duplicateLoincCodes
 import dev.idoodler.labimporter.core.parse.AiLabEntry
 import dev.idoodler.labimporter.core.parse.AiLabReport
 import dev.idoodler.labimporter.core.parse.LabParsePipeline
+import kotlinx.datetime.LocalDate
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -277,6 +278,33 @@ class CatalogTest {
         assertEquals("Negative", LabParsePipeline.valueWithoutFlag("In Range· Negative"))
         val report = AiLabReport(listOf(AiLabEntry("DHEA-S", "DHEA Sulfate", "In Range· 211", "mcg/dL")), reportLanguage = "en")
         assertEquals(211.0, LabParsePipeline.postProcess(report, "").values.single().numericValue)
+        // From mutation testing: a middle dot between digits is a decimal point (5·1 is 5.1), never a label.
+        assertEquals("5·1", LabParsePipeline.valueWithoutFlag("5·1"))
+    }
+
+    /** From mutation testing (tools/quality/mutation.sh): rules whose opposite the other tests let through. */
+    @Test
+    fun aRowWithoutANameOrCodeIsDroppedAndBlankNamesAreNoNames() {
+        val report = AiLabReport(
+            listOf(
+                AiLabEntry("", "", "5,1", "mmol/l"),
+                AiLabEntry("", "Kalium", "4,1", "mmol/l"),
+                AiLabEntry("2160-0", "", "0,8", "mg/dl"),
+            ),
+            reportLanguage = "de", patientName = "  ", authorName = "  ",
+        )
+        val result = LabParsePipeline.postProcess(report, "Kalium 4,1 mmol/l\nKreatinin 0,8 mg/dl")
+        assertEquals(listOf(4.1, 0.8), result.values.map { it.numericValue })
+        assertNull(result.patientName)
+        assertNull(result.authorName)
+        val named = LabParsePipeline.postProcess(report.copy(patientName = " Max ", authorName = " Labor "), "")
+        assertEquals("Max" to "Labor", named.patientName to named.authorName)
+    }
+
+    @Test
+    fun anImpossibleDateInTheTextIsNoDate() {
+        assertEquals(emptySet(), LabParsePipeline.printedDates("Datum 2026-13-45, Befund 31.02.2026"))
+        assertEquals(setOf(LocalDate(2026, 5, 6)), LabParsePipeline.printedDates("Datum 2026-05-06"))
     }
 
     @Test

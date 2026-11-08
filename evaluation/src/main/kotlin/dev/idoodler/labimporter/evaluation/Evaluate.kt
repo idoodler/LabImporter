@@ -31,6 +31,8 @@ import kotlin.time.TimeSource
  *
  * `--args="replay"` re-scores the replies saved by the last run without the
  * model — quick when only the shared post-processing (LOINC lookup) changed.
+ * The replies are committed (evaluation/replies), so CI replays them too;
+ * `-Psummary=<file>` also writes the totals as JSON.
  */
 
 /** What a sample report contains (written by hand from the report text). */
@@ -121,6 +123,7 @@ private fun replay() {
             score(report.nameWithoutExtension, expectedFor(report), LabParsePrompt.decodeJsonReply(reply)?.let { LabParsePipeline.postProcess(it, report.readText()) },
                 0, reply.length)
         },
+        mode = "replay",
     )
 }
 
@@ -129,9 +132,42 @@ private fun reports() = File("evaluation/reports").listFiles { f -> f.name.endsW
 private fun expectedFor(report: File) =
     json.decodeFromString(Expected.serializer(), File(report.parentFile, report.nameWithoutExtension + ".expected.json").readText())
 
-private fun replyFile(report: File) = File("evaluation/build/replies", report.nameWithoutExtension + ".reply.json")
+/**
+ * Committed, so replay works on a fresh checkout (and in CI) without the model;
+ * a model run overwrites them, and the diff shows what the model now reads differently.
+ */
+private fun replyFile(report: File) = File("evaluation/replies", report.nameWithoutExtension + ".reply.json")
 
-private fun printTotal(scores: List<Score>) {
+/** The totals as JSON, for tools/quality/scorecard.py and the CI floor (`-Psummary=<file>`). */
+@Serializable
+data class Summary(
+    val mode: String,
+    val reports: Int,
+    val invalidReplies: Int,
+    val valuesExpected: Int,
+    val valuesCorrect: Int,
+    val numbersRead: Int,
+    val extraNumbers: Int,
+    /** Correct / expected and correct / read, 0…1; null when there's nothing to divide by. */
+    val recall: Double?,
+    val precision: Double?,
+    val loincExpected: Int,
+    val loincRight: Int,
+    val textExpected: Int,
+    val textKept: Int,
+    val datesExpected: Int,
+    val datesRight: Int,
+    /** A date that is there but wrong: the silent kind. A missing date is visible in Review. */
+    val datesWrong: Int,
+    val wrongValuesFlagged: Int,
+    val wrongValuesNotFlagged: Int,
+    val rightValues: Int,
+    val falseFlags: Int,
+)
+
+private fun ratio(a: Int, b: Int) = if (b == 0) null else a.toDouble() / b
+
+private fun printTotal(scores: List<Score>, mode: String = "model") {
     val expectedCount = scores.sumOf { it.expected }
     val correct = scores.sumOf { it.correct }
     val read = scores.sumOf { it.readNumbers }
@@ -139,10 +175,36 @@ private fun printTotal(scores: List<Score>) {
         "extra numbers ${scores.sumOf { it.extra }}, precision ${pct(correct, read)}, " +
         "invalid replies ${scores.count { !it.valid }}, LOINC ${scores.sumOf { it.loincRight }}/${scores.sumOf { it.loincExpected }}, " +
         "text results ${scores.sumOf { it.textKept }}/${scores.sumOf { it.textExpected }}, " +
+        "dates ${scores.count { it.dateRight }}/${scores.count { it.dateExpected }}, " +
         "median time ${scores.map { it.millis }.sorted()[scores.size / 2] / 1000.0} s")
     println("SOURCE CHECK  wrong values flagged ${scores.sumOf { it.wrongFlagged }}, " +
         "wrong values NOT flagged ${scores.sumOf { it.wrongNotFlagged }}, " +
         "right values falsely flagged ${scores.sumOf { it.rightFlagged }}/${scores.sumOf { it.rightValues }}")
+    val summaryPath = System.getProperty("eval.summary")?.takeIf { it.isNotBlank() } ?: return
+    val summary = Summary(
+        mode = mode,
+        reports = scores.size,
+        invalidReplies = scores.count { !it.valid },
+        valuesExpected = expectedCount,
+        valuesCorrect = correct,
+        numbersRead = read,
+        extraNumbers = scores.sumOf { it.extra },
+        recall = ratio(correct, expectedCount),
+        precision = ratio(correct, read),
+        loincExpected = scores.sumOf { it.loincExpected },
+        loincRight = scores.sumOf { it.loincRight },
+        textExpected = scores.sumOf { it.textExpected },
+        textKept = scores.sumOf { it.textKept },
+        datesExpected = scores.count { it.dateExpected },
+        datesRight = scores.count { it.dateRight },
+        datesWrong = scores.count { it.dateWrong },
+        wrongValuesFlagged = scores.sumOf { it.wrongFlagged },
+        wrongValuesNotFlagged = scores.sumOf { it.wrongNotFlagged },
+        rightValues = scores.sumOf { it.rightValues },
+        falseFlags = scores.sumOf { it.rightFlagged },
+    )
+    File(summaryPath).apply { parentFile?.mkdirs() }.writeText(json.encodeToString(Summary.serializer(), summary) + "\n")
+    println("Summary written to $summaryPath")
 }
 
 private const val MAX_TOKENS = 4096
@@ -165,6 +227,10 @@ data class Score(
     val rightFlagged: Int = 0,
     val wrongFlagged: Int = 0,
     val wrongNotFlagged: Int = 0,
+    /** The report prints a date; the read one is it, or another one (a missing date isn't "wrong"). */
+    val dateExpected: Boolean = false,
+    val dateRight: Boolean = false,
+    val dateWrong: Boolean = false,
 )
 
 private fun pct(a: Int, b: Int) = if (b == 0) "—" else "${(100.0 * a / b).toInt()}%"
@@ -245,5 +311,8 @@ private fun score(name: String, expected: Expected, result: ParseResult?, millis
         values.count { it.numericValue != null }, extras.size, loincExpected, loincRight, millis,
         expected.notNumeric.size, textKept,
         right.size, right.count { it.needsSourceCheck }, wrong.count { it.needsSourceCheck }, wrong.count { !it.needsSourceCheck },
+        dateExpected = expected.reportDate != null,
+        dateRight = expected.reportDate != null && result?.reportDate?.toString() == expected.reportDate,
+        dateWrong = expected.reportDate != null && result?.reportDate != null && result.reportDate.toString() != expected.reportDate,
     )
 }

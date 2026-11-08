@@ -32,6 +32,8 @@ data. The Foundation Models language model runs entirely on device.
 LabImporter/
 ├── LabImporterApp.swift        # @main entry; starts SharedCore; routes to HomeView or UnsupportedDeviceView
 ├── Info.plist                  # usage strings, document types (PDF/image), HealthKit, App Group key
+├── PrivacyInfo.xcprivacy       # privacy manifest: no tracking or collected data; UserDefaults + file-timestamp
+│                               #   reasons (LabImporterShare/ has its own, empty one) — see "Privacy note"
 ├── LabImporter.entitlements    # HealthKit, iCloud KVS, App Group (shared with the share extension)
 ├── Localizable.xcstrings        # all user-facing strings (String(localized:))
 ├── AppIcon.icon/               # app icon (Icon Composer); SVG layers from tools/generate_app_icon_layers.py,
@@ -81,10 +83,11 @@ LabImporter/
 LabImporterShare/   # share extension (text only): hands shared text to the app via ShareInbox
 LabImporterTests/   # unit tests (Swift Testing), hosted in the app; golden CDA shared with the Kotlin tests
 LabImporterUITests/ # UI tests (XCUITest)
-tools/              # sync_xcode_project.rb (targets/files/scheme), ios_test.sh, LOINC/icon/string generators
+tools/              # sync_xcode_project.rb (targets/files/scheme), ios_test.sh, LOINC/icon/string generators,
+                    #   quality/ (collect.sh, scorecard.py, static gates, mutation.sh) — see "Measuring quality"
 shared/, androidApp/  # Kotlin Multiplatform core + Android app — see "Android & shared Kotlin module"
 fastlane/        # Fastfile (build/release/certs lanes) + Matchfile (git storage)
-.github/workflows/  # numbered setup workflows + lint + build
+.github/workflows/  # numbered setup workflows + lint + build + quality; dependabot.yml next to it
 .claude/         # SessionStart hook (installs SwiftLint) + pre-push lint hook
 Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENTIFIER = dev.idoodler.$(DEVELOPMENT_TEAM).labimporter
 ```
@@ -95,7 +98,7 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
 - Long-running work lives in **`actor`** types: `OCRService`, `LabParserService`,
   `HealthKitService`. Views call them with `await` from `Task { … }`.
 - `HealthKitService` is a singleton (`HealthKitService.shared`); its `HKHealthStore`
-  is `nonisolated(unsafe)` because `HKHealthStore` is thread-safe by design.
+  is a plain `private let` the actor owns.
 - Legacy completion-handler APIs (Vision, `HKDocumentQuery`, `HKSourceQuery`) are
   bridged with `withCheckedThrowingContinuation`, guarding against double-resume
   via a `finished` flag.
@@ -195,11 +198,14 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   own decimal notation: 263000 beside decimal points, 263 beside decimal commas;
   with no such sign it's no number. Text that can't be saved as written
   (`needsCorrection`) holds back saving until it's corrected or deselected.
-- **Model quality check:** `evaluation/` (JVM, not part of the app or CI) runs
+- **Model quality check:** `evaluation/` (JVM, not part of the app) runs
   an on-device model over synthetic sample reports with the app's exact prompt,
   schema and post-processing, and scores values, LOINC codes and dates — see
   `evaluation/README.md`. Re-run it (or `--args="replay"` for post-processing
   changes) before touching the prompt, the LOINC ranking or the downloaded model.
+  The model's replies are committed (`evaluation/replies/`), so CI replays them on
+  every pull request and fails below `tools/quality/evaluation_floor.json`; commit
+  a model run's new replies with its result.
 
 ### CDA round-trip
 - **Export:** the shared `CdaExport.generate` (via `CDAExportService.generateCDA`)
@@ -288,8 +294,8 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
 
 - **Accessibility is measured, on every screen.** `AccessibilityAuditUITests` runs Apple's
   audit over `QualityScreen.all` (`LabImporterUITests/QualityScreens.swift`) at the
-  largest text, and the screens marked `hasTints` again in dark (kept under 15 minutes for
-  CI); Dynamic Type is measured as each text's height at both sizes. An issue fails it unless
+  largest text and in light at the standard size, and the screens marked `hasTints` again in
+  dark (kept under 20 minutes for CI); Dynamic Type is measured as each text's height at both sizes. An issue fails it unless
   `AuditExemption` names it — screen, condition, audit type and element — with why it's a
   false positive; `TEST_RUNNER_QUALITY_AUDIT_EVIDENCE=<folder>` saves what it found. New screens and states go in that list (`--ss-data`, `--ss-onboarding`,
   `--ss-screen` in `ScreenshotMode`). Text goes in `.textSecondary`/`.textTertiary` and
@@ -546,7 +552,11 @@ tools/generate_android_icon.py # layered adaptive launcher icon (+ night + monoc
 - **Previews:** the same rule as SwiftUI — every composable screen ships
   `@Preview`s for its variations (empty/populated, light/dark, sizes).
 - Build & test: `./gradlew :shared:jvmTest :androidApp:testDebugUnitTest :androidApp:assembleRelease`
-  (`androidApp/build/outputs/apk/release/`). CI: `build_android.yml`.
+  (`androidApp/build/outputs/apk/release/`). CI: `build_android.yml`. Kotlin warnings
+  are errors in `shared/` and `androidApp/` (main and test): fix a deprecation, don't
+  suppress it. Release APKs are signed with the debug key unless
+  `LABIMPORTER_RELEASE_STORE_FILE` and friends are set (README, "Android release
+  signing"); the build warns when it falls back.
 - **Robolectric tests** all run in one sandbox (`robolectric.graphicsMode=NATIVE`
   in `build.gradle.kts`): a second sandbox can't load the bundled SQLite again and
   the catalog would silently be empty. Use `waitFor` (`ComposeWait.kt`) rather
@@ -588,6 +598,10 @@ hardware fall back to `UnsupportedDeviceView` since parsing needs the on-device 
   ```
   swiftlint lint --strict
   ```
+- The analyzer rule (`unused_import`) needs a compiler log, so `lint` never runs it:
+  `build_pr.yml` runs `swiftlint analyze --strict --compiler-log-path build/xcodebuild.log`
+  after `IOS_BUILD_LOG=build/xcodebuild.log tools/ios_test.sh` (a clean build, so the
+  log holds every compile; locally add `IOS_CLEAN=1`).
 - A **pre-push hook** (`.claude/settings.json`) runs `swiftlint lint --strict`
   on `git push` and blocks the push on violations. In Claude Code on the web,
   the `SessionStart` hook auto-installs SwiftLint 0.63.2; locally it's assumed via brew.
@@ -616,7 +630,7 @@ and run in order on first setup:
 4. **`build_labimporter.yml`** — on the `xcode-27` image with Xcode 27.1: lints, bumps the
    build number from the latest TestFlight build, builds, archives, uploads to
    TestFlight. Manual + scheduled (first Sunday monthly).
-5. **`lint.yml`** — SwiftLint on every PR to `main` (and manual dispatch).
+5. **`lint.yml`** — SwiftLint 0.63.2 (pinned image) on every PR to `main` (and manual dispatch).
 
 `build_android.yml` (every PR to `main`) runs the shared Kotlin tests, the
 Android unit/UI tests, the translation check, Android lint and builds the APKs —
@@ -635,6 +649,16 @@ pinned Xcode version and the tests pass; it does *not* produce a signed archive
 or an `.ipa` (that needs real signing credentials — see
 `build_labimporter.yml`). Use this to confirm a branch is sound before merging.
 
+**`quality.yml`** (every PR to `main`, manual dispatch, no secrets) runs the
+gates of "Measuring quality" below and uploads the Kover reports.
+
+Every third-party action is pinned to a full commit SHA with its tag in a comment
+(resolve a tag with `gh api repos/<owner>/<repo>/git/ref/tags/<tag>`, following an
+annotated tag to its commit); `.github/dependabot.yml` proposes updates weekly for
+the actions and the Gradle dependencies. A container image is pinned to its
+`@sha256:` digest (tag kept for reading). `static_metrics.py --gate` fails on an
+unpinned action or image.
+
 Fastlane lanes (`fastlane/Fastfile`): `build_labimporter`, `release`,
 `identifiers`, `certs`, `validate_secrets`, `nuke_certs`,
 `check_and_renew_certificates`. Match uses git storage
@@ -644,6 +668,36 @@ Fastlane lanes (`fastlane/Fastfile`): `build_labimporter`, `release`,
 Required secrets: `GH_PAT`, `TEAMID`, `FASTLANE_ISSUER_ID`, `FASTLANE_KEY_ID`,
 `FASTLANE_KEY`, `MATCH_PASSWORD`. The bundle ID prefix `$(DEVELOPMENT_TEAM)` in
 `Config.xcconfig` is substituted from `TEAMID` at build time.
+
+## Measuring quality
+
+`docs/quality/RUBRIC.md` defines the measures; `docs/quality/SCORECARD.md` is one
+run of them. Regenerate it with:
+
+```
+tools/quality/collect.sh [--ios] [--mutation] [--simulator <udid>]
+```
+
+It runs one step at a time (8 GB Macs): `static_metrics.py` and SwiftLint, the Gradle
+tests with Kover, Android `lintRelease`, the evaluation replay, then with `--ios` the
+iOS tests with coverage (clean build; the accessibility audit is one of the UI suites),
+`swiftlint analyze` and the privacy manifests in the built bundles, and with
+`--mutation` PIT (`tools/quality/mutation.sh`, ~4 min). Each writes JSON to
+`build/quality/`; `scorecard.py` turns them into the scorecard, where a missing
+input is "not run", never a pass. Python is stdlib-only plus lizard, pinned in
+`tools/quality/requirements.txt` (collect.sh installs it into `build/quality/venv`).
+
+CI gates (`quality.yml`): `static_metrics.py --gate` fails on a swallowed error in a
+storage path without a stated reason (`try?`, an empty catch, a `runCatching` whose
+failure nothing looks at), a missing translation, an iOS network API, a missing or
+wrong privacy manifest (a required-reason API a bundle's sources call but it doesn't
+declare, or a reason Apple doesn't list for it), a function over complexity 15 or
+100 lines that isn't in `tools/quality/complexity_allowlist.txt` (with its reason),
+a SwiftUI view file without previews, and an action or image not pinned to a SHA or
+digest; the evaluation replay must stay at or above
+`tools/quality/evaluation_floor.json`. Coverage (Kover) is uploaded, never gated:
+mutation score is what counts (`shared:mutationTest`, `-Pmutation.classes=…` to
+narrow it while writing tests).
 
 ## Working in this repo
 
@@ -743,3 +797,11 @@ system's AICore, or the pinned Gemma file the user chose to download, by the
 system download manager — never lab data; `NetworkGuardrailTest` enforces it.)
 Do not introduce network calls that transmit lab data, and don't weaken the "no
 server" guarantee described in `README.md`.
+
+The privacy manifests (`LabImporter/PrivacyInfo.xcprivacy`,
+`LabImporterShare/PrivacyInfo.xcprivacy`) declare no tracking and no collected
+data, and list the required-reason APIs the binaries really call — today
+UserDefaults (CA92.1) and the executable's modification date (C617.1) in the app,
+none in the extension. Using another one (a file's dates or size, disk space,
+`systemUptime`/`mach_absolute_time`, active keyboards, a UserDefaults App Group
+suite) means adding it there with its reason; check with `nm -u` on the built binary.

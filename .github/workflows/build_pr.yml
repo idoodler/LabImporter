@@ -20,11 +20,11 @@ jobs:
         run: sudo xcode-select --switch /Applications/Xcode_27.1.app/Contents/Developer
 
       - name: Checkout Repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
 
       # The Xcode "Build shared Kotlin" phase runs Gradle (shared/ KMP module).
       - name: Set up JDK
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
           distribution: temurin
           java-version: "21"
@@ -54,4 +54,10 @@ jobs:
           # Boot it up front: left to xcodebuild, the Duo simulator's first boot
           # can stall the test run indefinitely.
           xcrun simctl bootstatus "$SIMULATOR" -b
-          tools/ios_test.sh all "$SIMULATOR"
+          # The log feeds `swiftlint analyze` below: a clean checkout, so it holds every compile.
+          IOS_BUILD_LOG=build/xcodebuild.log tools/ios_test.sh all "$SIMULATOR"
+
+      # The analyzer rules of .swiftlint.yml (unused_import) need the compiler's
+      # arguments, so they run here, against that build, and not in `swiftlint lint`.
+      - name: SwiftLint analyze
+        run: swiftlint analyze --strict --compiler-log-path build/xcodebuild.log --reporter github-actions-logging

@@ -23,7 +23,7 @@ struct QualityScreen: Sendable {
     var arguments: [String] = []
     /// What to tap once the app has launched, for a screen that is a tap further.
     var tapping: String?
-    /// Audited at the standard size too, in dark (the others are only measured there, in light): one screen for each kind of tinted
+    /// Audited at the standard size in dark too, not only in light: one screen for each kind of tinted
     /// surface — cards, badges and chips, Review's warnings, onboarding's tinted icons, buttons.
     /// Dark uses the same colour tokens everywhere else, and a run of every screen in both takes too long for CI.
     var hasTints = false
@@ -99,14 +99,17 @@ struct QualityScreen: Sendable {
 }
 
 /// Screens fade or slide in and lists decelerate: only what's finally on screen says anything.
-func waitUntilSettled(_ app: XCUIApplication) {
+/// Returns that screen's screenshot.
+@discardableResult
+func waitUntilSettled(_ app: XCUIApplication) -> Data {
     var previous = app.screenshot().pngRepresentation
     for _ in 0..<15 {
         Thread.sleep(forTimeInterval: 0.7)
         let current = app.screenshot().pngRepresentation
-        if current == previous { return }
+        if current == previous { return current }
         previous = current
     }
+    return previous
 }
 
 /// Scrolls the screen a page at a time, running `body` on each, until it stops changing.
@@ -115,8 +118,13 @@ func forEachPage(of app: XCUIApplication, limit: Int, _ body: (Int) throws -> Vo
         try body(page)
         guard page < limit else { return }
         let before = app.screenshot().pngRepresentation
-        app.swipeUp()
-        waitUntilSettled(app)
-        if app.screenshot().pngRepresentation == before { return }
+        // A swipe right after a cold launch once left the dashboard where it was, and its second page
+        // went unaudited: only a second swipe that moves nothing either is the end of the screen.
+        var moved = false
+        for _ in 0..<2 where !moved {
+            app.swipeUp()
+            moved = waitUntilSettled(app) != before
+        }
+        if !moved { return }
     }
 }

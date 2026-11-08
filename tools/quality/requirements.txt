@@ -1,0 +1,6 @@
+# The only third-party code the quality scripts use: lizard, for complexity and
+# duplication. Exact versions, so two runs measure the same way.
+#   python3 -m venv build/quality/venv && build/quality/venv/bin/pip install -r tools/quality/requirements.txt
+lizard==1.24.3
+pygments==2.21.0
+pathspec==1.1.1
