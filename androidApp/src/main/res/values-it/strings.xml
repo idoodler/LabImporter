@@ -68,6 +68,9 @@
     <string name="share_cda">Condividi file del referto</string>
     <string name="delete_report_title">Eliminare il referto?</string>
     <string name="delete_report_message">Questo referto verrà rimosso definitivamente.</string>
+    <string name="delete_unread_values">Verranno eliminati anche i valori che questa versione di LabImporter non può mostrare: %1$d.</string>
+    <string name="report_read_only_title">Non modificabile</string>
+    <string name="report_read_only_message">Questo referto contiene valori che questa versione di LabImporter non può mostrare: %1$d. Per non perderli, non può essere modificato. Aggiornando LabImporter potrebbero essere mostrati.</string>
     <string name="report_deleted">Referto eliminato</string>
     <string name="patient_label">Paziente: %1$s</string>
     <plurals name="value_count">
@@ -157,6 +160,11 @@
     <string name="search_loinc">Cerca esami di laboratorio</string>
     <string name="loinc_suggested">Suggerimento: %1$s</string>
     <string name="loinc_duplicate">Duplicato: %1$s</string>
+    <string name="save_check_title">Controlla prima di salvare</string>
+    <string name="save_check_compare">Confrontali con il tuo referto:</string>
+    <string name="save_check_left_out">Questi non hanno un codice LOINC e non verranno salvati:</string>
+    <string name="save_anyway">Salva comunque</string>
+    <string name="go_back">Torna indietro</string>
     <string name="compare_with_report">Confronta con il referto</string>
     <string name="compare_with_report_detail">Questo valore non è stato trovato nel testo del referto. Confrontalo con il tuo referto.</string>
     <plurals name="values_to_check">
@@ -305,7 +313,6 @@
     <string name="pdf_all_time">Tutto il periodo</string>
     <string name="pdf_generated">Generato %1$s</string>
     <string name="pdf_page_of">Pagina %1$d di %2$d</string>
-    <string name="pdf_author">Autore</string>
     <string name="pdf_period_covered">Periodo coperto</string>
     <string name="pdf_metrics">Parametri</string>
     <string name="pdf_out_of_range">Fuori intervallo</string>

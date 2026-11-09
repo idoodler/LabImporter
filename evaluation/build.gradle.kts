@@ -15,6 +15,7 @@ dependencies {
     implementation(libs.litertlm.jvm)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.core)
+    testImplementation(kotlin("test"))
 }
 
 application {
@@ -29,5 +30,12 @@ tasks.named<JavaExec>("run") {
     systemProperty("eval.verbose", providers.gradleProperty("verbose").getOrElse("false"))
     // `-Psummary=build/quality/evaluation.json`: the totals as JSON (relative to the repo root).
     systemProperty("eval.summary", providers.gradleProperty("summary").getOrElse(""))
+    systemProperty("loinc.db", project(":androidApp").layout.buildDirectory.file("generated/loincAssets/loinc.db").get().asFile.absolutePath)
+}
+
+// The scoring and the planted errors (`./gradlew :evaluation:test`), on the same catalog.
+tasks.test {
+    dependsOn(":androidApp:buildLoincDb")
+    workingDir = rootProject.projectDir
     systemProperty("loinc.db", project(":androidApp").layout.buildDirectory.file("generated/loincAssets/loinc.db").get().asFile.absolutePath)
 }

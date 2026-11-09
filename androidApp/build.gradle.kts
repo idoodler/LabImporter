@@ -121,6 +121,13 @@ android {
         buildConfigField("String", "GIT_REMOTE", "\"${git("remote", "get-url", "origin")}\"")
         buildConfigField("String", "GIT_BRANCH", "\"${git("rev-parse", "--abbrev-ref", "HEAD").ifEmpty { "unknown" }}\"")
         buildConfigField("String", "GIT_COMMIT", "\"${git("rev-parse", "--short", "HEAD").ifEmpty { "unknown" }}\"")
+        // The languages the app's strings ship in (values-<qualifier>/strings.xml), as BCP 47 tags:
+        // the LOINC catalog speaks the one Android picks for those strings (AppLanguage.kt).
+        val shippedLanguages = listOf("en") + file("src/main/res").listFiles().orEmpty()
+            .filter { it.name.startsWith("values-") && File(it, "strings.xml").exists() }
+            .map { it.name.removePrefix("values-").replace("b+zh+Hans", "zh-Hans").replace("-r", "-") }
+            .sorted()
+        buildConfigField("String", "LANGUAGES", "\"${shippedLanguages.joinToString(",")}\"")
     }
 
     signingConfigs {

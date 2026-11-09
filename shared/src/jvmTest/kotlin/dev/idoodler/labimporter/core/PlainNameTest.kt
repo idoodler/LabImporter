@@ -4,10 +4,15 @@ import dev.idoodler.labimporter.core.loinc.LoincDirectory
 import dev.idoodler.labimporter.core.loinc.LoincPlainName
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.core.model.LabMapping
+import dev.idoodler.labimporter.core.model.LabValue
+import dev.idoodler.labimporter.core.model.confirmationLine
+import dev.idoodler.labimporter.core.model.saveConfirmation
 import dev.idoodler.labimporter.core.platform.openReadOnlyDatabase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class PlainNameTest {
@@ -49,7 +54,7 @@ class PlainNameTest {
         assertEquals("Glucose", name("en", "14749-6"), "moles share the name: the unit tells them apart")
         assertEquals("Protein (urine)", name("en", "2888-6"))
         assertEquals("Protein (24H urine)", name("en", "2889-4"))
-        assertEquals("Cholesterol in LDL Calc", name("en", "13457-7"))
+        assertEquals("Cholesterol in LDL (calculated)", name("en", "13457-7"))
         assertEquals("Alanin-Aminotransferase", name("de", "1742-6"))
         assertEquals("Protein in Urin", name("de", "2888-6"))
         assertEquals("Bilirubin gesamt", name("de", "1975-2"))
@@ -72,8 +77,8 @@ class PlainNameTest {
     fun aPropertyThatNamesTheTestStays() {
         assertEquals("Erythrocyte (Sedimentation Rate)", name("en", "30341-2"))
         assertEquals("Erythrocyte (DistWidth)", name("en", "30385-9"))
-        assertEquals("Platelet Auto (Entitic mean vol)", name("en", "32623-1"))
-        assertEquals("MCV Auto (RBC)", name("en", "787-2"))
+        assertEquals("Platelet (automated) (Entitic mean vol)", name("en", "32623-1"))
+        assertEquals("MCV (RBC, automated)", name("en", "787-2"))
         // No specimen printed, and two tests: the drug level and the antibiotic susceptibility.
         assertEquals("Vancomycin", name("en", "20578-1"))
         assertNotEquals("Vancomycin", name("en", "523-1"))
@@ -88,9 +93,9 @@ class PlainNameTest {
         assertEquals("Nitrite Test strip (urine)", name("en", "5802-4"))
         assertEquals("C-reaktives Protein", name("de", "11039-5"))
         // What tells tests apart stays: a morphology isn't its count, a calculation or a method isn't the measurement.
-        assertEquals("RBC Auto Nom", name("en", "11273-0"))
-        assertEquals("RBC Auto", name("en", "789-8"))
-        assertEquals("Cholesterol in LDL Calc", name("en", "13457-7"))
+        assertEquals("RBC Nom (automated)", name("en", "11273-0"))
+        assertEquals("RBC (automated)", name("en", "789-8"))
+        assertEquals("Cholesterol in LDL (calculated)", name("en", "13457-7"))
         assertEquals("Urobilinogen Test strip SemiQn (urine)", name("en", "19161-9"))
     }
 
@@ -101,6 +106,47 @@ class PlainNameTest {
             catalog.getValue(language).map { "$language ${it.code}: ${plain(language, it)}" }.filter { scales.containsMatchIn(it.substringAfter(": ")) }
         }
         assertTrue(left.isEmpty(), "${left.size} names:\n" + left.take(30).joinToString("\n"))
+    }
+
+    @Test
+    fun englishMethodsAreSpelledOut() {
+        assertEquals("Cholesterol in LDL (calculated)", name("en", "13457-7"))
+        assertEquals("Hematocrit (calculated)", name("en", "20570-8"))
+        assertEquals("Base excess (arterial blood, calculated)", name("en", "1925-7"))
+        assertEquals("Platelets (automated)", name("en", "777-3"))
+        assertEquals("HCV Ab (immunoassay)", name("en", "13955-0"))
+        // Spelled out, the method still tells the calculation from the measurement.
+        assertNotEquals(name("en", "13457-7"), name("en", "18262-6"))
+        val abbreviations = Regex("(?<![\\p{L}\\p{N}.])(?:Calc|Auto|IA)(?![\\p{L}\\p{N}.])")
+        val left = catalog.getValue("en").map { "${it.code}: ${plain("en", it)}" }.filter { abbreviations.containsMatchIn(it.substringAfter(": ")) }
+        assertTrue(left.isEmpty(), "${left.size} names:\n" + left.take(30).joinToString("\n"))
+    }
+
+    /** What Review's save confirmation lists, and what the chips name: the plain name, never the bare code. */
+    @Test
+    fun theSaveConfirmationAndTheChipsSayPlainNames() {
+        startCatalog("en-US")
+        val misread = LabValue(code = "13457-7", name = "LDL-C", displayValue = "1200", numericValue = 1200.0, unit = "mg/dL", needsSourceCheck = true)
+        val unmapped = LabValue(code = "KREA", name = "Kreatinin", displayValue = "0.9", numericValue = 0.9, unit = "mg/dL")
+        val confirmation = assertNotNull(listOf(misread, unmapped).saveConfirmation())
+        assertEquals(listOf("Cholesterol in LDL (calculated) 1200 mg/dL"), confirmation.toCheck.map { it.confirmationLine })
+        assertEquals(listOf("Kreatinin 0.9 mg/dL"), confirmation.leftOut.map { it.confirmationLine }, "no code: the name as printed")
+        assertEquals("Creatinine", LabValue(code = "2160-0", name = "KREA", displayValue = "1", numericValue = 1.0, unit = "").resolvedName)
+        assertEquals(unmapped.id, listOf(unmapped).saveConfirmation()?.firstId)
+        assertEquals(misread.id, listOf(unmapped, misread).saveConfirmation()?.firstId, "a value to check comes first")
+        // Nothing flagged or left out: no question.
+        assertNull(listOf(misread.copy(needsSourceCheck = false)).saveConfirmation())
+        assertNull(listOf(misread.copy(isSelected = false), unmapped.copy(isSelected = false)).saveConfirmation(), "deselected is the user's answer")
+        assertNull(listOf(unmapped.copy(displayValue = "", numericValue = null)).saveConfirmation(), "an empty row has nothing to lose")
+    }
+
+    /** "About this value" and the pickers' second line show the catalog label, in the app's language. */
+    @Test
+    fun secondaryLabelsAreTheLocalizedFullLabel() {
+        startCatalog("de-DE")
+        assertEquals("25-Hydroxyvitamin D3 [Masse/Volumen] in Serum oder Plasma", LabMapping.catalogName("1989-3"))
+        startCatalog("en-US")
+        assertEquals("25-hydroxyvitamin D3 [Mass/Vol]", LabMapping.catalogName("1989-3"), "not LOINC's terse \"Calcidiol in Ser/Plas (MCnc)\"")
     }
 
     @Test

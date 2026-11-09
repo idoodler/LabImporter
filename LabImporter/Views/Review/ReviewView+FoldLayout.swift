@@ -38,6 +38,22 @@ extension ReviewView {
     /// Without this the centered form and its buttons sit right across the hinge.
     @ViewBuilder
     var reviewLists: some View {
+        ScrollViewReader { proxy in
+            panes
+                // Go Back from the save confirmation: to the first value it listed.
+                .onChange(of: scrollTarget) { _, target in
+                    guard let target else { return }
+                    withAnimation { proxy.scrollTo(target, anchor: .center) }
+                    scrollTarget = nil
+                }
+        }
+        .onGeometryChange(for: ReviewPaneGeometry.self) { proxy in
+            ReviewPaneGeometry(width: proxy.size.width, fold: proxy.verticalFold)
+        } action: { paneGeometry = $0 }
+    }
+
+    @ViewBuilder
+    private var panes: some View {
         Group {
             if let split = paneGeometry.split {
                 HStack(spacing: 0) {
@@ -68,9 +84,6 @@ extension ReviewView {
                 }
             }
         }
-        .onGeometryChange(for: ReviewPaneGeometry.self) { proxy in
-            ReviewPaneGeometry(width: proxy.size.width, fold: proxy.verticalFold)
-        } action: { paneGeometry = $0 }
     }
 
     /// There's room for patient and lab here, so they aren't folded away.

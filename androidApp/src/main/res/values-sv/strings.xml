@@ -67,6 +67,9 @@
     <string name="share_cda">Dela rapportfil</string>
     <string name="delete_report_title">Radera rapport?</string>
     <string name="delete_report_message">Den här rapporten tas bort permanent.</string>
+    <string name="delete_unread_values">Värden som den här versionen av LabImporter inte kan visa raderas också: %1$d.</string>
+    <string name="report_read_only_title">Kan inte redigeras</string>
+    <string name="report_read_only_message">Den här rapporten har värden som den här versionen av LabImporter inte kan visa: %1$d. För att de inte ska gå förlorade kan den inte redigeras. En uppdatering av LabImporter kan visa dem.</string>
     <string name="report_deleted">Rapporten raderades</string>
     <string name="patient_label">Patient: %1$s</string>
     <plurals name="value_count">
@@ -154,6 +157,11 @@
     <string name="search_loinc">Sök labbtester</string>
     <string name="loinc_suggested">Förslag: %1$s</string>
     <string name="loinc_duplicate">Dubblett: %1$s</string>
+    <string name="save_check_title">Kontrollera innan du sparar</string>
+    <string name="save_check_compare">Jämför dem med din rapport:</string>
+    <string name="save_check_left_out">Dessa har ingen LOINC-kod och sparas inte:</string>
+    <string name="save_anyway">Spara ändå</string>
+    <string name="go_back">Gå tillbaka</string>
     <string name="compare_with_report">Jämför med rapporten</string>
     <string name="compare_with_report_detail">Det här värdet hittades inte i rapportens text. Jämför det med din rapport.</string>
     <plurals name="values_to_check">
@@ -297,7 +305,6 @@
     <string name="pdf_all_time">Hela tiden</string>
     <string name="pdf_generated">Genererad %1$s</string>
     <string name="pdf_page_of">Sida %1$d av %2$d</string>
-    <string name="pdf_author">Författare</string>
     <string name="pdf_period_covered">Täckt period</string>
     <string name="pdf_metrics">Mätvärden</string>
     <string name="pdf_out_of_range">Utanför referens</string>

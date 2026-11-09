@@ -257,7 +257,7 @@ class PdfReportRenderer(private val context: Context) {
                 patient.sex?.let { sex ->
                     add(string(R.string.sex) to string(when (sex) { PatientSex.FEMALE -> R.string.sex_female; PatientSex.MALE -> R.string.sex_male; PatientSex.OTHER -> R.string.sex_other }))
                 }
-                if (data.authorName.isNotEmpty()) add(string(R.string.pdf_author) to data.authorName)
+                if (data.authorName.isNotEmpty()) add(string(R.string.lab_or_doctor) to data.authorName)
                 val earliest = data.earliestDate
                 val latest = data.latestDate
                 if (earliest != null && latest != null) {

@@ -101,6 +101,61 @@ class ReviewCheckTest {
         compose.onNodeWithText(toCheck(1)).assertDoesNotExist()
     }
 
+    /** Flag, don't block: saving a flagged value asks once, listing it, and Go Back stays in Review. */
+    @Test
+    fun savingAFlaggedValueAsksFirstAndGoBackStaysInReview() {
+        val viewModel = review { misread() }
+        compose.onAllNodesWithText(string(R.string.save)).onFirst().performClick()
+        compose.onNodeWithText(string(R.string.save_check_title)).assertIsDisplayed()
+        compose.onNodeWithText(string(R.string.save_check_compare)).assertIsDisplayed()
+        // By its plain name, value and unit.
+        compose.onNodeWithText("ALT 222 U/l").assertIsDisplayed()
+        compose.onNodeWithText(string(R.string.save_check_left_out)).assertDoesNotExist()
+
+        compose.onNodeWithText(string(R.string.go_back)).performClick()
+        compose.waitForIdle()
+        compose.onNodeWithText(string(R.string.save_check_title)).assertDoesNotExist()
+        assertTrue(viewModel.importState.value is ImportState.Reviewing)
+        // Scrolled to the value it asked about.
+        compose.onNode(hasText("222")).assertIsDisplayed()
+    }
+
+    @Test
+    fun saveAnywaySavesTheFlaggedValue() {
+        val viewModel = review { misread() }
+        compose.onAllNodesWithText(string(R.string.save)).onFirst().performClick()
+        compose.onNodeWithText(string(R.string.save_anyway)).performClick()
+        compose.waitFor { viewModel.importState.value is ImportState.Idle }
+        compose.waitFor { viewModel.reports.value.isNotEmpty() }
+        assertEquals(222.0, viewModel.reports.value.single().entries.single { it.code == "1742-6" }.numericValue)
+    }
+
+    @Test
+    fun aValueWithoutACodeIsListedAsLeftOut() {
+        review { FakeAi.replyJson(listOf("2160-0", "Kreatinin", "0,8", "mg/dl"), listOf("", "Spezialwert XY", "4", "U/l")) }
+        compose.onAllNodesWithText(string(R.string.save)).onFirst().performClick()
+        compose.onNodeWithText(string(R.string.save_check_left_out)).assertIsDisplayed()
+        compose.onNodeWithText("Spezialwert XY 4 U/l").assertIsDisplayed()
+        compose.onNodeWithText(string(R.string.save_check_compare)).assertDoesNotExist()
+    }
+
+    @Test
+    fun nothingFlaggedSavesWithoutAsking() {
+        val viewModel = review { FakeAi.replyJson(listOf("2160-0", "Kreatinin", "0,8", "mg/dl"), listOf("1742-6", "ALT", "22", "U/l")) }
+        compose.onAllNodesWithText(string(R.string.save)).onFirst().performClick()
+        compose.onNodeWithText(string(R.string.save_check_title)).assertDoesNotExist()
+        compose.waitFor { viewModel.importState.value is ImportState.Idle }
+    }
+
+    /** The screen matrix showed "Creatinine" on a German screen; iOS says "Creatinin", the catalog's German name. */
+    @Test
+    @Config(qualifiers = "de-rDE-w411dp-h914dp")
+    fun aGermanScreenNamesTheTestsInGerman() {
+        review { misread() }
+        compose.onNodeWithText("Creatinin").assertIsDisplayed()
+        compose.onNodeWithText("Creatinine").assertDoesNotExist()
+    }
+
     @Test
     fun aValueTheReportPrintsIsNotFlagged() {
         val viewModel = review { FakeAi.replyJson(listOf("2160-0", "Kreatinin", "0.8", "mg/dl"), listOf("1742-6", "ALT", "22", "U/l")) }

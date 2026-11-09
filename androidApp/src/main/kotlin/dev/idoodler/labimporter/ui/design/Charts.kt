@@ -48,7 +48,8 @@ import kotlinx.datetime.LocalDate
 import kotlin.math.roundToInt
 
 /**
- * An area chart for a metric's history on the shared [ChartAxis.scale]: straight
+ * An area chart for a metric's history on the shared [ChartAxis.scale] (or, as a card's
+ * [sparkline], a line on [ChartAxis.sparkline] with no fill): straight
  * segments between readings, spaced by date, over a gradient fill down to zero,
  * an optional reference band, and, when [onSelect] is set, touch scrubbing that
  * highlights the nearest reading.
@@ -74,6 +75,7 @@ fun AreaChart(
     formatValue: (Double) -> String = { it.toString() },
     description: String? = null,
     readingLabels: List<String>? = null,
+    sparkline: Boolean = false,
 ) {
     val accent = accentFor(color)
     val band = accent.copy(alpha = if (isDarkScheme) 0.16f else 0.12f)
@@ -82,7 +84,7 @@ fun AreaChart(
     val markerFill = MaterialTheme.colorScheme.surface
     val measurer = rememberTextMeasurer()
     val labelStyle = TextStyle(fontSize = 11.sp, color = labelColor, fontFeatureSettings = "tnum")
-    val scale = remember(points, range) { ChartAxis.scale(points, range) }
+    val scale = remember(points, range, sparkline) { if (sparkline) ChartAxis.sparkline(points) else ChartAxis.scale(points, range) }
     val hasXLabels = xLabels != null
 
     var canvas: Modifier = Modifier.fillMaxSize()
@@ -133,9 +135,10 @@ fun AreaChart(
             }
 
             if (range != null) {
-                val bandTop = y(range.high ?: scale.yHigh)
-                val bandBottom = y(range.low ?: scale.yLow)
-                drawRoundRect(band, Offset(plot.left, bandTop), Size(plot.width, bandBottom - bandTop), CornerRadius(8.dp.toPx()))
+                // A sparkline isn't stretched to the range: the band is cut at the plot's edges, or left out.
+                val bandTop = y(minOf(range.high ?: scale.yHigh, scale.yHigh))
+                val bandBottom = y(maxOf(range.low ?: scale.yLow, scale.yLow))
+                if (bandBottom > bandTop) drawRoundRect(band, Offset(plot.left, bandTop), Size(plot.width, bandBottom - bandTop), CornerRadius(8.dp.toPx()))
             }
 
             if (points.size > 1) {
@@ -143,14 +146,17 @@ fun AreaChart(
                     moveTo(x(points.first()), y(points.first().value))
                     points.drop(1).forEach { lineTo(x(it), y(it.value)) }
                 }
-                val zero = y(0.0)
-                val fill = Path().apply {
-                    addPath(line)
-                    lineTo(x(points.last()), zero)
-                    lineTo(x(points.first()), zero)
-                    close()
+                // A sparkline has no zero baseline, so an area under it would claim an amount.
+                if (!sparkline) {
+                    val zero = y(0.0)
+                    val fill = Path().apply {
+                        addPath(line)
+                        lineTo(x(points.last()), zero)
+                        lineTo(x(points.first()), zero)
+                        close()
+                    }
+                    drawPath(fill, Brush.verticalGradient(listOf(accent.copy(alpha = 0.42f), accent.copy(alpha = 0.02f)), startY = plot.top, endY = zero))
                 }
-                drawPath(fill, Brush.verticalGradient(listOf(accent.copy(alpha = 0.42f), accent.copy(alpha = 0.02f)), startY = plot.top, endY = zero))
                 drawPath(line, accent, style = Stroke(stroke, cap = StrokeCap.Round, join = StrokeJoin.Round))
                 if (showPoints) {
                     points.forEach { point(accent, markerFill, Offset(x(it), y(it.value)), stroke * 1.1f, ring = false) }
@@ -244,6 +250,25 @@ private fun AreaChartSelectedPreview() {
                 yLabels = true, xLabels = "Jan 2024" to "Sep 2026", selectedIndex = 2,
             )
         }
+    }
+}
+
+@Preview(name = "Sparkline – flat and range", widthDp = 340, heightDp = 120)
+@Composable
+private fun SparklinePreview() {
+    LabImporterTheme(dynamicColor = false) {
+        Surface {
+            val flat = listOf(MetricPoint(LocalDate(2025, 6, 1), 92.0, "mg/dL", "preview"), MetricPoint(LocalDate(2026, 5, 28), 92.0, "mg/dL", "preview"))
+            AreaChart(flat, LabCategory.GLYCEMIC.color, Modifier.fillMaxSize().padding(16.dp), range = ReferenceRange(70.0, 99.0), sparkline = true)
+        }
+    }
+}
+
+@Preview(name = "Sparkline – dark", widthDp = 340, heightDp = 120, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun SparklineDarkPreview() {
+    LabImporterTheme(darkTheme = true, dynamicColor = false) {
+        Surface { AreaChart(previewPoints(), LabCategory.GLYCEMIC.color, Modifier.fillMaxSize().padding(16.dp), sparkline = true) }
     }
 }
 

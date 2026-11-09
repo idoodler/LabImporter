@@ -20,6 +20,12 @@ struct ReportDetailView: View {
                     .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
+                if report.isReadOnly {
+                    readOnlyNotice
+                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                }
             }
 
             ForEach(categoryGroups, id: \.category) { group in
@@ -42,8 +48,11 @@ struct ReportDetailView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
-                    Button { showEdit = true } label: {
-                        Label("Edit", systemImage: "pencil")
+                    // A read-only report has values this build can't show; saving it would drop them.
+                    if !report.isReadOnly {
+                        Button { showEdit = true } label: {
+                            Label("Edit", systemImage: "pencil")
+                        }
                     }
                     Button { shareCDA() } label: {
                         Label("Share Report File", systemImage: "square.and.arrow.up")
@@ -64,7 +73,7 @@ struct ReportDetailView: View {
             }
             Button("Cancel", role: .cancel) { }
         } message: {
-            Text("This report will be permanently removed from Apple Health.")
+            Text(deleteConfirmation)
         }
         .alert("Export Error", isPresented: .constant(shareError != nil)) {
             Button("OK") { shareError = nil }
@@ -108,13 +117,9 @@ struct ReportDetailView: View {
                 .frame(width: 54, height: 54)
                 .shadow(color: dominantColor.opacity(0.35), radius: 5, x: 0, y: 2)
 
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(report.date.formatted(date: .long, time: .omitted))
-                        .font(.headline)
-                    Text("\(report.entries.count) values")
-                        .font(.subheadline)
-                        .foregroundStyle(.textSecondary)
-                }
+                // The date is the screen's title, right above: said once.
+                Text("\(report.entries.count) values")
+                    .font(.headline)
                 Spacer(minLength: 0)
             }
 
@@ -149,6 +154,36 @@ struct ReportDetailView: View {
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
         .cardSurface(cornerRadius: 22)
+    }
+
+    // MARK: - Read only
+
+    /// Why there's no Edit: the report has values this build can't show, and saving would drop them.
+    private var readOnlyNotice: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 12) {
+            Image(systemName: "lock.fill")
+                .foregroundStyle(.textSecondary)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Can't Be Edited")
+                    .font(.subheadline.weight(.semibold))
+                Text(LabReport.readOnlyExplanation(unreadValues: report.unreadValues))
+                    .font(.subheadline)
+                    .foregroundStyle(.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .cardSurface(cornerRadius: 18)
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("report-read-only")
+    }
+
+    private var deleteConfirmation: String {
+        let removed = String(localized: "This report will be permanently removed from Apple Health.")
+        return report.isReadOnly ? removed + "\n\n" + LabReport.deletesUnreadValues(report.unreadValues) : removed
     }
 
     private func categoryChip(_ group: CategoryGroup) -> some View {
@@ -285,7 +320,7 @@ struct ReportDetailView: View {
             items.append(MetaItem(icon: "person.fill", label: String(localized: "Patient"), value: report.patientName))
         }
         if !report.authorName.isEmpty {
-            items.append(MetaItem(icon: "cross.case.fill", label: String(localized: "Author"), value: report.authorName))
+            items.append(MetaItem(icon: "cross.case.fill", label: String(localized: "Lab / Doctor"), value: report.authorName))
         }
         return items
     }
@@ -359,5 +394,25 @@ private struct ShareSheet: UIViewControllerRepresentable {
         ReportDetailView(report: .sampleWithQualitative, onDeleted: { _ in })
     }
     .preferredColorScheme(.dark)
+}
+
+#Preview("Read Only") {
+    NavigationStack {
+        ReportDetailView(report: .sampleReadOnly, onDeleted: { _ in })
+    }
+}
+
+#Preview("Read Only – Dark") {
+    NavigationStack {
+        ReportDetailView(report: .sampleReadOnly, onDeleted: { _ in })
+    }
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Read Only – Largest Text") {
+    NavigationStack {
+        ReportDetailView(report: .sampleReadOnly, onDeleted: { _ in })
+    }
+    .dynamicTypeSize(.accessibility5)
 }
 #endif

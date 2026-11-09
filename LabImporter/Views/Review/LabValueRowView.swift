@@ -56,6 +56,7 @@ struct LabValueRowView: View {
             .tapTargetButton()
             .accessibilityLabel(spoken(String(localized: "Include in Export")))
             .accessibilityValue(value.isSelected ? "Included" : "Excluded")
+            .accessibilityIdentifier("review-include-button")
 
             AdaptiveRow(spacing: 12) {
                 nameColumn

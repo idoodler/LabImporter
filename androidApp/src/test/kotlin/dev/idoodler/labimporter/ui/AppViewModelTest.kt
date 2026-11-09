@@ -260,6 +260,20 @@ class AppViewModelTest {
     }
 
     @Test
+    fun aReadOnlyReportNeverOpensForEditing() {
+        val report = LabReport(
+            "report", LocalDate(2026, 3, 1), "", "",
+            listOf(LabReport.Entry("entry", "4548-4", "HbA1c", "6.5", 6.5, "%")),
+        )
+        viewModel.editReport(report.copy(unreadValues = 1))
+        idle()
+        assertEquals(ImportState.Idle, viewModel.importState.value)
+
+        viewModel.editReport(report)
+        assertEquals(report, (await(viewModel.importState) { it is ImportState.Reviewing } as ImportState.Reviewing).draft.original)
+    }
+
+    @Test
     fun importedReportsGetFreshEntryIds() {
         // Health Connect upserts by entry id: a file's older version must not overwrite the report here.
         val source = LabReport(

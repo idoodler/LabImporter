@@ -16,7 +16,13 @@ enum StandInReport {
         let entry: AILabEntry
     }
 
-    static let rows: [Row] = [
+    /// The rows printed, with `unknownTest` under `--ss-unknown-test`.
+    static var rows: [Row] { printedRows + (ScreenshotMode.readsUnknownTest ? [unknownTest] : []) }
+
+    /// A test no LOINC term names: Review can't save it until the user picks a code or leaves it out.
+    private static let unknownTest = row("Zorblax Index", "4.0", "U/L")
+
+    private static let printedRows: [Row] = [
         row("Uric Acid", "In Range· 5.1", "mg/dL"),
         row("Carbon Dioxide", "24", "mmol/L"),
         row("Platelet Count", "263", "Thousand/uL"),

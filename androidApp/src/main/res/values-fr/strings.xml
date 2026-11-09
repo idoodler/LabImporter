@@ -68,6 +68,9 @@
     <string name="share_cda">Partager le fichier du rapport</string>
     <string name="delete_report_title">Supprimer le rapport ?</string>
     <string name="delete_report_message">Ce rapport sera définitivement supprimé.</string>
+    <string name="delete_unread_values">Les valeurs que cette version de LabImporter ne peut pas afficher seront aussi supprimées : %1$d.</string>
+    <string name="report_read_only_title">Modification impossible</string>
+    <string name="report_read_only_message">Ce rapport contient des valeurs que cette version de LabImporter ne peut pas afficher : %1$d. Pour qu\'elles ne soient pas perdues, il ne peut pas être modifié. Une mise à jour de LabImporter pourra les afficher.</string>
     <string name="report_deleted">Rapport supprimé</string>
     <string name="patient_label">Patient : %1$s</string>
     <plurals name="value_count">
@@ -157,6 +160,11 @@
     <string name="search_loinc">Rechercher des tests de labo</string>
     <string name="loinc_suggested">Suggestion : %1$s</string>
     <string name="loinc_duplicate">Doublon : %1$s</string>
+    <string name="save_check_title">Vérifiez avant d\'enregistrer</string>
+    <string name="save_check_compare">Comparez-les à votre rapport :</string>
+    <string name="save_check_left_out">Ces valeurs n\'ont pas de code LOINC et ne seront pas enregistrées :</string>
+    <string name="save_anyway">Enregistrer quand même</string>
+    <string name="go_back">Revenir</string>
     <string name="compare_with_report">Comparez au rapport</string>
     <string name="compare_with_report_detail">Cette valeur n\'a pas été trouvée dans le texte du rapport. Comparez-la à votre rapport.</string>
     <plurals name="values_to_check">
@@ -305,7 +313,6 @@
     <string name="pdf_all_time">Tout l’historique</string>
     <string name="pdf_generated">Généré %1$s</string>
     <string name="pdf_page_of">Page %1$d sur %2$d</string>
-    <string name="pdf_author">Auteur</string>
     <string name="pdf_period_covered">Période couverte</string>
     <string name="pdf_metrics">Paramètres</string>
     <string name="pdf_out_of_range">Hors plage</string>

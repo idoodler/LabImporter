@@ -14,12 +14,21 @@ Run it with `tools/quality/collect.sh`. It writes `build/quality/` and
 
 ## What 9.5 means
 
+9.5 is an engineering and expert-review score: what scripts, tests and independent
+reviewers can establish from the code, the evidence and the screenshots. It is not a
+usability or accessibility certification. The moderated usability test and the walkthrough
+with real assistive-technology users ("What isn't measured" below) are release criteria
+of their own, and a 9.5 says nothing about whether they pass.
+
 The app ranks 9.5 only when all of these hold:
 
 1. **Every gate below passes**, on three runs in a row (one flaky run fails it).
 2. **Every council member scores it 9.5 or higher, in two fresh rounds in a row.**
    A fresh round is a new reviewer with no memory of the last one, given the code
-   and the evidence, not the previous scores.
+   and the evidence, not the previous scores. Reviewers judge the panel measures
+   (Screenshot matrix, Heuristic panel) separately from their overall score: each
+   panel measure gets its own verdict against its threshold, so a strong overall
+   impression can't stand in for it, nor one weak screen sink the rest.
 3. **No open data-loss defect.** Any open one caps the score at 7.0, whatever else
    is true. A health record that silently disappears outweighs everything else.
 
@@ -29,20 +38,20 @@ Consistency comes from (1) being enforced in CI, so the floor can't erode unnoti
 
 | Measure | Weight | How it's collected | 9.5 threshold | In CI |
 |---|---:|---|---|---|
-| Write-path safety | 25 | Fault injection at each save, replace, move and import step, with the real codec | The old or the new record always survives | Yes |
-| Extraction safety | 15 | `evaluation/` on the sample reports, scoring values, codes and dates | Every wrong value is flagged for review; no silent wrong date | Replay yes, model by hand |
-| Test effectiveness | 15 | PIT mutation testing of `shared/` (`tools/quality/mutation.sh`) | At least 80% of mutants killed in export, parse and model | Scheduled |
+| Write-path safety | 25 | Fault injection at each save, replace, delete, move and import step, with the real codec, on both platforms (Android's `ReportSavingFaultTest`, iOS's `ReportWriterFaultTests`) | The old or the new record always survives | Yes |
+| Extraction safety | 15 | Planted errors (`evaluation/`, no model): every right reading of the committed replies made wrong — tenfold, a tenth, a digit dropped or doubled, the neighbouring test's value, a dropped "<"/">", another test's unit, a changed date — through the shared post-processing; plus the replay itself, scoring values, codes and dates | At least 95% of planted errors flagged for review, and at least 90% of each kind; at most 5% of right values flagged; every wrong value of the replay flagged; no planted or read date wrong without a flag | Replay yes, model by hand |
+| Test effectiveness | 15 | PIT mutation testing of `shared/` (`tools/quality/mutation.sh`); a mutant PIT couldn't run (RUN_ERROR) is inconclusive and never counts as killed | At least 80% of mutants killed in export, parse, model and loinc | Scheduled (weekly, `quality.yml`) |
 | Round trips | 10 | Property tests: random reports through CDA, FHIR and the transfer file | No value, unit or date lost | Yes |
-| Error visibility | 10 | `static_metrics.py` lists every swallowed error in a storage path | None without a stated reason; failed reads never look empty | Yes |
+| Error visibility | 10 | `static_metrics.py` lists every swallowed error where reports are read, saved, deleted or imported (services, Home, Import, Review, History, the share extension; Android's data layer and `AppViewModel`; shared export and transfer) | None without a stated reason (a comment of at least four words saying why; not a lint directive or a `///` doc comment); failed reads never look empty | Yes |
 | Privacy guardrails | 10 | Network guardrail tests on both platforms, privacy manifests, no results in logs, export cleanup | Nothing leaves the device; no leftover medical files | Yes |
 | Static gates | 5 | SwiftLint strict and analyze, Android lint, compiler warnings, complexity, duplication | No violations; no function over complexity 15 or 100 lines without a reason; duplication under 3% | Yes |
-| Build and release safety | 5 | Pinned CI actions, dependency updates, CI green on a clean machine | All pinned; all green | Yes |
+| Build and release safety | 5 | Pinned CI actions and tools, dependency updates, the pull request's CI checks (`gh pr checks`) for the measured commit | All pinned; all green | Yes |
 
 ## Design quality
 
 | Measure | Weight | How it's collected | 9.5 threshold | In CI |
 |---|---:|---|---|---|
-| Accessibility | 20 | `performAccessibilityAudit()` on every screen in light, dark and the largest text; a semantics audit on Android | No issues without a stated reason | Yes |
+| Accessibility | 20 | `performAccessibilityAudit()` on every screen in light, dark and the largest text; a semantics audit on Android; the audit's exemptions, each listed with what it covers, and the rules that grant some, against a baseline that may only go down (`tools/quality/accessibility_exemptions_baseline.json`) | No issues without a stated reason; no exemption the baseline doesn't list, none wider, no more rules | Yes |
 | Review safety | 20 | UI tests with planted errors: a value not in the report, a missing date, an unconfirmed code | Each is flagged where the user is looking; values are on screen when Review opens | Yes |
 | Clinical readability | 15 | Catalog-wide test on primary labels; contrast check | No LOINC syntax in a primary label; 4.5:1 for text | Yes |
 | Screenshot matrix | 15 | Every screen in light, dark, largest text and the longest language | No clipped label or value | Captured in CI, judged by the panel |
@@ -54,7 +63,7 @@ Consistency comes from (1) being enforced in CI, so the floor can't erode unnoti
 ## What isn't measured
 
 These matter and can't be done by a script or a model. They are not counted in the
-score, and a 9.5 says nothing about them:
+score, and a 9.5 says nothing about them; the first two are release criteria:
 
 - **Moderated usability test:** five people per platform review a report with a
   planted tenfold error. Target: at least 90% catch it, SUS of 85 or more.

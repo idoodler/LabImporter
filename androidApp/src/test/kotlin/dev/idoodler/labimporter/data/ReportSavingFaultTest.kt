@@ -68,7 +68,8 @@ private class FhirHealthConnect : HealthConnectStore {
         if (!losesSaves) resources.forEach { records[it.id] = it.json }
     }
 
-    override suspend fun delete(report: LabReport) = remove(report.entries.map { it.id })
+    // As the real store: records this build couldn't read belong to the report too.
+    override suspend fun delete(report: LabReport) = remove(report.entries.map { it.id } + report.unreadRecordIds)
 
     override suspend fun removeDropped(old: LabReport, updated: LabReport) = remove(droppedEntryIds(old, updated))
 
@@ -358,6 +359,55 @@ class ReportSavingFaultTest {
     @Test
     fun deletingAFileThatsAlreadyGoneIsFine() = runTest {
         local.delete(report("never-saved"))
+    }
+
+    // endregion
+
+    // region A value this build can't read
+
+    /** Stores [report] in Health Connect as a later build would: its first value of a type this build can't read. */
+    private fun storeWithAnUnreadableValue(report: LabReport) {
+        FhirLabCodec.encodeForSaving(report, "test").forEachIndexed { index, resource ->
+            healthConnect.records[resource.id] = if (index == 0) {
+                Regex("\"valueQuantity\":\\{[^}]*\\}").replace(resource.json, "\"valueCodeableConcept\":{\"text\":\"positive\"}")
+            } else {
+                resource.json
+            }
+        }
+    }
+
+    @Test
+    fun aReportWithAValueThisBuildCanNotReadIsNeverReplaced() = runTest {
+        useHealthConnect()
+        val repository = repository()
+        storeWithAnUnreadableValue(report("a", 1, entry("e1", "2160-0", 0.8), entry("e2", "2823-3", 4.1)))
+        val stored = healthConnect.records.toMap()
+        repository.reload()
+        val shown = repository.reports.value.single()
+        assertTrue(shown.isReadOnly)
+        assertEquals(listOf("e2"), shown.entries.map { it.id })
+
+        // An edit that keeps every value it can see would still lose the one it can't.
+        assertThrows(ReadOnlyReportException::class.java) {
+            runBlocking { repository.replace(shown, shown.copy(entries = listOf(entry("e2", "2823-3", 5.0)), unreadValues = 0)) }
+        }
+
+        assertEquals(stored, healthConnect.records)
+        assertEquals(emptyList<String>(), healthConnect.savedReports)
+        assertEquals(emptyList<String>(), healthConnect.deletedRecords)
+    }
+
+    @Test
+    fun deletingAReportWithAValueThisBuildCanNotReadRemovesThatValueToo() = runTest {
+        useHealthConnect()
+        val repository = repository()
+        storeWithAnUnreadableValue(report("a", 1, entry("e1", "2160-0", 0.8), entry("e2", "2823-3", 4.1)))
+        repository.reload()
+
+        repository.delete(repository.reports.value.single())
+
+        assertEquals(emptyMap<String, String>(), healthConnect.records.toMap())
+        assertTrue(repository.reports.value.isEmpty())
     }
 
     // endregion

@@ -66,6 +66,8 @@ object ReportTransfer {
                     val resources = FhirLabCodec.encode(report, softwareIdentity)
                     written += resources.size
                     leftOut += (report.entries.count { it.hasResult } - resources.size).coerceAtLeast(0)
+                    // Values this build couldn't read aren't in the file either (LabReport.isReadOnly).
+                    leftOut += report.unreadValues
                     for (resource in resources) {
                         add(buildJsonObject {
                             put("fullUrl", "urn:uuid:${resource.id}")
@@ -101,7 +103,8 @@ object ReportTransfer {
         if (CdaParser.looksLikeCda(trimmed)) {
             val report = CdaParser.parse(trimmed)
                 ?: return if (CdaParser.problem(trimmed) == ReportReadProblem.NEWER_VERSION) ReadResult.NewerVersion else ReadResult.Unsupported
-            return ReadResult.Reports(listOf(report))
+            // Only what could be read comes across, so a report missing values is a damaged one, as in a Bundle.
+            return ReadResult.Reports(listOf(report), unreadableReports = if (report.isReadOnly) 1 else 0)
         }
         // Not JSON: reported as the file not being one of ours.
         val root = runCatching { json.parseToJsonElement(trimmed).jsonObject }.getOrNull() ?: return ReadResult.Unsupported

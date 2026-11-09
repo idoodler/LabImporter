@@ -69,6 +69,9 @@
     <string name="share_cda">Поділитися файлом звіту</string>
     <string name="delete_report_title">Видалити звіт?</string>
     <string name="delete_report_message">Цей звіт буде остаточно видалено.</string>
+    <string name="delete_unread_values">Значення, які ця версія LabImporter не може показати, теж буде видалено: %1$d.</string>
+    <string name="report_read_only_title">Не можна редагувати</string>
+    <string name="report_read_only_message">У цьому звіті є значення, які ця версія LabImporter не може показати: %1$d. Щоб вони не загубилися, звіт не можна редагувати. Після оновлення LabImporter вони можуть з\'явитися.</string>
     <string name="report_deleted">Звіт видалено</string>
     <string name="patient_label">Пацієнт: %1$s</string>
     <plurals name="value_count">
@@ -160,6 +163,11 @@
     <string name="search_loinc">Пошук лабораторних аналізів</string>
     <string name="loinc_suggested">Пропозиція: %1$s</string>
     <string name="loinc_duplicate">Дублікат: %1$s</string>
+    <string name="save_check_title">Перевірте перед збереженням</string>
+    <string name="save_check_compare">Порівняйте їх зі своїм звітом:</string>
+    <string name="save_check_left_out">Ці значення не мають коду LOINC і не будуть збережені:</string>
+    <string name="save_anyway">Усе одно зберегти</string>
+    <string name="go_back">Назад</string>
     <string name="compare_with_report">Порівняйте зі звітом</string>
     <string name="compare_with_report_detail">Це значення не знайдено в тексті звіту. Порівняйте його зі своїм звітом.</string>
     <plurals name="values_to_check">
@@ -313,7 +321,6 @@
     <string name="pdf_all_time">За весь час</string>
     <string name="pdf_generated">Створено %1$s</string>
     <string name="pdf_page_of">Сторінка %1$d з %2$d</string>
-    <string name="pdf_author">Автор</string>
     <string name="pdf_period_covered">Охоплений період</string>
     <string name="pdf_metrics">Показники</string>
     <string name="pdf_out_of_range">Поза нормою</string>

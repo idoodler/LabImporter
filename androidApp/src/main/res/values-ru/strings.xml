@@ -69,6 +69,9 @@
     <string name="share_cda">Поделиться файлом отчёта</string>
     <string name="delete_report_title">Удалить отчёт?</string>
     <string name="delete_report_message">Этот отчёт будет удалён без возможности восстановления.</string>
+    <string name="delete_unread_values">Значения, которые эта версия LabImporter не может показать, тоже будут удалены: %1$d.</string>
+    <string name="report_read_only_title">Нельзя изменить</string>
+    <string name="report_read_only_message">В этом отчёте есть значения, которые эта версия LabImporter не может показать: %1$d. Чтобы они не потерялись, отчёт нельзя изменить. После обновления LabImporter они могут отобразиться.</string>
     <string name="report_deleted">Отчёт удалён</string>
     <string name="patient_label">Пациент: %1$s</string>
     <plurals name="value_count">
@@ -160,6 +163,11 @@
     <string name="search_loinc">Поиск лабораторных анализов</string>
     <string name="loinc_suggested">Предложение: %1$s</string>
     <string name="loinc_duplicate">Дубликат: %1$s</string>
+    <string name="save_check_title">Проверьте перед сохранением</string>
+    <string name="save_check_compare">Сравните их с вашим отчётом:</string>
+    <string name="save_check_left_out">У этих значений нет кода LOINC, и они не будут сохранены:</string>
+    <string name="save_anyway">Всё равно сохранить</string>
+    <string name="go_back">Назад</string>
     <string name="compare_with_report">Сравните с отчётом</string>
     <string name="compare_with_report_detail">Это значение не найдено в тексте отчёта. Сравните его с вашим отчётом.</string>
     <plurals name="values_to_check">
@@ -313,7 +321,6 @@
     <string name="pdf_all_time">За всё время</string>
     <string name="pdf_generated">Создано %1$s</string>
     <string name="pdf_page_of">Страница %1$d из %2$d</string>
-    <string name="pdf_author">Автор</string>
     <string name="pdf_period_covered">Охваченный период</string>
     <string name="pdf_metrics">Показатели</string>
     <string name="pdf_out_of_range">Вне нормы</string>

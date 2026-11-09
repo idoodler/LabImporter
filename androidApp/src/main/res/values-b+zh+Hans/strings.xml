@@ -66,6 +66,9 @@
     <string name="share_cda">分享报告文件</string>
     <string name="delete_report_title">删除报告？</string>
     <string name="delete_report_message">此报告将被永久移除。</string>
+    <string name="delete_unread_values">此版本 LabImporter 无法显示的数值也会被删除：%1$d 个。</string>
+    <string name="report_read_only_title">无法编辑</string>
+    <string name="report_read_only_message">此报告包含此版本 LabImporter 无法显示的数值：%1$d 个。为避免丢失，此报告无法编辑。更新 LabImporter 后可能会显示这些数值。</string>
     <string name="report_deleted">报告已删除</string>
     <string name="patient_label">患者：%1$s</string>
     <plurals name="value_count">
@@ -151,6 +154,11 @@
     <string name="search_loinc">搜索检验项目</string>
     <string name="loinc_suggested">建议：%1$s</string>
     <string name="loinc_duplicate">重复：%1$s</string>
+    <string name="save_check_title">存储前请检查</string>
+    <string name="save_check_compare">请与您的报告核对：</string>
+    <string name="save_check_left_out">这些值没有 LOINC 代码，将不会存储：</string>
+    <string name="save_anyway">仍然存储</string>
+    <string name="go_back">返回</string>
     <string name="compare_with_report">请与报告核对</string>
     <string name="compare_with_report_detail">在报告文本中未找到此值。请与您的报告核对。</string>
     <plurals name="values_to_check">
@@ -289,7 +297,6 @@
     <string name="pdf_all_time">全部时间</string>
     <string name="pdf_generated">生成于 %1$s</string>
     <string name="pdf_page_of">第 %1$d 页，共 %2$d 页</string>
-    <string name="pdf_author">作者</string>
     <string name="pdf_period_covered">涵盖时段</string>
     <string name="pdf_metrics">指标</string>
     <string name="pdf_out_of_range">超出范围</string>

@@ -89,7 +89,8 @@ extension LabReport {
     var shared: LabImporterCore.LabReport {
         LabImporterCore.LabReport(
             id: id.uuidString, date: date.sharedDate, patientName: patientName,
-            authorName: authorName, entries: entries.map(\.shared)
+            authorName: authorName, entries: entries.map(\.shared),
+            unreadValues: Int32(unreadValues), unreadRecordIds: []
         )
     }
 
@@ -97,7 +98,8 @@ extension LabReport {
         self.init(
             id: UUID(uuidString: report.id) ?? UUID(), date: Date(shared: report.date),
             patientName: report.patientName, authorName: report.authorName,
-            entries: report.entries.map(LabReport.Entry.init(shared:))
+            entries: report.entries.map(LabReport.Entry.init(shared:)),
+            unreadValues: Int(report.unreadValues)
         )
     }
 }

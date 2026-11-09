@@ -69,6 +69,9 @@
     <string name="share_cda">Udostępnij plik raportu</string>
     <string name="delete_report_title">Usunąć raport?</string>
     <string name="delete_report_message">Ten raport zostanie trwale usunięty.</string>
+    <string name="delete_unread_values">Wartości, których ta wersja LabImporter nie może wyświetlić, też zostaną usunięte: %1$d.</string>
+    <string name="report_read_only_title">Nie można edytować</string>
+    <string name="report_read_only_message">Ten raport zawiera wartości, których ta wersja LabImporter nie może wyświetlić: %1$d. Aby nie zostały utracone, nie można go edytować. Aktualizacja LabImporter może je wyświetlić.</string>
     <string name="report_deleted">Usunięto raport</string>
     <string name="patient_label">Pacjent: %1$s</string>
     <plurals name="value_count">
@@ -160,6 +163,11 @@
     <string name="search_loinc">Szukaj badań</string>
     <string name="loinc_suggested">Propozycja: %1$s</string>
     <string name="loinc_duplicate">Duplikat: %1$s</string>
+    <string name="save_check_title">Sprawdź przed zapisaniem</string>
+    <string name="save_check_compare">Porównaj je ze swoim raportem:</string>
+    <string name="save_check_left_out">Te nie mają kodu LOINC i nie zostaną zapisane:</string>
+    <string name="save_anyway">Zapisz mimo to</string>
+    <string name="go_back">Wróć</string>
     <string name="compare_with_report">Porównaj z raportem</string>
     <string name="compare_with_report_detail">Tej wartości nie znaleziono w tekście raportu. Porównaj ją ze swoim raportem.</string>
     <plurals name="values_to_check">
@@ -313,7 +321,6 @@
     <string name="pdf_all_time">Cały okres</string>
     <string name="pdf_generated">Utworzono %1$s</string>
     <string name="pdf_page_of">Strona %1$d z %2$d</string>
-    <string name="pdf_author">Autor</string>
     <string name="pdf_period_covered">Objęty okres</string>
     <string name="pdf_metrics">Parametry</string>
     <string name="pdf_out_of_range">Poza zakresem</string>

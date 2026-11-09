@@ -68,6 +68,9 @@
     <string name="share_cda">Comparteix el fitxer de l\'informe</string>
     <string name="delete_report_title">Vols eliminar l\'informe?</string>
     <string name="delete_report_message">Aquest informe s\'eliminarà definitivament.</string>
+    <string name="delete_unread_values">També s\'eliminaran els valors que aquesta versió de LabImporter no pot mostrar: %1$d.</string>
+    <string name="report_read_only_title">No es pot editar</string>
+    <string name="report_read_only_message">Aquest informe té valors que aquesta versió de LabImporter no pot mostrar: %1$d. Perquè no es perdin, no es pot editar. Actualitzar LabImporter podria mostrar-los.</string>
     <string name="report_deleted">Informe eliminat</string>
     <string name="patient_label">Pacient: %1$s</string>
     <plurals name="value_count">
@@ -157,6 +160,11 @@
     <string name="search_loinc">Cerca proves de laboratori</string>
     <string name="loinc_suggested">Suggeriment: %1$s</string>
     <string name="loinc_duplicate">Duplicat: %1$s</string>
+    <string name="save_check_title">Comprova-ho abans de desar</string>
+    <string name="save_check_compare">Compara\'ls amb el teu informe:</string>
+    <string name="save_check_left_out">Aquests no tenen codi LOINC i no es desaran:</string>
+    <string name="save_anyway">Desa igualment</string>
+    <string name="go_back">Torna</string>
     <string name="compare_with_report">Compara-ho amb l\'informe</string>
     <string name="compare_with_report_detail">Aquest valor no s\'ha trobat al text de l\'informe. Compara\'l amb el teu informe.</string>
     <plurals name="values_to_check">
@@ -305,7 +313,6 @@
     <string name="pdf_all_time">Tot el temps</string>
     <string name="pdf_generated">Generat %1$s</string>
     <string name="pdf_page_of">Pàgina %1$d de %2$d</string>
-    <string name="pdf_author">Autor</string>
     <string name="pdf_period_covered">Període cobert</string>
     <string name="pdf_metrics">Paràmetres</string>
     <string name="pdf_out_of_range">Fora de rang</string>

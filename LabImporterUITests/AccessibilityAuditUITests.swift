@@ -243,9 +243,11 @@ private enum AuditExemption {
         fileprivate var used: [Int: Int] = [:]
     }
 
-    /// Every Review value row has one LOINC code button (a row without a value has no value field)
-    /// and one swipe-to-delete button.
-    static let valueRow = "review-code-button"
+    /// Every Review value row has one Include button (a row without a value has no value field)
+    /// and one swipe-to-delete button. The Include button sits at the row's middle, as the folded
+    /// Delete does: the LOINC code button, low in a row whose name wraps, could lie below the screen
+    /// while the row's Delete still reached into it.
+    static let valueRow = "review-include-button"
     static let compareBadgeID = "review-compare-badge"
 
     // The audit's contrast check fails text whose screenshot shows plain black on white or
@@ -275,7 +277,7 @@ private enum AuditExemption {
 
     private static let entries: [Entry] = [
         Entry(condition: "dashboard/dark/standard/1", type: .contrast, element: "25-hydroxyvitamin D3", reason: measured),
-        Entry(condition: "dashboard/dark/standard/1", type: .contrast, element: "Cholesterol in LDL Calc", reason: measured),
+        Entry(condition: "dashboard/dark/standard/1", type: .contrast, element: "Cholesterol in LDL (calculated)", reason: measured),
         Entry(condition: "dashboard/dark/standard/1", type: .contrast, element: "%", reason: measured),
         // A different card's text on each run ("24", "Cholesterol in HDL"): any, but each still measured.
         Entry(condition: "dashboard/light/ax5", type: .contrast, element: "", reason: measured),
@@ -306,6 +308,8 @@ private enum AuditExemption {
         Entry(condition: "settings/light/ax5", type: .contrast, element: "Browse Catalog", reason: measured),
         Entry(condition: "settings/light/ax5", type: .contrast, element: "About", reason: measured),
         Entry(condition: "empty/dark/standard/1", type: .contrast, element: nil, reason: unpointed),
+        // The category chips wrap at this size, and the audit reports a node it can't point to among them.
+        Entry(condition: "review/light/ax5/1", type: .contrast, element: nil, reason: unpointed),
         Entry(condition: "review-planted-errors/light/ax5/1", type: .contrast, element: nil, reason: unpointed),
         Entry(condition: "review-planted-errors/light/ax5/2", type: .contrast, element: nil, reason: unpointed),
         Entry(condition: "review-planted-errors/light/ax5", type: .contrast, element: "", reason: rowText),
@@ -324,6 +328,10 @@ private enum AuditExemption {
         // Light at the standard size: plain black, grey `.textSecondary` (6:1) or blue on white, each screenshot checked.
         Entry(condition: "dashboard/light/standard/1", type: .contrast, element: "25-hydroxyvitamin D3", reason: measured),
         Entry(condition: "dashboard/light/standard/1", type: .contrast, element: "%", reason: measured),
+        // Measured 17.8:1 and 6.6:1 when the audit flagged them (black, and grey `.textSecondary`, on the card).
+        Entry(condition: "dashboard/light/standard/1", type: .contrast, element: "Cholesterol in LDL (calculated)", reason: measured),
+        Entry(condition: "dashboard/light/standard/1", type: .contrast, element: "mg/dL", reason: measured),
+        Entry(condition: "dashboard-qualitative/light/standard/1", type: .contrast, element: "Cholesterol in LDL (calculated)", reason: measured),
         Entry(condition: "dashboard-qualitative/light/standard/1", type: .contrast, element: "25-hydroxyvitamin D3", reason: measured),
         Entry(condition: "dashboard-qualitative/light/standard/1", type: .contrast, element: "May 28, 2026", reason: measured),
         Entry(condition: "dashboard-qualitative/light/standard/1", type: .contrast, element: nil, reason: unpointed),
@@ -333,7 +341,7 @@ private enum AuditExemption {
         Entry(condition: "dashboard-notices/light/standard/1", type: .contrast, element: nil, reason: unpointed),
         Entry(condition: "dashboard-load-failed-stale/light/standard/1", type: .contrast, element: "Try Again", reason: measured),
         Entry(condition: "dashboard-load-failed-stale/light/standard/1", type: .contrast, element: "25-hydroxyvitamin D3", reason: measured),
-        Entry(condition: "dashboard-load-failed-stale/light/standard/1", type: .contrast, element: "Cholesterol in LDL Calc", reason: measured),
+        Entry(condition: "dashboard-load-failed-stale/light/standard/1", type: .contrast, element: "Cholesterol in LDL (calculated)", reason: measured),
         // What it finds is the x axis's dates: the first and last readings', which VoiceOver reads on those
         // points and in the chart's Audio Graph. Drawn without the axis labels, the chart raises nothing.
         Entry(

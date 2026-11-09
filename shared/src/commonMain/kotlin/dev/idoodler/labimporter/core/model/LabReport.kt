@@ -13,7 +13,19 @@ data class LabReport(
     val patientName: String,
     val authorName: String,
     val entries: List<Entry>,
+    /**
+     * Values stored with this report that this build couldn't read, so [entries] isn't all of it
+     * (a later version wrote something this one doesn't know, or a value is damaged). Saving the
+     * report again would drop them for good, so it's [isReadOnly].
+     */
+    val unreadValues: Int = 0,
+    /** The stored records of [unreadValues] that have an id (Health Connect), so deleting the report removes them too. */
+    val unreadRecordIds: List<String> = emptyList(),
 ) {
+    /** Shown and deleted, never edited or replaced: a new version would lose the [unreadValues]. */
+    val isReadOnly: Boolean
+        get() = unreadValues > 0
+
     @Serializable
     data class Entry(
         val id: String,

@@ -10,7 +10,11 @@ import dev.idoodler.labimporter.core.model.LabReport
  * is serialized.
  *
  * Whenever an export's meaning changes (a LOINC remap, a unit convention, …):
- * bump [VERSION] and register a [ReportMigration] from the old version.
+ * bump [VERSION] and register a [ReportMigration] from the old version. So does
+ * any change that older builds can't read in full (a new value type, a new kind
+ * of observation), even an "additive" one: an older build then ignores such
+ * reports instead of listing them in part. One it still lists in part is
+ * read-only there ([LabReport.isReadOnly]), since saving it would drop the rest.
  * Reports read back below [MINIMUM_SUPPORTED_VERSION] or without any version
  * stamp (legacy exports) are ignored — there is no implicit data migration.
  * Reports newer than this build aren't listed either, but are counted

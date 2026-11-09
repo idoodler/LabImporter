@@ -240,7 +240,12 @@ fun HistoryScreen(
             onDismissRequest = { pendingDelete = emptyList() },
             icon = { Icon(Icons.Rounded.Delete, null) },
             title = { Text(stringResource(if (count == 1) R.string.delete_report_title else R.string.delete_reports_title)) },
-            text = { Text(pluralStringResource(R.plurals.delete_reports_message, count, count)) },
+            text = {
+                val removed = pluralStringResource(R.plurals.delete_reports_message, count, count)
+                // Values the list can't show go too, and the confirmation says so.
+                val unread = reports.filter { it.id in pendingDelete }.sumOf { it.unreadValues }
+                Text(if (unread > 0) removed + "\n\n" + stringResource(R.string.delete_unread_values, unread) else removed)
+            },
             confirmButton = {
                 TextButton(
                     onClick = {

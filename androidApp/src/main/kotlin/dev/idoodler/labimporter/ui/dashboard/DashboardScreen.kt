@@ -263,7 +263,7 @@ private fun CategoryFilterRow(categories: List<Pair<LabCategory, Int>>, selected
     }
 }
 
-/** Grid card: badge + name, the latest value, its trend and a gradient sparkline (or the latest results that aren't numbers). */
+/** Grid card: badge + name, the latest value, its trend and a sparkline (or the latest results that aren't numbers). */
 @Composable
 fun MetricCard(metric: Metric, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val color = metric.category.color
@@ -296,7 +296,7 @@ fun MetricCard(metric: Metric, onClick: () -> Unit, modifier: Modifier = Modifie
                 // Like iOS: the sparkline covers the year before the latest reading.
                 AreaChart(
                     metric.history, color, Modifier.fillMaxWidth().height(64.dp),
-                    range = metric.range, strokeWidth = 2.5.dp, showPoints = metric.history.size <= 8,
+                    range = metric.range, strokeWidth = 2.5.dp, showPoints = metric.history.size <= 8, sparkline = true,
                 )
             }
         }
@@ -342,7 +342,7 @@ fun HeroMetricCard(metric: Metric, pinned: Boolean, onClick: () -> Unit, modifie
             } else {
                 AreaChart(
                     metric.history, color, Modifier.fillMaxWidth().height(132.dp).padding(top = 12.dp),
-                    range = metric.range, showPoints = values.size <= 12,
+                    range = metric.range, showPoints = values.size <= 12, sparkline = true,
                 )
             }
             if (values.size > 1) {

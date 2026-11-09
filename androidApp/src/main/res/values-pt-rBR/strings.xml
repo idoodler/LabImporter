@@ -68,6 +68,9 @@
     <string name="share_cda">Compartilhar arquivo do laudo</string>
     <string name="delete_report_title">Excluir laudo?</string>
     <string name="delete_report_message">Este relatório será removido permanentemente.</string>
+    <string name="delete_unread_values">Os valores que esta versão do LabImporter não consegue mostrar também serão excluídos: %1$d.</string>
+    <string name="report_read_only_title">Não pode ser editado</string>
+    <string name="report_read_only_message">Este laudo tem valores que esta versão do LabImporter não consegue mostrar: %1$d. Para que não se percam, ele não pode ser editado. Atualizar o LabImporter pode mostrá-los.</string>
     <string name="report_deleted">Relatório apagado</string>
     <string name="patient_label">Paciente: %1$s</string>
     <plurals name="value_count">
@@ -157,6 +160,11 @@
     <string name="search_loinc">Buscar exames laboratoriais</string>
     <string name="loinc_suggested">Sugestão: %1$s</string>
     <string name="loinc_duplicate">Duplicado: %1$s</string>
+    <string name="save_check_title">Confira antes de salvar</string>
+    <string name="save_check_compare">Compare-os com o seu laudo:</string>
+    <string name="save_check_left_out">Estes não têm código LOINC e não serão salvos:</string>
+    <string name="save_anyway">Salvar mesmo assim</string>
+    <string name="go_back">Voltar</string>
     <string name="compare_with_report">Compare com o laudo</string>
     <string name="compare_with_report_detail">Este valor não foi encontrado no texto do laudo. Compare-o com o seu laudo.</string>
     <plurals name="values_to_check">
@@ -305,7 +313,6 @@
     <string name="pdf_all_time">Todo o período</string>
     <string name="pdf_generated">Gerado %1$s</string>
     <string name="pdf_page_of">Página %1$d de %2$d</string>
-    <string name="pdf_author">Autor</string>
     <string name="pdf_period_covered">Período abrangido</string>
     <string name="pdf_metrics">Parâmetros</string>
     <string name="pdf_out_of_range">Fora da faixa</string>

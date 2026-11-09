@@ -163,9 +163,25 @@ data class Summary(
     val wrongValuesNotFlagged: Int,
     val rightValues: Int,
     val falseFlags: Int,
+    /**
+     * Planted errors (PlantedErrors.kt): faults planted in the right readings of the
+     * committed replies, how many Review flagged, and the right values it flagged anyway.
+     */
+    val plantedErrors: Int,
+    val plantedFlagged: Int,
+    val plantedNotFlagged: Int,
+    val plantedByKind: Map<String, KindScore>,
+    val plantedControls: Int,
+    val plantedFalseFlags: Int,
 )
 
 private fun ratio(a: Int, b: Int) = if (b == 0) null else a.toDouble() / b
+
+/** Every report with its saved reply, for [plantErrors]; a report whose reply isn't valid has no right readings to plant in. */
+private fun plantedReports() = reports().mapNotNull { report ->
+    val reply = LabParsePrompt.decodeJsonReply(replyFile(report).readText()) ?: return@mapNotNull null
+    PlantedReport(report.nameWithoutExtension, report.readText(), reply, expectedFor(report))
+}
 
 private fun printTotal(scores: List<Score>, mode: String = "model") {
     val expectedCount = scores.sumOf { it.expected }
@@ -180,6 +196,11 @@ private fun printTotal(scores: List<Score>, mode: String = "model") {
     println("SOURCE CHECK  wrong values flagged ${scores.sumOf { it.wrongFlagged }}, " +
         "wrong values NOT flagged ${scores.sumOf { it.wrongNotFlagged }}, " +
         "right values falsely flagged ${scores.sumOf { it.rightFlagged }}/${scores.sumOf { it.rightValues }}")
+    println("\nPlanting errors in the right readings")
+    val planted = plantErrors(plantedReports())
+    println("PLANTED ERRORS  flagged ${planted.flagged}/${planted.planted} (${pct(planted.flagged, planted.planted)}), " +
+        "right values falsely flagged ${planted.falseFlags}/${planted.controls}")
+    println("    " + planted.byKind.entries.joinToString(", ") { (kind, s) -> "${Fault.valueOf(kind).label} ${s.flagged}/${s.planted}" })
     val summaryPath = System.getProperty("eval.summary")?.takeIf { it.isNotBlank() } ?: return
     val summary = Summary(
         mode = mode,
@@ -202,6 +223,12 @@ private fun printTotal(scores: List<Score>, mode: String = "model") {
         wrongValuesNotFlagged = scores.sumOf { it.wrongNotFlagged },
         rightValues = scores.sumOf { it.rightValues },
         falseFlags = scores.sumOf { it.rightFlagged },
+        plantedErrors = planted.planted,
+        plantedFlagged = planted.flagged,
+        plantedNotFlagged = planted.planted - planted.flagged,
+        plantedByKind = planted.byKind,
+        plantedControls = planted.controls,
+        plantedFalseFlags = planted.falseFlags,
     )
     File(summaryPath).apply { parentFile?.mkdirs() }.writeText(json.encodeToString(Summary.serializer(), summary) + "\n")
     println("Summary written to $summaryPath")
@@ -235,19 +262,27 @@ data class Score(
 
 private fun pct(a: Int, b: Int) = if (b == 0) "—" else "${(100.0 * a / b).toInt()}%"
 
-private fun normalizeUnit(unit: String) = unit.lowercase().replace(" ", "").replace('µ', 'u').replace('μ', 'u')
-    .replace("²", "2").replace(',', '.').replace("^", "")
+private val SUPERSCRIPTS = mapOf('⁰' to '0', '¹' to '1', '²' to '2', '³' to '3', '⁴' to '4', '⁵' to '5', '⁶' to '6', '⁷' to '7', '⁸' to '8', '⁹' to '9', '⁻' to '-')
 
-private fun unitMatches(read: String, expected: String): Boolean {
-    val a = normalizeUnit(read)
-    val b = normalizeUnit(expected)
-    return a == b || (b.isNotEmpty() && (a.startsWith(b) || b.startsWith(a) && a.isNotEmpty()))
-}
+/** A count prefix standing alone before the slash: "G/L" is 10⁹ cells a litre, never "g/L" (grams); "T/L" is 10¹². */
+private val COUNT_PREFIX = Regex("(?<![A-Za-z])([GT])(?=/)")
 
-private fun LabValue.matchesName(names: List<String>) =
+/**
+ * A unit as a clinician reads it: case, spacing, µ/u, superscripts ("10³", "10^3") and the decimal comma don't
+ * matter — except a count prefix's capital ("G/L" is "10^9/L", not "g/L"), read before the case goes.
+ */
+internal fun normalizeUnit(unit: String) = COUNT_PREFIX.replace(unit) { if (it.value == "G") "10^9" else "10^12" }
+    .lowercase().filterNot { it.isWhitespace() }
+    .map { SUPERSCRIPTS[it] ?: if (it == 'µ' || it == 'μ') 'u' else it }.joinToString("")
+    .replace(',', '.').replace("^", "")
+
+/** The same unit after [normalizeUnit]: a cut-off one ("mg" for "mg/dl", "/l" for "U/l") is wrong. */
+internal fun unitMatches(read: String, expected: String) = normalizeUnit(read) == normalizeUnit(expected)
+
+internal fun LabValue.matchesName(names: List<String>) =
     names.any { name.contains(it, ignoreCase = true) || code.contains(it, ignoreCase = true) }
 
-private fun LabValue.matchesValue(value: Double, unit: String) =
+internal fun LabValue.matchesValue(value: Double, unit: String) =
     numericValue?.let { abs(it - value) < 1e-9 } == true && unitMatches(this.unit, unit)
 
 private fun score(name: String, expected: Expected, result: ParseResult?, millis: Long, replyLength: Int): Score {

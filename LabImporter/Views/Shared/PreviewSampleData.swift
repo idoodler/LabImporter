@@ -31,6 +31,13 @@ extension LabReport {
         }
     }
 
+    /// `sample` with two values this build couldn't read: shown, but read-only.
+    static var sampleReadOnly: LabReport {
+        var report = sample
+        report.unreadValues = 2
+        return report
+    }
+
     /// `sample` plus results that aren't numbers (a finding, a titer, a threshold).
     static var sampleWithQualitative: LabReport {
         let base = sample

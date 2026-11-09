@@ -69,6 +69,9 @@
     <string name="share_cda">Zdieľať súbor správy</string>
     <string name="delete_report_title">Odstrániť správu?</string>
     <string name="delete_report_message">Táto správa bude natrvalo odstránená.</string>
+    <string name="delete_unread_values">Vymažú sa aj hodnoty, ktoré táto verzia LabImportera nedokáže zobraziť: %1$d.</string>
+    <string name="report_read_only_title">Nedá sa upraviť</string>
+    <string name="report_read_only_message">Táto správa obsahuje hodnoty, ktoré táto verzia LabImportera nedokáže zobraziť: %1$d. Aby sa nestratili, nedá sa upraviť. Aktualizácia LabImportera ich môže zobraziť.</string>
     <string name="report_deleted">Správa odstránená</string>
     <string name="patient_label">Pacient: %1$s</string>
     <plurals name="value_count">
@@ -160,6 +163,11 @@
     <string name="search_loinc">Hľadať laboratórne testy</string>
     <string name="loinc_suggested">Návrh: %1$s</string>
     <string name="loinc_duplicate">Duplicita: %1$s</string>
+    <string name="save_check_title">Skontrolujte pred uložením</string>
+    <string name="save_check_compare">Porovnajte ich so svojou správou:</string>
+    <string name="save_check_left_out">Tieto nemajú kód LOINC a nebudú uložené:</string>
+    <string name="save_anyway">Napriek tomu uložiť</string>
+    <string name="go_back">Späť</string>
     <string name="compare_with_report">Porovnajte so správou</string>
     <string name="compare_with_report_detail">Táto hodnota sa v texte správy nenašla. Porovnajte ju so svojou správou.</string>
     <plurals name="values_to_check">
@@ -313,7 +321,6 @@
     <string name="pdf_all_time">Celé obdobie</string>
     <string name="pdf_generated">Vygenerované %1$s</string>
     <string name="pdf_page_of">Strana %1$d z %2$d</string>
-    <string name="pdf_author">Autor</string>
     <string name="pdf_period_covered">Pokryté obdobie</string>
     <string name="pdf_metrics">Parametre</string>
     <string name="pdf_out_of_range">Mimo normy</string>

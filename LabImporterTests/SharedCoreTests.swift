@@ -117,6 +117,40 @@ struct SharedCoreTests {
         #expect(ChartDomain(dates: [], values: [], range: nil) == nil)
     }
 
+    @Test func cardSparklinesUseTheSharedSparklineRule() throws {
+        let dates = [Fixtures.date(2025, 6, 1), Fixtures.date(2026, 5, 28)]
+        let flat = try #require(ChartDomain(sparkline: dates, values: [92, 92]))
+        // In the middle, not at the top of a zero-based axis.
+        #expect(abs((flat.yDomain.lowerBound + flat.yDomain.upperBound) / 2 - 92) < 1e-9)
+        #expect(flat.yDomain.lowerBound > 0)
+        #expect(flat.yTicks.isEmpty)
+        #expect(ChartDomain(sparkline: [], values: []) == nil)
+    }
+
+    @Test func saveConfirmationListsFlaggedAndLeftOutValuesByName() throws {
+        let misread = LabValue(code: "2345-7", name: "Glucose", displayValue: "922", numericValue: 922, unit: "mg/dL", needsSourceCheck: true)
+        let unmapped = LabValue(code: "KREA", name: "Kreatinin", displayValue: "0.9", numericValue: 0.9, unit: "mg/dL")
+        let confirmation = try #require([unmapped, misread].saveConfirmation())
+        #expect(confirmation.toCheck == ["Glucose 922 mg/dL"])
+        #expect(confirmation.leftOut == ["Kreatinin 0.9 mg/dL"])
+        #expect(confirmation.firstID == misread.id, "Go Back leads to the value to check first")
+        #expect(confirmation.message.contains("Glucose 922 mg/dL") && confirmation.message.contains("Kreatinin 0.9 mg/dL"))
+        var checked = misread
+        checked.needsSourceCheck = false
+        #expect([checked].saveConfirmation() == nil, "Nothing flagged or left out: no question")
+    }
+
+    @Test func sharingTheReportFileAsksTheSameQuestionInItsOwnWords() throws {
+        let misread = LabValue(code: "2345-7", name: "Glucose", displayValue: "922", numericValue: 922, unit: "mg/dL", needsSourceCheck: true)
+        let unmapped = LabValue(code: "KREA", name: "Kreatinin", displayValue: "0.9", numericValue: 0.9, unit: "mg/dL")
+        let share = try #require([unmapped, misread].saveConfirmation(for: .share))
+        let save = try #require([unmapped, misread].saveConfirmation())
+        #expect(share.toCheck == save.toCheck && share.leftOut == save.leftOut, "The file leaves out what a save would")
+        #expect(share.title == "Check Before Sharing" && share.proceedTitle == "Share Anyway")
+        #expect(share.message.contains("won't be shared:") && !share.message.contains("won't be saved:"))
+        #expect(save.title == "Check Before Saving" && save.proceedTitle == "Save Anyway")
+    }
+
     @Test func trendWindowsSpanTheSharedDays() {
         #expect(TrendsView.TrendWindow.allCases.map(\.days) == [92, 183, 366, nil])
         #expect(TrendsView.TrendWindow.opening == .all)
@@ -176,17 +210,21 @@ struct SharedCoreTests {
     @Test func aFileIsNotImportedWhileTheSavedReportsCantBeRead() async throws {
         let file = try transferFile([report(Fixtures.date(2026, 5, 6), [("2160-0", 0.8)])])
         defer { try? FileManager.default.removeItem(at: file) }
-        struct ReadFailed: Error {}
+        let health = FakeHealthStore()
+        await health.failLoads()
         await #expect(throws: ReportTransferService.Failure.savedReportsUnreadable) {
-            try await ReportTransferService.importFile(at: file) { throw ReadFailed() }
+            try await ReportTransferService.importFile(at: file, store: health)
         }
+        #expect(await health.saveAttempts == 0)
     }
 
     @Test func importingSkipsWhatAFreshReadFinds() async throws {
         let saved = report(Fixtures.date(2026, 5, 6), [("2160-0", 0.8)])
         let file = try transferFile([saved])
         defer { try? FileManager.default.removeItem(at: file) }
-        let summary = try await ReportTransferService.importFile(at: file) { [saved] }
+        let health = FakeHealthStore()
+        _ = try await ReportWriter(store: health).save(saved.asLabValues, date: saved.date)
+        let summary = try await ReportTransferService.importFile(at: file, store: health)
         #expect(summary.imported == 0)
         #expect(summary.alreadyPresent == 1)
     }

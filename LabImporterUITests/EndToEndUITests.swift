@@ -79,6 +79,81 @@ final class EndToEndUITests: XCTestCase {
         XCTAssertFalse(app.descendants(matching: .any)["review-values-to-check"].exists)
     }
 
+    /// Flag, don't block: the tenfold glucose doesn't save with one tap. The question lists it, and Go Back stays.
+    func testSavingAFlaggedValueAsksFirstAndGoBackLeadsToIt() {
+        let app = launch(["--ss-import"])
+        let save = app.buttons["Save to Health Records"]
+        XCTAssertTrue(save.waitForExistence(timeout: 60), "The review sheet opens once the report is read")
+        save.tap()
+
+        let alert = app.alerts["Check Before Saving"]
+        XCTAssertTrue(alert.waitForExistence(timeout: 10), "Saving a value to compare asks first")
+        let listed = alert.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Glucose 922 mg/dL")).firstMatch
+        XCTAssertTrue(listed.exists, "It names the value: \(alert.staticTexts.allElementsBoundByIndex.map { $0.label })")
+        let shot = XCTAttachment(screenshot: app.screenshot())
+        shot.name = "review-save-confirmation"
+        shot.lifetime = .keepAlways
+        add(shot)
+
+        alert.buttons["Go Back"].tap()
+        wait(for: [expectation(for: NSPredicate(format: "exists == false"), evaluatedWith: alert)], timeout: 10)
+        XCTAssertTrue(save.exists, "Still in Review")
+        let misread = field("922", in: app)
+        wait(for: [expectation(for: NSPredicate(format: "isHittable == true"), evaluatedWith: misread)], timeout: 10)
+    }
+
+    func testSaveAnywaySavesTheFlaggedReport() {
+        let app = launch(["--ss-import"])
+        let save = app.buttons["Save to Health Records"]
+        XCTAssertTrue(save.waitForExistence(timeout: 60))
+        save.tap()
+        let alert = app.alerts["Check Before Saving"]
+        XCTAssertTrue(alert.waitForExistence(timeout: 10))
+        alert.buttons["Save Anyway"].tap()
+        // Saved, the Review sheet closes; a failed save would keep it open with an error.
+        wait(for: [expectation(for: NSPredicate(format: "exists == false"), evaluatedWith: save)], timeout: 15)
+        XCTAssertFalse(app.alerts["Export Error"].exists)
+    }
+
+    /// The report file leaves out and carries the same values as a save, so sharing it asks the same question.
+    func testSharingAFlaggedValueAsksFirst() {
+        let app = launch(["--ss-import"])
+        let share = app.buttons["Share Report File"]
+        XCTAssertTrue(share.waitForExistence(timeout: 60), "The review sheet opens once the report is read")
+        share.tap()
+
+        let alert = app.alerts["Check Before Sharing"]
+        XCTAssertTrue(alert.waitForExistence(timeout: 10), "Sharing a value to compare asks first")
+        XCTAssertTrue(line("Glucose 922 mg/dL", in: alert).exists, "It names the value")
+        alert.buttons["Go Back"].tap()
+        wait(for: [expectation(for: NSPredicate(format: "exists == false"), evaluatedWith: alert)], timeout: 10)
+        XCTAssertTrue(share.exists, "Still in Review, nothing shared")
+    }
+
+    /// A value without a LOINC code has the include check of any other: leaving it out is an answer the question respects.
+    func testAValueWithoutACodeCanBeLeftOutSoTheQuestionStopsListingIt() {
+        let app = launch(["--ss-import", "--ss-unknown-test"])
+        let save = app.buttons["Save to Health Records"]
+        XCTAssertTrue(save.waitForExistence(timeout: 60), "The review sheet opens once the report is read")
+        save.tap()
+        let alert = app.alerts["Check Before Saving"]
+        XCTAssertTrue(alert.waitForExistence(timeout: 10))
+        XCTAssertTrue(line("Zorblax Index", in: alert).exists, "Saving would leave the unknown test out: it's listed")
+        alert.buttons["Go Back"].tap()
+        wait(for: [expectation(for: NSPredicate(format: "exists == false"), evaluatedWith: alert)], timeout: 10)
+
+        let include = app.buttons.matching(NSPredicate(format: "label == %@", "Zorblax Index, Include in Export")).firstMatch
+        reveal(include, in: app)
+        include.tap()
+        save.tap()
+        XCTAssertTrue(alert.waitForExistence(timeout: 10), "The misread glucose is still to compare")
+        XCTAssertFalse(line("Zorblax Index", in: alert).exists, "Left out on purpose, it isn't asked about again")
+    }
+
+    private func line(_ text: String, in alert: XCUIElement) -> XCUIElement {
+        alert.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", text)).firstMatch
+    }
+
     func testPatientAndLabFoldAwayAfterTheValuesWithTheNamesFoundInView() {
         let app = launch(["--ss-import"])
         let details = app.buttons["review-details"]

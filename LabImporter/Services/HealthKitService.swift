@@ -18,12 +18,15 @@ actor HealthKitService {
 
     private let store = HKHealthStore()
 
-    static var isHealthDataAvailable: Bool {
-        HKHealthStore.isHealthDataAvailable()
+    /// Apple Health's CDA document type; nil where the device has none, and in tests.
+    private let cdaType: HKDocumentType?
+
+    init(cdaType: HKDocumentType? = HKObjectType.documentType(forIdentifier: .CDA)) {
+        self.cdaType = cdaType
     }
 
-    private var cdaType: HKDocumentType? {
-        HKObjectType.documentType(forIdentifier: .CDA)
+    static var isHealthDataAvailable: Bool {
+        HKHealthStore.isHealthDataAvailable()
     }
 
     // MARK: - Authorization
@@ -61,9 +64,10 @@ actor HealthKitService {
 
     // MARK: - Write
 
+    /// Throws unless the document is saved: with no document type there's nowhere to save it.
     func importCDADocument(_ xmlString: String, date: Date) async throws {
-        guard let data = xmlString.data(using: .utf8),
-              let documentType = cdaType else { return }
+        guard let documentType = cdaType else { throw HealthKitServiceError.documentsUnavailable }
+        let data = Data(xmlString.utf8)
         try await store.requestAuthorization(toShare: [documentType], read: [documentType])
         let sample = try HKCDADocumentSample(data: data, start: date, end: date, metadata: nil)
         try await store.save(sample)
@@ -199,8 +203,9 @@ actor HealthKitService {
 
     // MARK: - Delete
 
+    /// Throws unless the document is gone (a document that's already gone counts as deleted).
     func deleteCDADocument(id: UUID) async throws {
-        guard let documentType = cdaType else { return }
+        guard let documentType = cdaType else { throw HealthKitServiceError.documentsUnavailable }
         let predicate = HKQuery.predicateForObject(with: id)
 
         let sample: HKDocumentSample? = try await withCheckedThrowingContinuation { continuation in
@@ -241,6 +246,17 @@ actor HealthKitService {
     private static func notifyReportsChanged() async {
         await MainActor.run {
             NotificationCenter.default.post(name: .labReportsDidChange, object: nil)
+        }
+    }
+}
+
+enum HealthKitServiceError: LocalizedError, Equatable {
+    /// Apple Health has no lab report (CDA document) type here, so nothing can be saved or removed.
+    case documentsUnavailable
+
+    var errorDescription: String? {
+        switch self {
+        case .documentsUnavailable: String(localized: "Apple Health can't store lab reports on this device.")
         }
     }
 }

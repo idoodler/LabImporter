@@ -104,4 +104,37 @@ class ChartAxisTest {
         assertEquals(0.5, twoOnOneDay.xFraction(day))
         assertNull(ChartAxis.scale(emptyList()))
     }
+
+    @Test
+    fun aFlatSparklineLiesInTheMiddleNotAtTheTop() {
+        val flat = listOf(point(LocalDate(2026, 1, 1), 100.0), point(LocalDate(2026, 3, 1), 100.0))
+        val sparkline = ChartAxis.sparkline(flat)!!
+        assertEquals(0.5, sparkline.yFraction(100.0), 1e-9)
+        // The detail chart's zero-based axis draws the same series at its top.
+        assertEquals(1.0, ChartAxis.scale(flat)!!.yFraction(100.0))
+        val zero = ChartAxis.sparkline(listOf(point(LocalDate(2026, 1, 1), 0.0), point(LocalDate(2026, 3, 1), 0.0)))!!
+        assertEquals(0.5, zero.yFraction(0.0), 1e-9)
+    }
+
+    @Test
+    fun aSmallChangeDoesNotFillTheSparkline() {
+        val sparkline = ChartAxis.sparkline(irregular)!!
+        // 32 → 35 is 9 % of 35: it spans 3 of the 25 % × 35 = 8.75 minimum, centred, plus the margins.
+        assertEquals(8.75 * 1.2, sparkline.yHigh - sparkline.yLow, 1e-9)
+        assertEquals(33.5, (sparkline.yLow + sparkline.yHigh) / 2, 1e-9)
+        val rise = sparkline.yFraction(35.0) - sparkline.yFraction(32.0)
+        assertTrue(rise < 0.3, "a 9 % change rose $rise of the height")
+        assertTrue(sparkline.yTicks.isEmpty(), "a sparkline has no axis")
+    }
+
+    @Test
+    fun aLargeChangeUsesTheSparklineWithAMargin() {
+        val big = listOf(point(LocalDate(2026, 1, 1), 10.0), point(LocalDate(2026, 6, 1), 110.0))
+        val sparkline = ChartAxis.sparkline(big)!!
+        assertEquals(1.0 / 12, sparkline.yFraction(10.0), 1e-9)
+        assertEquals(11.0 / 12, sparkline.yFraction(110.0), 1e-9)
+        // Time stays proportional, exactly as on the detail chart.
+        assertEquals(ChartAxis.scale(irregular)!!.xFraction(irregular[1].date), ChartAxis.sparkline(irregular)!!.xFraction(irregular[1].date))
+        assertNull(ChartAxis.sparkline(emptyList()))
+    }
 }

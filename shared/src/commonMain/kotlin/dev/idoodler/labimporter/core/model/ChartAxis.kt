@@ -14,7 +14,7 @@ import kotlin.math.round
 /**
  * Where a metric's readings go on a chart: the same on iOS and Android, in the
  * trend chart and the card sparklines, so both apps tell one story about one
- * history. See [ChartAxis.scale] for the rule and why.
+ * history. See [ChartAxis.scale] (trend charts) and [ChartAxis.sparkline] (cards) for the rules and why.
  */
 class ChartScale internal constructor(
     /** The y axis' bounds: its first and last tick. */
@@ -72,6 +72,33 @@ object ChartAxis {
         val xEnd = if (first == last) last.plus(DatePeriod(days = 1)) else last
         return ChartScale(ticks.first(), ticks.last(), ticks, xStart, xEnd, dates)
     }
+
+    /**
+     * The scale of a card's sparkline: a picture with no axis, so nothing on it reads off a
+     * baseline. On the zero-based [scale] a flat series lies at the very top, which reads as
+     * "high"; here it lies in the middle. And the y span is at least [SPARKLINE_MIN_SPAN] of
+     * the value's magnitude, so 32 → 35 rises less than half the height instead of all of it:
+     * a small change doesn't look dramatic. The detail charts, with an axis, keep [scale].
+     * x is the same as [scale]'s. The reference range isn't fitted in: the card's badge says it.
+     */
+    fun sparkline(points: List<MetricPoint>): ChartScale? {
+        val axis = scale(points) ?: return null
+        val values = points.map { it.value }
+        val low = values.min()
+        val high = values.max()
+        val magnitude = maxOf(abs(low), abs(high))
+        val span = maxOf(high - low, magnitude * SPARKLINE_MIN_SPAN).let { if (it == 0.0) 1.0 else it }
+        // A margin each way keeps the line and its points off the card's edges.
+        val half = span / 2 * (1 + 2 * SPARKLINE_MARGIN)
+        val middle = (low + high) / 2
+        return ChartScale(middle - half, middle + half, emptyList(), axis.xStart, axis.xEnd, points.map { it.date })
+    }
+
+    /** A sparkline's smallest y span, relative to the value's magnitude. */
+    const val SPARKLINE_MIN_SPAN = 0.25
+
+    /** The room above and below a sparkline's readings, relative to its span. */
+    const val SPARKLINE_MARGIN = 0.1
 
     /**
      * Evenly spaced, rounded tick values (steps of 1, 2, 2.5 or 5 × 10ⁿ) that

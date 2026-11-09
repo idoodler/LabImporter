@@ -67,6 +67,9 @@
     <string name="share_cda">Berichtsdatei teilen</string>
     <string name="delete_report_title">Bericht löschen?</string>
     <string name="delete_report_message">Dieser Bericht wird dauerhaft entfernt.</string>
+    <string name="delete_unread_values">Werte, die diese Version von LabImporter nicht anzeigen kann, werden ebenfalls gelöscht: %1$d.</string>
+    <string name="report_read_only_title">Nicht bearbeitbar</string>
+    <string name="report_read_only_message">Dieser Bericht enthält Werte, die diese Version von LabImporter nicht anzeigen kann: %1$d. Damit sie nicht verloren gehen, kann er nicht bearbeitet werden. Ein Update von LabImporter kann sie anzeigen.</string>
     <string name="report_deleted">Bericht gelöscht</string>
     <string name="patient_label">Patient: %1$s</string>
     <plurals name="value_count">
@@ -154,6 +157,11 @@
     <string name="search_loinc">Labortest suchen</string>
     <string name="loinc_suggested">Vorschlag: %1$s</string>
     <string name="loinc_duplicate">Doppelt: %1$s</string>
+    <string name="save_check_title">Vor dem Sichern prüfen</string>
+    <string name="save_check_compare">Vergleiche sie mit deinem Bericht:</string>
+    <string name="save_check_left_out">Diese haben keinen LOINC-Code und werden nicht gesichert:</string>
+    <string name="save_anyway">Trotzdem sichern</string>
+    <string name="go_back">Zurück</string>
     <string name="compare_with_report">Mit Bericht vergleichen</string>
     <string name="compare_with_report_detail">Dieser Wert wurde im Text des Berichts nicht gefunden. Vergleiche ihn mit deinem Bericht.</string>
     <plurals name="values_to_check">
@@ -297,7 +305,6 @@
     <string name="pdf_all_time">Gesamter Zeitraum</string>
     <string name="pdf_generated">Erstellt %1$s</string>
     <string name="pdf_page_of">Seite %1$d von %2$d</string>
-    <string name="pdf_author">Erstellt von</string>
     <string name="pdf_period_covered">Erfasster Zeitraum</string>
     <string name="pdf_metrics">Messwerte</string>
     <string name="pdf_out_of_range">Außerhalb des Bereichs</string>

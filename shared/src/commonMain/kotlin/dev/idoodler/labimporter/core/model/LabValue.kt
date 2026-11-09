@@ -95,6 +95,32 @@ fun List<LabValue>.valuesToCheckCount(): Int = count { it.needsSourceCheck && it
 fun List<LabValue>.valuesToCorrectCount(): Int = count { it.needsCorrection }
 
 /**
+ * What Review asks about before saving, or null when there's nothing to ask: flag, don't block.
+ * A value the report doesn't print saves as fast as a checked one otherwise, and a selected
+ * value without a LOINC code would be left out without a word.
+ */
+data class SaveConfirmation(
+    /** Values about to be saved that the report text doesn't print ("Compare with report"). */
+    val toCheck: List<LabValue>,
+    /** Selected values with a result but no LOINC code: saving leaves them out. */
+    val leftOut: List<LabValue>,
+) {
+    /** The row Go Back scrolls to: the first value to check, else the first one left out. */
+    val firstId: String get() = (toCheck.firstOrNull() ?: leftOut.first()).id
+}
+
+/** Review's question before saving these values (in screen order), or null when nothing is flagged or left out. */
+fun List<LabValue>.saveConfirmation(): SaveConfirmation? {
+    val toCheck = filter { it.needsSourceCheck && it.isExportable }
+    val leftOut = filter { it.isSelected && it.hasResult && LabMapping.loincCode(it.code) == null }
+    return if (toCheck.isEmpty() && leftOut.isEmpty()) null else SaveConfirmation(toCheck, leftOut)
+}
+
+/** One value as the confirmation lists it: its plain name, the result and the unit ("Glucose 922 mg/dL"). */
+val LabValue.confirmationLine: String
+    get() = listOf(resolvedName, displayValue, unit).map { it.trim() }.filter { it.isNotEmpty() }.joinToString(" ")
+
+/**
  * Collapses entries sharing a LOINC code (last-resort guarantee at the save
  * boundary). Unmapped rows pass through untouched; within a group the most
  * useful row wins and keeps the first-seen slot.

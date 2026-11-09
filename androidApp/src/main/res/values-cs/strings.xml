@@ -69,6 +69,9 @@
     <string name="share_cda">Sdílet soubor protokolu</string>
     <string name="delete_report_title">Smazat protokol?</string>
     <string name="delete_report_message">Tento protokol bude trvale odstraněn.</string>
+    <string name="delete_unread_values">Smazány budou i hodnoty, které tato verze LabImporteru nedokáže zobrazit: %1$d.</string>
+    <string name="report_read_only_title">Nelze upravit</string>
+    <string name="report_read_only_message">Tento protokol obsahuje hodnoty, které tato verze LabImporteru nedokáže zobrazit: %1$d. Aby se neztratily, nelze ho upravit. Aktualizace LabImporteru je může zobrazit.</string>
     <string name="report_deleted">Protokol smazán</string>
     <string name="patient_label">Pacient: %1$s</string>
     <plurals name="value_count">
@@ -160,6 +163,11 @@
     <string name="search_loinc">Hledat laboratorní vyšetření</string>
     <string name="loinc_suggested">Návrh: %1$s</string>
     <string name="loinc_duplicate">Duplicita: %1$s</string>
+    <string name="save_check_title">Zkontrolujte před uložením</string>
+    <string name="save_check_compare">Porovnejte je se svým protokolem:</string>
+    <string name="save_check_left_out">Tyto nemají kód LOINC a nebudou uloženy:</string>
+    <string name="save_anyway">Přesto uložit</string>
+    <string name="go_back">Zpět</string>
     <string name="compare_with_report">Porovnejte s protokolem</string>
     <string name="compare_with_report_detail">Tato hodnota nebyla v textu protokolu nalezena. Porovnejte ji se svým protokolem.</string>
     <plurals name="values_to_check">
@@ -313,7 +321,6 @@
     <string name="pdf_all_time">Celé období</string>
     <string name="pdf_generated">Vygenerováno %1$s</string>
     <string name="pdf_page_of">Stránka %1$d z %2$d</string>
-    <string name="pdf_author">Autor</string>
     <string name="pdf_period_covered">Pokryté období</string>
     <string name="pdf_metrics">Parametry</string>
     <string name="pdf_out_of_range">Mimo rozsah</string>

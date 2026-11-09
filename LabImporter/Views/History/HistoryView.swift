@@ -93,12 +93,17 @@ struct HistoryView: View {
             }
             Button("Cancel", role: .cancel) { pendingDeleteIDs = [] }
         } message: {
-            if pendingDeleteIDs.count == 1 {
-                Text("This report will be permanently removed from Apple Health.")
-            } else {
-                Text("\(pendingDeleteIDs.count) reports will be permanently removed from Apple Health.")
-            }
+            Text(deleteConfirmation)
         }
+    }
+
+    /// What deleting `pendingDeleteIDs` removes, including values this build can't show.
+    private var deleteConfirmation: String {
+        let removed = pendingDeleteIDs.count == 1
+            ? String(localized: "This report will be permanently removed from Apple Health.")
+            : String(localized: "\(pendingDeleteIDs.count) reports will be permanently removed from Apple Health.")
+        let unread = reports.filter { pendingDeleteIDs.contains($0.id) }.reduce(0) { $0 + $1.unreadValues }
+        return unread > 0 ? removed + "\n\n" + LabReport.deletesUnreadValues(unread) : removed
     }
 
     // MARK: - Toolbar
@@ -216,10 +221,13 @@ struct HistoryView: View {
                         }
                         .listRowBackground(Rectangle().fill(.ultraThinMaterial))
                         .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                            Button { reportToEdit = report } label: {
-                                Label("Edit", systemImage: "pencil")
+                            // A read-only report has values this build can't show; saving it would drop them.
+                            if !report.isReadOnly {
+                                Button { reportToEdit = report } label: {
+                                    Label("Edit", systemImage: "pencil")
+                                }
+                                .tint(.blue)
                             }
-                            .tint(.blue)
                         }
                         // While selecting, show the multi-select circles instead of
                         // the per-row red delete control (swipe-to-delete still works
@@ -319,7 +327,7 @@ struct HistoryView: View {
         reports.removeAll { $0.id == id }
         Task {
             do {
-                try await HealthKitService.shared.deleteCDADocument(id: id)
+                try await ReportWriter().delete(id)
             } catch {
                 deleteError = error.localizedDescription
             }
@@ -330,16 +338,9 @@ struct HistoryView: View {
     private func deleteReports(ids: [UUID]) {
         reports.removeAll { ids.contains($0.id) }
         Task {
-            var failed = false
-            for id in ids {
-                do {
-                    try await HealthKitService.shared.deleteCDADocument(id: id)
-                } catch {
-                    failed = true
-                }
-            }
+            let failed = await ReportWriter().delete(ids)
             await loadReports()
-            if failed {
+            if failed > 0 {
                 deleteError = String(localized: "Some reports couldn't be removed from Apple Health.")
             }
         }

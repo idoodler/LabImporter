@@ -7,6 +7,7 @@
 #
 #   (always)    static_metrics.py (+ SwiftLint when installed), the Gradle tests
 #               with Kover coverage, Android lintRelease, the evaluation replay
+#               with its planted errors
 #   --ios       the iOS unit and UI tests with coverage (the accessibility audit
 #               is one of the UI test suites), `swiftlint analyze` on that build's
 #               log, and the privacy manifests in the built .app and .appex
@@ -66,7 +67,9 @@ lizard_env() {
   fi
 }
 static() {
-  lizard_env && "$OUT/venv/bin/python3" tools/quality/static_metrics.py > "$OUT/static.json"
+  # The scripts' own tests first: a gate that measures the wrong thing passes for the wrong reason.
+  lizard_env && "$OUT/venv/bin/python3" -m unittest discover -s tools/quality -p 'test_*.py' \
+    && "$OUT/venv/bin/python3" tools/quality/static_metrics.py > "$OUT/static.json"
 }
 step static static
 swiftlint_lint() {
@@ -100,7 +103,8 @@ step android-lint ./gradlew --console=plain :androidApp:lintRelease
 python3 tools/quality/reports.py lint androidApp/build/reports/lint-results-release.xml > "$OUT/lint.json"
 
 # --- 4. Evaluation replay ----------------------------------------------------
-step evaluation ./gradlew --console=plain :evaluation:run --args=replay "-Psummary=$OUT/evaluation.json"
+# With the planted errors (evaluation/…/PlantedErrors.kt) and the evaluation's own tests.
+step evaluation ./gradlew --console=plain :evaluation:test :evaluation:run --args=replay "-Psummary=$OUT/evaluation.json"
 
 # --- 5. iOS (optional) -------------------------------------------------------
 if [ $IOS -eq 1 ]; then

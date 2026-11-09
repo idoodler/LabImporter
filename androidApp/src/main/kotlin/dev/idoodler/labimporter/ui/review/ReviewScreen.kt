@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -34,6 +35,7 @@ import androidx.compose.material.icons.rounded.ExpandLess
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.FindInPage
 import androidx.compose.material.icons.rounded.Warning
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
@@ -60,6 +62,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -87,6 +90,9 @@ import dev.idoodler.labimporter.ai.DevelopmentStandIn
 import dev.idoodler.labimporter.core.model.LabCategory
 import dev.idoodler.labimporter.core.model.LabMapping
 import dev.idoodler.labimporter.core.model.LabValue
+import dev.idoodler.labimporter.core.model.SaveConfirmation
+import dev.idoodler.labimporter.core.model.confirmationLine
+import dev.idoodler.labimporter.core.model.saveConfirmation
 import dev.idoodler.labimporter.core.model.duplicateLoincCodes
 import dev.idoodler.labimporter.core.model.valuesToCheckCount
 import dev.idoodler.labimporter.core.model.valuesToCorrectCount
@@ -105,6 +111,7 @@ import dev.idoodler.labimporter.ui.preview.PreviewSamples
 import dev.idoodler.labimporter.ui.design.washTopBarColors
 import dev.idoodler.labimporter.ui.design.readableListPadding
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -128,6 +135,14 @@ fun ReviewScreen(
 ) {
     var pickingFor by remember { mutableStateOf<String?>(null) }
     var pickingDate by remember { mutableStateOf(false) }
+    // Asked before saving when a value is flagged or would be left out: flag, don't block (iOS the same).
+    var confirmation by remember { mutableStateOf<SaveConfirmation?>(null) }
+    val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+    val requestSave: () -> Unit = {
+        val asked = draft.values.saveConfirmation()
+        if (asked != null) confirmation = asked else onSave()
+    }
     val duplicates = remember(draft.values) { draft.values.duplicateLoincCodes() }
     val exportable = remember(draft.values) { draft.values.count { it.isExportable } }
     val valuesToCorrect = remember(draft.values) { draft.values.valuesToCorrectCount() }
@@ -150,7 +165,7 @@ fun ReviewScreen(
                     title = { Text(stringResource(if (draft.original != null) R.string.edit_report else R.string.review_title), fontWeight = FontWeight.SemiBold) },
                     navigationIcon = { IconButton(onClick = onCancel) { Icon(Icons.Rounded.Close, stringResource(R.string.cancel)) } },
                     actions = {
-                        Button(onClick = onSave, enabled = canSave, modifier = Modifier.padding(end = 8.dp)) {
+                        Button(onClick = requestSave, enabled = canSave, modifier = Modifier.padding(end = 8.dp)) {
                             Text(stringResource(R.string.save))
                         }
                     },
@@ -160,54 +175,14 @@ fun ReviewScreen(
             },
         ) { padding ->
             LazyColumn(
+                state = listState,
                 contentPadding = readableListPadding(top = padding.calculateTopPadding() + 4.dp, bottom = 48.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxSize().imePadding(),
             ) {
                 item(key = "hero") {
-                    Card(
-                        shape = MaterialTheme.shapes.extraLarge,
-                        colors = CardDefaults.cardColors(containerColor = groupContainerColor()),
-                    ) {
-                        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                ShapeBadge(
-                                    MaterialShapes.Sunny, MaterialTheme.colorScheme.primary,
-                                    if (draft.engine == AiEngine.DEVELOPMENT_STAND_IN) Icons.Rounded.Science else Icons.Rounded.AutoAwesome,
-                                    size = 48.dp,
-                                    brush = Brush.linearGradient(
-                                        if (wash.size > 1) wash.take(2) else listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.tertiary),
-                                    ),
-                                )
-                                Spacer(Modifier.width(12.dp))
-                                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                    Text(
-                                        pluralStringResource(R.plurals.value_count, draft.values.size, draft.values.size),
-                                        style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold,
-                                    )
-                                    StatusPill(canSave, duplicates.isNotEmpty(), valuesToCorrect, valuesToCheck)
-                                }
-                            }
-                            if (categories.isNotEmpty()) {
-                                // One scrolling line, however many categories: the values must start on the first screen.
-                                Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    categories.groupingBy { it }.eachCount().entries.sortedByDescending { it.value }.forEach { (category, count) ->
-                                        CategoryChip(category, count)
-                                    }
-                                }
-                            }
-                            // Debug builds: results of the development stand-in are samples, and say so.
-                            val standIn = DevelopmentStandIn.texts
-                            if (draft.engine == AiEngine.DEVELOPMENT_STAND_IN && standIn != null) {
-                                Text(
-                                    standIn.reviewBanner, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.onErrorContainer,
-                                    modifier = Modifier.fillMaxWidth()
-                                        .background(MaterialTheme.colorScheme.errorContainer, MaterialTheme.shapes.large).padding(12.dp),
-                                )
-                            }
-                            DateRow(draft, onPickDate = { pickingDate = true })
-                        }
+                    SummaryCard(draft, wash, StatusCounts(canSave, duplicates.isNotEmpty(), valuesToCorrect, valuesToCheck), categories) {
+                        pickingDate = true
                     }
                 }
                 item(key = "values-title") {
@@ -243,7 +218,7 @@ fun ReviewScreen(
                 item(key = "details") { DetailsCard(draft, onUpdateDraft) }
                 item(key = "save") {
                     Button(
-                        onClick = onSave, enabled = canSave,
+                        onClick = requestSave, enabled = canSave,
                         modifier = Modifier.fillMaxWidth().height(64.dp),
                         contentPadding = ButtonDefaults.MediumContentPadding,
                     ) {
@@ -269,6 +244,22 @@ fun ReviewScreen(
         )
     }
 
+    confirmation?.let { asked ->
+        SaveConfirmationDialog(
+            asked,
+            onSave = {
+                confirmation = null
+                onSave()
+            },
+            onGoBack = {
+                confirmation = null
+                // The values start after the summary and the "Lab values" title.
+                val index = draft.values.indexOfFirst { it.id == asked.firstId }
+                if (index >= 0) scope.launch { listState.animateScrollToItem(VALUES_START + index) }
+            },
+        )
+    }
+
     if (pickingDate) {
         val state = rememberDatePickerState(initialSelectedDateMillis = draft.date.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds())
         DatePickerDialog(
@@ -284,6 +275,64 @@ fun ReviewScreen(
             },
             dismissButton = { TextButton(onClick = { pickingDate = false }) { Text(stringResource(R.string.cancel)) } },
         ) { DatePicker(state) }
+    }
+}
+
+/** What the summary's pill says. */
+private data class StatusCounts(val ready: Boolean, val duplicates: Boolean, val valuesToCorrect: Int, val valuesToCheck: Int)
+
+/** The count, what's left to do, the categories and the report's date: above the values, kept short. */
+@Composable
+private fun SummaryCard(
+    draft: ReviewDraft,
+    wash: List<Color>,
+    status: StatusCounts,
+    categories: List<LabCategory>,
+    onPickDate: () -> Unit,
+) {
+    Card(
+        shape = MaterialTheme.shapes.extraLarge,
+        colors = CardDefaults.cardColors(containerColor = groupContainerColor()),
+    ) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                ShapeBadge(
+                    MaterialShapes.Sunny, MaterialTheme.colorScheme.primary,
+                    if (draft.engine == AiEngine.DEVELOPMENT_STAND_IN) Icons.Rounded.Science else Icons.Rounded.AutoAwesome,
+                    size = 48.dp,
+                    brush = Brush.linearGradient(
+                        if (wash.size > 1) wash.take(2) else listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.tertiary),
+                    ),
+                )
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(
+                        pluralStringResource(R.plurals.value_count, draft.values.size, draft.values.size),
+                        style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold,
+                    )
+                    StatusPill(status.ready, status.duplicates, status.valuesToCorrect, status.valuesToCheck)
+                }
+            }
+            if (categories.isNotEmpty()) {
+                // One scrolling line, however many categories: the values must start on the first screen.
+                Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    categories.groupingBy { it }.eachCount().entries.sortedByDescending { it.value }.forEach { (category, count) ->
+                        CategoryChip(category, count)
+                    }
+                }
+            }
+            // Debug builds: results of the development stand-in are samples, and say so.
+            val standIn = DevelopmentStandIn.texts
+            if (draft.engine == AiEngine.DEVELOPMENT_STAND_IN && standIn != null) {
+                Text(
+                    standIn.reviewBanner, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onErrorContainer,
+                    modifier = Modifier.fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.errorContainer, MaterialTheme.shapes.large).padding(12.dp),
+                )
+            }
+            DateRow(draft, onPickDate)
+        }
     }
 }
 
@@ -308,6 +357,35 @@ private fun StatusPill(ready: Boolean, duplicates: Boolean, valuesToCorrect: Int
             Spacer(Modifier.width(6.dp))
             Text(quad.b, style = MaterialTheme.typography.labelLarge)
         }
+    }
+}
+
+/** The list items before the first value: the summary card and the "Lab values" title. */
+private const val VALUES_START = 2
+
+/** Each value it asks about with its plain name, result and unit; Go Back is the safe answer. */
+@Composable
+private fun SaveConfirmationDialog(confirmation: SaveConfirmation, onSave: () -> Unit, onGoBack: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onGoBack,
+        title = { Text(stringResource(R.string.save_check_title)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                ConfirmationList(stringResource(R.string.save_check_compare), confirmation.toCheck)
+                ConfirmationList(stringResource(R.string.save_check_left_out), confirmation.leftOut)
+            }
+        },
+        confirmButton = { TextButton(onClick = onSave) { Text(stringResource(R.string.save_anyway)) } },
+        dismissButton = { TextButton(onClick = onGoBack) { Text(stringResource(R.string.go_back), fontWeight = FontWeight.SemiBold) } },
+    )
+}
+
+@Composable
+private fun ConfirmationList(heading: String, values: List<LabValue>) {
+    if (values.isEmpty()) return
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Text(heading, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+        values.forEach { Text(it.confirmationLine, style = MaterialTheme.typography.bodyMedium) }
     }
 }
 
@@ -522,19 +600,27 @@ private fun ValueCard(
 
 @Composable
 private fun CodeChip(value: LabValue, mapped: Boolean, isDuplicate: Boolean, onClick: () -> Unit) {
+    // The test's name says what's duplicated or suggested; the code stays below, as this chip is where it's chosen.
     val label = when {
         !mapped -> stringResource(R.string.choose_loinc)
-        isDuplicate -> stringResource(R.string.loinc_duplicate, value.code)
-        value.isSuggestedCode -> stringResource(R.string.loinc_suggested, value.code)
+        isDuplicate -> stringResource(R.string.loinc_duplicate, value.resolvedName)
+        value.isSuggestedCode -> stringResource(R.string.loinc_suggested, value.resolvedName)
         else -> "LOINC ${value.code}"
     }
+    val code = if (mapped && (isDuplicate || value.isSuggestedCode)) "LOINC ${value.code}" else null
     val (container, content) = when {
         !mapped || isDuplicate -> MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
         value.isSuggestedCode -> MaterialTheme.colorScheme.tertiaryContainer to MaterialTheme.colorScheme.onTertiaryContainer
         else -> MaterialTheme.colorScheme.surface.copy(alpha = 0.7f) to MaterialTheme.colorScheme.onSurface
     }
     AssistChip(
-        onClick = onClick, label = { Text(label) }, shape = CircleShape,
+        onClick = onClick, shape = CircleShape,
+        label = {
+            Column(Modifier.padding(vertical = if (code != null) 4.dp else 0.dp)) {
+                Text(label)
+                code?.let { Text(it, style = MaterialTheme.typography.labelSmall) }
+            }
+        },
         colors = AssistChipDefaults.assistChipColors(containerColor = container, labelColor = content),
         border = null,
     )

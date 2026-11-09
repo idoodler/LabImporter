@@ -262,6 +262,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun onHealthConnectPermissionsResult(granted: Set<String>) {
         viewModelScope.launch {
             if (granted.containsAll(healthConnectPermissions)) {
+                // Not dropped: connectFailed tells the user, and a move cut short resumes on the next reload.
                 val moved = runCatching { repository.enableHealthConnect() }.getOrElse {
                     connectFailed(it)
                     0
@@ -388,7 +389,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         )
     }
 
+    /** Opens [report] for editing, unless it's read-only: saving would drop the values this build can't read. */
     fun editReport(report: LabReport) {
+        if (report.isReadOnly) return
         _importState.value = ImportState.Reviewing(
             ReviewDraft(report.asLabValues, report.date, report.patientName, report.authorName, null, original = report),
         )

@@ -26,6 +26,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 ALLOWLIST = ROOT / "tools/quality/complexity_allowlist.txt"
+AUDIT_TESTS = ROOT / "LabImporterUITests/AccessibilityAuditUITests.swift"
+EXEMPTION_BASELINE = ROOT / "tools/quality/accessibility_exemptions_baseline.json"
 CCN_LIMIT, NLOC_LIMIT = 15, 100
 SWIFT_ROOTS = ["LabImporter", "LabImporterShare"]
 KOTLIN_ROOTS = ["shared/src/commonMain", "shared/src/androidMain", "shared/src/jvmMain", "shared/src/iosMain", "androidApp/src/main"]
@@ -221,6 +223,155 @@ def icon_buttons_without_description(path: Path) -> list[int]:
     ]
 
 
+def swift_split(text: str, start: int, open_char: str, close_char: str) -> tuple[list[str], int]:
+    """The top-level comma-separated items of the bracket opened at [start], comments dropped, and where it closes.
+
+    String literals (with their escapes) and nested brackets are skipped, so a `,` or `)` inside them
+    doesn't split; an item is whatever sits between two top-level commas, however it is written.
+    """
+    items, current, depth, i = [], [], 0, start + 1
+    while i < len(text):
+        char = text[i]
+        if text.startswith("//", i):
+            i = text.find("\n", i) if "\n" in text[i:] else len(text)
+            continue
+        if text.startswith("/*", i):
+            i = text.find("*/", i) + 2 if "*/" in text[i:] else len(text)
+            continue
+        if char == '"':
+            end = i + 1
+            while end < len(text) and text[end] != '"':
+                end += 2 if text[end] == "\\" else 1
+            current.append(text[i:end + 1])
+            i = end + 1
+            continue
+        if char in "([{":
+            depth += 1
+        elif char in ")]}":
+            if depth == 0 and char == close_char:
+                items.append("".join(current))
+                return [s.strip() for s in items if s.strip()], i
+            depth -= 1
+        elif char == "," and depth == 0:
+            items.append("".join(current))
+            current = []
+            i += 1
+            continue
+        current.append(char)
+        i += 1
+    return [s.strip() for s in items + ["".join(current)] if s.strip()], len(text)
+
+
+def exemption_of(item: str) -> dict | None:
+    """One exemption as what it covers, or None when it isn't written with literals the script can read.
+
+    `limit` absent is no limit (`Int.max`); `element` None is an issue without an element, "" any element.
+    """
+    condition = re.search(r'\bcondition:\s*"([^"\\]*)"', item)
+    kind = re.search(r"\btype:\s*\.(\w+)", item)
+    element = re.search(r'\belement:\s*(?:(nil)\b|"([^"\\]*)")', item)
+    limit = re.search(r"\blimit:\s*([^,)]+)", item)
+    per_element = re.search(r"\bperElement:\s*([^,)]+)", item)
+    if not (condition and kind and element) or (limit and not limit.group(1).strip().isdigit()):
+        return None
+    exemption = {"condition": condition.group(1), "type": kind.group(1), "element": None if element.group(1) else element.group(2)}
+    if limit:
+        exemption["limit"] = int(limit.group(1).strip())
+    if per_element:
+        exemption["perElement"] = per_element.group(1).strip()
+    return exemption
+
+
+def audit_entries(text: str) -> list[dict | None]:
+    """Every item of `AuditExemption.entries`, `Entry(…)`, `.init(…)` or however else it's written."""
+    start = re.search(r"\bstatic\s+(?:let|var)\s+entries\b[^=\n]*=\s*\[", text)
+    return [exemption_of(item) for item in swift_split(text, start.end() - 1, "[", "]")[0]] if start else []
+
+
+def exemption_rules(text: str) -> int:
+    """The exemptions `AuditExemption.reason` grants by rule, before any entry: each a `return` of a reason not taken from an entry."""
+    start = re.search(r"\bstatic\s+func\s+reason\s*\(", text)
+    if not start:
+        return 0
+    body_start = text.index("{", swift_split(text, start.end() - 1, "(", ")")[1])
+    body_end = swift_split(text, body_start, "{", "}")[1]
+    # A reason is a string literal or a named one (`return measured`); `nil`, an entry's reason and a closure's `return (…)` aren't rules.
+    returns = re.findall(r'\breturn\s+("[^\n]*|[A-Za-z_]\w*\s*(?:\}|\n))', text[body_start:body_end])
+    return sum(1 for r in returns if not r.startswith("nil") and "entry.reason" not in r)
+
+
+def audit_exemptions(text: str) -> dict:
+    """The exemptions of the iOS audit: each a finding let go.
+
+    One without a named element covers an issue the audit found without one (`element: nil`)
+    or any element on its page (`element: ""`): the widest kind, listed apart.
+    """
+    entries = audit_entries(text)
+    no_element = sum(1 for e in entries if e and e["element"] is None)
+    any_element = sum(1 for e in entries if e and e["element"] == "")
+    return {"entries": len(entries), "without_named_element": no_element + any_element, "no_element": no_element,
+            "any_element": any_element, "rules": exemption_rules(text)}
+
+
+def exemption_key(e: dict) -> str:
+    return json.dumps(e, sort_keys=True, ensure_ascii=False)
+
+
+def covers(wide: dict, narrow: dict) -> bool:
+    """Whether exemption [wide] lets go at least every issue [narrow] does (`AuditExemption.reason`'s matching)."""
+    element_covered = (narrow["element"] is None) if wide["element"] is None else (
+        narrow["element"] is not None and narrow["element"].startswith(wide["element"]))
+    return (wide["type"] == narrow["type"] and (narrow["condition"] + "/").startswith(wide["condition"] + "/") and element_covered
+            and wide.get("perElement") == narrow.get("perElement")
+            and ("limit" not in wide or narrow.get("limit", float("inf")) <= wide["limit"]))
+
+
+def uncovered(exemptions: list[dict], allowed: list[dict]) -> list[dict]:
+    """The [exemptions] no exemption of [allowed] covers, each of [allowed] standing for one at most (a matching)."""
+    owner: dict[int, int] = {}
+
+    def assign(index: int, seen: set[int]) -> bool:
+        for a, wide in enumerate(allowed):
+            if a not in seen and covers(wide, exemptions[index]):
+                seen.add(a)
+                if a not in owner or assign(owner[a], seen):
+                    owner[a] = index
+                    return True
+        return False
+
+    return [e for i, e in enumerate(exemptions) if not assign(i, set())]
+
+
+def exemption_ratchet() -> dict:
+    """The audit's exemptions against the committed baseline, which lists each one and may only go down.
+
+    The audit must match the baseline exactly: one added, widened (a shorter condition or element
+    prefix, a higher or no limit) or written so the script can't read it isn't in it. Whether the
+    baseline itself went down is `ratchet_raised`'s job (CI compares it with the base branch's).
+    """
+    text = AUDIT_TESTS.read_text(encoding="utf-8") if AUDIT_TESTS.exists() else ""
+    counts = audit_exemptions(text)
+    entries = audit_entries(text)
+    baseline = json.loads(EXEMPTION_BASELINE.read_text(encoding="utf-8")) if EXEMPTION_BASELINE.exists() else {}
+    listed = baseline.get("exemptions")
+    base_counts = audit_exemptions("") if listed is None else {
+        "entries": len(listed), "without_named_element": sum(1 for e in listed if not e["element"]), "rules": baseline.get("rules")}
+    current_keys = [exemption_key(e) for e in entries if e]
+    listed_keys = [exemption_key(e) for e in listed or []]
+    keys = ("entries", "without_named_element", "rules")
+    return {
+        **counts,
+        "baseline": {k: (base_counts[k] if listed is not None else None) for k in keys},
+        # More than the baseline allows (or no baseline): the gate fails.
+        "above_baseline": [k for k in keys if listed is None or base_counts[k] is None or counts[k] > base_counts[k]],
+        # Fewer: the baseline must come down with them, so it can't be spent again later.
+        "below_baseline": [k for k in keys if listed is not None and base_counts[k] is not None and counts[k] < base_counts[k]],
+        "unreadable": sum(1 for e in entries if e is None),
+        "not_in_baseline": [k for k in dict.fromkeys(current_keys) if current_keys.count(k) > listed_keys.count(k)],
+        "not_in_audit": [k for k in dict.fromkeys(listed_keys) if listed_keys.count(k) > current_keys.count(k)],
+    }
+
+
 def accessibility() -> dict:
     """Interactive icons with no spoken name are the one thing a grep catches reliably."""
     compose = sources(["androidApp/src/main/kotlin"], ".kt")
@@ -230,6 +381,7 @@ def accessibility() -> dict:
         "android_null_descriptions_in_icon_buttons": [
             f"{rel(p)}:{line}" for p in compose for line in icon_buttons_without_description(p)
         ],
+        "ios_audit_exemptions": exemption_ratchet(),
     }
 
 
@@ -350,15 +502,25 @@ def run_catching_chains(text: str) -> list[tuple[int, int]]:
     The chain is what follows the lambda's closing brace on its line, and on lines that go on
     with `.` or `?.`, comment lines between them included: `}.isSuccess`, `}\n    .getOrNull()`.
     """
+    def block_end(index: int) -> int:
+        """The offset after the block whose `{` is at [index], nested blocks included."""
+        depth = 0
+        for offset in range(index, len(text)):
+            depth += {"{": 1, "}": -1}.get(text[offset], 0)
+            if depth == 0:
+                return offset + 1
+        return len(text)
+
     chains = []
-    chain = re.compile(r"(?:[ \t]*\n(?:[ \t]*//[^\n]*\n)*[ \t]*(?=\??\.)|[ \t]*)\??\.\w+(?:\([^()\n]*\))?(?:\s*\{[^{}]*\})?")
+    chain = re.compile(r"(?:[ \t]*\n(?:[ \t]*//[^\n]*\n)*[ \t]*(?=\??\.)|[ \t]*)\??\.\w+(?:\([^()\n]*\))?")
+    # A link's lambda, whatever it nests: `.onSuccess { if (…) { … } }.onFailure { … }`.
+    lambda_start = re.compile(r"\s*(?=\{)")
     for match in re.finditer(r"\brunCatching\s*\{", text):
-        depth, index = 1, match.end()
-        while depth and index < len(text):
-            depth += {"{": 1, "}": -1}.get(text[index], 0)
-            index += 1
+        index = block_end(match.end() - 1)
         while (link := chain.match(text, index)) and link.end() > index:
             index = link.end()
+            if lam := lambda_start.match(text, index):
+                index = block_end(lam.end())
         chains.append((match.start(), index))
     return chains
 
@@ -382,19 +544,60 @@ def swallow_sites(text: str, suffix: str) -> list[tuple[int, int]]:
     return sorted({(line(start), line(max(start, end - 1))) for start, end in hits})
 
 
-def swallowed_errors() -> dict:
-    """Errors dropped in the paths that read and write reports, each needing a stated reason.
+# The places that read, save, delete and import reports.
+SWALLOW_PATHS = (
+    ["LabImporter/Services", "LabImporter/Views/Home", "LabImporter/Views/Import", "LabImporter/Views/Review",
+     "LabImporter/Views/History", "LabImporterShare"],
+    ["androidApp/src/main/kotlin/dev/idoodler/labimporter/data", "androidApp/src/main/kotlin/dev/idoodler/labimporter/ui/AppViewModel.kt",
+     "shared/src/commonMain/kotlin/dev/idoodler/labimporter/core/export", "shared/src/commonMain/kotlin/dev/idoodler/labimporter/core/transfer"],
+)
+REASON_WORDS = 4
 
-    A reason is a comment on the site's lines or the line above it. Only these paths count:
-    a failed read here looks like "you have no reports", and a failed write like a save.
+
+def stated_reason(comment: str) -> bool:
+    """A comment that says why: at least four words, not a bare marker ("// ignore", "// TODO").
+
+    A lint directive's parts aren't words: `swiftlint:disable:this` and a rule name (`force_try`)
+    say what is silenced, not why.
     """
-    paths = (
-        sources(["LabImporter/Services", "LabImporter/Views/Home", "LabImporter/Views/Import", "LabImporterShare"], ".swift")
-        + sources(
-            ["androidApp/src/main/kotlin/dev/idoodler/labimporter/data", "shared/src/commonMain/kotlin/dev/idoodler/labimporter/core/export",
-             "shared/src/commonMain/kotlin/dev/idoodler/labimporter/core/transfer"],
-            ".kt",
-        )
+    prose = " ".join(t for t in comment.split() if not re.search(r"\S:\S|_", t))
+    return len(re.findall(r"[^\W\d_][\w'’-]*", prose)) >= REASON_WORDS
+
+
+def comment_of(line: str) -> str | None:
+    """The `//` comment on a line (outside a string literal), or None."""
+    in_string = False
+    for index, char in enumerate(line):
+        if char == '"' and (index == 0 or line[index - 1] != "\\"):
+            in_string = not in_string
+        elif not in_string and line.startswith("//", index):
+            return line[index + 2:]
+    return None
+
+
+def site_reason(lines: list[str], first: int, last: int) -> bool:
+    """A swallowed error's reason: a comment on its lines, or the comment block right above it, of four words or more.
+
+    A `///` doc comment documents the declaration below it, not the error it drops: it's never the reason.
+    """
+    comments = [c for i in range(first, last + 1) if (c := comment_of(lines[i])) is not None and not c.startswith("/")]
+    above, i = [], first - 1
+    while i >= 0 and lines[i].lstrip().startswith("//") and not lines[i].lstrip().startswith("///"):
+        above.insert(0, lines[i].lstrip()[2:])
+        i -= 1
+    return any(stated_reason(c) for c in comments) or (bool(above) and stated_reason(" ".join(above)))
+
+
+def swallowed_errors() -> dict:
+    """Errors dropped in the paths that read, save, delete and import reports, each needing a stated reason.
+
+    A reason is a comment of at least four words on the site's lines or right above it; a bare
+    `//` or "// ignore" isn't one. Only these paths count: a failed read here looks like "you
+    have no reports", and a failed write or delete like one that worked.
+    """
+    swift_roots, kotlin_roots = SWALLOW_PATHS
+    paths = sources(swift_roots, ".swift") + sorted(
+        p for r in kotlin_roots for p in ([ROOT / r] if r.endswith(".kt") else (ROOT / r).rglob("*.kt")) if p.is_file()
     )
     explained, unexplained = [], []
     for path in paths:
@@ -403,9 +606,8 @@ def swallowed_errors() -> dict:
         for first, last in swallow_sites(text, path.suffix):
             if lines[first].lstrip().startswith(("//", "*", "/*")):
                 continue
-            reason = any("//" in lines[i] for i in range(first, last + 1)) or (first > 0 and lines[first - 1].lstrip().startswith("//"))
-            (explained if reason else unexplained).append(f"{rel(path)}:{first + 1}")
-    return {"explained": len(explained), "unexplained": unexplained}
+            (explained if site_reason(lines, first, last) else unexplained).append(f"{rel(path)}:{first + 1}")
+    return {"explained": len(explained), "unexplained": unexplained, "paths": swift_roots + kotlin_roots}
 
 
 def tests() -> dict:
@@ -461,7 +663,43 @@ def gate_failures(report: dict) -> list[str]:
     failures += [f"privacy manifest: {p}" for p in report["privacy"]["privacy_manifest_problems"]]
     failures += [f"SwiftUI view without #Preview: {s}" for s in report["previews"]["swift_files_without_preview"]]
     failures += [f"third-party action or image not pinned to a commit SHA or digest: {s}" for s in report["ci"]["unpinned"]]
+    exemptions = report["accessibility"]["ios_audit_exemptions"]
+    failures += [f"iOS audit exemptions: {k} {exemptions[k]} is above the baseline {exemptions['baseline'][k]} in {rel(EXEMPTION_BASELINE)}"
+                 for k in exemptions["above_baseline"]]
+    failures += [f"iOS audit exemptions: {k} came down to {exemptions[k]}; lower the baseline in {rel(EXEMPTION_BASELINE)} to match"
+                 for k in exemptions["below_baseline"]]
+    if exemptions["unreadable"]:
+        failures.append(f"iOS audit exemptions: {exemptions['unreadable']} not written with literal condition, type, element and limit")
+    failures += [f"iOS audit exemption not in {rel(EXEMPTION_BASELINE)} (new or widened): {e}" for e in exemptions["not_in_baseline"]]
+    failures += [f"iOS audit exemption gone or narrowed; update {rel(EXEMPTION_BASELINE)} to match: {e}" for e in exemptions["not_in_audit"]]
+    failures += ratchet_raised(json.loads(EXEMPTION_BASELINE.read_text(encoding="utf-8")) if EXEMPTION_BASELINE.exists() else {})
     return failures
+
+
+def baseline_raised(baseline: dict, base: dict) -> list[str]:
+    """What [baseline] lets go that the base branch's [base] didn't: an exemption no base one covers, or more rules."""
+    if "exemptions" not in base:
+        # The base counted its exemptions only.
+        return [f"iOS audit exemptions: the baseline's {k} rose from {base[k]} to {n} (it may only go down)"
+                for k, n in (("entries", len(baseline.get("exemptions", []))),
+                             ("without_named_element", sum(1 for e in baseline.get("exemptions", []) if not e["element"])))
+                if k in base and n > base[k]]
+    raised = [f"iOS audit exemptions: the baseline lets go more than the base's (it may only go down): {exemption_key(e)}"
+              for e in uncovered(baseline.get("exemptions", []), base["exemptions"])]
+    if baseline.get("rules", 0) > base.get("rules", 0):
+        raised.append(f"iOS audit exemptions: the baseline's rules rose from {base.get('rules', 0)} to {baseline['rules']} (it may only go down)")
+    return raised
+
+
+def ratchet_raised(baseline: dict) -> list[str]:
+    """The baseline itself may only go down: compared with the one on `--ratchet-ref <git ref>` (CI: the pull request's base)."""
+    ref = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--ratchet-ref=")), None)
+    if not ref:
+        return []
+    shown = subprocess.run(["git", "show", f"{ref}:{rel(EXEMPTION_BASELINE)}"], cwd=ROOT, capture_output=True, text=True)
+    if shown.returncode != 0:
+        return []  # the base has no baseline yet: this pull request starts it
+    return baseline_raised(baseline, json.loads(shown.stdout))
 
 
 def main() -> None:

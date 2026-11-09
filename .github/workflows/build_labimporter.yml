@@ -20,6 +20,15 @@ jobs:
     outputs:
       run: ${{ steps.day.outputs.run }}
     steps:
+      # TestFlight gets main only: a build dispatched from another branch stops here, before
+      # the certificates are touched.
+      - name: From main?
+        run: |
+          if [ "${{ github.ref }}" != "refs/heads/main" ]; then
+            echo "::error::TestFlight builds come from main only, not ${{ github.ref_name }}"
+            exit 1
+          fi
+
       - id: day
         run: |
           if [ "${{ github.event_name }}" != "schedule" ] || [ "$(date -u +%-d)" -le 7 ]; then
@@ -102,6 +111,19 @@ jobs:
         with:
           distribution: temurin
           java-version: "21"
+
+      # Nothing goes to TestFlight that fails its unit tests (Simulator SDK, unsigned: the
+      # same run as build_pr.yml's, without the UI tests).
+      - name: Unit tests
+        run: |
+          SIMULATOR=$(xcrun simctl list devices available --json | python3 -c '
+          import json, sys
+          runtimes = json.load(sys.stdin)["devices"]
+          ios = sorted((k for k in runtimes if ".iOS-" in k), key=lambda k: [int(p) for p in k.rsplit("iOS-", 1)[1].split("-")])
+          phones = [d for k in ios for d in runtimes[k] if d["name"].startswith("iPhone")]
+          print(phones[-1]["udid"])')
+          xcrun simctl bootstatus "$SIMULATOR" -b
+          tools/ios_test.sh unit "$SIMULATOR"
 
       - name: Fastlane Build & Archive
         run: bundle exec fastlane build_labimporter

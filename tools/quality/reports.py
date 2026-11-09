@@ -100,14 +100,17 @@ def mutation(args: list[str]) -> dict:
     The score is killed / (all mutants), so a mutant no test reaches counts against it:
     code without tests can't look well tested. TIMED_OUT and MEMORY_ERROR mean the mutant
     broke the code badly enough to hang or blow up, which a test run notices, so they count
-    as killed — PIT's own convention.
+    as killed — PIT's own convention. RUN_ERROR means PIT couldn't run the tests against the
+    mutant at all: nothing was learned, so it's inconclusive — reported as such, and not
+    counted as killed (it stays in the total, so errors can't raise a score).
     """
     path = Path(args[0])
     if not path.exists():
         return {"error": f"no PIT report at {path}"}
-    detected = {"KILLED", "TIMED_OUT", "MEMORY_ERROR", "RUN_ERROR"}
-    packages: dict = collections.defaultdict(lambda: [0, 0])
-    classes: dict = collections.defaultdict(lambda: [0, 0])
+    detected = {"KILLED", "TIMED_OUT", "MEMORY_ERROR"}
+    inconclusive = {"RUN_ERROR"}
+    packages: dict = collections.defaultdict(lambda: [0, 0, 0])
+    classes: dict = collections.defaultdict(lambda: [0, 0, 0])
     statuses: collections.Counter = collections.Counter()
     survivors = []
     for m in ET.parse(path).getroot().findall("mutation"):
@@ -119,7 +122,8 @@ def mutation(args: list[str]) -> dict:
         for bucket in (packages[package], classes[cls]):
             bucket[0] += killed
             bucket[1] += 1
-        if not killed and cls in CLINICAL:
+            bucket[2] += status in inconclusive
+        if not killed and status not in inconclusive and cls in CLINICAL:
             survivors.append({
                 "class": cls.rsplit(".", 1)[1],
                 "method": m.findtext("mutatedMethod"),
@@ -130,12 +134,10 @@ def mutation(args: list[str]) -> dict:
             })
 
     def score(bucket: list[int]) -> dict:
-        return {"killed": bucket[0], "total": bucket[1], "score_pct": pct(bucket[0], bucket[1])}
+        return {"killed": bucket[0], "total": bucket[1], "inconclusive": bucket[2], "score_pct": pct(bucket[0], bucket[1])}
 
-    killed = sum(b[0] for b in packages.values())
-    total = sum(b[1] for b in packages.values())
     return {
-        "total": score([killed, total]),
+        "total": score([sum(b[i] for b in packages.values()) for i in range(3)]),
         "statuses": dict(statuses),
         "packages": {p.rsplit(".", 1)[1]: score(b) for p, b in sorted(packages.items())},
         "classes": {c.split(".core.", 1)[1]: score(b) for c, b in sorted(classes.items())},

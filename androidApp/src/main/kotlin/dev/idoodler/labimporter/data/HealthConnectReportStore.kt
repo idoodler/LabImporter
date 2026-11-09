@@ -137,7 +137,8 @@ class HealthConnectReportStore(
         c.upsertMedicalResources(resources.map { UpsertMedicalResourceRequest(source.id, source.fhirVersion, it.json) })
     }
 
-    override suspend fun delete(report: LabReport) = deleteEntries(report.entries.map { it.id })
+    /** Records this build couldn't read go too: they belong to the report, and nothing else would remove them. */
+    override suspend fun delete(report: LabReport) = deleteEntries(report.entries.map { it.id } + report.unreadRecordIds)
 
     /** Entries keep their ids through an edit, so the save already replaced those that stayed. */
     override suspend fun removeDropped(old: LabReport, updated: LabReport) = deleteEntries(droppedEntryIds(old, updated))

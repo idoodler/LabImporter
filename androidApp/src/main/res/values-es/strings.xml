@@ -68,6 +68,9 @@
     <string name="share_cda">Compartir archivo del informe</string>
     <string name="delete_report_title">¿Eliminar informe?</string>
     <string name="delete_report_message">Este informe se eliminará de forma permanente.</string>
+    <string name="delete_unread_values">También se eliminarán los valores que esta versión de LabImporter no puede mostrar: %1$d.</string>
+    <string name="report_read_only_title">No se puede editar</string>
+    <string name="report_read_only_message">Este informe tiene valores que esta versión de LabImporter no puede mostrar: %1$d. Para que no se pierdan, no se puede editar. Al actualizar LabImporter podrían mostrarse.</string>
     <string name="report_deleted">Informe eliminado</string>
     <string name="patient_label">Paciente: %1$s</string>
     <plurals name="value_count">
@@ -157,6 +160,11 @@
     <string name="search_loinc">Buscar pruebas de lab</string>
     <string name="loinc_suggested">Sugerencia: %1$s</string>
     <string name="loinc_duplicate">Duplicado: %1$s</string>
+    <string name="save_check_title">Revisa antes de guardar</string>
+    <string name="save_check_compare">Compáralos con tu informe:</string>
+    <string name="save_check_left_out">Estos no tienen código LOINC y no se guardarán:</string>
+    <string name="save_anyway">Guardar de todos modos</string>
+    <string name="go_back">Volver</string>
     <string name="compare_with_report">Compara con el informe</string>
     <string name="compare_with_report_detail">Este valor no se encontró en el texto del informe. Compáralo con tu informe.</string>
     <plurals name="values_to_check">
@@ -305,7 +313,6 @@
     <string name="pdf_all_time">Todo el tiempo</string>
     <string name="pdf_generated">Generado %1$s</string>
     <string name="pdf_page_of">Página %1$d de %2$d</string>
-    <string name="pdf_author">Autor</string>
     <string name="pdf_period_covered">Período cubierto</string>
     <string name="pdf_metrics">Parámetros</string>
     <string name="pdf_out_of_range">Fuera de rango</string>

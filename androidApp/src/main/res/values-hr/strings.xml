@@ -68,6 +68,9 @@
     <string name="share_cda">Podijeli datoteku izvješća</string>
     <string name="delete_report_title">Izbrisati izvješće?</string>
     <string name="delete_report_message">Ovo izvješće bit će trajno uklonjeno.</string>
+    <string name="delete_unread_values">Brišu se i vrijednosti koje ova verzija LabImportera ne može prikazati: %1$d.</string>
+    <string name="report_read_only_title">Ne može se urediti</string>
+    <string name="report_read_only_message">Ovo izvješće ima vrijednosti koje ova verzija LabImportera ne može prikazati: %1$d. Da se ne izgube, ne može se urediti. Ažuriranje LabImportera moglo bi ih prikazati.</string>
     <string name="report_deleted">Izvješće izbrisano</string>
     <string name="patient_label">Pacijent: %1$s</string>
     <plurals name="value_count">
@@ -157,6 +160,11 @@
     <string name="search_loinc">Pretraži laboratorijske pretrage</string>
     <string name="loinc_suggested">Prijedlog: %1$s</string>
     <string name="loinc_duplicate">Duplikat: %1$s</string>
+    <string name="save_check_title">Provjerite prije spremanja</string>
+    <string name="save_check_compare">Usporedite ih sa svojim nalazom:</string>
+    <string name="save_check_left_out">Ove nemaju LOINC kod i neće biti spremljene:</string>
+    <string name="save_anyway">Ipak spremi</string>
+    <string name="go_back">Natrag</string>
     <string name="compare_with_report">Usporedite s nalazom</string>
     <string name="compare_with_report_detail">Ova vrijednost nije pronađena u tekstu nalaza. Usporedite je sa svojim nalazom.</string>
     <plurals name="values_to_check">
@@ -305,7 +313,6 @@
     <string name="pdf_all_time">Cijelo razdoblje</string>
     <string name="pdf_generated">Generirano %1$s</string>
     <string name="pdf_page_of">Stranica %1$d od %2$d</string>
-    <string name="pdf_author">Autor</string>
     <string name="pdf_period_covered">Obuhvaćeno razdoblje</string>
     <string name="pdf_metrics">Parametri</string>
     <string name="pdf_out_of_range">Izvan raspona</string>

@@ -67,6 +67,9 @@
     <string name="share_cda">Jelentésfájl megosztása</string>
     <string name="delete_report_title">Törlöd a jelentést?</string>
     <string name="delete_report_message">Ez a jelentés véglegesen törlődik.</string>
+    <string name="delete_unread_values">Azok az értékek is törlődnek, amelyeket a LabImporter ezen verziója nem tud megjeleníteni: %1$d.</string>
+    <string name="report_read_only_title">Nem szerkeszthető</string>
+    <string name="report_read_only_message">Ebben a jelentésben olyan értékek vannak, amelyeket a LabImporter ezen verziója nem tud megjeleníteni: %1$d. Hogy ne vesszenek el, a jelentés nem szerkeszthető. A LabImporter frissítése megjelenítheti őket.</string>
     <string name="report_deleted">Jelentés törölve</string>
     <string name="patient_label">Páciens: %1$s</string>
     <plurals name="value_count">
@@ -154,6 +157,11 @@
     <string name="search_loinc">Laborvizsgálatok keresése</string>
     <string name="loinc_suggested">Javaslat: %1$s</string>
     <string name="loinc_duplicate">Ismétlődés: %1$s</string>
+    <string name="save_check_title">Ellenőrizd mentés előtt</string>
+    <string name="save_check_compare">Vesd össze ezeket a leleteddel:</string>
+    <string name="save_check_left_out">Ezeknek nincs LOINC-kódjuk, és nem lesznek mentve:</string>
+    <string name="save_anyway">Mentés így is</string>
+    <string name="go_back">Vissza</string>
     <string name="compare_with_report">Vesd össze a lelettel</string>
     <string name="compare_with_report_detail">Ez az érték nem található a lelet szövegében. Vesd össze a leleteddel.</string>
     <plurals name="values_to_check">
@@ -297,7 +305,6 @@
     <string name="pdf_all_time">Teljes időszak</string>
     <string name="pdf_generated">Létrehozva: %1$s</string>
     <string name="pdf_page_of">%1$d/%2$d oldal</string>
-    <string name="pdf_author">Szerző</string>
     <string name="pdf_period_covered">Lefedett időszak</string>
     <string name="pdf_metrics">Paraméterek</string>
     <string name="pdf_out_of_range">Tartományon kívül</string>

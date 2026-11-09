@@ -84,6 +84,9 @@
     <string name="share_cda">Share Report File</string>
     <string name="delete_report_title">Delete Report?</string>
     <string name="delete_report_message">This report will be permanently removed.</string>
+    <string name="delete_unread_values">Values this version of LabImporter can\'t show are deleted too: %1$d.</string>
+    <string name="report_read_only_title">Can\'t Be Edited</string>
+    <string name="report_read_only_message">This report has values this version of LabImporter can\'t show: %1$d. So that they aren\'t lost, it can\'t be edited. Updating LabImporter may show them.</string>
     <string name="report_deleted">Report deleted</string>
     <string name="patient_label">Patient: %1$s</string>
     <plurals name="value_count">
@@ -176,6 +179,11 @@
     <string name="search_loinc">Search lab tests</string>
     <string name="loinc_suggested">Suggested: %1$s</string>
     <string name="loinc_duplicate">Duplicate: %1$s</string>
+    <string name="save_check_title">Check Before Saving</string>
+    <string name="save_check_compare">Compare these with your report:</string>
+    <string name="save_check_left_out">These have no LOINC code and won\'t be saved:</string>
+    <string name="save_anyway">Save Anyway</string>
+    <string name="go_back">Go Back</string>
     <string name="compare_with_report">Compare with report</string>
     <string name="compare_with_report_detail">This value wasn\'t found in the report text. Compare it with your report.</string>
     <plurals name="values_to_check">
@@ -332,7 +340,6 @@
     <string name="pdf_all_time">All time</string>
     <string name="pdf_generated">Generated %1$s</string>
     <string name="pdf_page_of">Page %1$d of %2$d</string>
-    <string name="pdf_author">Author</string>
     <string name="pdf_period_covered">Period Covered</string>
     <string name="pdf_metrics">Metrics</string>
     <string name="pdf_out_of_range">Out of Range</string>

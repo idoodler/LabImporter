@@ -21,12 +21,12 @@ struct ValueDescriptionCard: View {
                         .foregroundStyle(.textTertiary)
                         .accessibilityHidden(true)
                 }
-                if let description {
-                    Text(description)
-                        .font(.callout)
-                        .foregroundStyle(.textSecondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
+                // The full catalog label in the app's language, which tells this test from its neighbours;
+                // LOINC's description is terse syntax ("Calcidiol in Ser/Plas (MCnc)").
+                Text(term.name)
+                    .font(.callout)
+                    .foregroundStyle(.textSecondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 Text(verbatim: "LOINC \(term.code)")
                     .font(.caption2)
                     .foregroundStyle(.textTertiary)
@@ -37,12 +37,6 @@ struct ValueDescriptionCard: View {
             .padding(.horizontal)
         }
         .buttonStyle(.plain)
-    }
-
-    private var description: String? {
-        if let description = term.description, !description.isEmpty { return description }
-        // Fall back to the English name when it adds detail beyond the title.
-        return term.englishName == term.name ? nil : term.englishName
     }
 }
 

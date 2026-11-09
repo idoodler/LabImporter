@@ -67,6 +67,9 @@
     <string name="share_cda">Сподели файла с отчета</string>
     <string name="delete_report_title">Да се изтрие ли отчетът?</string>
     <string name="delete_report_message">Този отчет ще бъде премахнат завинаги.</string>
+    <string name="delete_unread_values">Стойностите, които тази версия на LabImporter не може да покаже, също се изтриват: %1$d.</string>
+    <string name="report_read_only_title">Не може да се редактира</string>
+    <string name="report_read_only_message">Този отчет съдържа стойности, които тази версия на LabImporter не може да покаже: %1$d. За да не се загубят, той не може да се редактира. Актуализирането на LabImporter може да ги покаже.</string>
     <string name="report_deleted">Отчетът е изтрит</string>
     <string name="patient_label">Пациент: %1$s</string>
     <plurals name="value_count">
@@ -154,6 +157,11 @@
     <string name="search_loinc">Търсене на лабораторни изследвания</string>
     <string name="loinc_suggested">Предложение: %1$s</string>
     <string name="loinc_duplicate">Дублиране: %1$s</string>
+    <string name="save_check_title">Проверете преди запазване</string>
+    <string name="save_check_compare">Сравнете ги с вашия отчет:</string>
+    <string name="save_check_left_out">Тези нямат LOINC код и няма да бъдат запазени:</string>
+    <string name="save_anyway">Запази въпреки това</string>
+    <string name="go_back">Назад</string>
     <string name="compare_with_report">Сравнете с отчета</string>
     <string name="compare_with_report_detail">Тази стойност не е открита в текста на отчета. Сравнете я с вашия отчет.</string>
     <plurals name="values_to_check">
@@ -297,7 +305,6 @@
     <string name="pdf_all_time">Цялото време</string>
     <string name="pdf_generated">Генериран на %1$s</string>
     <string name="pdf_page_of">Страница %1$d от %2$d</string>
-    <string name="pdf_author">Автор</string>
     <string name="pdf_period_covered">Обхванат период</string>
     <string name="pdf_metrics">Показатели</string>
     <string name="pdf_out_of_range">Извън нормата</string>

@@ -128,12 +128,16 @@ object FhirLabCodec {
         val rows = mutableListOf<Row>()
         val newer = hashSetOf<String>()
         val damaged = hashSetOf<String>()
+        // Per report: the resources it has that this build can't read (their ids, where they have one).
+        val unread = hashMapOf<String, MutableList<String?>>()
         var damagedWithoutId = 0
         for (raw in resources) {
             var reportId: String? = null
+            var resourceId: String? = null
             try {
                 val obj = json.parseToJsonElement(raw).jsonObject
                 if (obj.string("resourceType") != "Observation") continue
+                resourceId = obj.string("id")
                 val tags = obj["meta"]?.jsonObject?.get("tag")?.jsonArray.orEmpty().map { it.jsonObject }
                 val id = tags.firstOrNull { it.string("system") == REPORT_TAG_SYSTEM }?.string("code") ?: continue
                 reportId = id
@@ -160,23 +164,33 @@ object FhirLabCodec {
                         id = obj.string("id") ?: id,
                         code = coding.string("code").orEmpty(),
                         name = obj["code"]?.jsonObject?.string("text") ?: coding.string("display").orEmpty(),
-                        displayValue = value?.let(NumberFormatting::exactValue) ?: text?.first ?: "-",
+                        displayValue = value?.let(NumberFormatting::exactValue) ?: text?.first
+                            // Every stored value is one or the other; anything else (a later build's value type) isn't readable here.
+                            ?: error("No value this build can read"),
                         numericValue = value,
                         unit = text?.second ?: quantity?.string("unit").orEmpty(),
                     ),
                 )
             } catch (_: Exception) {
                 // Only counted: the exception's message would quote a health record.
-                if (reportId != null) damaged += reportId else damagedWithoutId++
+                if (reportId != null) {
+                    damaged += reportId
+                    unread.getOrPut(reportId) { mutableListOf() } += resourceId
+                } else {
+                    damagedWithoutId++
+                }
             }
         }
 
         // A report with any newer resource isn't listed at all: half of it can't be read, and edits would lose the rest.
+        // One with a value this build can't read is listed with what it can, read-only (LabReport.isReadOnly).
         val reports = rows.filter { it.reportId !in newer }.groupBy { it.reportId }.mapNotNull { (reportId, group) ->
             val first = group.first()
+            val missing = unread[reportId].orEmpty()
             val report = LabReport(
                 id = reportId, date = first.date, patientName = first.patient, authorName = first.author,
                 entries = group.map { it.entry },
+                unreadValues = missing.size, unreadRecordIds = missing.filterNotNull(),
             )
             ReportSchema.upgrade(report, group.minOf { it.version })
         }.sortedByDescending { it.date }

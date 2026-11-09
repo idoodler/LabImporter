@@ -143,5 +143,30 @@ class TransferTest {
     fun anIntactFileHasNothingDamaged() {
         val read = assertIs<ReportTransfer.ReadResult.Reports>(ReportTransfer.read(ReportTransfer.export(listOf(may, sep), "x").contents))
         assertEquals(0, read.unreadableReports)
+        val cda = assertIs<ReportTransfer.ReadResult.Reports>(ReportTransfer.read(CdaExport.generate(may.asLabValues, may.date, "x", GoldenCda.narrative)))
+        assertEquals(0, cda.unreadableReports)
+    }
+
+    @Test
+    fun aCdaWithAValueThisBuildCanNotReadCountsAsDamaged() {
+        // A later build's value type (a coded result) in place of May's creatinine.
+        val xml = CdaExport.generate(may.asLabValues, may.date, "x", GoldenCda.narrative)
+            .replaceFirst(Regex("<value xsi:type=\"PQ\"[^>]*/>"), "<value xsi:type=\"CD\" code=\"260385009\" codeSystem=\"2.16.840.1.113883.6.96\"/>")
+
+        val read = assertIs<ReportTransfer.ReadResult.Reports>(ReportTransfer.read(xml))
+
+        assertEquals(listOf("2823-3"), read.reports.single().entries.map { it.code }, "What could be read still comes across")
+        assertEquals(1, read.unreadableReports, "Or the summary reads like the whole report came across")
+    }
+
+    @Test
+    fun anExportCountsTheValuesThisBuildCouldNotReadAsLeftOut() {
+        // Shown read-only: one of its values is stored, but this build can't read it, so it can't go in the file.
+        val readOnly = may.copy(unreadValues = 1)
+
+        val export = ReportTransfer.export(listOf(readOnly, sep), "x")
+
+        assertEquals(3, export.writtenResults)
+        assertEquals(1, export.leftOutResults, "The file is missing a value the report has")
     }
 }

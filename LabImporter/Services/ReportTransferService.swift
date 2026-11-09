@@ -16,6 +16,8 @@ enum ReportTransferService {
         let needingNewerVersion: Int
         /// Damaged reports in the file; what could be read of them is among `imported`.
         let damaged: Int
+        /// Reports Apple Health didn't take; the others are imported all the same.
+        var notSaved = 0
     }
 
     /// What importing a file would do.
@@ -91,11 +93,9 @@ enum ReportTransferService {
 
     /// Imports a transfer file into Apple Health. Skipping what's already there needs the whole
     /// list, read now: a list from a failed read would make every report new, and nothing merges
-    /// the duplicates once reading works again. `loadExisting` is Apple Health's, except in tests.
-    static func importFile(
-        at url: URL,
-        loadExisting: @Sendable () async throws -> [LabReport] = { try await HealthKitService.shared.loadStoredReports().reports }
-    ) async throws -> Summary {
+    /// the duplicates once reading works again. A report that can't be saved doesn't stop the rest; the
+    /// summary counts it. `store` is Apple Health, except in tests.
+    static func importFile(at url: URL, store: any ReportDocumentStore = HealthKitService.shared) async throws -> Summary {
         let accessing = url.startAccessingSecurityScopedResource()
         defer { if accessing { url.stopAccessingSecurityScopedResource() } }
         // Reported below as a file that can't be read.
@@ -104,22 +104,15 @@ enum ReportTransferService {
         }
         let existing: [LabReport]
         do {
-            existing = try await loadExisting()
+            existing = try await store.loadStoredReports().reports
         } catch {
             throw Failure.savedReportsUnreadable
         }
         let plan = try plan(contents: contents, existing: existing)
-        let exporter = CDAExportService()
-        for report in plan.reports {
-            let xml = exporter.generateCDA(
-                labValues: report.asLabValues, date: report.date,
-                patientName: report.patientName, authorName: report.authorName
-            )
-            try await HealthKitService.shared.importCDADocument(xml, date: report.date)
-        }
+        let notSaved = await ReportWriter(store: store).saveNew(plan.reports)
         return Summary(
-            imported: plan.reports.count, alreadyPresent: plan.alreadyPresent,
-            needingNewerVersion: plan.needingNewerVersion, damaged: plan.damaged
+            imported: plan.reports.count - notSaved, alreadyPresent: plan.alreadyPresent,
+            needingNewerVersion: plan.needingNewerVersion, damaged: plan.damaged, notSaved: notSaved
         )
     }
 }

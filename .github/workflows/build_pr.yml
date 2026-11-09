@@ -29,11 +29,19 @@ jobs:
           distribution: temurin
           java-version: "21"
 
+      # SwiftLint 0.63.2, like lint.yml's image and the SessionStart hook, never whatever brew
+      # has today: the release's own macOS binary, checked against its SHA-256 (the digest
+      # GitHub lists for the release asset).
+      - name: Install SwiftLint 0.63.2
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/swiftlint.zip" https://github.com/realm/SwiftLint/releases/download/0.63.2/portable_swiftlint.zip
+          echo "c59a405c85f95b92ced677a500804e081596a4cae4a6a485af76065557d6ed29  $RUNNER_TEMP/swiftlint.zip" | shasum -a 256 -c -
+          unzip -o -q "$RUNNER_TEMP/swiftlint.zip" -d "$RUNNER_TEMP/swiftlint"
+          echo "$RUNNER_TEMP/swiftlint" >> "$GITHUB_PATH"
+
       - name: SwiftLint
         run: |
-          if ! command -v swiftlint &>/dev/null; then
-            brew install swiftlint
-          fi
+          test "$(swiftlint version)" = "0.63.2"
           swiftlint lint --strict --reporter github-actions-logging
 
       # Simulator SDK + code signing disabled: confirms the branch compiles and

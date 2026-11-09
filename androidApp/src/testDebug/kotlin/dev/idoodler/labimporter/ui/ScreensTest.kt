@@ -1,5 +1,6 @@
 package dev.idoodler.labimporter.ui
 
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -57,6 +58,7 @@ import dev.idoodler.labimporter.export.PdfOptions
 import dev.idoodler.labimporter.ui.export.PdfExportScreen
 import dev.idoodler.labimporter.ui.components.formatDate
 import dev.idoodler.labimporter.ui.history.HistoryScreen
+import dev.idoodler.labimporter.ui.history.ReportDetailScreen
 import dev.idoodler.labimporter.ui.loinc.LoincCatalogScreen
 import dev.idoodler.labimporter.ui.loinc.LoincTermScreen
 import dev.idoodler.labimporter.ui.preview.PreviewSamples
@@ -105,9 +107,30 @@ class ScreensTest {
     @Test
     fun reviewSavesUniqueExportableValues() {
         var saved = 0
-        review(listOf(value("a", "2160-0", 0.8), value("b", "KREA", 1.0)), onSave = { saved++ })
+        review(listOf(value("a", "2160-0", 0.8), value("c", "2345-7", 92.0)), onSave = { saved++ })
         compose.onAllNodesWithText(string(R.string.save)).onFirst().assertIsEnabled().performClick()
         assertEquals(1, saved)
+    }
+
+    @Test
+    fun aValueSavingLeavesOutIsSaidBeforeSaving() {
+        var saved = 0
+        review(listOf(value("a", "2160-0", 0.8), value("b", "KREA", 1.0)), onSave = { saved++ })
+        compose.onAllNodesWithText(string(R.string.save)).onFirst().performClick()
+        assertEquals(0, saved)
+        compose.onNodeWithText("KREA 1.0 mg/dl").assertIsDisplayed()
+        compose.onNodeWithText(string(R.string.save_anyway)).performClick()
+        assertEquals(1, saved)
+    }
+
+    /** "Duplicate: 2160-0" said nothing: the chip names the test, with its code below where it's chosen. */
+    @Test
+    fun theCodeChipsNameTheTest() {
+        review(listOf(value("a", "2160-0", 0.8), value("b", "2160-0", 0.9)))
+        val duplicate = app.getString(R.string.loinc_duplicate, "Creatinine")
+        assertEquals(2, compose.onAllNodesWithText(duplicate, useUnmergedTree = true).fetchSemanticsNodes().size)
+        compose.onAllNodesWithText("Duplicate: 2160-0", substring = true, useUnmergedTree = true).assertCountEquals(0)
+        assertEquals(2, compose.onAllNodesWithText("LOINC 2160-0", useUnmergedTree = true).fetchSemanticsNodes().size)
     }
 
     @Test
@@ -283,6 +306,34 @@ class ScreensTest {
         compose.onNodeWithText(app.resources.getQuantityString(R.plurals.delete_reports_message, 3, 3)).assertIsDisplayed()
         compose.onAllNodesWithText(string(R.string.delete)).onLast().performClick()
         assertEquals(setOf("r1", "r2", "r3"), deleted.last())
+    }
+
+    @Test
+    fun aReportWithValuesThisBuildCanNotShowIsReadOnly() {
+        var edits = 0
+        var deletes = 0
+        val report = PreviewSamples.readOnlyReport
+        compose.setContent { LabImporterTheme { ReportDetailScreen(report, {}, { edits++ }, { deletes++ }, { Uri.EMPTY }) } }
+
+        // No way into editing, and the screen says why.
+        compose.onAllNodesWithContentDescription(string(R.string.edit)).assertCountEquals(0)
+        compose.onNodeWithText(string(R.string.report_read_only_title)).assertIsDisplayed()
+        compose.onNodeWithText(app.getString(R.string.report_read_only_message, 2)).assertIsDisplayed()
+        // Deleting still works, after a confirmation that names what goes with it unseen.
+        compose.onNodeWithContentDescription(string(R.string.delete)).performClick()
+        compose.onNodeWithText(string(R.string.delete_report_message) + "\n\n" + app.getString(R.string.delete_unread_values, 2)).assertIsDisplayed()
+        compose.onAllNodesWithText(string(R.string.delete)).onLast().performClick()
+        assertEquals(0, edits)
+        assertEquals(1, deletes)
+    }
+
+    @Test
+    fun aReportThatCanBeReadInFullCanBeEdited() {
+        compose.setContent { LabImporterTheme { ReportDetailScreen(PreviewSamples.reports[0], {}, {}, {}, { Uri.EMPTY }) } }
+        compose.onNodeWithContentDescription(string(R.string.edit)).assertIsDisplayed()
+        compose.onAllNodesWithText(string(R.string.report_read_only_title)).assertCountEquals(0)
+        compose.onNodeWithContentDescription(string(R.string.delete)).performClick()
+        compose.onNodeWithText(string(R.string.delete_report_message)).assertIsDisplayed()
     }
 
     @Test

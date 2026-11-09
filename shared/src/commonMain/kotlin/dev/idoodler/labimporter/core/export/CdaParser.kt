@@ -21,7 +21,9 @@ import kotlin.uuid.Uuid
  *  - the report date is the first `effectiveTime` in the document;
  *  - an observation needs a LOINC code, a display name and either a `PQ`
  *    value with a unit or an `ST` qualitative result (whose text carries the
- *    unit, see [QualitativeResult]) — older builds skip `ST` observations;
+ *    unit, see [QualitativeResult]). An observation this build can't read in full
+ *    (another value type, a damaged one) isn't dropped silently: it's counted in
+ *    [LabReport.unreadValues], which makes the report read-only;
  *  - the `Unknown` patient / `LabImporter` organisation placeholders are ignored.
  */
 object CdaParser {
@@ -60,7 +62,7 @@ object CdaParser {
                 unit = unit,
             )
         }
-        val report = LabReport(id, date, state.patientFamily, state.authorOrg, entries)
+        val report = LabReport(id, date, state.patientFamily, state.authorOrg, entries, unreadValues = state.unreadObservations)
         return ReportSchema.upgrade(report, state.schemaVersion)
     }
 
@@ -95,6 +97,8 @@ object CdaParser {
         var authorOrg = ""
         var schemaVersion: Int? = null
         val observations = mutableListOf<Observation>()
+        // Observations seen that didn't become an [Observation].
+        var unreadObservations = 0
         val elementStack = mutableListOf<String>()
         val text = StringBuilder()
         var inObservation = false
@@ -185,6 +189,8 @@ object CdaParser {
                     s.observations += Observation(loinc, display, value, unit, null)
                 } else if (loinc != null && display != null && text != null) {
                     s.observations += Observation(loinc, display, null, "", text)
+                } else {
+                    s.unreadObservations++
                 }
                 s.inObservation = false
             }

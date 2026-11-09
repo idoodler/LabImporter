@@ -17,6 +17,9 @@ enum class ReplaceOutcome {
     SAVED_WITH_LEFTOVERS,
 }
 
+/** A report with values this build can't read can't be replaced: the new version would lose them. */
+class ReadOnlyReportException(val unreadValues: Int) : Exception("The report has values this version can't read: $unreadValues")
+
 /** Why the reports on screen may not be all there are. Each has its own way out; only the first is helped by trying again. */
 enum class ReportsLoadProblem {
     /** Reading the store failed. */
@@ -178,8 +181,11 @@ class ReportRepository(
     /**
      * Replaces [old] with [updated] (edit flow: same id, rewritten entries). The new version
      * is saved first, so a failed save — which throws — or a process death leaves the old one.
+     * A read-only [old] (values this build can't read, see [LabReport.isReadOnly]) is refused with
+     * [ReadOnlyReportException]: the new version would drop them.
      */
     suspend fun replace(old: LabReport, updated: LabReport): ReplaceOutcome {
+        if (old.isReadOnly) throw ReadOnlyReportException(old.unreadValues)
         val target = store()
         val waiting = target === healthConnect && local.loadReports().any { it.id == old.id }
         val removed = if (waiting) {

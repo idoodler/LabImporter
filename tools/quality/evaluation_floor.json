@@ -1,12 +1,28 @@
 {
-  "_comment": "CI's floor for the evaluation replay (quality.yml): the committed replies replay deterministically, so these are today's numbers and any change to the shared post-processing that reads them worse fails. Raise them when a change reads better; lower one only with the reason in the pull request.",
-  "valuesCorrect": {"min": 76},
-  "extraNumbers": {"max": 1},
-  "loincRight": {"min": 62},
+  "_comment": "CI's floor for the evaluation replay (quality.yml): the committed replies replay deterministically, so these are today's numbers and any change to the shared post-processing that reads them worse fails. Raise them when a change reads better; lower one only with the reason in the pull request. Units match exactly after clinical normalisation since 2026-11-09 (a cut-off unit no longer counts), which read LDL's 'mg/dL (calc)' as wrong: 75 values, 61 LOINC, 2 extra numbers, 1 wrong value not flagged. The planted* numbers are the errors planted in the right readings (evaluation/.../PlantedErrors.kt): the set mustn't shrink, and no more may slip through, in total and of each kind (plantedByKind: planted at least, notFlagged = planted - flagged at most), so one kind reading worse can't hide behind another reading better.",
+  "valuesCorrect": {"min": 75},
+  "extraNumbers": {"max": 2},
+  "loincRight": {"min": 61},
   "textKept": {"min": 14},
   "datesRight": {"min": 7},
   "datesWrong": {"max": 0},
   "invalidReplies": {"max": 0},
-  "wrongValuesNotFlagged": {"max": 0},
-  "falseFlags": {"max": 0}
+  "wrongValuesNotFlagged": {"max": 1},
+  "falseFlags": {"max": 0},
+  "plantedErrors": {"min": 464},
+  "plantedNotFlagged": {"max": 85},
+  "plantedControls": {"min": 196},
+  "plantedFalseFlags": {"max": 0},
+  "plantedByKind": {
+    "TENFOLD": {"planted": {"min": 75}, "notFlagged": {"max": 0}},
+    "TENTH": {"planted": {"min": 75}, "notFlagged": {"max": 0}},
+    "DIGIT_DROPPED": {"planted": {"min": 73}, "notFlagged": {"max": 1}},
+    "DIGIT_DOUBLED": {"planted": {"min": 75}, "notFlagged": {"max": 0}},
+    "NEIGHBOUR": {"planted": {"min": 72}, "notFlagged": {"max": 10}},
+    "QUALIFIER_DROPPED": {"planted": {"min": 3}, "notFlagged": {"max": 1}},
+    "WRONG_UNIT": {"planted": {"min": 73}, "notFlagged": {"max": 72}},
+    "DATE_DAY": {"planted": {"min": 7}, "notFlagged": {"max": 0}},
+    "DATE_YEAR": {"planted": {"min": 7}, "notFlagged": {"max": 0}},
+    "DATE_SWAPPED": {"planted": {"min": 4}, "notFlagged": {"max": 1}}
+  }
 }

@@ -105,6 +105,7 @@ internal val qualityScreens: List<QualityScreen> = listOf(
     },
     QualityScreen("reports-newer") { HistoryScreen(emptyList(), {}, notices = { NewerVersionReportsCard(2) }) },
     QualityScreen("report-detail") { ReportDetailScreen(PreviewSamples.reports[0], {}, {}, {}, { Uri.EMPTY }) },
+    QualityScreen("report-detail-read-only") { ReportDetailScreen(PreviewSamples.readOnlyReport, {}, {}, {}, { Uri.EMPTY }) },
     QualityScreen("review") { review(PreviewSamples.reviewValues)() },
     QualityScreen("review-errors") { review(reviewWithErrors)() },
     QualityScreen("review-stand-in") { review(PreviewSamples.reviewValues, AiEngine.DEVELOPMENT_STAND_IN)() },

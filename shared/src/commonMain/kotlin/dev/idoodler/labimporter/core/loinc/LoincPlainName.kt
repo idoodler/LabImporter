@@ -52,6 +52,7 @@ internal object LoincPlainName {
         if (language == "en") name = name.split(' ').filterNot { it in SCALES_THE_RESULT_STATES }.joinToString(" ")
         if (usual) WORDED_SPECIMENS[language]?.let { name = withoutWordedSpecimen(name, it) }
         if (language == "en" && !usual) name = withSpecimenSpelledOut(name)
+        if (language == "en") name = withMethodSpelledOut(name)
         val names = property.isNotEmpty() && (keepsProperty || (!usual && !printsSpecimen))
         return if (names && !name.contains(property, ignoreCase = true)) "$name ($property)" else name
     }
@@ -116,6 +117,29 @@ internal object LoincPlainName {
         if (group < 0) return name
         val spelled = SPECIMEN_WORD.replace(name.substring(group + 1, name.length - 1)) { ENGLISH_SPECIMEN_WORDS[it.value] ?: it.value }
         return "${name.substring(0, group)}($spelled)"
+    }
+
+    /**
+     * "Cholesterol in LDL Calc" → "Cholesterol in LDL (calculated)", "RBC Auto (urine)" → "RBC (urine,
+     * automated)": the method stays (a calculation isn't the measurement), in words. English only:
+     * the other catalogs spell theirs out. Only the abbreviations common in lab panels.
+     */
+    private fun withMethodSpelledOut(name: String): String {
+        val group = trailingGroupStart(name)
+        val head = if (group >= 0) name.substring(0, group).trimEnd() else name
+        val methods = mutableListOf<String>()
+        val rest = head.split(' ').mapNotNull { word ->
+            // "IA.rapid" is one method; in "IA.DDU" the unit after the method stays.
+            val method = ENGLISH_METHOD_WORDS[word] ?: ENGLISH_METHOD_WORDS[word.substringBefore('.')].takeIf { '.' in word }
+            when {
+                method == null -> word
+                word in ENGLISH_METHOD_WORDS -> null.also { methods += method }
+                else -> word.substringAfter('.').also { methods += method }
+            }
+        }.joinToString(" ")
+        if (methods.isEmpty() || rest.isBlank()) return name
+        val details = listOfNotNull(if (group >= 0) name.substring(group + 1, name.length - 1) else null) + methods
+        return "$rest (${details.joinToString(", ")})"
     }
 
     /** Index of the "(" matching a final ")", or -1. */
@@ -238,6 +262,11 @@ internal object LoincPlainName {
     private val PORTUGUESE_PROPERTY_SUFFIX = Regex("-(?:(?:m|s|a|c|n|ms|v|Ln)?(?:Cnc|Cnt|Rto|Rate)|Imp|Titr)$")
     private val PORTUGUESE_PROPERTY_TOKENS = setOf("#", "MFr", "NFr", "SFr", "VFr", "Titr")
     private val PORTUGUESE_SPECIMEN_TOKENS = setOf("SerPl", "Ser", "Sg", "SgTotal", "Plas", "Soro", "Soro/Plas", "Soro/Plas/Sg")
+
+    /** The method abbreviations of LOINC's English display names that common panels print, spelled out. */
+    private val ENGLISH_METHOD_WORDS = mapOf(
+        "Calc" to "calculated", "Auto" to "automated", "IA" to "immunoassay", "IA.rapid" to "rapid immunoassay",
+    )
 
     /** The abbreviations LOINC's English display names use for specimens. */
     private val ENGLISH_SPECIMEN_WORDS = mapOf(

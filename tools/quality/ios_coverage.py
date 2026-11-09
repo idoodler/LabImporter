@@ -12,6 +12,20 @@ import collections
 import json
 import subprocess
 import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+
+
+def folder_of(path: str, root: Path = ROOT) -> str:
+    """The folder a source file is counted under: its directory relative to the repository root,
+    two levels deep ("LabImporter/Views", "LabImporterShare"). Splitting the absolute path on a
+    folder name went wrong whenever the checkout itself sits under a folder of that name."""
+    try:
+        parts = Path(path).resolve().relative_to(root.resolve()).parts[:-1]
+    except ValueError:
+        return "(outside the repository)"
+    return "/".join(parts[:2]) or "."
 
 
 def main() -> None:
@@ -27,9 +41,7 @@ def main() -> None:
             continue
         folders: dict = collections.defaultdict(lambda: [0, 0])
         for file in target["files"]:
-            # The path may sit in a worktree that itself lives under a LabImporter folder.
-            parts = file["path"].rsplit("/LabImporter/", 1)[-1].split("/")
-            folder = "/".join(parts[:2]) if len(parts) > 2 else parts[0]
+            folder = folder_of(file["path"])
             folders[folder][0] += file["coveredLines"]
             folders[folder][1] += file["executableLines"]
         summary[name] = {

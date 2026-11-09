@@ -203,6 +203,14 @@ struct ReviewHeaderCard: View {
     let groups: [CategoryCount]
     let dominantColor: Color
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    private var chips: some View {
+        ForEach(groups) { group in
+            CategoryChip(category: group.category, count: group.count)
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 12) {
@@ -233,14 +241,16 @@ struct ReviewHeaderCard: View {
             }
 
             if groups.count > 1 {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(groups) { group in
-                            CategoryChip(category: group.category, count: group.count)
-                        }
+                if dynamicTypeSize.isAccessibilitySize {
+                    // One line held a chip and a half at the largest text ("Ho…"): they wrap instead.
+                    FlowLayout(spacing: 8) { chips }
+                } else {
+                    // One scrolling line, however many categories: the values must start on the first screen.
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) { chips }
                     }
+                    .edgeFadeScroll()
                 }
-                .edgeFadeScroll()
             }
 
             if duplicateCount > 0 {
@@ -309,73 +319,6 @@ struct CategoryChip: View {
         .overlay(
             Capsule().stroke(category.color.opacity(0.25), lineWidth: 0.5)
         )
-        .accessibilityElement(children: .combine)
-    }
-}
-
-/// Section listing values that carry no LOINC code and therefore can't be saved
-/// to Apple Health. Shown at the bottom of the review screen so the user can
-/// still see (and remove) what was parsed but won't be exported.
-struct UnsupportedValuesSection: View {
-    let values: [LabValue]
-    let onDelete: (LabValue) -> Void
-
-    var body: some View {
-        Section {
-            ForEach(values) { value in
-                row(value)
-                    .padding(.vertical, 2)
-                    .listRowBackground(Rectangle().fill(.ultraThinMaterial))
-                    .swipeActions(edge: .trailing) {
-                        Button(role: .destructive) {
-                            onDelete(value)
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                    }
-            }
-        } header: {
-            HStack(spacing: 8) {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .font(.caption)
-                    .foregroundStyle(.statusWarning)
-                Text("Not supported for export")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.primary)
-            }
-            .textCase(nil)
-        } footer: {
-            Text("These values don't have a LOINC code and won't be saved to Apple Health.")
-        }
-    }
-
-    private func row(_ value: LabValue) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: "doc.badge.minus")
-                .font(.body)
-                .foregroundStyle(.textTertiary)
-                .frame(width: 22)
-                .accessibilityHidden(true)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(value.resolvedName).font(.body)
-                Text(value.code)
-                    .font(.caption2)
-                    .foregroundStyle(.textTertiary)
-                    .textCase(.uppercase)
-            }
-            Spacer()
-            HStack(spacing: 6) {
-                Text(value.displayValue)
-                    .font(.body.monospacedDigit())
-                    .foregroundStyle(.textSecondary)
-                if !value.unit.isEmpty {
-                    Text(value.unit)
-                        .font(.caption)
-                        .foregroundStyle(.textSecondary)
-                }
-            }
-        }
         .accessibilityElement(children: .combine)
     }
 }
@@ -467,21 +410,23 @@ struct CategorySectionHeader: View {
     .padding()
     .background(Color(.systemGroupedBackground))
 }
-#endif
 
-#Preview("Unsupported Values") {
-    List {
-        UnsupportedValuesSection(
-            values: [
-                LabValue(code: "CRP-X", name: "C-Reactive Protein",
-                         displayValue: "3.1", numericValue: 3.1, unit: "mg/L"),
-                LabValue(code: "FOO", name: "Unknown Marker",
-                         displayValue: "1.2", numericValue: 1.2, unit: ""),
-            ],
-            onDelete: { _ in }
+// The largest text: the chips wrap rather than cut off at the card's edge.
+#Preview("Header Card – Largest Text") {
+    ScrollView {
+        ReviewHeaderCard(
+            supportedCount: 8,
+            exportableCount: 8,
+            valuesToCheck: 1,
+            groups: CategoryCount.sampleGroups,
+            dominantColor: LabCategory.glycemic.color
         )
+        .padding()
     }
+    .background(Color(.systemGroupedBackground))
+    .dynamicTypeSize(.accessibility5)
 }
+#endif
 
 #if DEBUG
 #Preview("Category Chips") {

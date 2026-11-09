@@ -68,6 +68,9 @@
     <string name="share_cda">Partajează fișierul raportului</string>
     <string name="delete_report_title">Ștergi raportul?</string>
     <string name="delete_report_message">Acest raport va fi eliminat definitiv.</string>
+    <string name="delete_unread_values">Vor fi șterse și valorile pe care această versiune LabImporter nu le poate afișa: %1$d.</string>
+    <string name="report_read_only_title">Nu poate fi editat</string>
+    <string name="report_read_only_message">Acest raport are valori pe care această versiune LabImporter nu le poate afișa: %1$d. Ca să nu se piardă, nu poate fi editat. Actualizarea LabImporter le-ar putea afișa.</string>
     <string name="report_deleted">Raport șters</string>
     <string name="patient_label">Pacient: %1$s</string>
     <plurals name="value_count">
@@ -157,6 +160,11 @@
     <string name="search_loinc">Caută analize de laborator</string>
     <string name="loinc_suggested">Sugestie: %1$s</string>
     <string name="loinc_duplicate">Duplicat: %1$s</string>
+    <string name="save_check_title">Verifică înainte de salvare</string>
+    <string name="save_check_compare">Compară-le cu raportul tău:</string>
+    <string name="save_check_left_out">Acestea nu au cod LOINC și nu vor fi salvate:</string>
+    <string name="save_anyway">Salvează oricum</string>
+    <string name="go_back">Înapoi</string>
     <string name="compare_with_report">Compară cu raportul</string>
     <string name="compare_with_report_detail">Această valoare nu a fost găsită în textul raportului. Compar-o cu raportul tău.</string>
     <plurals name="values_to_check">
@@ -305,7 +313,6 @@
     <string name="pdf_all_time">Tot intervalul</string>
     <string name="pdf_generated">Generat %1$s</string>
     <string name="pdf_page_of">Pagina %1$d din %2$d</string>
-    <string name="pdf_author">Autor</string>
     <string name="pdf_period_covered">Perioada acoperită</string>
     <string name="pdf_metrics">Parametri</string>
     <string name="pdf_out_of_range">În afara intervalului</string>

@@ -241,14 +241,18 @@ struct SettingsView: View {
     private func importReports(from url: URL) async {
         do {
             let summary = try await ReportTransferService.importFile(at: url)
-            var message = String(localized: "New reports: \(summary.imported) · Already present: \(summary.alreadyPresent)")
+            var message = summary.notSaved > 0
+                ? String(localized: "New reports: \(summary.imported) · Already present: \(summary.alreadyPresent) · Not saved: \(summary.notSaved)")
+                : String(localized: "New reports: \(summary.imported) · Already present: \(summary.alreadyPresent)")
             if summary.needingNewerVersion > 0 {
                 message += " " + String(localized: "Reports in this file that need a newer version of LabImporter: \(summary.needingNewerVersion).")
             }
             if summary.damaged > 0 {
                 message += " " + String(localized: "Damaged reports in this file: \(summary.damaged). Only what could be read was imported.")
             }
-            transferResult = TransferResult(title: String(localized: "Reports Imported"), message: message)
+            // Nothing saved is no import, even when the file was read.
+            let title = summary.imported == 0 && summary.notSaved > 0 ? String(localized: "Import Failed") : String(localized: "Reports Imported")
+            transferResult = TransferResult(title: title, message: message)
         } catch {
             transferResult = TransferResult(title: String(localized: "Import Failed"), message: error.localizedDescription)
         }

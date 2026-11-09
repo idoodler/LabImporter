@@ -288,6 +288,62 @@ class ExportTest {
     }
 
     @Test
+    fun aCdaObservationThisBuildCanNotReadMakesTheReportReadOnly() {
+        val xml = CdaExport.generate(values, LocalDate(2026, 5, 6), "LabImporter test", GoldenCda.narrative)
+        val intact = assertNotNull(CdaParser.parse(xml))
+        assertEquals(0, intact.unreadValues)
+        assertFalse(intact.isReadOnly)
+
+        // A later build's value type (here a coded result), written under the same schema version.
+        val coded = editObservations(xml) { index, it ->
+            if (index == 1) it.replace(Regex("<value [^>]*/>"), "<value xsi:type=\"CD\" code=\"260385009\" codeSystem=\"2.16.840.1.113883.6.96\"/>") else it
+        }
+        val report = assertNotNull(CdaParser.parse(coded))
+        assertEquals(listOf("2160-0"), report.entries.map { it.code })
+        assertEquals(1, report.unreadValues, "Seen but not read: counted, not dropped")
+        assertTrue(report.isReadOnly)
+
+        // Damage counts the same way: a number that isn't one, or no LOINC code.
+        val broken = editObservations(xml) { index, it ->
+            when (index) {
+                0 -> it.replace("value=\"0.8\"", "value=\"\"")
+                else -> it.replace("codeSystem=\"2.16.840.1.113883.6.1\"", "codeSystem=\"other\"")
+            }
+        }
+        val empty = assertNotNull(CdaParser.parse(broken))
+        assertEquals(emptyList(), empty.entries)
+        assertEquals(2, empty.unreadValues)
+    }
+
+    @Test
+    fun aFhirValueThisBuildCanNotReadMakesTheReportReadOnlyAndKeepsItsRecordId() {
+        val report = LabReport(
+            "r", LocalDate(2026, 5, 6), "", "",
+            listOf(
+                LabReport.Entry("r-1", "2160-0", "Creatinine", "0.8", 0.8, "mg/dl"),
+                LabReport.Entry("r-2", "2823-3", "Potassium", "4.1", 4.1, "mmol/l"),
+                LabReport.Entry("r-3", "4548-4", "HbA1c", "6.5", 6.5, "%"),
+            ),
+        )
+        val (first, second, third) = FhirLabCodec.encodeForSaving(report, "x").map { it.json }
+        val intact = FhirLabCodec.decodeStored(listOf(first, second, third)).reports.single()
+        assertEquals(0, intact.unreadValues)
+        assertFalse(intact.isReadOnly)
+
+        // A later build's value type in place of the quantity, and a value that lost its date.
+        val coded = Regex("\"valueQuantity\":\\{[^}]*\\}").replace(second, "\"valueCodeableConcept\":{\"text\":\"positive\"}")
+        val undated = third.replace("effectiveDateTime", "lostTheDate")
+        val stored = FhirLabCodec.decodeStored(listOf(first, coded, undated))
+
+        val read = stored.reports.single()
+        assertEquals(listOf("r-1"), read.entries.map { it.id }, "Never a \"-\" entry that a save would then drop")
+        assertEquals(2, read.unreadValues)
+        assertEquals(setOf("r-2", "r-3"), read.unreadRecordIds.toSet(), "So deleting the report removes them too")
+        assertTrue(read.isReadOnly)
+        assertEquals(1, stored.unreadableReports)
+    }
+
+    @Test
     fun theReportDateIsTheDocumentsNotTheLastObservations() {
         val xml = CdaExport.generate(values, LocalDate(2026, 5, 6), "LabImporter test", GoldenCda.narrative)
         val documentDate = "<effectiveTime value=\"20260506\"/>"

@@ -67,6 +67,9 @@
     <string name="share_cda">Κοινή χρήση αρχείου αναφοράς</string>
     <string name="delete_report_title">Διαγραφή αναφοράς;</string>
     <string name="delete_report_message">Αυτή η αναφορά θα αφαιρεθεί οριστικά.</string>
+    <string name="delete_unread_values">Θα διαγραφούν επίσης τιμές που αυτή η έκδοση του LabImporter δεν μπορεί να εμφανίσει: %1$d.</string>
+    <string name="report_read_only_title">Δεν μπορεί να επεξεργαστεί</string>
+    <string name="report_read_only_message">Αυτή η αναφορά έχει τιμές που αυτή η έκδοση του LabImporter δεν μπορεί να εμφανίσει: %1$d. Για να μη χαθούν, δεν μπορεί να επεξεργαστεί. Η ενημέρωση του LabImporter μπορεί να τις εμφανίσει.</string>
     <string name="report_deleted">Η αναφορά διαγράφηκε</string>
     <string name="patient_label">Ασθενής: %1$s</string>
     <plurals name="value_count">
@@ -154,6 +157,11 @@
     <string name="search_loinc">Αναζήτηση εργαστηριακών εξετάσεων</string>
     <string name="loinc_suggested">Πρόταση: %1$s</string>
     <string name="loinc_duplicate">Διπλότυπο: %1$s</string>
+    <string name="save_check_title">Ελέγξτε πριν από την αποθήκευση</string>
+    <string name="save_check_compare">Συγκρίνετέ τες με την αναφορά σας:</string>
+    <string name="save_check_left_out">Αυτές δεν έχουν κωδικό LOINC και δεν θα αποθηκευτούν:</string>
+    <string name="save_anyway">Αποθήκευση ούτως ή άλλως</string>
+    <string name="go_back">Επιστροφή</string>
     <string name="compare_with_report">Συγκρίνετε με την αναφορά</string>
     <string name="compare_with_report_detail">Αυτή η τιμή δεν βρέθηκε στο κείμενο της αναφοράς. Συγκρίνετέ τη με την αναφορά σας.</string>
     <plurals name="values_to_check">
@@ -297,7 +305,6 @@
     <string name="pdf_all_time">Όλο το διάστημα</string>
     <string name="pdf_generated">Δημιουργήθηκε %1$s</string>
     <string name="pdf_page_of">Σελίδα %1$d από %2$d</string>
-    <string name="pdf_author">Συντάκτης</string>
     <string name="pdf_period_covered">Καλυπτόμενη περίοδος</string>
     <string name="pdf_metrics">Παράμετροι</string>
     <string name="pdf_out_of_range">Εκτός εύρους</string>

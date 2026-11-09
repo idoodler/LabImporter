@@ -66,6 +66,9 @@
     <string name="share_cda">レポートファイルを共有</string>
     <string name="delete_report_title">レポートを削除しますか？</string>
     <string name="delete_report_message">このレポートは完全に削除されます。</string>
+    <string name="delete_unread_values">このバージョンのLabImporterでは表示できない値も削除されます：%1$d件。</string>
+    <string name="report_read_only_title">編集できません</string>
+    <string name="report_read_only_message">このレポートには、このバージョンのLabImporterでは表示できない値があります：%1$d件。失われないように、このレポートは編集できません。LabImporterをアップデートすると表示される場合があります。</string>
     <string name="report_deleted">レポートを削除しました</string>
     <string name="patient_label">患者：%1$s</string>
     <plurals name="value_count">
@@ -151,6 +154,11 @@
     <string name="search_loinc">検査項目を検索</string>
     <string name="loinc_suggested">候補：%1$s</string>
     <string name="loinc_duplicate">重複：%1$s</string>
+    <string name="save_check_title">保存する前に確認</string>
+    <string name="save_check_compare">レポートと照合してください:</string>
+    <string name="save_check_left_out">これらにはLOINCコードがないため、保存されません:</string>
+    <string name="save_anyway">このまま保存</string>
+    <string name="go_back">戻る</string>
     <string name="compare_with_report">レポートと照合してください</string>
     <string name="compare_with_report_detail">この値はレポートの本文に見つかりませんでした。レポートと照合してください。</string>
     <plurals name="values_to_check">
@@ -289,7 +297,6 @@
     <string name="pdf_all_time">全期間</string>
     <string name="pdf_generated">作成日 %1$s</string>
     <string name="pdf_page_of">%1$d/%2$dページ</string>
-    <string name="pdf_author">担当医</string>
     <string name="pdf_period_covered">対象期間</string>
     <string name="pdf_metrics">指標</string>
     <string name="pdf_out_of_range">基準範囲外</string>

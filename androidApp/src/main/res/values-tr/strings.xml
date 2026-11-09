@@ -67,6 +67,9 @@
     <string name="share_cda">Rapor Dosyasını Paylaş</string>
     <string name="delete_report_title">Rapor silinsin mi?</string>
     <string name="delete_report_message">Bu rapor kalıcı olarak kaldırılacak.</string>
+    <string name="delete_unread_values">LabImporter\'ın bu sürümünün gösteremediği değerler de silinir: %1$d.</string>
+    <string name="report_read_only_title">Düzenlenemez</string>
+    <string name="report_read_only_message">Bu raporda LabImporter\'ın bu sürümünün gösteremediği değerler var: %1$d. Kaybolmamaları için rapor düzenlenemez. LabImporter\'ı güncellemek bunları gösterebilir.</string>
     <string name="report_deleted">Rapor silindi</string>
     <string name="patient_label">Hasta: %1$s</string>
     <plurals name="value_count">
@@ -154,6 +157,11 @@
     <string name="search_loinc">Laboratuvar testlerini ara</string>
     <string name="loinc_suggested">Öneri: %1$s</string>
     <string name="loinc_duplicate">Yinelenen: %1$s</string>
+    <string name="save_check_title">Kaydetmeden Önce Kontrol Edin</string>
+    <string name="save_check_compare">Bunları raporunuzla karşılaştırın:</string>
+    <string name="save_check_left_out">Bunların LOINC kodu yok ve kaydedilmeyecek:</string>
+    <string name="save_anyway">Yine de Kaydet</string>
+    <string name="go_back">Geri Dön</string>
     <string name="compare_with_report">Raporla karşılaştırın</string>
     <string name="compare_with_report_detail">Bu değer rapor metninde bulunamadı. Raporunuzla karşılaştırın.</string>
     <plurals name="values_to_check">
@@ -297,7 +305,6 @@
     <string name="pdf_all_time">Tüm zamanlar</string>
     <string name="pdf_generated">Oluşturma %1$s</string>
     <string name="pdf_page_of">Sayfa %1$d / %2$d</string>
-    <string name="pdf_author">Yazar</string>
     <string name="pdf_period_covered">Kapsanan Dönem</string>
     <string name="pdf_metrics">Parametreler</string>
     <string name="pdf_out_of_range">Aralık dışı</string>

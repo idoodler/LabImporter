@@ -139,6 +139,11 @@ extension Array where Element == LabValue {
         Int(LabValueKt.valuesToCorrectCount(map(\.shared)))
     }
 
+    /// What Review asks before saving or sharing the report file, or `nil` when nothing is flagged or left out. Shared rule.
+    func saveConfirmation(for action: SaveConfirmation.Action = .save) -> SaveConfirmation? {
+        LabValueKt.saveConfirmation(map(\.shared)).map { SaveConfirmation(shared: $0, action: action) }
+    }
+
     /// Exportable codes (selected, numeric, LOINC-mapped) this save is about to
     /// introduce that Siri hasn't been asked about yet — the set
     /// `NewValuesSiriPromptView` should offer. Empty whenever there's nothing
@@ -150,5 +155,60 @@ extension Array where Element == LabValue {
         return filter { $0.isSelected && $0.numericValue != nil && LabMapping.loincCode(for: $0.code) != nil }
             .filter { !decided.contains($0.code) && seen.insert($0.code).inserted }
             .map { CodeName(code: $0.code, name: $0.resolvedName) }
+    }
+}
+
+/// Review's question before saving: flag, don't block. Values to compare with the report and
+/// selected values without a LOINC code, which saving leaves out (shared `SaveConfirmation`).
+struct SaveConfirmation: Equatable {
+    /// What the question guards. The report file carries and leaves out the same values a save does.
+    enum Action: Equatable {
+        case save, share
+    }
+
+    /// "Glucose 922 mg/dL", for each value the report text doesn't print.
+    let toCheck: [String]
+    /// The same for each selected value saving leaves out.
+    let leftOut: [String]
+    /// The row Go Back scrolls to.
+    let firstID: UUID?
+    let action: Action
+
+    init(shared: LabImporterCore.SaveConfirmation, action: Action = .save) {
+        toCheck = shared.toCheck.map(\.confirmationLine)
+        leftOut = shared.leftOut.map(\.confirmationLine)
+        firstID = UUID(uuidString: shared.firstId)
+        self.action = action
+    }
+
+    var title: String {
+        switch action {
+        case .save: String(localized: "Check Before Saving")
+        case .share: String(localized: "Check Before Sharing")
+        }
+    }
+
+    /// The button that goes ahead.
+    var proceedTitle: String {
+        switch action {
+        case .save: String(localized: "Save Anyway")
+        case .share: String(localized: "Share Anyway")
+        }
+    }
+
+    /// Each list under its heading, one value a line.
+    var message: String {
+        var parts: [String] = []
+        if !toCheck.isEmpty {
+            parts.append(([String(localized: "Compare these with your report:")] + toCheck).joined(separator: "\n"))
+        }
+        if !leftOut.isEmpty {
+            let heading = switch action {
+            case .save: String(localized: "These have no LOINC code and won't be saved:")
+            case .share: String(localized: "These have no LOINC code and won't be shared:")
+            }
+            parts.append(([heading] + leftOut).joined(separator: "\n"))
+        }
+        return parts.joined(separator: "\n\n")
     }
 }

@@ -67,6 +67,9 @@
     <string name="share_cda">Rapportbestand delen</string>
     <string name="delete_report_title">Rapport verwijderen?</string>
     <string name="delete_report_message">Dit rapport wordt definitief verwijderd.</string>
+    <string name="delete_unread_values">Waarden die deze versie van LabImporter niet kan tonen, worden ook verwijderd: %1$d.</string>
+    <string name="report_read_only_title">Kan niet worden bewerkt</string>
+    <string name="report_read_only_message">Dit rapport bevat waarden die deze versie van LabImporter niet kan tonen: %1$d. Zodat ze niet verloren gaan, kan het niet worden bewerkt. Een update van LabImporter kan ze tonen.</string>
     <string name="report_deleted">Rapport verwijderd</string>
     <string name="patient_label">Patiënt: %1$s</string>
     <plurals name="value_count">
@@ -154,6 +157,11 @@
     <string name="search_loinc">Labtests zoeken</string>
     <string name="loinc_suggested">Voorstel: %1$s</string>
     <string name="loinc_duplicate">Dubbel: %1$s</string>
+    <string name="save_check_title">Controleer voor het bewaren</string>
+    <string name="save_check_compare">Vergelijk ze met je rapport:</string>
+    <string name="save_check_left_out">Deze hebben geen LOINC-code en worden niet bewaard:</string>
+    <string name="save_anyway">Toch bewaren</string>
+    <string name="go_back">Ga terug</string>
     <string name="compare_with_report">Vergelijk met rapport</string>
     <string name="compare_with_report_detail">Deze waarde is niet gevonden in de tekst van het rapport. Vergelijk hem met je rapport.</string>
     <plurals name="values_to_check">
@@ -297,7 +305,6 @@
     <string name="pdf_all_time">Alle tijd</string>
     <string name="pdf_generated">Gegenereerd %1$s</string>
     <string name="pdf_page_of">Pagina %1$d van %2$d</string>
-    <string name="pdf_author">Auteur</string>
     <string name="pdf_period_covered">Gedekte periode</string>
     <string name="pdf_metrics">Parameters</string>
     <string name="pdf_out_of_range">Buiten bereik</string>

@@ -67,6 +67,9 @@
     <string name="share_cda">Jaa raporttitiedosto</string>
     <string name="delete_report_title">Poistetaanko raportti?</string>
     <string name="delete_report_message">Tämä raportti poistetaan pysyvästi.</string>
+    <string name="delete_unread_values">Myös arvot, joita tämä LabImporterin versio ei voi näyttää, poistetaan: %1$d.</string>
+    <string name="report_read_only_title">Ei muokattavissa</string>
+    <string name="report_read_only_message">Tässä raportissa on arvoja, joita tämä LabImporterin versio ei voi näyttää: %1$d. Jotta ne eivät katoa, raporttia ei voi muokata. LabImporterin päivitys voi näyttää ne.</string>
     <string name="report_deleted">Raportti poistettu</string>
     <string name="patient_label">Potilas: %1$s</string>
     <plurals name="value_count">
@@ -154,6 +157,11 @@
     <string name="search_loinc">Hae laboratoriokokeita</string>
     <string name="loinc_suggested">Ehdotus: %1$s</string>
     <string name="loinc_duplicate">Kaksoiskappale: %1$s</string>
+    <string name="save_check_title">Tarkista ennen tallentamista</string>
+    <string name="save_check_compare">Vertaa näitä raporttiisi:</string>
+    <string name="save_check_left_out">Näillä ei ole LOINC-koodia, eikä niitä tallenneta:</string>
+    <string name="save_anyway">Tallenna silti</string>
+    <string name="go_back">Palaa</string>
     <string name="compare_with_report">Vertaa raporttiin</string>
     <string name="compare_with_report_detail">Tätä arvoa ei löytynyt raportin tekstistä. Vertaa sitä raporttiisi.</string>
     <plurals name="values_to_check">
@@ -297,7 +305,6 @@
     <string name="pdf_all_time">Koko ajalta</string>
     <string name="pdf_generated">Luotu %1$s</string>
     <string name="pdf_page_of">Sivu %1$d/%2$d</string>
-    <string name="pdf_author">Tekijä</string>
     <string name="pdf_period_covered">Kattaa ajanjakson</string>
     <string name="pdf_metrics">Parametrit</string>
     <string name="pdf_out_of_range">Viiterajojen ulkopuolella</string>

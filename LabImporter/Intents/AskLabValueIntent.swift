@@ -13,6 +13,10 @@ struct AskLabValueIntent: AppIntent {
         "Reads back your most recent reading for a value you've allowed to be accessed this way."
     )
 
+    /// A lab value is never spoken from a locked phone: Siri asks to unlock it first. (HealthKit's
+    /// store is also closed while locked, which would read as "no reading yet".)
+    static let authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
+
     @Parameter(title: "Lab Value")
     var metric: LabMetricEntity
 

@@ -79,8 +79,21 @@ enum ScreenshotMode {
     /// `--ss-no-date`: the stand-in model finds no date in the report.
     static var readsNoDate: Bool { CommandLine.arguments.contains("--ss-no-date") }
 
+    /// `--ss-unknown-test`: the report also prints a test the LOINC catalog doesn't know.
+    static var readsUnknownTest: Bool { CommandLine.arguments.contains("--ss-unknown-test") }
+
     /// The stand-in model `LabParserService` reads with in screenshot mode.
     static var partReader: LabParserService.PartReader? { isActive ? StandInReport.read : nil }
+
+    /// Where Review saves in screenshot mode: nowhere, successfully. A UI test can't grant Apple Health
+    /// access, and what it checks is that Save went through Review's confirmation to the writer.
+    static var reportStore: (any ReportDocumentStore)? { isActive ? DiscardingReportStore() : nil }
+
+    private struct DiscardingReportStore: ReportDocumentStore {
+        func importCDADocument(_ xmlString: String, date: Date) async throws {}
+        func deleteCDADocument(id: UUID) async throws {}
+        func loadStoredReports() async throws -> StoredReports { StoredReports() }
+    }
 
     private static func value(after flag: String) -> String? {
         guard let index = CommandLine.arguments.firstIndex(of: flag),
@@ -96,5 +109,6 @@ enum ScreenshotMode {
     static let showsUnsupportedDevice = false
     static let opensSheetsInFull = false
     static let colorScheme: ColorScheme? = nil
+    static let reportStore: (any ReportDocumentStore)? = nil
 }
 #endif

@@ -45,3 +45,46 @@ enum Fixtures {
             )
     }
 }
+
+/// A write or read that the test made fail.
+struct InjectedFault: Error {}
+
+/// Apple Health as the report flows use it, over the real CDA export and the shared parser:
+/// documents are the XML the app writes, read back as `HealthKitService` reads them. Any
+/// write, and the read, can be made to fail.
+actor FakeHealthStore: ReportDocumentStore {
+    private(set) var documents: [(id: UUID, xml: String)] = []
+    private(set) var saveAttempts = 0
+    /// Which save attempts fail, counting from 1.
+    private var failingSaves: Set<Int> = []
+    private var failDeletes = false
+    private var failLoads = false
+
+    func failSaves(_ attempts: Set<Int>) { failingSaves = attempts }
+    func failEverySave() { failingSaves = Set(1...1_000) }
+    func failDeletes(_ fail: Bool = true) { failDeletes = fail }
+    func failLoads(_ fail: Bool = true) { failLoads = fail }
+
+    /// Stores a document as it is, the way another version of the app may have written it.
+    func store(_ xml: String) -> UUID {
+        let id = UUID()
+        documents.append((id, xml))
+        return id
+    }
+
+    func importCDADocument(_ xmlString: String, date: Date) async throws {
+        saveAttempts += 1
+        if failingSaves.contains(saveAttempts) { throw InjectedFault() }
+        documents.append((UUID(), xmlString))
+    }
+
+    func deleteCDADocument(id: UUID) async throws {
+        if failDeletes { throw InjectedFault() }
+        documents.removeAll { $0.id == id }
+    }
+
+    func loadStoredReports() async throws -> StoredReports {
+        if failLoads { throw InjectedFault() }
+        return HealthKitService.storedReports(fromDocuments: documents.map { (data: Data($0.xml.utf8), id: $0.id) })
+    }
+}

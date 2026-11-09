@@ -258,8 +258,9 @@ fun TrendScreen(
                 }
                 term?.let { term ->
                     item(key = "about") {
-                        // The value's LOINC description, opening the full details (iOS ValueDescriptionCard).
-                        val description = term.description?.takeIf { it.isNotBlank() } ?: term.englishName.takeIf { it != term.name }
+                        // The full catalog label in the app's language, opening the full details (iOS ValueDescriptionCard).
+                        // LOINC's description is terse syntax ("Calcidiol in Ser/Plas (MCnc)").
+                        val label = term.name
                         Spacer(Modifier.height(12.dp))
                         GroupedListItem(
                             0, 1,
@@ -267,7 +268,7 @@ fun TrendScreen(
                             headline = { Text(stringResource(R.string.about_this_value), fontWeight = FontWeight.SemiBold) },
                             supporting = {
                                 Column {
-                                    description?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
+                                    Text(label, style = MaterialTheme.typography.bodyMedium)
                                     Text(
                                         "LOINC $code", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline,
                                         modifier = Modifier.padding(top = 4.dp),

@@ -97,7 +97,10 @@ struct QualityScreen: Sendable {
         app.launch()
         XCTAssertTrue(app.wait(for: .runningForeground, timeout: 30), name)
         if name == "review-planted-errors" {
-            XCTAssertTrue(app.datePickers.firstMatch.waitForExistence(timeout: 60), "The report is read")
+            // The header's count of values to check, at the top at every text size: at the largest, the
+            // wrapped category chips push the date row off the first screen, and a list only builds what it shows.
+            let read = app.descendants(matching: .any)["review-values-to-check"].firstMatch
+            XCTAssertTrue(read.waitForExistence(timeout: 60), "The report is read")
         }
         if tapping == nil {
             XCTAssertTrue(shows.element(in: app, language: language).waitForExistence(timeout: 30), "\(name) shows \(shows.label)")

@@ -3,13 +3,18 @@ run-name: Quality gates (${{ github.ref_name }})
 
 # The gates of docs/quality/RUBRIC.md that hold today, so they can't erode
 # unnoticed: tools/quality/static_metrics.py --gate, and the evaluation replay
-# above its floor (tools/quality/evaluation_floor.json). Coverage is reported as
-# an artifact, never gated (RUBRIC.md: it's for orientation). No secrets needed.
+# (with its planted errors) above its floor (tools/quality/evaluation_floor.json).
+# Mutation testing runs weekly ("Scheduled" in RUBRIC.md) and on demand. Coverage
+# is reported as an artifact, never gated (RUBRIC.md: it's for orientation). No
+# secrets needed.
 on:
   pull_request:
     branches:
       - main
   workflow_dispatch:
+  schedule:
+    # Mondays at 05:00 UTC: PIT mutation testing of shared/ (the mutation job).
+    - cron: "0 5 * * 1"
 
 permissions:
   contents: read
@@ -17,21 +22,34 @@ permissions:
 jobs:
   static:
     name: Static gates
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
 
+      # The base branch's accessibility exemption baseline, which this branch may only lower.
+      - name: Fetch the base branch
+        if: github.event_name == 'pull_request'
+        run: git fetch --no-tags --depth=1 origin "${{ github.base_ref }}"
+
       # Fails on: a swallowed error in a storage path without a stated reason, a
       # missing translation, an iOS network API, a missing or wrong privacy
       # manifest (an API its bundle's sources call left undeclared), a function over complexity 15 or 100 lines that isn't in
       # tools/quality/complexity_allowlist.txt, a SwiftUI view file without previews,
-      # an action or container image not pinned to a commit SHA or digest.
+      # an action or container image not pinned to a commit SHA or digest, and an iOS
+      # accessibility audit exemption tools/quality/accessibility_exemptions_baseline.json
+      # doesn't list as is (a baseline that may only go down: none added or widened compared
+      # with the base branch's). First the
+      # scripts' own tests: a gate that measures the wrong thing passes for the wrong reason.
       - name: Static gates
         run: |
           python3 -m venv build/quality/venv
           build/quality/venv/bin/pip install --quiet -r tools/quality/requirements.txt
-          build/quality/venv/bin/python3 tools/quality/static_metrics.py --gate
+          build/quality/venv/bin/python3 -m unittest discover -s tools/quality -p 'test_*.py'
+          RATCHET=()
+          if [ -n "${{ github.base_ref }}" ]; then RATCHET=("--ratchet-ref=origin/${{ github.base_ref }}"); fi
+          build/quality/venv/bin/python3 tools/quality/static_metrics.py --gate "${RATCHET[@]}"
           build/quality/venv/bin/python3 tools/quality/static_metrics.py > build/quality/static.json
 
       - name: Upload static metrics
@@ -44,6 +62,7 @@ jobs:
 
   kotlin:
     name: Evaluation replay and coverage
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -59,9 +78,10 @@ jobs:
         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
 
       # The committed model replies (evaluation/replies) through today's shared
-      # post-processing: no model needed, and the same numbers every run.
+      # post-processing, and errors planted in their right readings: no model
+      # needed, and the same numbers every run.
       - name: Evaluation replay
-        run: ./gradlew :evaluation:run --args=replay -Psummary=build/quality/evaluation.json
+        run: ./gradlew :evaluation:test :evaluation:run --args=replay -Psummary=build/quality/evaluation.json
 
       - name: Evaluation floor
         run: python3 tools/quality/scorecard.py --check-evaluation build/quality/evaluation.json
@@ -85,4 +105,40 @@ jobs:
             androidApp/build/reports/kover/reportDebug.xml
             build/quality/coverage.json
             build/quality/evaluation.json
+          if-no-files-found: ignore
+
+  mutation:
+    name: Mutation testing
+    # Weekly, and when started by hand: PIT takes minutes, not seconds.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+
+      - name: Set up JDK
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+
+      - name: PIT
+        run: tools/quality/mutation.sh
+
+      # At least 80% killed in export, parse, model and loinc (RUBRIC.md, "Test effectiveness");
+      # a mutant PIT couldn't run (RUN_ERROR) is inconclusive, never counted as killed.
+      - name: Mutation score
+        run: python3 tools/quality/scorecard.py --check-mutation build/quality/mutation.json
+
+      - name: Upload the mutation report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: mutation
+          path: |
+            build/quality/mutation
+            build/quality/mutation.json
           if-no-files-found: ignore

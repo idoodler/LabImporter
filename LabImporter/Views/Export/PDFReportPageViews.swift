@@ -165,7 +165,7 @@ struct PDFCoverPage: View {
             items.append(MetaItem(icon: "figure.stand", label: String(localized: "Sex"), value: sex))
         }
         if !data.authorName.isEmpty {
-            items.append(MetaItem(icon: "cross.case.fill", label: String(localized: "Author"), value: data.authorName))
+            items.append(MetaItem(icon: "cross.case.fill", label: String(localized: "Lab / Doctor"), value: data.authorName))
         }
         if let range = dateRangeValue {
             items.append(MetaItem(icon: "clock.arrow.circlepath", label: String(localized: "Period Covered"), value: range))

@@ -23,6 +23,10 @@ struct ReviewView: View {
     @State private var replaceWarning: String?
     @State private var showDiscardAlert = false
     @State private var replacingReport: LabReport?
+    /// Asked before saving when a value is flagged or would be left out: flag, don't block.
+    @State private var saveConfirmation: SaveConfirmation?
+    /// The row Go Back scrolls to (see ReviewView+FoldLayout).
+    @State var scrollTarget: UUID?
 
     @State private var showAddValue = false
     @State private var importEngine = LabImportEngine()
@@ -49,8 +53,9 @@ struct ReviewView: View {
         labValues.filter(\.isExportable).count
     }
 
-    private var unsupportedValues: [LabValue] {
-        labValues.filter { LabMapping.loincCode(for: $0.code) == nil }
+    // `labValues` indices without a LOINC mapping, so their rows stay live bindings like the categorized ones.
+    private var unsupportedIndices: [Int] {
+        labValues.indices.filter { LabMapping.loincCode(for: labValues[$0].code) == nil }
     }
 
     // Values carrying a LOINC mapping — eligible for the categorized list & export.
@@ -153,6 +158,16 @@ struct ReviewView: View {
         .alert("Export Error", isPresented: .constant(cdaError != nil)) {
             Button("OK") { cdaError = nil }
         } message: { Text(cdaError ?? "") }
+        .alert(
+            saveConfirmation?.title ?? "",
+            isPresented: Binding(get: { saveConfirmation != nil }, set: { if !$0 { saveConfirmation = nil } }),
+            presenting: saveConfirmation
+        ) { confirmation in
+            Button(confirmation.proceedTitle) { perform(confirmation.action) }
+            Button("Go Back", role: .cancel) { scrollTarget = confirmation.firstID }
+        } message: { confirmation in
+            Text(confirmation.message)
+        }
         .alert("Report Saved", isPresented: .constant(replaceWarning != nil)) {
             Button("OK") { finishSave() }
         } message: { Text(replaceWarning ?? "") }
@@ -239,6 +254,7 @@ struct ReviewView: View {
             Section {
                 ForEach(group.indices, id: \.self) { idx in
                     LabValueRowView(value: $labValues[idx], isDuplicate: labValues[idx].isDuplicate(in: duplicateLoincCodes))
+                        .id(labValues[idx].id)
                         .listRowBackground(Rectangle().fill(.ultraThinMaterial))
                         .swipeActions(edge: .trailing) {
                             Button(role: .destructive) {
@@ -278,10 +294,9 @@ struct ReviewView: View {
 
     @ViewBuilder
     var unsupportedSection: some View {
-        if !unsupportedValues.isEmpty {
-            UnsupportedValuesSection(values: unsupportedValues) { value in
-                labValues.removeAll { $0.id == value.id }
-            }
+        let indices = unsupportedIndices
+        if !indices.isEmpty {
+            UnsupportedValuesSection(labValues: $labValues, indices: indices)
         }
     }
 }
@@ -332,8 +347,8 @@ private extension ReviewView {
             isEnabled: exportableCount > 0 && duplicateLoincCodes.isEmpty && labValues.valuesToCorrectCount() == 0,
             hasDuplicates: !duplicateLoincCodes.isEmpty,
             valuesToCorrect: labValues.valuesToCorrectCount(),
-            onSave: { Task { await performCDAImport() } },
-            onShare: { shareCDA() },
+            onSave: { request(.save) },
+            onShare: { request(.share) },
             isPinned: isPinned
         )
     }
@@ -381,8 +396,9 @@ private extension ReviewView {
     }
 
     func loadHKCharacteristics() async {
-        guard !ScreenshotMode.isActive,
-              let chars = try? await HealthKitService.shared.readPatientCharacteristics() else { return }
+        guard !ScreenshotMode.isActive else { return }
+        // Only a suggestion beside the fields: when Health doesn't answer, Review offers none and the user types them.
+        guard let chars = try? await HealthKitService.shared.readPatientCharacteristics() else { return }
         hkBirthdate = chars.dateOfBirth
         hkSex = chars.biologicalSexRaw
     }
@@ -400,34 +416,38 @@ private extension ReviewView {
         }
     }
 
-    func performCDAImport() async {
-        guard exportableCount > 0 else {
-            cdaError = CDAExportError.noExportableValues.errorDescription
-            return
+    /// Saves or shares the report file, or first asks when a value is flagged "Compare with report" or would be left out.
+    func request(_ action: SaveConfirmation.Action) {
+        if let confirmation = labValues.saveConfirmation(for: action) {
+            saveConfirmation = confirmation
+        } else {
+            perform(action)
         }
-        let xml = cdaService.generateCDA(
-            labValues: labValues,
-            date: reportDate,
-            patientName: names.patient,
-            authorName: names.author
-        )
-        // Save first so a failure here never loses data (the old version stays intact).
+    }
+
+    func perform(_ action: SaveConfirmation.Action) {
+        switch action {
+        case .save: Task { await performCDAImport() }
+        case .share: shareCDA()
+        }
+    }
+
+    /// `ReportWriter` saves first and removes a replaced version only then, so a failure never loses a report.
+    func performCDAImport() async {
+        let outcome: ReportWriter.SaveOutcome
         do {
-            try await HealthKitService.shared.importCDADocument(xml, date: reportDate)
+            outcome = try await ReportWriter(store: ScreenshotMode.reportStore ?? HealthKitService.shared).save(
+                labValues, date: reportDate, patientName: names.patient, authorName: names.author, replacing: replacingReport
+            )
         } catch {
             cdaError = error.localizedDescription
             return
         }
         names.rememberForNextReport(replacing: replacingReport)
-        // Then remove the replaced document; a failed delete would leave a duplicate.
-        if let old = replacingReport {
-            do {
-                try await HealthKitService.shared.deleteCDADocument(id: old.id)
-            } catch {
-                replaceWarning = String(localized:
-                    "The updated report was saved, but the previous version couldn't be removed from Apple Health. You can delete it from the Reports list.")
-                return
-            }
+        if outcome == .savedOldVersionLeft {
+            replaceWarning = String(localized:
+                "The updated report was saved, but the previous version couldn't be removed from Apple Health. You can delete it from the Reports list.")
+            return
         }
         finishSave()
     }

@@ -128,6 +128,19 @@ class HealthConnectReportStoreTest {
     }
 
     @Test
+    fun deletingAReportAlsoRemovesTheRecordsThisBuildCanNotRead() = runTest {
+        source = newSource()
+        val (readable, later) = FhirLabCodec.encodeForSaving(report(entry("e1", "2160-0", 0.8), entry("e2", "2823-3", 4.1)), "test").map { it.json }
+        stored = listOf(readable, Regex("\"valueQuantity\":\\{[^}]*\\}").replace(later, "\"valueCodeableConcept\":{\"text\":\"positive\"}"))
+
+        val loaded = store.loadReports().single()
+        assertEquals(listOf("e1"), loaded.entries.map { it.id })
+        store.delete(loaded)
+
+        assertEquals(listOf("e1", "e2"), deleted)
+    }
+
+    @Test
     fun anEditRemovesOnlyTheRecordsItDropped() = runTest {
         source = newSource()
         val old = report(entry("dropped", "2160-0", 0.8), entry("kept", "2823-3", 4.1))
