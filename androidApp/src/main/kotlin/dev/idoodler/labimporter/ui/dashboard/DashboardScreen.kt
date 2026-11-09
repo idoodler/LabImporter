@@ -54,6 +54,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -261,10 +262,20 @@ fun DashboardScreen(
 @Composable
 private fun KeepTopInView(state: LazyGridState, leadingKeys: List<String>) {
     val atTop by remember(state) { derivedStateOf { state.firstVisibleItemIndex == 0 && state.firstVisibleItemScrollOffset == 0 } }
-    remember(leadingKeys) {
-        // In composition, so the grid's next measure applies it together with the new rows.
-        if (atTop) state.requestScrollToItem(0)
+    val shown = remember { ShownRows() }
+    // After a successful composition and before this frame's layout, so the grid's next measure
+    // applies it together with the new rows; an effect launched later would show the card over
+    // the title for a frame.
+    SideEffect {
+        val changed = shown.keys != null && shown.keys != leadingKeys
+        shown.keys = leadingKeys
+        if (changed && atTop) state.requestScrollToItem(0)
     }
+}
+
+/** The rows above the metrics as last composed, to tell when they change. */
+private class ShownRows {
+    var keys: List<String>? = null
 }
 
 @Composable
