@@ -56,9 +56,12 @@ class AppViewModelTest {
         viewModel = AppViewModel(app)
     }
 
-    /** Runs main-thread work (and waits for background work) until [flow] satisfies [predicate]. */
+    /**
+     * Runs main-thread work (and waits for background work) until [flow] satisfies [predicate].
+     * The deadline only matters when the test fails; shared CI runners need far longer than a Mac.
+     */
     private fun <T> await(flow: StateFlow<T>, predicate: (T) -> Boolean): T {
-        val deadline = System.currentTimeMillis() + 10_000
+        val deadline = System.currentTimeMillis() + 30_000
         while (true) {
             idle()
             val value = flow.value
@@ -321,7 +324,7 @@ class AppViewModelTest {
         // This process may have been killed while the mail app the file went to stayed open.
         val recent = File(directory, "LabResults-2020-01-02.xml").apply { writeText("<health record/>") }
         AppViewModel(app)
-        val deadline = System.currentTimeMillis() + 10_000
+        val deadline = System.currentTimeMillis() + 30_000
         while (stale.exists() && System.currentTimeMillis() < deadline) {
             idle()
             Thread.sleep(10)
