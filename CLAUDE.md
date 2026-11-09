@@ -339,7 +339,12 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   largest text and in light at the standard size, and the screens marked `hasTints` again in
   dark (kept under 20 minutes for CI); Dynamic Type is measured as each text's height at both sizes. An issue fails it unless
   `AuditExemption` names it — screen, condition, audit type and element — with why it's a
-  false positive; `TEST_RUNNER_QUALITY_AUDIT_EVIDENCE=<folder>` saves what it found. New screens and states go in that list (`--ss-data`, `--ss-onboarding`,
+  false positive; `TEST_RUNNER_QUALITY_AUDIT_EVIDENCE=<folder>` saves what it found. At the largest
+  text a pull request's run audits each screen's first `auditedPages` (listed in the exemption
+  baseline, may only go up); `TEST_RUNNER_QUALITY_AUDIT_ALL_PAGES=1` audits every page, as the
+  weekly `quality.yml` job does (~36 min; the clipped-text check, which scrolls the whole list
+  itself, still starts on the page a pull request's run starts it; where Apple's contrast check
+  gives up three times, every text on that page is measured to 4.5:1 instead). New screens and states go in that list (`--ss-data`, `--ss-onboarding`,
   `--ss-screen` in `ScreenshotMode`). Text goes in `.textSecondary`/`.textTertiary` and
   the `status*` colours, not `.secondary` or `.orange`: the system's are 3.4:1 on white,
   less over a wash, and a `List` takes `.readableListText()` for its headers and footers. Text
@@ -742,10 +747,23 @@ deleted or imported (services, Home, Import, Review, History, the share extensio
 Android's data layer and `AppViewModel`, shared export/transfer) without a stated reason —
 a comment of at least four words saying why, not a lint directive or a `///` doc comment
 (`try?`, an empty catch, a `runCatching` whose failure nothing looks at) —, an iOS audit
-exemption that `tools/quality/accessibility_exemptions_baseline.json` doesn't list as is
-(it lists each entry with what it covers, and the rules in `AuditExemption.reason`: a
-ratchet — remove one when it goes, never add or widen one; CI checks it against the base
-branch's), a missing translation, an iOS network API, a missing or
+exemption the audit lets go unmeasured that `tools/quality/accessibility_exemptions_baseline.json`
+doesn't list as is (hit regions, clipped text, element detection, and contrast without a named
+element — `nil` for an issue without one, `""` for whichever element the audit points at; it lists
+each with what it covers, and counts the rules in `AuditExemption.reason`: a ratchet — remove one
+when it goes, never add or widen one; one without an element may give way to one that names it, on
+the same or a narrower page with the same or a lower limit; CI checks it against the base branch's).
+Only a contrast exemption naming its element by its full label is measured and isn't listed: the
+audit lets it go only while that element's own pixels measure 4.5:1 on that run (whatever the text's
+size), and fails it otherwise. `""` and `nil` are checked too (the flagged element's strongest ink,
+every text on the page), but that can't catch a faint label beside a dark icon, so they count as
+unmeasured. Each test prints `AUDIT exemptions <test> applied <n> measured <m> unmeasured <k> rules <r>`,
+every rule application among the unmeasured; `reports.py audit` reads it from the log for the
+scorecard. When Apple's audit for a documented type gives up three times on a page, the test fails:
+nothing stands in for it (only the bits `.all` sets that Apple doesn't document are logged instead).
+The baseline also lists each screen's audited pages at the largest text and whether it leaves later
+pages alone: a screen may not audit fewer, nor newly leave pages alone),
+a missing translation, an iOS network API, a missing or
 wrong privacy manifest (a required-reason API a bundle's sources call but it doesn't
 declare, or a reason Apple doesn't list for it), a function over complexity 15 or
 100 lines that isn't in `tools/quality/complexity_allowlist.txt` (with its reason),
@@ -755,7 +773,12 @@ digest; the evaluation replay, with the errors it plants in the replies' right r
 `tools/quality/evaluation_floor.json`, in total and for each kind of planted error. Coverage (Kover) is uploaded, never gated:
 mutation score is what counts — at least 80% in export, parse, model and loinc, run
 weekly by `quality.yml` (`shared:mutationTest`, `-Pmutation.classes=…` to narrow it
-while writing tests; PIT's RUN_ERROR is inconclusive, never killed). The scorecard
+while writing tests; PIT's RUN_ERROR is inconclusive, never killed). Also weekly, on the
+`xcode-27` runner: the iOS audit of every page of every screen (`QUALITY_AUDIT_ALL_PAGES=1`; a pull
+request's run keeps its page limits to stay under 20 minutes): every page in every condition — the
+largest text, the standard size and dark — and clipped text from each page, checked by
+`scorecard.py --check-audit … --all-pages` (every screen of `QualityScreen.all` printed its
+`AUDIT screen` line, none stopped at a limit). The scorecard
 reads the pull request's checks with `gh pr checks` ("not run" without a PR for the
 measured commit).
 

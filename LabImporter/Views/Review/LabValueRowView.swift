@@ -108,6 +108,10 @@ struct LabValueRowView: View {
                                          unit: value.unit)
                     }
                 }
+                // "Glucose, Suggested": the badges are said with the name they belong to. On their own, each was
+                // one more stop for VoiceOver, and the row's swipe-to-delete action made each a target the
+                // accessibility audit found too small (13 pt tall).
+                .accessibilityElement(children: .combine)
 
                 FittingRow(alignment: .center, spacing: 10) {
                     Button { showCodePicker = true } label: {
@@ -164,6 +168,9 @@ struct LabValueRowView: View {
                         .foregroundStyle(.textSecondary)
                         .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
                         .fixedSize(horizontal: !dynamicTypeSize.isAccessibilitySize, vertical: true)
+                        // A text: the row's swipe-to-delete action, which every element in the row carries, made
+                        // the accessibility audit take it for a target, too small (14 pt tall).
+                        .accessibilityRespondsToUserInteraction(false)
                 }
             }
             .layoutPriority(1)
@@ -184,6 +191,8 @@ struct LabValueRowView: View {
             .help(Self.compareExplanation)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(Self.compareExplanation)
+            // It explains, it doesn't act: the audit took it for a target 17 pt tall.
+            .accessibilityRespondsToUserInteraction(false)
             .accessibilityIdentifier("review-compare-badge")
     }
 

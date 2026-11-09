@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 import tempfile
 import unittest
@@ -129,14 +130,15 @@ class ExemptionTest(unittest.TestCase):
 
     def test_exemptions_are_counted_with_those_without_a_named_element(self):
         self.assertEqual(static_metrics.audit_exemptions(self.SAMPLE),
-                         {"entries": 3, "without_named_element": 2, "no_element": 1, "any_element": 1, "rules": 0})
+                         {"entries": 3, "measured": 1, "unmeasured": 2, "without_named_element": 2, "no_element": 1,
+                          "any_element": 1, "rules": 0})
 
     def test_every_entry_counts_however_it_is_written(self):
         text = """
     private static let entries: [Entry] = [
         Entry(condition: "a/dark/standard/1", type: .contrast, element: "Total", reason: measured),
         .init(condition: "b/light/ax5", type: .contrast, element: nil, reason: unpointed),
-        .init(condition: "c/light/ax5", type: .contrast, element: "", reason: "a reason, with (a comma)"),
+        .init(condition: "c/light/ax5", type: .hitRegion, element: "", reason: "a reason, with (a comma)"),
     ]
 """
         self.assertEqual(static_metrics.audit_exemptions(text)["entries"], 3)
@@ -150,15 +152,77 @@ class ExemptionTest(unittest.TestCase):
         self.assertEqual(static_metrics.exemption_rules(added), 3)
         self.assertEqual(static_metrics.exemption_rules(static_metrics.AUDIT_TESTS.read_text(encoding="utf-8")), 3)
 
+    def test_only_contrast_on_a_named_element_is_measured(self):
+        def measured(kind: str, element: str | None) -> bool:
+            return static_metrics.is_measured({"condition": "a/light/ax5", "type": kind, "element": element})
+
+        self.assertTrue(measured("contrast", "On-Device AI"))
+        # Any element: checked against the flagged element's strongest ink, so a faint label beside a dark icon
+        # passes. It's unmeasured and listed in the baseline.
+        self.assertFalse(measured("contrast", ""))
+        self.assertFalse(measured("contrast", None))
+        self.assertFalse(measured("hitRegion", ""))
+        self.assertFalse(measured("hitRegion", "On-Device AI"))
+        self.assertFalse(measured("textClipped", None))
+        self.assertFalse(measured("elementDetection", "Total"))
+
+    def test_a_measured_exemption_may_be_added_or_changed(self):
+        # The case that once failed: a verified false positive, measured 16.6:1, that needed a new entry.
+        old = {"condition": "onboarding-welcome/light/ax5/2", "type": "contrast", "element": "Welcome to"}
+        new = {**old, "element": "On-Device AI"}
+        unmeasured = {"condition": "settings/light/ax5", "type": "contrast", "element": None}
+        base = {"rules": 3, "exemptions": [old, unmeasured]}
+        self.assertEqual(static_metrics.baseline_raised({"rules": 3, "unmeasured": [unmeasured]}, base), [])
+        # Against a base in either format, and in the old format too (a list of every exemption).
+        self.assertEqual(static_metrics.baseline_raised({"rules": 3, "exemptions": [new, {**new, "condition": "dashboard"}, unmeasured]}, base), [])
+        self.assertEqual(static_metrics.baseline_raised({"rules": 3, "unmeasured": [unmeasured]}, {"rules": 3, "unmeasured": [unmeasured]}), [])
+        # The audit's source with a new measured entry still matches a baseline that lists only the unmeasured ones.
+        audit = """
+    private static let entries: [Entry] = [
+        Entry(condition: "settings/light/ax5", type: .contrast, element: nil, reason: unpointed),
+        Entry(condition: "onboarding-welcome/light/ax5/2", type: .contrast, element: "On-Device AI", reason: measured),
+    ]
+"""
+        compared = static_metrics.compare_with_baseline(audit, {"rules": 0, "unmeasured": [unmeasured]})
+        self.assertEqual((compared["not_in_baseline"], compared["not_in_audit"], compared["above_baseline"]), ([], [], []))
+        self.assertEqual((compared["measured"], compared["unmeasured"]), (1, 1))
+
+    def test_an_unmeasured_exemption_may_not_be_added(self):
+        unmeasured = {"condition": "settings/light/ax5", "type": "contrast", "element": None}
+        base = {"rules": 3, "unmeasured": [unmeasured]}
+        for added in ({"condition": "dashboard/light/ax5", "type": "contrast", "element": None},
+                      {"condition": "dashboard/light/ax5", "type": "contrast", "element": ""},
+                      {"condition": "dashboard/light/ax5", "type": "hitRegion", "element": ""},
+                      {"condition": "dashboard/light/ax5", "type": "hitRegion", "element": "Glucose"},
+                      {"condition": "dashboard/light/ax5", "type": "textClipped", "element": None, "limit": 1},
+                      {"condition": "trends/light/standard/1", "type": "elementDetection", "element": None, "limit": 1}):
+            self.assertTrue(static_metrics.baseline_raised({"rules": 3, "unmeasured": [unmeasured, added]}, base), added)
+            # Listed as measured in the old format, it's still found.
+            self.assertTrue(static_metrics.baseline_raised({"rules": 3, "exemptions": [unmeasured, added]}, base), added)
+        audit = """
+    private static let entries: [Entry] = [
+        Entry(condition: "settings/light/ax5", type: .contrast, element: nil, reason: unpointed),
+        Entry(condition: "dashboard/light/ax5", type: .hitRegion, element: "Glucose", reason: "small"),
+    ]
+"""
+        compared = static_metrics.compare_with_baseline(audit, {"rules": 0, "unmeasured": [unmeasured]})
+        self.assertEqual(len(compared["not_in_baseline"]), 1)
+        self.assertEqual(compared["above_baseline"], ["unmeasured"])
+        # A contrast entry for any element ("") is no measured one: added, it's outside the baseline.
+        anywhere = audit.replace('type: .hitRegion, element: "Glucose", reason: "small"', 'type: .contrast, element: "", reason: measured')
+        compared = static_metrics.compare_with_baseline(anywhere, {"rules": 0, "unmeasured": [unmeasured]})
+        self.assertEqual(len(compared["not_in_baseline"]), 1)
+        self.assertIn("unmeasured", compared["above_baseline"])
+
     def test_a_widened_exemption_raises_the_baseline(self):
-        narrow = {"condition": "dashboard/dark/standard/1", "type": "contrast", "element": "Cholesterol", "limit": 2}
-        base = {"rules": 3, "exemptions": [narrow]}
+        narrow = {"condition": "dashboard/dark/standard/1", "type": "textClipped", "element": "Cholesterol", "limit": 2}
+        base = {"rules": 3, "unmeasured": [narrow]}
 
         def raised(**change):
-            return static_metrics.baseline_raised({"rules": 3, "exemptions": [{**narrow, **change}]}, base)
+            return static_metrics.baseline_raised({"rules": 3, "unmeasured": [{**narrow, **change}]}, base)
 
         self.assertEqual(raised(), [])
-        self.assertEqual(raised(condition="dashboard/dark/standard/1/2", element="Cholesterol in HDL", limit=1), [])
+        self.assertEqual(raised(condition="dashboard/dark/standard/1/2", limit=1), [])
         self.assertTrue(raised(condition="dashboard"))
         self.assertTrue(raised(condition="dashboard/dark/standard"))
         self.assertTrue(raised(element="Chol"))
@@ -168,10 +232,253 @@ class ExemptionTest(unittest.TestCase):
         self.assertTrue(raised(type="hitRegion"))
         self.assertTrue(raised(perElement="review-include-button"))
         unlimited = {k: v for k, v in narrow.items() if k != "limit"}
-        self.assertTrue(static_metrics.baseline_raised({"rules": 3, "exemptions": [unlimited]}, base))
+        self.assertTrue(static_metrics.baseline_raised({"rules": 3, "unmeasured": [unlimited]}, base))
         # Each base exemption stands for one: the same one twice lets go twice as much.
-        self.assertTrue(static_metrics.baseline_raised({"rules": 3, "exemptions": [narrow, narrow]}, base))
-        self.assertTrue(static_metrics.baseline_raised({"rules": 4, "exemptions": [narrow]}, base))
+        self.assertTrue(static_metrics.baseline_raised({"rules": 3, "unmeasured": [narrow, narrow]}, base))
+        self.assertTrue(static_metrics.baseline_raised({"rules": 4, "unmeasured": [narrow]}, base))
+
+    def test_an_element_is_matched_by_its_full_label(self):
+        # The audit matches the whole label: a name is no prefix of the labels it starts.
+        named = {"condition": "report-detail/light/ax5/2", "type": "textClipped", "element": "Cholesterol"}
+        base = {"rules": 3, "unmeasured": [named]}
+        for longer in ("Cholesterol in HDL", "Cholesterol in LDL (calculated)", "Cholesterol "):
+            self.assertTrue(static_metrics.baseline_raised({"rules": 3, "unmeasured": [{**named, "element": longer}]}, base), longer)
+        self.assertFalse(static_metrics.element_covers("C", "Cholesterol"))
+        self.assertFalse(static_metrics.element_covers("1", "13457-7"))
+        self.assertTrue(static_metrics.element_covers("1", "1"))
+        self.assertTrue(static_metrics.element_covers("", "Cholesterol"))
+        self.assertFalse(static_metrics.element_covers("", None))
+        # One for an issue without an element gives way to one exact label, and that lets go only that label.
+        self.assertTrue(static_metrics.element_covers(None, "C"))
+        self.assertFalse(static_metrics.element_covers(None, ""))
+        unnamed = {**named, "element": None}
+        self.assertEqual(static_metrics.baseline_raised({"rules": 3, "unmeasured": [{**unnamed, "element": "C"}]}, {"rules": 3, "unmeasured": [unnamed]}), [])
+        self.assertTrue(static_metrics.baseline_raised({"rules": 3, "unmeasured": [{**unnamed, "element": "Cholesterol"}]},
+                                                       {"rules": 3, "unmeasured": [{**unnamed, "element": "C"}]}))
+        # And the audit itself: an entry's element is compared whole, never with hasPrefix.
+        source = static_metrics.AUDIT_TESTS.read_text(encoding="utf-8")
+        matches = re.search(r"static func matches\([^)]*\)[^{]*\{(.*?)\n    \}", source, re.S)
+        self.assertIsNotNone(matches, "AuditExemption.matches is gone")
+        self.assertNotIn("hasPrefix", matches.group(1))
+        self.assertIn("name == entryElement", matches.group(1))
+        self.assertIn("matches(entry.element, name)", source)
+
+    def test_every_named_contrast_entry_is_measured_in_the_audit(self):
+        # `reason` measures every contrast entry with an element before it lets an issue go: no path skips it.
+        source = static_metrics.AUDIT_TESTS.read_text(encoding="utf-8")
+        body = source[source.index("static func reason("):source.index("static func matches(")]
+        self.assertIn("if entry.type == .contrast, entry.element != nil {", body)
+        measured = body[body.index("if entry.type == .contrast, entry.element != nil {"):]
+        self.assertLess(measured.index("PixelContrast.of(element)"), measured.index("page.used[index, default: 0] += 1"))
+        self.assertIn("ratio >= minimumContrast else { return nil }", measured)
+
+    def test_every_measured_exemption_needs_4_5_to_1_whatever_its_size(self):
+        # A frame's height isn't its type's size: a two-line paragraph is 24 pt tall too. No 3:1 bar anywhere.
+        source = static_metrics.AUDIT_TESTS.read_text(encoding="utf-8")
+        measurements = static_metrics.AUDIT_TESTS.with_name("AuditMeasurements.swift").read_text(encoding="utf-8")
+        self.assertIn("static let minimumContrast = TextContrast.minimum", source)
+        self.assertIn("static let minimum = 4.5", measurements)
+        for text in (source, measurements):
+            self.assertNotIn("requiredContrast", text)
+            self.assertNotRegex(text, r"\b3\.0\b|height\s*>=\s*24")
+        # Each text on a page whose issue without an element is let go, and that page's exemption.
+        self.assertIn("if ratio < minimum {", measurements)
+        self.assertIn("guard let lowest = page.texts?.lowest, lowest >= minimumContrast else { return nil }", source)
+
+    def test_the_audit_itself_fails_a_contrast_exemption_it_did_not_measure(self):
+        # The runtime check sits in the caller, not in `reason`: an early return there can't switch it off.
+        source = static_metrics.AUDIT_TESTS.read_text(encoding="utf-8")
+        count = source[source.index("private func count(_ granted: AuditExemption.Granted?"):source.index("/// The audit gives up on a long screen")]
+        self.assertIn("if granted.namesContrastElement {", count)
+        self.assertIn("guard let ratio = granted.ratio, ratio >= AuditExemption.minimumContrast else {", count)
+        self.assertIn("XCTFail(", count)
+        self.assertIn("count(AuditExemption.reason(for: issue, element: element, on: &page)", source)
+
+    def test_only_a_named_element_counts_as_measured_at_runtime(self):
+        # "" (any element) and nil are let go on the flagged element's strongest ink or the page's texts: unmeasured.
+        source = static_metrics.AUDIT_TESTS.read_text(encoding="utf-8")
+        self.assertIn("namesContrastElement: entry.element?.isEmpty == false", source)
+        count = source[source.index("private func count(_ granted: AuditExemption.Granted?"):source.index("/// The audit gives up on a long screen")]
+        measured = count.index("tally.measured += 1")
+        self.assertLess(count.index("if granted.namesContrastElement {"), measured)
+        self.assertLess(measured, count.index("} else {"))
+
+    def test_every_rule_application_counts_as_unmeasured(self):
+        # A rule of `reason` lets an issue go with no entry and no measure: the tally counts it with the unmeasured.
+        source = static_metrics.AUDIT_TESTS.read_text(encoding="utf-8")
+        count = source[source.index("private func count(_ granted: AuditExemption.Granted?"):source.index("/// The audit gives up on a long screen")]
+        unmeasured = count[count.index("} else {"):]
+        self.assertLess(unmeasured.index("tally.unmeasured += 1"), unmeasured.index("if granted.isRule { tally.rules += 1 }"))
+        self.assertIn("Granted(reason: reason, isRule: true)", source)
+        self.assertNotIn("unmeasuredContrast", source)
+        # Its one line a test, in the format reports.py reads.
+        line = re.search(r'print\("(AUDIT exemptions [^"]*)"\)', source)
+        self.assertIsNotNone(line, "the AUDIT exemptions line is gone")
+        printed = re.sub(r"\\\([^)]*\)", "7", line.group(1)).replace("7 applied", "testEveryScreen applied", 1)
+        self.assertRegex(printed, reports.AUDIT_TALLY)
+        self.assertIn("rules 7", printed)
+        pages = re.search(r'print\("(AUDIT screen .*)"\)$', source, re.M)
+        self.assertIsNotNone(pages, "the AUDIT screen line is gone")
+        self.assertIn("pages \\(last) of \\(Self.allPages ? \"all\" : String(screen.auditedPages))", pages.group(1))
+
+
+class AuditRunTest(unittest.TestCase):
+    SOURCE = static_metrics.AUDIT_TESTS.read_text(encoding="utf-8")
+
+    def run_audit(self) -> str:
+        return self.SOURCE[self.SOURCE.index("private func runAudit("):self.SOURCE.index("/// Audit findings that are false positives")]
+
+    def test_a_contrast_check_that_gives_up_fails_the_test(self):
+        # Nothing stands in for Apple's check: no page is judged by measuring its texts instead.
+        body = self.run_audit()
+        self.assertNotIn("TextContrast", body)
+        self.assertNotIn("types == .contrast", body)
+        last = body[body.index("catch let error as NSError where error.code == -56 {"):]
+        self.assertLess(last.index("XCTFail("), last.index("return nil"))
+        # Only the bits Apple doesn't document are logged, and only when nothing documented is among them.
+        logged = body[body.rindex("catch let error as NSError where error.code == -56 && Self.documentedTypes.isDisjoint(with: types) {"):]
+        self.assertLess(logged.index("print(\"AUDIT unfinished undocumented type"), logged.index("catch let error as NSError where error.code == -56 {"))
+
+    def test_every_page_mode_audits_every_condition_to_its_end(self):
+        test = self.SOURCE[self.SOURCE.index("func testEveryScreen()"):self.SOURCE.index("private func printTally()")]
+        # The standard size in light and dark: no page limit in the run of every page.
+        self.assertEqual(test.count("limit: Self.allPages ? Int.max : 1"), 2)
+        self.assertIn("limit: Self.allPages ? Int.max : screen.auditedPages", test)
+        self.assertNotIn('label: "\\(screen.name)/light/standard/1"', test)
+        self.assertNotIn('label: "\\(screen.name)/dark/standard/1"', test)
+        # Each condition's pages go through one function, which pages with no stated rest in that run.
+        self.assertIn("rest: Self.allPages ? nil : rest", test)
+        # And clipped text from every page, not from where a pull request's run starts it.
+        self.assertIn("for start in 1...last {", test)
+        self.assertNotIn("screen.auditedPages, rest: screen.laterPages) { _ in }", test)
+
+
+class AuditLogTest(unittest.TestCase):
+    LOG = """Test Case '-[LabImporterUITests.AccessibilityAuditUITests testEveryScreen]' started.
+AUDIT page 1 f82a49ec038200bc
+AUDIT exempt (its pixels measure over 4.5:1 (16.6:1)) dashboard/light/ax5/1 [1] Contrast failed — 24 @ (0, 0, 1, 1)
+AUDIT screen dashboard pages 2 of 2
+AUDIT screen settings pages 14 of 14
+AUDIT exemptions testEveryScreen applied 134 measured 120 unmeasured 14 rules 5
+"""
+    SCREENS = ["dashboard", "settings"]
+
+    def test_the_counts_come_from_the_run(self):
+        audit = reports.audit_log(self.LOG)
+        self.assertEqual(audit["tests"], {"testEveryScreen": {"applied": 134, "measured": 120, "unmeasured": 14, "rules": 5}})
+        self.assertEqual(audit["screens"]["settings"], {"pages": 14, "limit": 14})
+        self.assertFalse(audit["all_pages"])
+        part = scorecard.audit_run_part(audit)
+        self.assertEqual(part.status, scorecard.PASS)
+        # The scorecard says how many went unmeasured, and how many of those by a rule.
+        self.assertIn("14 unmeasured (5 by a rule)", part.text)
+
+    def test_counts_that_do_not_add_up_fail_the_scorecard(self):
+        for wrong in ("unmeasured 13 rules 5", "unmeasured 14 rules 15"):
+            audit = reports.audit_log(self.LOG.replace("unmeasured 14 rules 5", wrong))
+            self.assertEqual(scorecard.audit_run_part(audit).status, scorecard.FAIL, wrong)
+        # The old line, without the rules, isn't read as a pass.
+        self.assertIn("error", reports.audit_log(self.LOG.replace("unmeasured 14 rules 5", "unmeasured-contrast 0")))
+
+    def test_a_log_without_the_counts_is_not_a_pass(self):
+        audit = reports.audit_log(self.LOG.replace("AUDIT exemptions", "AUDIT something"))
+        self.assertIn("error", audit)
+        self.assertEqual(scorecard.audit_run_part(None).status, scorecard.NOT_RUN)
+        self.assertEqual(scorecard.audit_run_part({"tests": {}}).status, scorecard.FAIL)
+        self.assertEqual(scorecard.check_audit(audit, all_pages=False, screens=self.SCREENS), 1)
+
+    def test_the_weekly_run_audits_every_page(self):
+        limited = reports.audit_log(self.LOG)
+        self.assertEqual(scorecard.check_audit(limited, all_pages=False, screens=self.SCREENS), 0)
+        self.assertEqual(scorecard.check_audit(limited, all_pages=True, screens=self.SCREENS), 1)
+        full = reports.audit_log(self.LOG.replace("of 2", "of all").replace("of 14", "of all"))
+        self.assertTrue(full["all_pages"])
+        self.assertEqual(scorecard.check_audit(full, all_pages=True, screens=self.SCREENS), 0)
+
+    def test_a_screen_without_its_line_fails_the_check(self):
+        # A screen the run never reached (it stopped early, or a QUALITY_SCREENS filter left it out) isn't a pass.
+        full = reports.audit_log(self.LOG.replace("of 2", "of all").replace("of 14", "of all"))
+        for mode in (False, True):
+            self.assertEqual(scorecard.check_audit(full, all_pages=mode, screens=self.SCREENS + ["trends"]), 1)
+            self.assertEqual(scorecard.check_audit(full, all_pages=mode, screens=[]), 1)
+        # The check reads the screens from QualityScreen.all.
+        self.assertIn("review-planted-errors", scorecard.audit_screens())
+        self.assertGreater(len(scorecard.audit_screens()), 20)
+
+
+class AuditPagesTest(unittest.TestCase):
+    SCREENS = """
+    var auditedPages = 1
+    static let all: [QualityScreen] = [
+        QualityScreen(name: "dashboard", shows: .bar("Lab Results"), hasTints: true, auditedPages: 2, laterPages: moreCards),
+        QualityScreen(
+            name: "settings", shows: .bar("Settings"), arguments: ["--ss-screen", "settings"], auditedPages: 14
+        ),
+        QualityScreen(name: "load-failed", shows: .text("Couldn't Load Your Reports"), arguments: ["--ss-data", "load-failed"]),
+    ]
+"""
+    BASELINE = {"pages": {"dashboard": {"audited": 2, "laterPages": True}, "settings": {"audited": 14}, "load-failed": {"audited": 1}}}
+
+    def test_each_screen_is_read_with_its_pages(self):
+        screens, unreadable = static_metrics.audited_pages(self.SCREENS)
+        self.assertEqual(unreadable, 0)
+        self.assertEqual(screens, {"dashboard": {"audited": 2, "laterPages": True}, "settings": {"audited": 14, "laterPages": False},
+                                   "load-failed": {"audited": 1, "laterPages": False}})
+        self.assertEqual(static_metrics.pages_against(screens, self.BASELINE), [])
+        self.assertEqual(static_metrics.audited_pages(self.SCREENS.replace("auditedPages: 14", "auditedPages: Self.pages"))[1], 1)
+
+    def test_fewer_audited_pages_fail_the_gate(self):
+        for change in (("auditedPages: 14", "auditedPages: 13"), ("auditedPages: 2, ", ""), ("auditedPages: 14", "auditedPages: 14, laterPages: moreRows"),
+                       ('QualityScreen(name: "load-failed"', 'QualityScreen(name: "load-failed-2"')):
+            screens, _ = static_metrics.audited_pages(self.SCREENS.replace(*change))
+            self.assertTrue(static_metrics.pages_against(screens, self.BASELINE), change)
+        # One more must be written down too, so it can't be spent again unnoticed.
+        screens, _ = static_metrics.audited_pages(self.SCREENS.replace("auditedPages: 14", "auditedPages: 15"))
+        self.assertTrue(static_metrics.pages_against(screens, self.BASELINE))
+        self.assertTrue(static_metrics.pages_against(screens, {}))
+
+    def test_the_baseline_pages_may_only_go_up(self):
+        base = self.BASELINE
+        self.assertEqual(static_metrics.pages_lowered(base, base), [])
+        self.assertEqual(static_metrics.pages_lowered({"pages": {**base["pages"], "settings": {"audited": 15}}}, base), [])
+        self.assertEqual(static_metrics.pages_lowered({"pages": {**base["pages"], "dashboard": {"audited": 2}}}, base), [])
+        self.assertTrue(static_metrics.pages_lowered({"pages": {**base["pages"], "settings": {"audited": 13}}}, base))
+        self.assertTrue(static_metrics.pages_lowered({"pages": {**base["pages"], "settings": {"audited": 14, "laterPages": True}}}, base))
+        self.assertTrue(static_metrics.pages_lowered({"pages": {k: v for k, v in base["pages"].items() if k != "settings"}}, base))
+        self.assertEqual(static_metrics.pages_lowered({"pages": {}}, {"rules": 3}), [])
+
+    def test_the_committed_pages_match_the_screens(self):
+        ratchet = static_metrics.pages_ratchet()
+        self.assertEqual((ratchet["problems"], ratchet["unreadable"]), ([], 0))
+        self.assertGreater(ratchet["screens"], 20)
+
+    def test_an_exemption_without_an_element_may_be_replaced_by_one_naming_it(self):
+        unnamed = {"condition": "review/light/ax5/1", "type": "textClipped", "element": None}
+
+        def raised(base: dict, *replacements: dict) -> list[str]:
+            return static_metrics.baseline_raised({"rules": 3, "unmeasured": list(replacements)}, {"rules": 3, "unmeasured": [base]})
+
+        # Strictly narrower: the element named, on the same or a narrower page, with the same or a lower limit.
+        self.assertEqual(raised(unnamed, {**unnamed, "element": "1"}), [])
+        self.assertEqual(raised({**unnamed, "condition": "settings/light/ax5"}, {**unnamed, "condition": "settings/light/ax5/5", "element": "About"}), [])
+        self.assertEqual(raised({**unnamed, "limit": 9}, {**unnamed, "element": "Total", "limit": 9}), [])
+        self.assertEqual(raised({**unnamed, "limit": 9}, {**unnamed, "element": "Total", "limit": 2}), [])
+        self.assertEqual(raised({**unnamed, "perElement": "valueRow"}, {**unnamed, "element": "mg/dL", "perElement": "valueRow"}), [])
+        # Wider or new: any element, a wider page, a higher or no limit, another type, a budget of its own, or one more.
+        self.assertTrue(raised(unnamed, {**unnamed, "element": ""}))
+        self.assertTrue(raised(unnamed, {**unnamed, "element": "1", "condition": "review/light/ax5"}))
+        self.assertTrue(raised(unnamed, {**unnamed, "element": "1", "condition": "review"}))
+        self.assertTrue(raised({**unnamed, "limit": 9}, {**unnamed, "element": "Total", "limit": 10}))
+        self.assertTrue(raised({**unnamed, "limit": 9}, {**unnamed, "element": "Total"}))
+        self.assertTrue(raised(unnamed, {**unnamed, "element": "1", "type": "hitRegion"}))
+        self.assertTrue(raised({**unnamed, "perElement": "valueRow"}, {**unnamed, "element": "mg/dL"}))
+        self.assertTrue(raised({**unnamed, "perElement": "valueRow"}, {**unnamed, "element": "mg/dL", "limit": 3}))
+        self.assertTrue(raised(unnamed, {**unnamed, "element": "1"}, {**unnamed, "element": "2"}))
+        self.assertTrue(raised(unnamed, unnamed, {**unnamed, "element": "1"}))
+        # A named one never goes back to none, nor to another name.
+        named = {**unnamed, "element": "1"}
+        self.assertTrue(raised(named, unnamed))
+        self.assertTrue(raised(named, {**unnamed, "element": "2"}))
 
     def test_the_committed_baseline_matches_the_audit(self):
         ratchet = static_metrics.exemption_ratchet()

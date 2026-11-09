@@ -28,6 +28,7 @@ ROOT = Path(__file__).resolve().parents[2]
 ALLOWLIST = ROOT / "tools/quality/complexity_allowlist.txt"
 AUDIT_TESTS = ROOT / "LabImporterUITests/AccessibilityAuditUITests.swift"
 EXEMPTION_BASELINE = ROOT / "tools/quality/accessibility_exemptions_baseline.json"
+QUALITY_SCREENS = ROOT / "LabImporterUITests/QualityScreens.swift"
 CCN_LIMIT, NLOC_LIMIT = 15, 100
 SWIFT_ROOTS = ["LabImporter", "LabImporterShare"]
 KOTLIN_ROOTS = ["shared/src/commonMain", "shared/src/androidMain", "shared/src/jvmMain", "shared/src/iosMain", "androidApp/src/main"]
@@ -295,32 +296,75 @@ def exemption_rules(text: str) -> int:
         return 0
     body_start = text.index("{", swift_split(text, start.end() - 1, "(", ")")[1])
     body_end = swift_split(text, body_start, "{", "}")[1]
-    # A reason is a string literal or a named one (`return measured`); `nil`, an entry's reason and a closure's `return (…)` aren't rules.
-    returns = re.findall(r'\breturn\s+("[^\n]*|[A-Za-z_]\w*\s*(?:\}|\n))', text[body_start:body_end])
+    # A reason is `.rule(…)`, a string literal or a named one (`return measured`); `nil`, an entry's reason and a closure's
+    # `return (…)` aren't rules.
+    returns = re.findall(r'\breturn\s+(\.rule\(|"[^\n]*|[A-Za-z_]\w*\s*(?:\}|\n))', text[body_start:body_end])
     return sum(1 for r in returns if not r.startswith("nil") and "entry.reason" not in r)
+
+
+def is_measured(e: dict) -> bool:
+    """Whether the audit measures what exemption [e] lets go on every run: contrast on an element named by its full label.
+
+    `AuditExemption.reason` lets such an issue go only while that element's own pixels measure 4.5:1.
+    Everything else is unmeasured and the baseline holds it: hit regions, clipped text, element
+    detection, and contrast without a named element — `nil` (an issue without one) and `""` (whichever
+    element the audit points at). Those are checked against the page or the flagged element's
+    strongest ink, so a faint label beside a dark icon still passes. The audit counts the same at
+    runtime (`AUDIT exemptions … measured … unmeasured …`, read by `reports.audit_log`).
+    """
+    return e["type"] == "contrast" and bool(e["element"])
 
 
 def audit_exemptions(text: str) -> dict:
     """The exemptions of the iOS audit: each a finding let go.
 
-    One without a named element covers an issue the audit found without one (`element: nil`)
+    Measured ones (`is_measured`) are counted apart from the unmeasured ones the baseline holds; of
+    those, the ones without a named element cover an issue the audit found without one (`element: nil`)
     or any element on its page (`element: ""`): the widest kind, listed apart.
     """
     entries = audit_entries(text)
-    no_element = sum(1 for e in entries if e and e["element"] is None)
-    any_element = sum(1 for e in entries if e and e["element"] == "")
-    return {"entries": len(entries), "without_named_element": no_element + any_element, "no_element": no_element,
+    readable = [e for e in entries if e]
+    unmeasured = [e for e in readable if not is_measured(e)]
+    no_element = sum(1 for e in unmeasured if e["element"] is None)
+    any_element = sum(1 for e in unmeasured if e["element"] == "")
+    measured = sum(1 for e in readable if is_measured(e))
+    return {"entries": len(entries), "measured": measured, "unmeasured": len(readable) - measured,
+            "without_named_element": no_element + any_element, "no_element": no_element,
             "any_element": any_element, "rules": exemption_rules(text)}
+
+
+def baseline_unmeasured(baseline: dict) -> list[dict] | None:
+    """The unmeasured exemptions a baseline lists; one from before they were told apart lists them all."""
+    if "unmeasured" in baseline:
+        return baseline["unmeasured"]
+    if "exemptions" in baseline:
+        return [e for e in baseline["exemptions"] if not is_measured(e)]
+    return None
 
 
 def exemption_key(e: dict) -> str:
     return json.dumps(e, sort_keys=True, ensure_ascii=False)
 
 
+def element_covers(wide: str | None, narrow: str | None) -> bool:
+    """Whether an exemption for element [wide] may stand for one for element [narrow].
+
+    The audit matches an element by its full label ("" any element), so a label covers only itself.
+    One for an issue without an element (None) may be replaced by one that names the element: the
+    audit points at what it once couldn't, and the replacement lets go that one label only. Never by
+    "" (any element), which is wider.
+    """
+    if wide is None:
+        return narrow != ""
+    if wide == "":
+        return narrow is not None
+    return narrow == wide
+
+
 def covers(wide: dict, narrow: dict) -> bool:
-    """Whether exemption [wide] lets go at least every issue [narrow] does (`AuditExemption.reason`'s matching)."""
-    element_covered = (narrow["element"] is None) if wide["element"] is None else (
-        narrow["element"] is not None and narrow["element"].startswith(wide["element"]))
+    """Whether exemption [wide] lets go at least every issue [narrow] does (`AuditExemption.reason`'s matching),
+    or [narrow] is the same exemption pointed at a named element (`element_covers`)."""
+    element_covered = element_covers(wide["element"], narrow["element"])
     return (wide["type"] == narrow["type"] and (narrow["condition"] + "/").startswith(wide["condition"] + "/") and element_covered
             and wide.get("perElement") == narrow.get("perElement")
             and ("limit" not in wide or narrow.get("limit", float("inf")) <= wide["limit"]))
@@ -342,34 +386,111 @@ def uncovered(exemptions: list[dict], allowed: list[dict]) -> list[dict]:
     return [e for i, e in enumerate(exemptions) if not assign(i, set())]
 
 
-def exemption_ratchet() -> dict:
-    """The audit's exemptions against the committed baseline, which lists each one and may only go down.
+def compare_with_baseline(text: str, baseline: dict) -> dict:
+    """The audit's exemptions (its source, [text]) against [baseline], which lists each unmeasured one and may only go down.
 
-    The audit must match the baseline exactly: one added, widened (a shorter condition or element
-    prefix, a higher or no limit) or written so the script can't read it isn't in it. Whether the
-    baseline itself went down is `ratchet_raised`'s job (CI compares it with the base branch's).
+    The unmeasured ones must match the baseline exactly: one added, widened (a shorter condition, any
+    element, a higher or no limit) or written so the script can't read it isn't in it. Measured ones
+    (`is_measured`) aren't listed: they may come and go. Whether the baseline itself went down is
+    `ratchet_raised`'s job (CI compares it with the base branch's).
     """
-    text = AUDIT_TESTS.read_text(encoding="utf-8") if AUDIT_TESTS.exists() else ""
     counts = audit_exemptions(text)
-    entries = audit_entries(text)
-    baseline = json.loads(EXEMPTION_BASELINE.read_text(encoding="utf-8")) if EXEMPTION_BASELINE.exists() else {}
-    listed = baseline.get("exemptions")
-    base_counts = audit_exemptions("") if listed is None else {
-        "entries": len(listed), "without_named_element": sum(1 for e in listed if not e["element"]), "rules": baseline.get("rules")}
-    current_keys = [exemption_key(e) for e in entries if e]
+    entries = [e for e in audit_entries(text) if e and not is_measured(e)]
+    listed = baseline_unmeasured(baseline)
+    base_counts = {} if listed is None else {
+        "unmeasured": len(listed), "without_named_element": sum(1 for e in listed if not e["element"]), "rules": baseline.get("rules")}
+    current_keys = [exemption_key(e) for e in entries]
     listed_keys = [exemption_key(e) for e in listed or []]
-    keys = ("entries", "without_named_element", "rules")
+    keys = ("unmeasured", "without_named_element", "rules")
     return {
         **counts,
-        "baseline": {k: (base_counts[k] if listed is not None else None) for k in keys},
+        "baseline": {k: base_counts.get(k) for k in keys},
         # More than the baseline allows (or no baseline): the gate fails.
-        "above_baseline": [k for k in keys if listed is None or base_counts[k] is None or counts[k] > base_counts[k]],
+        "above_baseline": [k for k in keys if base_counts.get(k) is None or counts[k] > base_counts[k]],
         # Fewer: the baseline must come down with them, so it can't be spent again later.
-        "below_baseline": [k for k in keys if listed is not None and base_counts[k] is not None and counts[k] < base_counts[k]],
-        "unreadable": sum(1 for e in entries if e is None),
+        "below_baseline": [k for k in keys if base_counts.get(k) is not None and counts[k] < base_counts[k]],
+        "unreadable": sum(1 for e in audit_entries(text) if e is None),
         "not_in_baseline": [k for k in dict.fromkeys(current_keys) if current_keys.count(k) > listed_keys.count(k)],
         "not_in_audit": [k for k in dict.fromkeys(listed_keys) if listed_keys.count(k) > current_keys.count(k)],
     }
+
+
+def exemption_ratchet() -> dict:
+    """The audit's exemptions against the committed baseline (`compare_with_baseline`)."""
+    text = AUDIT_TESTS.read_text(encoding="utf-8") if AUDIT_TESTS.exists() else ""
+    baseline = json.loads(EXEMPTION_BASELINE.read_text(encoding="utf-8")) if EXEMPTION_BASELINE.exists() else {}
+    return compare_with_baseline(text, baseline)
+
+
+def audited_pages(text: str) -> tuple[dict, int]:
+    """Each screen of `QualityScreen.all` ([text], QualityScreens.swift): how many pages at the largest text the
+    audit looks at (`auditedPages`, else the struct's default) and whether it leaves the pages after them alone
+    (`laterPages`), and how many screens aren't written with literals the script can read."""
+    default = re.search(r"\bvar\s+auditedPages\s*=\s*(\d+)\b", text)
+    start = re.search(r"\bstatic\s+let\s+all\s*:\s*\[QualityScreen\]\s*=\s*\[", text)
+    if not start:
+        return {}, 1
+    screens: dict = {}
+    unreadable = 0
+    for item in swift_split(text, start.end() - 1, "[", "]")[0]:
+        name = re.search(r'\bname:\s*"([^"\\]*)"', item)
+        pages = re.search(r"\bauditedPages:\s*([^,)]+)", item)
+        if not name or not (pages.group(1).strip().isdigit() if pages else default) or name.group(1) in screens:
+            unreadable += 1
+            continue
+        screens[name.group(1)] = {"audited": int(pages.group(1).strip() if pages else default.group(1)),
+                                  "laterPages": bool(re.search(r"\blaterPages:\s*(?!nil\b)\S", item))}
+    return screens, unreadable
+
+
+def pages_against(screens: dict, baseline: dict) -> list[str]:
+    """Where the screens' audited pages ([screens], `audited_pages`) differ from [baseline]'s `pages`: each
+    screen audits as many pages as listed, leaves later pages alone only where listed, and none comes or goes unlisted."""
+    listed = baseline.get("pages")
+    if listed is None:
+        return ["no 'pages' in the baseline"]
+    problems = []
+    for name, base in listed.items():
+        now = screens.get(name)
+        if now is None:
+            problems.append(f"{name}: no longer audited (listed with {base['audited']} pages)")
+            continue
+        if now["audited"] < base["audited"]:
+            problems.append(f"{name}: audits {now['audited']} pages at the largest text, fewer than the baseline's {base['audited']}")
+        elif now["audited"] > base["audited"]:
+            problems.append(f"{name}: audits {now['audited']} pages; raise the baseline's {base['audited']} to match")
+        if now["laterPages"] and not base.get("laterPages"):
+            problems.append(f"{name}: leaves the pages after its {now['audited']} alone, which the baseline doesn't")
+        elif base.get("laterPages") and not now["laterPages"]:
+            problems.append(f"{name}: audits to its end now; drop laterPages from the baseline")
+    problems += [f"{name}: not in the baseline's pages; add it ({now['audited']} pages)" for name, now in screens.items() if name not in listed]
+    return problems
+
+
+def pages_lowered(baseline: dict, base: dict) -> list[str]:
+    """Where [baseline] audits less than the base branch's [base]: a screen gone, fewer pages, or later pages newly left alone."""
+    if "pages" not in base:
+        return []  # the base doesn't list pages yet: this pull request starts it
+    now = baseline.get("pages", {})
+    lowered = []
+    for name, was in base["pages"].items():
+        if name not in now:
+            lowered.append(f"iOS audit pages: {name} is gone from the baseline (it audited {was['audited']} pages)")
+        elif now[name]["audited"] < was["audited"]:
+            lowered.append(f"iOS audit pages: {name} went from {was['audited']} audited pages to {now[name]['audited']} (it may only go up)")
+        elif now[name].get("laterPages") and not was.get("laterPages"):
+            lowered.append(f"iOS audit pages: {name} now leaves the pages after its {now[name]['audited']} alone")
+    return lowered
+
+
+def pages_ratchet() -> dict:
+    """The screens' audited pages against the committed baseline (`pages_against`)."""
+    text = QUALITY_SCREENS.read_text(encoding="utf-8") if QUALITY_SCREENS.exists() else ""
+    baseline = json.loads(EXEMPTION_BASELINE.read_text(encoding="utf-8")) if EXEMPTION_BASELINE.exists() else {}
+    screens, unreadable = audited_pages(text)
+    return {"screens": len(screens), "audited_pages": sum(s["audited"] for s in screens.values()),
+            "screens_leaving_later_pages": sum(1 for s in screens.values() if s["laterPages"]),
+            "unreadable": unreadable, "problems": pages_against(screens, baseline)}
 
 
 def accessibility() -> dict:
@@ -382,6 +503,7 @@ def accessibility() -> dict:
             f"{rel(p)}:{line}" for p in compose for line in icon_buttons_without_description(p)
         ],
         "ios_audit_exemptions": exemption_ratchet(),
+        "ios_audit_pages": pages_ratchet(),
     }
 
 
@@ -672,20 +794,28 @@ def gate_failures(report: dict) -> list[str]:
         failures.append(f"iOS audit exemptions: {exemptions['unreadable']} not written with literal condition, type, element and limit")
     failures += [f"iOS audit exemption not in {rel(EXEMPTION_BASELINE)} (new or widened): {e}" for e in exemptions["not_in_baseline"]]
     failures += [f"iOS audit exemption gone or narrowed; update {rel(EXEMPTION_BASELINE)} to match: {e}" for e in exemptions["not_in_audit"]]
+    pages = report["accessibility"]["ios_audit_pages"]
+    if pages["unreadable"]:
+        failures.append(f"iOS audit pages: {pages['unreadable']} screens in {rel(QUALITY_SCREENS)} not written with a literal name and auditedPages")
+    failures += [f"iOS audit pages ({rel(EXEMPTION_BASELINE)}): {p}" for p in pages["problems"]]
     failures += ratchet_raised(json.loads(EXEMPTION_BASELINE.read_text(encoding="utf-8")) if EXEMPTION_BASELINE.exists() else {})
     return failures
 
 
 def baseline_raised(baseline: dict, base: dict) -> list[str]:
-    """What [baseline] lets go that the base branch's [base] didn't: an exemption no base one covers, or more rules."""
-    if "exemptions" not in base:
-        # The base counted its exemptions only.
+    """What [baseline] lets go unmeasured that the base branch's [base] didn't: an exemption no base one covers, or more rules.
+
+    Measured exemptions (`is_measured`) are left out on both sides: the audit measures them on every run.
+    """
+    unmeasured = baseline_unmeasured(baseline) or []
+    base_unmeasured = baseline_unmeasured(base)
+    if base_unmeasured is None:
+        # The base counted its exemptions only (all of them as "entries").
         return [f"iOS audit exemptions: the baseline's {k} rose from {base[k]} to {n} (it may only go down)"
-                for k, n in (("entries", len(baseline.get("exemptions", []))),
-                             ("without_named_element", sum(1 for e in baseline.get("exemptions", []) if not e["element"])))
+                for k, n in (("entries", len(unmeasured)), ("without_named_element", sum(1 for e in unmeasured if not e["element"])))
                 if k in base and n > base[k]]
-    raised = [f"iOS audit exemptions: the baseline lets go more than the base's (it may only go down): {exemption_key(e)}"
-              for e in uncovered(baseline.get("exemptions", []), base["exemptions"])]
+    raised = [f"iOS audit exemptions: the baseline lets go more unmeasured than the base's (it may only go down): {exemption_key(e)}"
+              for e in uncovered(unmeasured, base_unmeasured)]
     if baseline.get("rules", 0) > base.get("rules", 0):
         raised.append(f"iOS audit exemptions: the baseline's rules rose from {base.get('rules', 0)} to {baseline['rules']} (it may only go down)")
     return raised
@@ -699,7 +829,8 @@ def ratchet_raised(baseline: dict) -> list[str]:
     shown = subprocess.run(["git", "show", f"{ref}:{rel(EXEMPTION_BASELINE)}"], cwd=ROOT, capture_output=True, text=True)
     if shown.returncode != 0:
         return []  # the base has no baseline yet: this pull request starts it
-    return baseline_raised(baseline, json.loads(shown.stdout))
+    base = json.loads(shown.stdout)
+    return baseline_raised(baseline, base) + pages_lowered(baseline, base)
 
 
 def main() -> None:

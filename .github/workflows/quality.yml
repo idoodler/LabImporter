@@ -13,7 +13,8 @@ on:
       - main
   workflow_dispatch:
   schedule:
-    # Mondays at 05:00 UTC: PIT mutation testing of shared/ (the mutation job).
+    # Mondays at 05:00 UTC: PIT mutation testing of shared/ (the mutation job) and the
+    # iOS accessibility audit of every page of every screen (the audit-all-pages job).
     - cron: "0 5 * * 1"
 
 permissions:
@@ -141,4 +142,67 @@ jobs:
           path: |
             build/quality/mutation
             build/quality/mutation.json
+          if-no-files-found: ignore
+
+  audit-all-pages:
+    name: Accessibility audit of every page
+    # A pull request's audit (build_pr.yml) looks at each screen's first pages at the largest
+    # text (QualityScreens.swift auditedPages) to stay within its time; this one audits every
+    # page of every screen, with no limit, weekly and when started by hand.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: xcode-27
+    timeout-minutes: 240
+    steps:
+      - name: Select Xcode version
+        run: sudo xcode-select --switch /Applications/Xcode_27.1.app/Contents/Developer
+
+      - name: Checkout Repo
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+
+      # The Xcode "Build shared Kotlin" phase runs Gradle (shared/ KMP module).
+      - name: Set up JDK
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      # QUALITY_AUDIT_ALL_PAGES=1 (TEST_RUNNER_ for xcodebuild): every page in every condition (largest text,
+      # standard size, dark), clipped text from each page. The run prints an `AUDIT screen <name> pages <n> of all`
+      # line per screen and the exemptions it applied, measured and left unmeasured (rules among them).
+      - name: Audit every page (Simulator SDK, unsigned)
+        env:
+          TEST_RUNNER_QUALITY_AUDIT_ALL_PAGES: "1"
+        run: |
+          # The simulator build_pr.yml uses: the iPhone Duo if this Xcode has one, else the newest iPhone.
+          SIMULATOR=$(xcrun simctl list devices available --json | python3 -c '
+          import json, sys
+          runtimes = json.load(sys.stdin)["devices"]
+          ios = sorted((k for k in runtimes if ".iOS-" in k), key=lambda k: [int(p) for p in k.rsplit("iOS-", 1)[1].split("-")])
+          phones = [d for k in ios for d in runtimes[k] if d["name"].startswith("iPhone")]
+          duos = [d for d in phones if d["name"] == "iPhone Duo"]
+          print((duos or phones)[-1]["udid"])')
+          xcrun simctl bootstatus "$SIMULATOR" -b
+          mkdir -p build/quality
+          set -o pipefail
+          xcodebuild test -project LabImporter.xcodeproj -scheme LabImporter \
+            -destination "id=$SIMULATOR" -only-testing:LabImporterUITests/AccessibilityAuditUITests \
+            -testLanguage en -testRegion en_US -collect-test-diagnostics never \
+            -derivedDataPath build/ios-dd CODE_SIGNING_ALLOWED=NO 2>&1 | tee build/quality/audit-all-pages.log
+
+      # The pages each screen audited, and the exemptions applied and measured on the run: fails when the
+      # log has no AUDIT exemptions line, a screen of QualityScreen.all has no AUDIT screen line, or one had a page limit.
+      - name: Pages and exemptions audited
+        if: always()
+        run: |
+          python3 tools/quality/reports.py audit build/quality/audit-all-pages.log | tee build/quality/audit.json
+          python3 tools/quality/scorecard.py --check-audit build/quality/audit.json --all-pages
+
+      - name: Upload the audit log
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: audit-all-pages
+          path: |
+            build/quality/audit-all-pages.log
+            build/quality/audit.json
           if-no-files-found: ignore

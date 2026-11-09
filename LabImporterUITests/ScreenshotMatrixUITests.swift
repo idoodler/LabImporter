@@ -35,7 +35,7 @@ final class ScreenshotMatrixUITests: XCTestCase {
             XCUIDevice.shared.appearance = condition.isDark ? .dark : .light
             for screen in QualityScreen.selected {
                 let app = screen.launch(extraArguments: condition.arguments)
-                try forEachPage(of: app, limit: condition.name == "largest-text" ? 4 : 2) { page in
+                try forEachPage(of: app, limit: condition.name == "largest-text" ? 4 : 2, rest: "evidence of the first pages") { page in
                     let name = "\(screen.name)-\(condition.name)-\(page)"
                     try drawnScreenshot(of: app, name: name).pngRepresentation.write(to: folder.appendingPathComponent("\(name).png"))
                 }

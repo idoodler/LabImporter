@@ -117,6 +117,8 @@ if [ $IOS -eq 1 ]; then
   }
   step ios-tests ios_tests
   python3 tools/quality/reports.py xcresult "$OUT/ios.xcresult" > "$OUT/ios.json"
+  # The exemptions the accessibility audit applied and measured on this run, from its AUDIT lines.
+  python3 tools/quality/reports.py audit "$LOGS/xcodebuild.log" > "$OUT/audit.json"
   python3 tools/quality/ios_coverage.py "$OUT/ios.xcresult" > "$OUT/ios_coverage.json" 2> "$LOGS/ios-coverage.log" || rm -f "$OUT/ios_coverage.json"
   # What App Store Connect reads: the manifests inside the built bundles, not the sources.
   python3 - "$OUT/ios_bundles.json" build/ios-dd/Build/Products/Debug-iphonesimulator/LabImporter.app <<'EOF'

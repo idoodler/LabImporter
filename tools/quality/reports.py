@@ -9,6 +9,7 @@ Standard library only. Each subcommand prints JSON:
     reports.py mutation build/quality/mutation/mutations.xml
     reports.py warnings gradle.log           # Kotlin compiler warnings ("w: ") in a Gradle log
     reports.py xcresult ios.xcresult         # iOS test counts and the failing tests
+    reports.py audit xcodebuild.log          # the accessibility audit's exemptions and pages, from its AUDIT lines
 """
 from __future__ import annotations
 
@@ -195,8 +196,43 @@ def xcresult(args: list[str]) -> dict:
     }
 
 
+AUDIT_TALLY = re.compile(r"^AUDIT exemptions (\w+) applied (\d+) measured (\d+) unmeasured (\d+) rules (\d+)$")
+AUDIT_PAGES = re.compile(r"^AUDIT screen (\S+) pages (\d+) of (all|\d+)$")
+
+
+def audit_log(text: str) -> dict:
+    """What the iOS accessibility audit printed (AccessibilityAuditUITests): per test, the exemptions it applied,
+    how many it measured on that run, how many it didn't and of those how many a rule granted; per screen, the
+    pages it audited.
+
+    The audit decides at runtime whether it measured an exemption, so these counts come from its log, not the source.
+    A test that ran more than once (a retry) keeps its last line.
+    """
+    tests: dict = {}
+    screens: dict = {}
+    for line in text.splitlines():
+        line = line.strip()
+        if m := AUDIT_TALLY.match(line):
+            tests[m.group(1)] = {"applied": int(m.group(2)), "measured": int(m.group(3)), "unmeasured": int(m.group(4)),
+                                 "rules": int(m.group(5))}
+        elif m := AUDIT_PAGES.match(line):
+            screens[m.group(1)] = {"pages": int(m.group(2)), "limit": None if m.group(3) == "all" else int(m.group(3))}
+    if not tests:
+        return {"error": "no AUDIT exemptions line in the log: the audit didn't run to its end"}
+    return {"tests": tests, "screens": screens, "all_pages": bool(screens) and all(s["limit"] is None for s in screens.values())}
+
+
+def audit(args: list[str]) -> dict:
+    """The audit's counts from an xcodebuild log (`audit_log`)."""
+    path = Path(args[0])
+    if not path.exists():
+        return {"error": f"no log at {path}"}
+    return audit_log(path.read_text(errors="replace"))
+
+
 def main() -> None:
-    commands = {"kover": kover, "junit": junit, "lint": lint, "mutation": mutation, "warnings": warnings, "xcresult": xcresult}
+    commands = {"kover": kover, "junit": junit, "lint": lint, "mutation": mutation, "warnings": warnings, "xcresult": xcresult,
+                "audit": audit}
     if len(sys.argv) < 3 or sys.argv[1] not in commands:
         sys.exit(__doc__)
     json.dump(commands[sys.argv[1]](sys.argv[2:]), sys.stdout, indent=2, ensure_ascii=False)

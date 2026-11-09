@@ -8,6 +8,7 @@ wrote nothing — shows as "not run", never as passed. Standard library only.
     python3 tools/quality/scorecard.py [--input build/quality] [--output docs/quality/SCORECARD.md]
     python3 tools/quality/scorecard.py --check-evaluation build/quality/evaluation.json   # CI's floor
     python3 tools/quality/scorecard.py --check-mutation build/quality/mutation.json       # CI, weekly
+    python3 tools/quality/scorecard.py --check-audit build/quality/audit.json --all-pages # CI, weekly
 """
 from __future__ import annotations
 
@@ -350,12 +351,33 @@ def kotlin_warnings(inputs: Inputs) -> Part:
     return check(as_errors and count == 0, f"Kotlin compiler warnings: {count}" + (" (warnings are errors)" if as_errors else " (warnings are NOT errors)"))
 
 
+def audit_run_part(audit: dict | None) -> Part:
+    """The exemptions the iOS audit applied on its run: measured (contrast on a named element, its pixels 4.5:1),
+    unmeasured and of those the ones a rule granted (`reports.py audit`, from its log).
+
+    The audit fails a named contrast exemption it couldn't measure; the counts must add up, or the line is wrong.
+    """
+    label = "iOS audit exemptions at runtime"
+    if audit is None:
+        return not_run(label)
+    tests = audit.get("tests", {})
+    if not tests:
+        return Part(FAIL, f"{label}: no AUDIT exemptions line in the log")
+    applied, measured, unmeasured, rules = (sum(t[k] for t in tests.values()) for k in ("applied", "measured", "unmeasured", "rules"))
+    pages = sum(s["pages"] for s in audit.get("screens", {}).values())
+    mode = "every page" if audit.get("all_pages") else "the pages each screen audits"
+    return check(applied == measured + unmeasured and rules <= unmeasured,
+                 f"{label}: {applied} applied, {measured} measured on the run, {unmeasured} unmeasured "
+                 f"({rules} by a rule); {pages} pages at the largest text ({mode})")
+
+
 def design_quality(inputs: Inputs) -> list[Measure]:
     static = inputs.get("static")
     measures = []
 
-    m = Measure("Design quality", "Accessibility", 20, "No issues without a stated reason; no exemption the baseline doesn't list, none wider, no more rules")
-    m.parts = [suite(inputs, "iOS", "AccessibilityAuditUITests"), suite(inputs, "android", "AccessibilityAuditTest")]
+    m = Measure("Design quality", "Accessibility", 20, "No issues without a stated reason; a contrast exemption naming its element measured on the run (4.5:1); no unmeasured exemption the baseline doesn't list, none wider, no more rules")
+    m.parts = [suite(inputs, "iOS", "AccessibilityAuditUITests"), audit_run_part(inputs.get("audit")),
+               suite(inputs, "android", "AccessibilityAuditTest")]
     if static:
         nulls = static["accessibility"]["android_null_descriptions_in_icon_buttons"]
         m.parts.append(check(not nulls, f"Android icon buttons without a spoken name: {len(nulls)}"))
@@ -365,11 +387,20 @@ def design_quality(inputs: Inputs) -> list[Measure]:
         else:
             outside = len(e.get("not_in_baseline", [])) + e.get("unreadable", 0)
             m.parts.append(check(not e["above_baseline"] and not outside,
-                                 f"iOS audit exemptions: {e['entries']} ({e['without_named_element']} without a named element: "
+                                 f"iOS audit exemptions (source, second line): {e['measured']} contrast on a named element, "
+                                 f"{e['unmeasured']} unmeasured ({e['without_named_element']} without a named element: "
                                  f"{e['no_element']} for an issue without one, {e['any_element']} for any element) and "
-                                 f"{e.get('rules', 0)} rules; baseline {e['baseline']['entries']}, "
+                                 f"{e.get('rules', 0)} rules; baseline {e['baseline']['unmeasured']} unmeasured, "
                                  f"{e['baseline']['without_named_element']} and {e['baseline'].get('rules')}; "
-                                 f"{outside} not in the baseline (new or widened)"))
+                                 f"{outside} unmeasured not in the baseline (new or widened)"))
+        p = static["accessibility"].get("ios_audit_pages")
+        if p is None:
+            m.parts.append(not_run("iOS audit pages"))
+        else:
+            m.parts.append(check(not p["problems"] and not p["unreadable"],
+                                 f"iOS audit pages: {p['audited_pages']} at the largest text over {p['screens']} screens, "
+                                 f"{p['screens_leaving_later_pages']} leaving later pages to the weekly run; "
+                                 f"{len(p['problems'])} differing from the baseline"))
     measures.append(m)
 
     m = Measure("Design quality", "Review safety", 20, "Each planted error is flagged where the user is looking; values on screen when Review opens")
@@ -583,13 +614,44 @@ def check_mutation(path: Path) -> int:
     return 1 if failures else 0
 
 
+def audit_screens() -> list[str]:
+    """Every screen of `QualityScreen.all` (LabImporterUITests/QualityScreens.swift)."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import static_metrics  # noqa: E402 — only for --check-audit
+
+    return list(static_metrics.audited_pages(static_metrics.QUALITY_SCREENS.read_text(encoding="utf-8"))[0])
+
+
+def check_audit(audit: dict, all_pages: bool, screens: list[str]) -> int:
+    """CI (weekly): the audit ran to its end, its counts add up, every screen of [screens] printed its AUDIT screen
+    line, and with [all_pages] none stopped at a limit."""
+    part = audit_run_part(None if "error" in audit else audit)
+    print(f"{'ok  ' if part.status == PASS else 'FAIL'} {part.text}" + (f" ({audit['error']})" if "error" in audit else ""))
+    failures = part.status != PASS
+    printed = audit.get("screens", {})
+    for name, screen in sorted(printed.items()):
+        limited = screen["limit"] is not None
+        print(f"{'FAIL' if all_pages and limited else 'ok  '} {name}: {screen['pages']} pages" + (f" of {screen['limit']}" if limited else ""))
+        failures += all_pages and limited
+    missing = [name for name in screens if name not in printed]
+    for name in missing:
+        print(f"FAIL {name}: no AUDIT screen line in the log (not audited, or stopped before its end)")
+    if not screens:
+        print("FAIL no screens to check the log against")
+    return 1 if failures or missing or not screens else 0
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--input", default=str(ROOT / "build/quality"))
     parser.add_argument("--output", default=str(ROOT / "docs/quality/SCORECARD.md"))
     parser.add_argument("--check-evaluation", metavar="SUMMARY")
     parser.add_argument("--check-mutation", metavar="MUTATION")
+    parser.add_argument("--check-audit", metavar="AUDIT")
+    parser.add_argument("--all-pages", action="store_true", help="with --check-audit: every screen audited without a page limit")
     args = parser.parse_args()
+    if args.check_audit:
+        sys.exit(check_audit(json.loads(Path(args.check_audit).read_text()), args.all_pages, audit_screens()))
     if args.check_evaluation:
         sys.exit(check_evaluation(Path(args.check_evaluation)))
     if args.check_mutation:
