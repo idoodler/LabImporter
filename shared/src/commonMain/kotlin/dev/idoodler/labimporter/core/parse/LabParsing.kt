@@ -8,9 +8,15 @@ import dev.idoodler.labimporter.core.model.LabMapping
 import dev.idoodler.labimporter.core.model.LabValue
 import dev.idoodler.labimporter.core.model.deduplicatedByLoinc
 import dev.idoodler.labimporter.core.platform.NumberFormatting
+import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
+import kotlinx.datetime.plus
+import kotlinx.datetime.todayIn
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlin.time.Clock
 
 /**
  * The structured shape the on-device model fills in — the same fields and
@@ -40,7 +46,17 @@ data class ParseResult(
     val reportDate: LocalDate?,
     val patientName: String?,
     val authorName: String?,
+    /**
+     * True when [reportDate] is printed but may be misread: its day and month can be
+     * read either way (03/10/2026, with nothing in the report saying which comes first),
+     * or the report prints a date more than a year after it (a birth date taken for the
+     * report's). Review asks the user to check it; it doesn't block saving.
+     */
+    val reportDateNeedsCheck: Boolean = false,
 )
+
+/** The model's report date checked against the text ([LabParsePipeline.checkedDate]). */
+data class CheckedDate(val date: LocalDate?, val needsCheck: Boolean = false)
 
 /** Live progress of a streaming parse: entries so far and the latest test name. */
 data class ParseProgress(val entryCount: Int, val latestName: String?)
@@ -164,7 +180,10 @@ object LabParsePipeline {
      * @param sourceText the whole report text the model read — every part of a
      *   long one ([LabParseChunks]) — to check its date and results against.
      */
-    fun postProcess(report: AiLabReport, sourceText: String): ParseResult {
+    fun postProcess(report: AiLabReport, sourceText: String): ParseResult = postProcess(report, sourceText, currentDate())
+
+    /** [postProcess] on the day [today] (no report is dated after it): the evaluation replays on a fixed one. */
+    fun postProcess(report: AiLabReport, sourceText: String, today: LocalDate): ParseResult {
         val source = ReportSourceText(sourceText)
         val entries = report.entries.filter { it.code.isNotBlank() || it.name.isNotBlank() }
         // "mg/dL (calc)": what the report prints beside a unit is no part of it, shown or saved.
@@ -196,12 +215,14 @@ object LabParsePipeline {
                 needsSourceCheck = !source.backs(results[index], units[index], listOf(entry.name, entry.code)),
             )
         }
+        val date = checkedDate(parseDate(report.reportDate), sourceText, report.reportLanguage, today)
         // A report can list a test twice: keep one entry per LOINC, the app's canonical identity.
         return ParseResult(
             values = values.deduplicatedByLoinc(),
-            reportDate = verifiedDate(parseDate(report.reportDate), sourceText),
+            reportDate = date.date,
             patientName = report.patientName.trim().ifEmpty { null },
             authorName = report.authorName.trim().ifEmpty { null },
+            reportDateNeedsCheck = date.needsCheck,
         )
     }
 
@@ -315,34 +336,149 @@ object LabParsePipeline {
      * The model's date if the report prints it. Models mis-copy digits —
      * "03/10/2026" came back as 2031-10-03 — so a date the text doesn't show
      * is no date (the user sets it in review), unless exactly one printed date
-     * has its day and month: then that one is what the model was copying. A
-     * text without numeric dates ("3. Oktober 2026") can't be checked and
-     * keeps the model's date.
+     * has its day and month (or, where the report says which comes first, its
+     * month and day: see [checkedDate]): then that one is what the model was
+     * copying. A text without numeric dates ("3. Oktober 2026") can't be
+     * checked and keeps the model's date.
      */
-    fun verifiedDate(date: LocalDate?, sourceText: String): LocalDate? {
-        if (date == null) return null
-        val printed = printedDates(sourceText)
-        if (printed.isEmpty() || date in printed) return date
-        return printed.filter { it.day == date.day && it.month == date.month }.distinct().singleOrNull()
+    fun verifiedDate(date: LocalDate?, sourceText: String, language: String = ""): LocalDate? =
+        checkedDate(date, sourceText, language).date
+
+    /**
+     * [verifiedDate], and whether the user should check the date all the same.
+     *
+     * A date with slashes or dashes reads either way where day and month are both 12 or
+     * under (03/10/2026). The report says which comes first where another of its dates
+     * can only be read one way (DOB 12/19/1970, 23/04/1979), else its [language] does
+     * where it writes the day first (French, German, …; English doesn't say: US reports
+     * put the month first, British ones the day). Then a date with day and month swapped
+     * is the printed one the model was copying, and is corrected — flagged where only the
+     * language said so. Where nothing says, the date is kept but flagged: it may be the
+     * other one — unless that one is after [today], which no report date is. A date more
+     * than a year before another printed date up to [today] is flagged too: a birth date
+     * taken for the report's (a next appointment ahead is no such date).
+     */
+    fun checkedDate(date: LocalDate?, sourceText: String, language: String = "", today: LocalDate = currentDate()): CheckedDate {
+        if (date == null) return CheckedDate(null)
+        val printed = numericDates(sourceText, today)
+        if (printed.isEmpty()) return CheckedDate(date)
+        val shown = printed.mapNotNull { it.order }.distinct()
+        val languageOrder = if (shown.isEmpty()) orderOf(language) else null
+        val byLanguage = languageOrder != null
+        // Dates that show both orders say nothing; nor does the language then.
+        val order = shown.singleOrNull() ?: languageOrder
+        val readings = printed.flatMap { it.readings(order) }.toSet()
+        val sameDayAndMonth = readings.filter { it.day == date.day && it.month == date.month }
+        // Only a date whose order is known can be told from its swap.
+        val swapped = printed.filter { !it.slashed || order != null }.flatMap { it.readings(order) }
+            .filter { it.year == date.year && it.day == date.month.number && it.month.number == date.day }.distinct()
+        val checked = when {
+            date in readings -> date
+            sameDayAndMonth.size == 1 -> sameDayAndMonth.single()
+            swapped.size == 1 -> swapped.single()
+            else -> return CheckedDate(null)
+        }
+        // Read the other way, it would have to be a date that has already come.
+        val eitherWay = order == null && printed.filter { checked in it.readings(null) }
+            .all { p -> p.readsBothWays && p.readings(null).any { it != checked && it <= today } }
+        val swappedByLanguage = byLanguage && checked != date && checked in swapped &&
+            printed.none { !it.slashed && checked in it.readings(null) }
+        val limit = checked.plus(DatePeriod(years = 1))
+        val laterPrinted = printed.any { p -> p.readings(order).let { it.isNotEmpty() && it.all { later -> later > limit && later <= today } } }
+        return CheckedDate(checked, needsCheck = eitherWay || swappedByLanguage || laterPrinted)
+    }
+
+    /** The local date now: no report is dated after it. */
+    private fun currentDate(): LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
+
+    /**
+     * The order [language] writes a date's day and month in: its region's where the tag
+     * has one that says (en-GB, en-US), else the language's where it writes the day
+     * first (French, German, …; plain English doesn't say).
+     */
+    private fun orderOf(language: String): DayMonthOrder? {
+        val parts = language.trim().replace('_', '-').split('-')
+        val region = parts.drop(1).firstOrNull { it.length == 2 && it.all(Char::isLetter) }?.uppercase()
+        return when {
+            region in MONTH_FIRST_REGIONS -> DayMonthOrder.MONTH_FIRST
+            region in DAY_FIRST_REGIONS -> DayMonthOrder.DAY_FIRST
+            parts.first().lowercase() in DAY_FIRST_LANGUAGES -> DayMonthOrder.DAY_FIRST
+            else -> null
+        }
     }
 
     /**
      * Every numeric date in [text]: ISO, day-first with dots, and with
      * slashes or dashes both readings where both are valid (09/10/2026 is
-     * October or September). Two-digit years are 20xx.
+     * October or September). Two-digit years are 20xx, or 19xx where 20xx is
+     * after [today]'s year (a birth date "12.03.58").
      */
-    fun printedDates(text: String): Set<LocalDate> = buildSet {
+    fun printedDates(text: String, today: LocalDate = currentDate()): Set<LocalDate> =
+        numericDates(text, today).flatMapTo(mutableSetOf()) { it.readings(null) }
+
+    private fun numericDates(text: String, today: LocalDate): List<PrintedDate> = buildList {
         ISO_DATE.findAll(text).forEach { m ->
             val (year, month, day) = m.destructured
-            date(year.toInt(), month.toInt(), day.toInt())?.let(::add)
+            date(year.toInt(), month.toInt(), day.toInt())?.let { add(PrintedDate(it, null, null, null)) }
         }
         NUMERIC_DATE.findAll(text).forEach { m ->
             val (first, separator, second, yearText) = m.destructured
-            val year = yearText.toInt().let { if (yearText.length == 2) 2000 + it else it }
-            date(year, second.toInt(), first.toInt())?.let(::add)
-            if (separator != ".") date(year, first.toInt(), second.toInt())?.let(::add)
+            val year = yearText.toInt().let { if (yearText.length != 2) it else if (2000 + it > today.year) 1900 + it else 2000 + it }
+            val dayFirst = date(year, second.toInt(), first.toInt())
+            if (separator == ".") {
+                dayFirst?.let { add(PrintedDate(it, null, null, null)) }
+            } else {
+                add(PrintedDate(dayFirst, date(year, first.toInt(), second.toInt()), first.toInt(), second.toInt()))
+            }
         }
     }
+
+    /** Which comes first in a date with slashes or dashes. */
+    private enum class DayMonthOrder { DAY_FIRST, MONTH_FIRST }
+
+    /**
+     * A numeric date as printed: [dayFirst] is its only reading where its form says
+     * (ISO, dots); with slashes or dashes, [monthFirst] is the other one, and [first]
+     * and [second] are the parts in front of the year.
+     */
+    private class PrintedDate(val dayFirst: LocalDate?, val monthFirst: LocalDate?, val first: Int?, val second: Int?) {
+        /** Written with slashes or dashes, so either part may be the day. */
+        val slashed: Boolean get() = first != null
+
+        /** The order this date shows: the one way a part above 12 can be read. */
+        val order: DayMonthOrder?
+            get() = when {
+                first == null || second == null -> null
+                first > 12 && second <= 12 -> DayMonthOrder.DAY_FIRST
+                second > 12 && first <= 12 -> DayMonthOrder.MONTH_FIRST
+                else -> null
+            }
+
+        /** Whether it is two different dates, both valid. */
+        val readsBothWays: Boolean get() = dayFirst != null && monthFirst != null && dayFirst != monthFirst
+
+        /** The dates it reads as in the report's [order]: both where that isn't known. */
+        fun readings(order: DayMonthOrder?): List<LocalDate> = when {
+            !slashed || order == DayMonthOrder.DAY_FIRST -> listOfNotNull(dayFirst)
+            order == DayMonthOrder.MONTH_FIRST -> listOfNotNull(monthFirst)
+            else -> listOfNotNull(dayFirst, monthFirst).distinct()
+        }
+    }
+
+    /**
+     * Languages that write a date's day first (03/10/2026 is 3 October). Not English:
+     * US reports put the month first, British and Australian ones the day.
+     */
+    private val DAY_FIRST_LANGUAGES = setOf(
+        "bg", "ca", "cs", "da", "de", "el", "es", "et", "fi", "fr", "ga", "hr", "is", "it", "lt", "lv", "mt",
+        "nb", "nl", "nn", "no", "pl", "pt", "ro", "ru", "sk", "sl", "sr", "sv", "tr", "uk",
+    )
+
+    /** Regions that write a date's month first, whatever the language (en-US, es-US). */
+    private val MONTH_FIRST_REGIONS = setOf("US")
+
+    /** Regions whose English writes a date's day first (Canada writes both, so it isn't here). */
+    private val DAY_FIRST_REGIONS = setOf("GB", "IE", "AU", "NZ", "ZA", "IN")
 
     private fun date(year: Int, month: Int, day: Int): LocalDate? =
         if (month in 1..12 && day in 1..31) runCatching { LocalDate(year, month, day) }.getOrNull() else null

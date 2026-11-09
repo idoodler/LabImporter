@@ -184,6 +184,7 @@
     </plurals>
     <string name="correct_or_deselect">Не можна зберегти в такому вигляді. Виправте значення або зніміть із нього позначку.</string>
     <string name="no_date_found">У звіті не знайдено дату. Перевірте, чи правильна ця дата.</string>
+    <string name="date_to_check">Цю дату могло бути прочитано неправильно. Перевірте, чи збігається вона зі звітом.</string>
     <string name="patient_and_lab">Пацієнт і лабораторія</string>
     <string name="not_filled_in">Не заповнено</string>
     <plurals name="exportable_count">

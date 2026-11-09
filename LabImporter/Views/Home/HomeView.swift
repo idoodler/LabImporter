@@ -15,6 +15,8 @@ struct HomeView: View {
     @State private var parsedReportDate: Date?
     /// An import that found no date, unlike a manual report, which has none to find.
     @State private var isParsedDateMissing = false
+    /// An import whose date may be misread (`ParseResult.isReportDateToCheck`).
+    @State private var isParsedDateToCheck = false
     @State private var parsedPatientName: String?
     @State private var parsedAuthorName: String?
     @State private var showReview = false
@@ -103,6 +105,7 @@ struct HomeView: View {
                     labValues: labValues,
                     reportDate: parsedReportDate ?? Date(),
                     isDateMissing: isParsedDateMissing,
+                    isDateToCheck: isParsedDateToCheck,
                     extractedPatientName: parsedPatientName,
                     extractedAuthorName: parsedAuthorName
                 )
@@ -370,6 +373,7 @@ struct HomeView: View {
             labValues = result.values
             parsedReportDate = result.reportDate
             isParsedDateMissing = result.reportDate == nil
+            isParsedDateToCheck = result.isReportDateToCheck
             parsedPatientName = result.patientName
             parsedAuthorName = result.authorName
             showReview = true
@@ -389,6 +393,7 @@ struct HomeView: View {
         labValues = []
         parsedReportDate = nil
         isParsedDateMissing = false
+        isParsedDateToCheck = false
         parsedPatientName = nil
         parsedAuthorName = nil
         showReview = true

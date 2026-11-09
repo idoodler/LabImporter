@@ -1,0 +1,90 @@
+{"entries":
+[{"code":
+"Sodium",
+"name":
+"Sodium",
+"rawValue":
+"141",
+"unit":
+"mmol/L"
+},
+{"code":
+"Potassium",
+"name":
+"Potassium",
+"rawValue":
+"4.2",
+"unit":
+"mmol/L"
+},
+{"code":
+"Creatinine",
+"name":
+"Creatinine",
+"rawValue":
+"81",
+"unit":
+"umol/L"
+},
+{"code":
+"eGFR",
+"name":
+"glomerular filtration rate",
+"rawValue":
+">90",
+"unit":
+"mL/min/1.73m2"
+},
+{"code":
+"ALT",
+"name":
+"Alanine aminotransferase",
+"rawValue":
+"<5",
+"unit":
+"U/L"
+},
+{"code":
+"GGT",
+"name":
+"Gamma-glutamyl transferase",
+"rawValue":
+"19",
+"unit":
+"U/L"
+},
+{"code":
+"Total Cholesterol",
+"name":
+"Total Cholesterol",
+"rawValue":
+"4.9",
+"unit":
+"mmol/L"
+},
+{"code":
+"C-Reactive Protein",
+"name":
+"C-Reactive Protein",
+"rawValue":
+"<1",
+"unit":
+"mg/L"
+},
+{"code":
+"Ferritin",
+"name":
+"Ferritin",
+"rawValue":
+"162",
+"unit":
+"ug/L"}]
+,
+"reportDate":
+"2026-10-09",
+"patientName":
+"Thomas Nguyen",
+"authorName":
+"Dr P. Kelly",
+"reportLanguage":
+"en"}

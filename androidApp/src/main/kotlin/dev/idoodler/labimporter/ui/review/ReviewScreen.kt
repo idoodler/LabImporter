@@ -394,25 +394,29 @@ private data class Quad<A, B, C, D>(val a: A, val b: B, val c: C, val d: D)
 /** The colour of "compare this with the report": a caution, not the error colour of what blocks saving. */
 private val CheckColor: Color get() = LabCategory.GLYCEMIC.color
 
-/** The report's date; says so when the import found none, until the user changes it. */
+/** The report's date; says so when the import found none or it may be misread, until the user changes it. */
 @Composable
 private fun DateRow(draft: ReviewDraft, onPickDate: () -> Unit) {
-    val notFound = stringResource(R.string.no_date_found)
+    val note = when {
+        draft.dateNotFound -> stringResource(R.string.no_date_found)
+        draft.dateToCheck -> stringResource(R.string.date_to_check)
+        else -> null
+    }
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         FilledTonalButton(
             onClick = onPickDate,
             modifier = Modifier.fillMaxWidth().height(48.dp)
-                .semantics { if (draft.dateNotFound) stateDescription = notFound },
+                .semantics { if (note != null) stateDescription = note },
         ) {
             Icon(Icons.Rounded.CalendarMonth, null)
             Spacer(Modifier.width(10.dp))
             Text(formatDate(draft.date, FormatStyle.LONG), style = MaterialTheme.typography.titleSmall)
         }
-        if (draft.dateNotFound) {
+        if (note != null) {
             Row(Modifier.padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Rounded.FindInPage, null, Modifier.size(18.dp), tint = CheckColor)
                 Spacer(Modifier.width(6.dp))
-                Text(notFound, style = MaterialTheme.typography.bodySmall)
+                Text(note, style = MaterialTheme.typography.bodySmall)
             }
         }
     }
@@ -673,6 +677,20 @@ private fun ReviewToCheckPreview() {
 @Composable
 private fun ReviewToCheckDarkPreview() {
     LabImporterTheme(darkTheme = true, dynamicColor = false) { ReviewScreen(previewToCheck, {}, { _, _ -> }, { "" }, {}, {}, {}) }
+}
+
+private val previewDateToCheck = previewDraft.copy(dateToCheck = true)
+
+@Preview(name = "Date to check", widthDp = 400, heightDp = 1100)
+@Composable
+private fun ReviewDateToCheckPreview() {
+    LabImporterTheme(dynamicColor = false) { ReviewScreen(previewDateToCheck, {}, { _, _ -> }, { "" }, {}, {}, {}) }
+}
+
+@Preview(name = "Date to check – dark", widthDp = 400, heightDp = 1100, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun ReviewDateToCheckDarkPreview() {
+    LabImporterTheme(darkTheme = true, dynamicColor = false) { ReviewScreen(previewDateToCheck, {}, { _, _ -> }, { "" }, {}, {}, {}) }
 }
 
 @Preview(name = "To check – small phone", widthDp = 360, heightDp = 640)

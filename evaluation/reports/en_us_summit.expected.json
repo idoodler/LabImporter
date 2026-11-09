@@ -1,0 +1,16 @@
+{
+  "reportDate": "2026-02-05",
+  "patientName": "Maria Gonzalez",
+  "values": [
+    {"names": ["Hemoglobin"], "value": 12.6, "unit": "g/dL", "loinc": "718-7"},
+    {"names": ["Creatinine"], "value": 0.68, "unit": "mg/dL", "loinc": "2160-0"},
+    {"names": ["Ferritin"], "value": 18, "unit": "ng/mL", "loinc": "2276-4"},
+    {"names": ["hs-CRP", "CRP", "C reactive"], "value": 0.4, "unit": "mg/L"}
+  ],
+  "notNumeric": [
+    {"names": ["Bilirubin"], "result": "<0.2"},
+    {"names": ["GFR"], "result": ">90"},
+    {"names": ["Albumin"], "result": "<0.2"},
+    {"names": ["Lead"], "result": "<1"}
+  ]
+}

@@ -169,6 +169,7 @@
     </plurals>
     <string name="correct_or_deselect">この形式では保存できません。修正するか、選択を解除してください。</string>
     <string name="no_date_found">レポートに日付が見つかりませんでした。この日付が正しいか確認してください。</string>
+    <string name="date_to_check">この日付は誤って読み取られた可能性があります。レポートと一致するか確認してください。</string>
     <string name="patient_and_lab">患者と検査機関</string>
     <string name="not_filled_in">未入力</string>
     <plurals name="exportable_count">

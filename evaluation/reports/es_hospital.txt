@@ -1,0 +1,13 @@
+Hospital Universitario del Norte - Laboratorio Central
+Paciente: Lucía Fernández Ruiz      F. nacimiento: 08/09/1972
+Fecha de extracción: 10/02/2026
+
+PRUEBA                         RESULTADO    UNIDADES         VALORES DE REFERENCIA
+Glucosa                        96           mg/dL            70 - 110
+Creatinina                     0,71         mg/dL            0,50 - 0,90
+Filtrado glomerular (CKD-EPI)  >90          mL/min/1,73m2    >60
+Proteína C reactiva            <0,5         mg/dL            0,0 - 0,5
+Colesterol total               205          mg/dL            <200
+Ferritina                      45           ng/mL            15 - 150
+Tirotropina (TSH)              3,12         µUI/mL           0,35 - 4,94
+Troponina T ultrasensible      <3           ng/L             <14

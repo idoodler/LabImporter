@@ -1,0 +1,17 @@
+{
+  "reportDate": "2026-10-09",
+  "patientName": "Thomas Nguyen",
+  "values": [
+    {"names": ["Sodium"], "value": 141, "unit": "mmol/L", "loinc": "2951-2"},
+    {"names": ["Potassium"], "value": 4.2, "unit": "mmol/L", "loinc": "2823-3"},
+    {"names": ["Creatinine"], "value": 81, "unit": "umol/L", "loinc": "14682-9"},
+    {"names": ["GGT", "Glutamyl"], "value": 19, "unit": "U/L"},
+    {"names": ["Cholesterol"], "value": 4.9, "unit": "mmol/L"},
+    {"names": ["Ferritin"], "value": 162, "unit": "ug/L", "loinc": "2276-4"}
+  ],
+  "notNumeric": [
+    {"names": ["GFR"], "result": ">90"},
+    {"names": ["ALT", "Alanine"], "result": "<5"},
+    {"names": ["C-Reactive", "C reactive", "CRP"], "result": "<1"}
+  ]
+}

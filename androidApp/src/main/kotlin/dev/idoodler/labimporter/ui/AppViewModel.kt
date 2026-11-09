@@ -70,9 +70,15 @@ data class ReviewDraft(
     val original: LabReport? = null,
     /** The import found no date the report prints, so [date] is only a starting point until the user changes it. */
     val dateNotFound: Boolean = false,
+    /**
+     * The report prints [date], but it may be misread — day and month either way, or a
+     * birth date ([dev.idoodler.labimporter.core.parse.ParseResult.reportDateNeedsCheck]).
+     */
+    val dateToCheck: Boolean = false,
 ) {
-    /** The user set the date; [dateNotFound] stands until it really changes, as on iOS. */
-    fun withDate(newDate: LocalDate): ReviewDraft = copy(date = newDate, dateNotFound = dateNotFound && newDate == date)
+    /** The user set the date; [dateNotFound] and [dateToCheck] stand until it really changes, as on iOS. */
+    fun withDate(newDate: LocalDate): ReviewDraft =
+        copy(date = newDate, dateNotFound = dateNotFound && newDate == date, dateToCheck = dateToCheck && newDate == date)
 }
 
 /** Something asked for from outside the app (a launcher shortcut), done once the main screen shows — like iOS's `SiriActionBridge`. */
@@ -352,6 +358,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 detectedPatientName = result.patientName?.trim()?.takeIf { it.isNotEmpty() },
                 detectedAuthorName = result.authorName?.trim()?.takeIf { it.isNotEmpty() },
                 dateNotFound = result.reportDate == null,
+                dateToCheck = result.reportDateNeedsCheck,
             ),
         )
     }

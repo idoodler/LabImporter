@@ -174,6 +174,7 @@
     </plurals>
     <string name="correct_or_deselect">Bu yazılışla kaydedilemez. Düzeltin veya seçimi kaldırın.</string>
     <string name="no_date_found">Raporda tarih bulunamadı. Bu tarihin doğru olup olmadığını kontrol edin.</string>
+    <string name="date_to_check">Bu tarih yanlış okunmuş olabilir. Raporla eşleşip eşleşmediğini kontrol edin.</string>
     <string name="patient_and_lab">Hasta ve laboratuvar</string>
     <string name="not_filled_in">Doldurulmadı</string>
     <plurals name="exportable_count">

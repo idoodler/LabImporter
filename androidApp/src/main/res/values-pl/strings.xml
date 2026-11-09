@@ -184,6 +184,7 @@
     </plurals>
     <string name="correct_or_deselect">Nie można zapisać w tej postaci. Popraw wartość lub usuń jej zaznaczenie.</string>
     <string name="no_date_found">W raporcie nie znaleziono daty. Sprawdź, czy ta data jest poprawna.</string>
+    <string name="date_to_check">Ta data mogła zostać źle odczytana. Sprawdź, czy zgadza się z raportem.</string>
     <string name="patient_and_lab">Pacjent i laboratorium</string>
     <string name="not_filled_in">Nie wypełniono</string>
     <plurals name="exportable_count">

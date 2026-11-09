@@ -33,7 +33,26 @@ internal class ReportSourceText(text: String) {
     fun backs(result: String, unit: String, names: List<String>): Boolean {
         val trimmed = result.trim()
         if (trimmed.isEmpty() || trimmed == "-") return true
-        return prints(trimmed) && printsBesideTest(trimmed, names) && printsUnitBesideTest(trimmed, unit, names)
+        return prints(trimmed) && printsBesideTest(trimmed, names) && printsUnitBesideTest(trimmed, unit, names) &&
+            !dropsQualifier(trimmed, names)
+    }
+
+    /**
+     * Whether [result], a plain number, is its test's result printed behind a "<" or ">":
+     * ">60" read as 60. A row's result is the first printing of the number behind the
+     * test's name (or the value the next line starts with, where the row goes on there),
+     * so what the row prints later — a reference "> OR = 60", a previous result —
+     * neither hides a dropped qualifier nor raises a false alarm ("LDL 100 H mg/dL <100").
+     * Where no row of the test prints the number, nothing is claimed.
+     */
+    fun dropsQualifier(result: String, names: List<String>): Boolean {
+        val trimmed = result.trim()
+        if (trimmed.firstOrNull()?.isDigit() != true) return false
+        val value = numberIn(trimmed, decimalSeparator)?.let { abs(it) } ?: return false
+        val verdicts = rowsOf(names).mapNotNull { (index, named) ->
+            lines[index].isQualifiedAfterName(value, named) ?: lines.getOrNull(index + 1)?.isQualifiedAtStart(value)
+        }
+        return verdicts.isNotEmpty() && verdicts.all { it }
     }
 
     /** Whether [result] is printed. No result (empty, `-`) claims nothing, so there's nothing to contradict. */
@@ -195,6 +214,34 @@ internal class ReportSourceText(text: String) {
                 val end = unitMatchEnd(form, wanted, start)
                 end != null && unitStartsCleanly(form, start) && unitEndsCleanly(form, end)
             }.map { from[it] }
+        }
+
+        /**
+         * Whether the first number behind the test's name (the first of [names], normalized
+         * without spacing, printed here) that reads [value] has a "<" or ">" in front of it;
+         * null where none reads it.
+         */
+        fun isQualifiedAfterName(value: Double, names: List<String>): Boolean? {
+            val from = nameEnd(names)
+            val token = tokens.firstOrNull { it.range.first >= from && value in it.values } ?: return null
+            return signAt(blanked, token.range.first) == null
+        }
+
+        /** Whether the value this line starts with ([LEADING_VALUE]) is [value] behind a "<" or ">"; null where it doesn't start with [value]. */
+        fun isQualifiedAtStart(value: Double): Boolean? {
+            val leading = LEADING_VALUE.find(blanked)?.value?.trim() ?: return null
+            val number = numberIn(leading.trimStart(*THRESHOLDS, '=').trim(), decimalSeparator)?.let { abs(it) } ?: return null
+            return if (number == value) leading.first() in THRESHOLDS else null
+        }
+
+        /**
+         * Where the first of [names] printed here ends, as a position of the printed text;
+         * 0 where normalizing changed the line's length, so positions can't be compared.
+         */
+        private fun nameEnd(names: List<String>): Int {
+            if (normalized.length != text.length) return 0
+            val start = normalized.indices.firstOrNull { start -> names.any { namesAt(it, start) } } ?: return 0
+            return names.filter { namesAt(it, start) }.mapNotNull { matchEnd(normalized, it, start) }.maxOrNull() ?: 0
         }
 
         /** Whether this prints [result] as a row's result: as [prints], but a reference range's limit isn't one. */

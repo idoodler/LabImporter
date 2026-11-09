@@ -56,6 +56,9 @@ struct ParseResult {
     let reportDate: Date?
     let patientName: String?
     let authorName: String?
+    /// The report prints `reportDate`, but it may be misread (03/10/2026 with nothing
+    /// saying whether the day or the month comes first, or a birth date): Review asks to check it.
+    var isReportDateToCheck = false
 }
 
 /// Live progress of a streaming parse, surfaced by the processing HUD: how
@@ -249,7 +252,8 @@ actor LabParserService {
             values: result.values.map(LabValue.init(shared:)),
             reportDate: result.reportDate.map(Date.init(shared:)),
             patientName: result.patientName,
-            authorName: result.authorName
+            authorName: result.authorName,
+            isReportDateToCheck: result.reportDateNeedsCheck
         )
     }
 

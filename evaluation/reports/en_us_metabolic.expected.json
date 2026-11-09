@@ -1,0 +1,17 @@
+{
+  "reportDate": "2026-01-07",
+  "patientName": "Kevin O'Brien",
+  "values": [
+    {"names": ["Glucose"], "value": 118, "unit": "mg/dL"},
+    {"names": ["BUN", "Urea"], "value": 21, "unit": "mg/dL"},
+    {"names": ["Creatinine"], "value": 1.08, "unit": "mg/dL", "loinc": "2160-0"},
+    {"names": ["Albumin"], "value": 4.3, "unit": "g/dL", "loinc": "1751-7"},
+    {"names": ["Bilirubin"], "value": 0.6, "unit": "mg/dL"},
+    {"names": ["A1c", "Hemoglobin A1c"], "value": 6.3, "unit": "%"}
+  ],
+  "notNumeric": [
+    {"names": ["GFR"], "result": ">60"},
+    {"names": ["Ketone"], "result": "<5"},
+    {"names": ["Microalbumin", "Albumin"], "result": "<3.0"}
+  ]
+}

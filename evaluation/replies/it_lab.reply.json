@@ -1,0 +1,83 @@
+{"entries":
+[
+{"code":
+"Emoglobina",
+"name":
+"Emoglobina",
+"rawValue":
+"14,8",
+"unit":
+"g/dL"
+},
+{"code":
+"Leucociti",
+"name":
+"Leucociti",
+"rawValue":
+"6,40",
+"unit":
+"10^3/µL"
+},
+{"code":
+"Glucosio",
+"name":
+"Glucosio",
+"rawValue":
+"92",
+"unit":
+"mg/dL"
+},
+{"code":
+"Creatinina",
+"name":
+"Creatinina",
+"rawValue":
+"1,02",
+"unit":
+"mg/dL"
+},
+{"code":
+"eGFR (CKD-EPI)",
+"name":
+"glomeruläre Filtrationsrate (eGFR)",
+"rawValue":
+"> 90",
+"unit":
+"mL/min"
+},
+{"code":
+"Proteina C reattiva",
+"name":
+"Proteina C reattiva",
+"rawValue":
+"< 0,30",
+"unit":
+"mg/dL"
+},
+{"code":
+"PSA totale",
+"name":
+"PSA totale",
+"rawValue":
+"0,82",
+"unit":
+"ng/mL"
+},
+{"code":
+"Bilirubina diretta",
+"name":
+"Bilirubina diretta",
+"rawValue":
+"< 0,10",
+"unit":
+"mg/dL"
+}
+],
+"reportDate":
+"2026-11-04",
+"patientName":
+"Bianchi Marco",
+"authorName":
+"Laboratorio Analisi Mediche Santa Chiara",
+"reportLanguage":
+"it"}

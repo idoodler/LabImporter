@@ -20,10 +20,18 @@ import java.math.BigDecimal
  * the model read right is made wrong in the ways a reader goes wrong — deterministically,
  * no model needed — and each faulty reply goes through the shared post-processing. A
  * planted error counts as caught when the value comes out flagged (`needsSourceCheck`),
- * a planted date when it doesn't come out as the planted date (it's corrected or left
- * empty, which Review shows). Controls are the right values, as read and in harmless
- * spellings: a flag on one of them is a false alarm.
+ * a planted date when it doesn't come out as the planted date unflagged (it's corrected,
+ * left empty or flagged to check, which Review shows) — a flag only where the report's
+ * right date comes out unflagged, else it tells nothing apart. Controls are the right
+ * values, as read and in harmless spellings, and each report's right date: a flag on one
+ * of them is a false alarm.
  */
+
+/**
+ * The day the evaluation reads its reports on: no report is dated after it, and a replay
+ * reads the same whatever the calendar says. Move it on when a report dated later joins.
+ */
+val EVALUATION_DAY = LocalDate(2026, 11, 9)
 
 /** The ways a value or date is planted wrong. */
 enum class Fault(val label: String) {
@@ -124,6 +132,9 @@ data class PlantedSummary(
     /** Right values, as read and respelled; and how many of them Review flagged anyway. */
     val controls: Int,
     val falseFlags: Int,
+    /** Reports' right dates that come out as themselves; and how many of them Review asks to check anyway. */
+    val dateControls: Int = 0,
+    val dateFalseFlags: Int = 0,
 )
 
 /** One report's material: its text, the model's reply, what it really says. */
@@ -133,7 +144,7 @@ private class Outcome(val kind: Fault, val flagged: Boolean, val what: String)
 
 /** One entry through the shared post-processing, on its own: the Review check looks at each value alone. */
 private fun processed(report: PlantedReport, entry: AiLabEntry): LabValue? =
-    LabParsePipeline.postProcess(report.reply.copy(entries = listOf(entry), reportDate = ""), report.text).values.singleOrNull()
+    LabParsePipeline.postProcess(report.reply.copy(entries = listOf(entry), reportDate = ""), report.text, EVALUATION_DAY).values.singleOrNull()
 
 /** What [value] rightly reads as: the expected value (with its alternatives) or text result it matches, or null when it's wrong. */
 private fun rightReading(value: LabValue, expected: Expected): List<Alternative>? {
@@ -141,7 +152,8 @@ private fun rightReading(value: LabValue, expected: Expected): List<Alternative>
         return expected.values.map { listOf(Alternative(it.value, it.unit)) + it.alternatives }
             .firstOrNull { options -> options.any { value.matchesValue(it.value, it.unit) } }
     }
-    return if (value.qualitativeResult != null && expected.notNumeric.any { value.matchesName(it.names) }) emptyList() else null
+    if (value.qualitativeResult == null) return null
+    return if (expected.notNumeric.any { value.matchesName(it.names) && it.readsAs(value.displayValue) }) emptyList() else null
 }
 
 private fun isRight(value: LabValue, options: List<Alternative>) =
@@ -151,6 +163,8 @@ fun plantErrors(reports: List<PlantedReport>): PlantedSummary {
     val outcomes = mutableListOf<Outcome>()
     var controls = 0
     var falseFlags = 0
+    var dateControls = 0
+    var dateFalseFlags = 0
     for (report in reports) {
         val entries = report.reply.entries
         for (index in entries.indices) {
@@ -174,10 +188,22 @@ fun plantErrors(reports: List<PlantedReport>): PlantedSummary {
             }
         }
         val date = report.expected.reportDate?.let(LocalDate::parse) ?: continue
-        if (LabParsePipeline.postProcess(report.reply, report.text).reportDate != date) continue
+        // The right date as the control, whatever the model read: Review shouldn't ask about it.
+        val right = LabParsePipeline.postProcess(report.reply.copy(reportDate = date.toString()), report.text, EVALUATION_DAY)
+        val rightFlagged = right.reportDate == date && right.reportDateNeedsCheck
+        if (right.reportDate == date) {
+            dateControls++
+            if (rightFlagged) {
+                dateFalseFlags++
+                println("    FALSE ALARM ${report.name}: date $date")
+            }
+        }
+        if (LabParsePipeline.postProcess(report.reply, report.text, EVALUATION_DAY).reportDate != date) continue
         for ((kind, planted) in plantedDates(date)) {
-            val read = LabParsePipeline.postProcess(report.reply.copy(reportDate = planted.toString()), report.text).reportDate
-            outcomes += Outcome(kind, read != planted, "${report.name}: $planted (printed $date)")
+            val read = LabParsePipeline.postProcess(report.reply.copy(reportDate = planted.toString()), report.text, EVALUATION_DAY)
+            // Caught when corrected, left empty, or kept but flagged for the user to check — where the right date isn't.
+            val caught = read.reportDate != planted || (read.reportDateNeedsCheck && !rightFlagged)
+            outcomes += Outcome(kind, caught, "${report.name}: $planted (printed $date)")
         }
     }
     outcomes.filterNot { it.flagged }.forEach { println("    NOT FLAGGED ${it.kind.label}: ${it.what}") }
@@ -189,5 +215,7 @@ fun plantErrors(reports: List<PlantedReport>): PlantedSummary {
         },
         controls = controls,
         falseFlags = falseFlags,
+        dateControls = dateControls,
+        dateFalseFlags = dateFalseFlags,
     )
 }

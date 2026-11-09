@@ -1,0 +1,14 @@
+Lakeview Medical Laboratories
+Patient: Robert Miles      DOB: 05/07/1958      Sex: M
+Collected: 11/04/2026 08:12
+
+Test                          Result   Flag   Units     Reference Range
+Glucose, Fasting              104      H      mg/dL     65-99
+Cholesterol, Total            182             mg/dL     <200
+LDL Cholesterol               100      H      mg/dL     <100
+HDL Cholesterol               44              mg/dL     > OR = 40
+Triglycerides                 190      H      mg/dL     <150
+TSH                           2.84            mIU/L     0.40-4.50
+PSA, Total                    <0.1            ng/mL     < OR = 4.0
+Troponin I, High Sensitivity  <3              ng/L      < OR = 20
+Vitamin D, 25-Hydroxy         >150     H      ng/mL     30-100

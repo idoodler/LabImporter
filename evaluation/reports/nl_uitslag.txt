@@ -1,0 +1,13 @@
+Huisartsenlaboratorium Noord - Uitslagen
+Patiënt: mw. S. de Vries      Geb.datum: 11-08-1990
+Afnamedatum: 05-01-2026
+
+Bepaling              Uitslag   Eenheid          Referentie
+Hemoglobine           8,4       mmol/l           7,5 - 10,0
+Leukocyten            5,8       10^9/l           4,0 - 10,0
+Kreatinine            64        µmol/l           49 - 90
+eGFR CKD-EPI          >90       ml/min/1.73m2    >60
+CRP                   <5        mg/l             <10
+Glucose (nuchter)     5,3       mmol/l           4,0 - 6,0
+TSH                   1,9       mU/l             0,4 - 4,0
+Vitamine B12          >1476     pmol/l           145 - 569

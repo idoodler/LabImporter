@@ -1,0 +1,16 @@
+{
+  "reportDate": "2026-03-09",
+  "patientName": "Klaus Hoffmann",
+  "values": [
+    {"names": ["Hämoglobin", "Haemoglobin", "Hb"], "value": 15.1, "unit": "g/dl", "loinc": "718-7"},
+    {"names": ["Leukozyten", "Leuko", "WBC"], "value": 7.3, "unit": "/nl", "loinc": "6690-2"},
+    {"names": ["Kreatinin"], "value": 0.96, "unit": "mg/dl", "loinc": "2160-0"},
+    {"names": ["PSA", "Prostata"], "value": 1.24, "unit": "ng/ml"},
+    {"names": ["TSH", "Thyreotropin"], "value": 1.87, "unit": "mU/l", "loinc": "3016-3"}
+  ],
+  "notNumeric": [
+    {"names": ["GFR", "Filtrationsrate"], "result": "> 90"},
+    {"names": ["CRP", "C-reaktiv"], "result": "< 0,5"},
+    {"names": ["Troponin"], "result": "< 3"}
+  ]
+}

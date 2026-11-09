@@ -1,0 +1,15 @@
+Royal County Hospital - Blood Sciences
+Patient: SMITH, Margaret      DOB: 23/04/1979      Hospital No: RCH0482215
+Sample collected: 06/03/2026 09:20
+
+Test                      Result     Units           Reference range
+Sodium                    139        mmol/L          133 - 146
+Potassium                 4.6        mmol/L          3.5 - 5.3
+Urea                      5.2        mmol/L          2.5 - 7.8
+Creatinine                68         umol/L          45 - 84
+eGFR                      >90        mL/min/1.73m2
+C-reactive protein        <4         mg/L            0 - 5
+Haemoglobin               131        g/L             115 - 165
+White cell count          6.1        10*9/L          4.0 - 11.0
+Platelets                 248        10*9/L          150 - 410
+HbA1c                     38         mmol/mol        20 - 41

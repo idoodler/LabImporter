@@ -179,6 +179,7 @@
     </plurals>
     <string name="correct_or_deselect">No es pot desar tal com està escrit. Corregeix-lo o desmarca\'l.</string>
     <string name="no_date_found">No s\'ha trobat cap data a l\'informe. Comprova que aquesta data sigui correcta.</string>
+    <string name="date_to_check">Aquesta data podria estar mal llegida. Comprova que coincideixi amb l\'informe.</string>
     <string name="patient_and_lab">Pacient i laboratori</string>
     <string name="not_filled_in">Sense omplir</string>
     <plurals name="exportable_count">

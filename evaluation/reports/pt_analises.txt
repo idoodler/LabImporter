@@ -1,0 +1,13 @@
+Laboratório de Análises Clínicas Avenida
+Utente: Ana Rita Sousa      Data de nascimento: 02/03/1987
+Data da colheita: 08/07/2026
+
+ANÁLISE                          RESULTADO     UNIDADES        VALORES DE REFERÊNCIA
+Hemoglobina                      13,2          g/dL            12,0 - 15,5
+Leucócitos                       5,60          x10^9/L         4,00 - 11,00
+Glicose                          89            mg/dL           70 - 110
+Creatinina                       0,64          mg/dL           0,51 - 0,95
+Taxa de filtração glomerular     > 90          mL/min/1,73m2   > 60
+Proteína C reativa               < 0,5         mg/dL           < 0,5
+Ferritina                        27            ng/mL           13 - 150
+Anticorpos anti-TPO              < 9           UI/mL           < 34

@@ -56758,6 +56758,154 @@
         }
       }
     },
+    "This date may be misread. Check that it matches the report." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тази дата може да е разчетена грешно. Проверете дали съвпада с отчета."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aquesta data podria estar mal llegida. Comprova que coincideixi amb l'informe."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toto datum mohlo být přečteno chybně. Zkontrolujte, zda odpovídá protokolu."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denne dato kan være læst forkert. Tjek, at den stemmer med rapporten."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses Datum wurde vielleicht falsch gelesen. Prüfe, ob es mit dem Bericht übereinstimmt."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αυτή η ημερομηνία μπορεί να διαβάστηκε λάθος. Ελέγξτε ότι συμφωνεί με την αναφορά."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es posible que esta fecha se haya leído mal. Comprueba que coincida con el informe."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tämä päivämäärä on voitu lukea väärin. Tarkista, että se vastaa raporttia."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cette date a peut-être été mal lue. Vérifiez qu'elle correspond au rapport."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ovaj je datum možda pogrešno pročitan. Provjerite odgovara li nalazu."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lehet, hogy ezt a dátumot rosszul olvastuk be. Ellenőrizd, hogy egyezik-e a lelettel."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questa data potrebbe essere stata letta male. Controlla che corrisponda al referto."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この日付は誤って読み取られた可能性があります。レポートと一致するか確認してください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deze datum is mogelijk verkeerd gelezen. Controleer of hij overeenkomt met het rapport."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ta data mogła zostać źle odczytana. Sprawdź, czy zgadza się z raportem."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta data pode ter sido lida incorretamente. Verifique se ela confere com o laudo."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta data pode ter sido lida incorretamente. Verifique se corresponde ao relatório."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este posibil ca această dată să fi fost citită greșit. Verifică dacă se potrivește cu raportul."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Эта дата могла быть прочитана неверно. Проверьте, совпадает ли она с отчётом."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tento dátum mohol byť prečítaný nesprávne. Skontrolujte, či zodpovedá správe."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Det här datumet kan ha lästs fel. Kontrollera att det stämmer med rapporten."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu tarih yanlış okunmuş olabilir. Raporla eşleşip eşleşmediğini kontrol edin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Цю дату могло бути прочитано неправильно. Перевірте, чи збігається вона зі звітом."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此日期可能读取有误。请确认它与报告一致。"
+          }
+        }
+      }
+    },
     "Patient and Lab" : {
       "localizations" : {
         "bg" : {

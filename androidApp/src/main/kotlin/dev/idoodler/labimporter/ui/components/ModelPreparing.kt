@@ -149,6 +149,22 @@ private fun ModelStatusFailedPreview() {
     }
 }
 
+@Preview(name = "Couldn't load – dark", widthDp = 400, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun ModelStatusLoadFailedDarkPreview() {
+    LabImporterTheme(darkTheme = true, dynamicColor = false) {
+        ModelStatusCard(AiAvailability.PreparationFailed(AiProblem.LOAD_FAILED), AiEngine.GEMMA, {}, {})
+    }
+}
+
+@Preview(name = "Couldn't load – largest text", widthDp = 400, fontScale = 2f)
+@Composable
+private fun ModelStatusLoadFailedLargestTextPreview() {
+    LabImporterTheme(dynamicColor = false) {
+        ModelStatusCard(AiAvailability.PreparationFailed(AiProblem.LOAD_FAILED), AiEngine.GEMMA, {}, {})
+    }
+}
+
 @Preview(name = "Downloading Gemini Nano – RTL", widthDp = 400, locale = "ar")
 @Composable
 private fun ModelStatusGeminiPreview() {

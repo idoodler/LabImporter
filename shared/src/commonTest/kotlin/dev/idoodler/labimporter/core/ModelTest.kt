@@ -6,6 +6,8 @@ import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.core.model.LabReport
 import dev.idoodler.labimporter.core.model.RangeStatus
 import dev.idoodler.labimporter.core.model.ReferenceRange
+import dev.idoodler.labimporter.core.parse.AiLabReport
+import dev.idoodler.labimporter.core.parse.CheckedDate
 import dev.idoodler.labimporter.core.parse.LabParsePipeline
 import dev.idoodler.labimporter.core.parse.LabParsePrompt
 import kotlinx.datetime.LocalDate
@@ -107,6 +109,98 @@ class ModelTest {
         assertEquals(setOf(LocalDate(2026, 9, 30)), LabParsePipeline.printedDates("Collected: 09/30/2026 07:42"))
         assertEquals(setOf(LocalDate(2026, 5, 6)), LabParsePipeline.printedDates("2026-05-06 und 06.05.26"))
         assertNull(LabParsePipeline.verifiedDate(null, text))
+    }
+
+    /** On a fixed day (9 November 2026), as dates after it are no report's. */
+    private fun checked(date: LocalDate, text: String, language: String) =
+        LabParsePipeline.checkedDate(date, text, language, today = LocalDate(2026, 11, 9))
+
+    @Test
+    fun aDayAndMonthNothingOrdersAreFlagged() {
+        // A US report (evaluation's en_us_wellness): 11/04/2026 is 4 November or 11 April, and no other date says which.
+        val us = "DOB: 05/07/1958\nCollected: 11/04/2026 08:12"
+        assertEquals(CheckedDate(LocalDate(2026, 4, 11), needsCheck = true), checked(LocalDate(2026, 4, 11), us, "en"))
+        assertEquals(CheckedDate(LocalDate(2026, 11, 4), needsCheck = true), checked(LocalDate(2026, 11, 4), us, "en"))
+        val result = LabParsePipeline.postProcess(AiLabReport(reportDate = "2026-04-11", reportLanguage = "en"), us)
+        assertEquals(LocalDate(2026, 4, 11), result.reportDate)
+        assertTrue(result.reportDateNeedsCheck)
+        // Day and month alike read the same either way.
+        assertEquals(CheckedDate(LocalDate(2026, 5, 5)), checked(LocalDate(2026, 5, 5), "Collected: 05/05/2026", "en"))
+        // Dates that show both orders say nothing, nor does the language then.
+        val mixed = "DOB: 23/04/1979\nPrevious: 12/19/2025\nCollected: 06/03/2026"
+        assertEquals(CheckedDate(LocalDate(2026, 6, 3), needsCheck = true), checked(LocalDate(2026, 6, 3), mixed, "fr"))
+    }
+
+    @Test
+    fun aSwapIsCorrectedWhereTheReportOrdersDayAndMonth() {
+        // Another date that reads one way only (a day or a month above 12) says which comes first.
+        val british = "DOB: 23/04/1979\nSample collected: 06/03/2026"
+        assertEquals(CheckedDate(LocalDate(2026, 3, 6)), checked(LocalDate(2026, 3, 6), british, "en"))
+        assertEquals(CheckedDate(LocalDate(2026, 3, 6)), checked(LocalDate(2026, 6, 3), british, "en"))
+        val american = "DOB: 12/19/1970\nCollected: 02/05/2026 10:31"
+        assertEquals(CheckedDate(LocalDate(2026, 2, 5)), checked(LocalDate(2026, 5, 2), american, "en"))
+        assertEquals(CheckedDate(LocalDate(2026, 2, 5)), checked(LocalDate(2026, 2, 5), american, "en"))
+        // A language that writes the day first says so too; a swap is then corrected but flagged,
+        // since only the language said which (a Spanish report from the US may not).
+        val french = "Né le 04/06/1985\nPrélevé le 07/02/2026"
+        assertEquals(CheckedDate(LocalDate(2026, 2, 7)), checked(LocalDate(2026, 2, 7), french, "fr"))
+        assertEquals(CheckedDate(LocalDate(2026, 2, 7), needsCheck = true), checked(LocalDate(2026, 7, 2), french, "fr-FR"))
+        // Dots and ISO say which in every language; dashes are read like slashes.
+        assertEquals(CheckedDate(LocalDate(2026, 3, 9)), checked(LocalDate(2026, 3, 9), "Abnahmedatum: 09.03.2026", "de"))
+        assertEquals(CheckedDate(LocalDate(2026, 3, 9)), checked(LocalDate(2026, 9, 3), "Abnahmedatum: 09.03.2026", "en"))
+        assertEquals(CheckedDate(LocalDate(2026, 4, 7)), checked(LocalDate(2026, 7, 4), "Provtagningsdatum: 2026-04-07", "sv"))
+        assertEquals(CheckedDate(LocalDate(2026, 1, 5), needsCheck = true), checked(LocalDate(2026, 5, 1), "Afnamedatum: 05-01-2026", "nl"))
+    }
+
+    @Test
+    fun aDateLongBeforeAnotherPrintedOneIsFlagged() {
+        // evaluation's nl_uitslag: the model took the birth date for the report's.
+        val dutch = "Geb.datum: 11-08-1990\nAfnamedatum: 05-01-2026"
+        assertEquals(CheckedDate(LocalDate(1990, 8, 11), needsCheck = true), checked(LocalDate(1990, 8, 11), dutch, "nl"))
+        assertEquals(CheckedDate(LocalDate(2026, 1, 5)), checked(LocalDate(2026, 1, 5), dutch, "nl"))
+        // A cumulative report's earlier results, or the next day's print-out, are no such date.
+        val cumulative = "Date Collected: 10/14/2026\nGlucose 65 Low 92 04/02/2026 mg/dL\nPrinted: 10/15/2026"
+        assertEquals(CheckedDate(LocalDate(2026, 10, 14)), checked(LocalDate(2026, 10, 14), cumulative, "en"))
+    }
+
+    @Test
+    fun aBirthDateWithATwoDigitYearIsNoLaterDate() {
+        // "58" is 1958, not 2058: no date a year after the report's.
+        val german = "Patient: Max Muster, geb. 12.03.58\nAbnahmedatum: 15.10.2026"
+        assertEquals(CheckedDate(LocalDate(2026, 10, 15)), checked(LocalDate(2026, 10, 15), german, "de"))
+        assertEquals(CheckedDate(LocalDate(2026, 10, 15)), checked(LocalDate(2026, 10, 15), "DOB: 07/05/58\nCollected: 10/15/2026", "en"))
+        // Taking that birth date for the report's is flagged.
+        assertEquals(CheckedDate(LocalDate(1958, 3, 12), needsCheck = true), checked(LocalDate(1958, 3, 12), german, "de"))
+        // This year's two-digit year stays 20xx.
+        assertEquals(CheckedDate(LocalDate(2026, 10, 15)), checked(LocalDate(2026, 10, 15), "Abnahme 15.10.26", "de"))
+        assertEquals(setOf(LocalDate(1958, 3, 12), LocalDate(2026, 10, 15)), LabParsePipeline.printedDates("12.03.58 15.10.26", LocalDate(2026, 11, 9)))
+    }
+
+    @Test
+    fun aDateAfterTodayIsNoLaterReportDate() {
+        // A next appointment printed more than a year ahead says nothing about the report's date.
+        val next = "Abnahmedatum: 15.10.2026\nNächste Kontrolle: 01.03.2028"
+        assertEquals(CheckedDate(LocalDate(2026, 10, 15)), checked(LocalDate(2026, 10, 15), next, "de"))
+    }
+
+    @Test
+    fun aRegionThatOrdersDayAndMonthIsKept() {
+        // en-GB and en-AU write the day first, en-US the month: the date is no longer "either way".
+        assertEquals(CheckedDate(LocalDate(2026, 3, 6)), checked(LocalDate(2026, 3, 6), "Sample collected: 06/03/2026", "en-GB"))
+        assertEquals(CheckedDate(LocalDate(2026, 3, 6)), checked(LocalDate(2026, 3, 6), "Collected: 06/03/2026", "en_AU"))
+        assertEquals(CheckedDate(LocalDate(2026, 6, 3)), checked(LocalDate(2026, 6, 3), "Collected: 06/03/2026", "en-US"))
+        // A swap is corrected, and flagged: only the region said which comes first.
+        assertEquals(CheckedDate(LocalDate(2026, 3, 6), needsCheck = true), checked(LocalDate(2026, 6, 3), "Sample collected: 06/03/2026", "en-GB"))
+        // A region that doesn't say (Canada writes both) leaves the date "either way".
+        assertEquals(CheckedDate(LocalDate(2026, 3, 6), needsCheck = true), checked(LocalDate(2026, 3, 6), "Collected: 06/03/2026", "en-CA"))
+    }
+
+    @Test
+    fun aReadingAfterTodayIsNoOtherReportDate() {
+        // 08/12/2026 on 9 November 2026: 8 December hasn't come yet, so it's 12 August.
+        assertEquals(CheckedDate(LocalDate(2026, 8, 12)), checked(LocalDate(2026, 8, 12), "Collected: 08/12/2026", "en"))
+        // The model's reading of it as 8 December is the one that may be wrong.
+        assertEquals(CheckedDate(LocalDate(2026, 12, 8), needsCheck = true), checked(LocalDate(2026, 12, 8), "Collected: 08/12/2026", "en"))
     }
 
     @Test

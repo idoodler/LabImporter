@@ -203,6 +203,12 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   table — resolution is entirely catalog/FTS driven. The model's report date
   is kept only if the report text prints it (`verifiedDate`; a mis-copied year
   falls back to the one printed date with that day and month, else no date).
+  Day and month of a date with slashes or dashes are ordered by another date of
+  the report that reads one way only, else by a day-first language (not
+  English); a swap is then corrected. Where nothing orders them (03/10/2026 in an
+  English report), or a later date is printed more than a year after it (a birth
+  date), the date is kept and `reportDateNeedsCheck` asks the user to check it
+  (`checkedDate`).
   Results are checked against the whole report text the same way
   (`ReportSourceText`): a value it doesn't print gets `needsSourceCheck`, a
   "compare with report" badge in review that editing clears and that never

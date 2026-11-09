@@ -1,0 +1,83 @@
+{"entries":
+[
+{"code":
+"Hemoglobina",
+"name":
+"Hemoglobina",
+"rawValue":
+"13,2",
+"unit":
+"g/dL"
+},
+{"code":
+"Leucócitos",
+"name":
+"Leucócitos",
+"rawValue":
+"5,60",
+"unit":
+"x10^9/L"
+},
+{"code":
+"Glicose",
+"name":
+"Glicose",
+"rawValue":
+"89",
+"unit":
+"mg/dL"
+},
+{"code":
+"Creatinina",
+"name":
+"Creatinina",
+"rawValue":
+"0,64",
+"unit":
+"mg/dL"
+},
+{"code":
+"Taxa de filtra glomerular",
+"name":
+"Taxa de filtração glomerular",
+"rawValue":
+"> 90",
+"unit":
+"mL/min/1,73m2"
+},
+{"code":
+"Proteína C reativa",
+"name":
+"Proteína C reativa",
+"rawValue":
+"< 0,5",
+"unit":
+"mg/dL"
+},
+{"code":
+"Ferritina",
+"name":
+"Ferritina",
+"rawValue":
+"27",
+"unit":
+"ng/mL"
+},
+{"code":
+"Anticorpos anti-TPO",
+"name":
+"Anticorpos anti-TPO",
+"rawValue":
+"< 9",
+"unit":
+"UI/mL"
+}
+],
+"reportDate":
+"2026-07-08",
+"patientName":
+"Ana Rita Sousa",
+"authorName":
+"",
+"reportLanguage":
+"pt"}

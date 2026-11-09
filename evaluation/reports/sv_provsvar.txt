@@ -1,0 +1,12 @@
+Klinisk kemi, Universitetssjukhuset
+Patient: Eva Lindqvist      Personnummer: 19760312-4428
+Provtagningsdatum: 2026-04-07
+
+Analys                   Resultat    Enhet           Referensintervall
+Hemoglobin               138         g/L             117 - 153
+LPK                      6,9         x10^9/L         3,5 - 8,8
+Kreatinin                72          µmol/L          45 - 90
+eGFR                     >90         mL/min/1,73m2   >60
+CRP                      <5          mg/L            <5
+TSH                      2,1         mIE/L           0,4 - 4,0
+Troponin T               <5          ng/L            <15

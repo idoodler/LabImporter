@@ -18,6 +18,8 @@ struct NewReportImportButton: View {
     @State private var reportDate: Date?
     /// An import that found no date, unlike a manual report, which has none to find.
     @State private var isDateMissing = false
+    /// An import whose date may be misread (`ParseResult.isReportDateToCheck`).
+    @State private var isDateToCheck = false
     @State private var patientName: String?
     @State private var authorName: String?
     @State private var showReview = false
@@ -48,6 +50,7 @@ struct NewReportImportButton: View {
                 labValues = []
                 reportDate = nil
                 isDateMissing = false
+                isDateToCheck = false
                 patientName = nil
                 authorName = nil
                 showReview = true
@@ -65,6 +68,7 @@ struct NewReportImportButton: View {
                 labValues = result.values
                 reportDate = result.reportDate
                 isDateMissing = result.reportDate == nil
+                isDateToCheck = result.isReportDateToCheck
                 patientName = result.patientName
                 authorName = result.authorName
                 showReview = true
@@ -76,6 +80,7 @@ struct NewReportImportButton: View {
                     labValues: labValues,
                     reportDate: reportDate ?? Date(),
                     isDateMissing: isDateMissing,
+                    isDateToCheck: isDateToCheck,
                     extractedPatientName: patientName,
                     extractedAuthorName: authorName,
                     onSaved: onSaved

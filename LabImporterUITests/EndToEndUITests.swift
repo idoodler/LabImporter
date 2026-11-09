@@ -172,6 +172,14 @@ final class EndToEndUITests: XCTestCase {
         XCTAssertTrue(notice.waitForExistence(timeout: 60), "The date row says none was found")
     }
 
+    /// The stand-in report prints "DOB: 02/11/1984" and "Collected: 08/10/2026" in English: 10 August or 8 October, both past.
+    func testReviewAsksToCheckADateWhoseDayAndMonthReadEitherWay() {
+        let app = launch(["--ss-import"])
+        let notice = app.descendants(matching: .any)["review-date-to-check"]
+        XCTAssertTrue(notice.waitForExistence(timeout: 60), "The date row asks to check the date")
+        XCTAssertFalse(app.descendants(matching: .any)["review-date-missing"].exists, "The report prints it")
+    }
+
     func testAManualReportFromTheEmptyHistoryHasNoDateToMiss() {
         let app = launch(["--ss-screen", "history", "--ss-data", "no-reports"])
         let menu = app.buttons["Import Report"]

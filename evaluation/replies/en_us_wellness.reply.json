@@ -1,0 +1,92 @@
+{"entries":
+[
+{"code":
+"Glucose, Fasting",
+"name":
+"Glucose, Fasting",
+"rawValue":
+"104",
+"unit":
+"mg/dL"
+},
+{"code":
+"Cholesterol, Total",
+"name":
+"Cholesterol, Total",
+"rawValue":
+"182",
+"unit":
+"mg/dL"
+},
+{"code":
+"LDL Cholesterol",
+"name":
+"LDL Cholesterol",
+"rawValue":
+"100",
+"unit":
+"mg/dL"
+},
+{"code":
+"HDL Cholesterol",
+"name":
+"HDL Cholesterol",
+"rawValue":
+"444",
+"unit":
+"mg/dL"
+},
+{"code":
+"Triglycerides",
+"name":
+"Triglycerides",
+"rawValue":
+"190",
+"unit":
+"mg/dL"
+},
+{"code":
+"TSH",
+"name":
+"TSH",
+"rawValue":
+"2.84",
+"unit":
+"mIU/L"
+},
+{"code":
+"PSA, Total",
+"name":
+"PSA, Total",
+"rawValue":
+"<0.1",
+"unit":
+"ng/mL"
+},
+{"code":
+"Troponin I, High Sensitivity",
+"name":
+"Troponin I, High Sensitivity",
+"rawValue":
+"<3",
+"unit":
+"ng/L"
+},
+{"code":
+"Vitamin D, 25-Hydroxy",
+"name":
+"Vitamin D 25-Hydroxy",
+"rawValue":
+">1500",
+"unit":
+"ng/mL"
+}
+],
+"reportDate":
+"2026-04-11",
+"patientName":
+"Robert Miles",
+"authorName":
+"Lakeview Medical Laboratories",
+"reportLanguage":
+"en"}

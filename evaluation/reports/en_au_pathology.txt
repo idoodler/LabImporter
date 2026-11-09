@@ -1,0 +1,14 @@
+Harbourside Pathology
+Patient: Thomas Nguyen      D.O.B.: 14/02/1988      Ref. Dr: Dr P. Kelly
+Collected: 09/10/2026 08:40
+
+BIOCHEMISTRY
+Sodium                 141        mmol/L      (135-145)
+Potassium              4.2        mmol/L      (3.5-5.2)
+Creatinine             81         umol/L      (60-110)
+eGFR                   >90        mL/min/1.73m2   (>59)
+ALT                    <5         U/L         (<40)
+GGT                    19         U/L         (<50)
+Total Cholesterol      4.9        mmol/L      (<5.5)
+C-Reactive Protein     <1         mg/L        (<5)
+Ferritin               162        ug/L        (30-500)

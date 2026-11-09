@@ -247,7 +247,26 @@ class ReviewCheckTest {
     fun aDateTheReportPrintsIsNotQuestioned() {
         val viewModel = review { misread() }
         assertFalse(viewModel.draft.dateNotFound)
+        assertFalse(viewModel.draft.dateToCheck)
         compose.onNodeWithText(string(R.string.no_date_found)).assertDoesNotExist()
+        compose.onNodeWithText(string(R.string.date_to_check)).assertDoesNotExist()
+    }
+
+    /** 06/05/2026 in English, with no other date to say which comes first: 6 May or 5 June. */
+    @Test
+    fun aDateWhoseDayAndMonthReadEitherWayIsToCheckUntilTheUserChangesIt() {
+        val viewModel = review(report = "Riverside Lab  Collected: 06/05/2026\nCreatinine 0.8 mg/dl\nALT 22 U/l") {
+            FakeAi.replyJson(listOf("2160-0", "Creatinine", "0.8", "mg/dl"), reportDate = "2026-06-05", language = "en")
+        }
+        assertEquals(LocalDate(2026, 6, 5), viewModel.draft.date)
+        assertTrue(viewModel.draft.dateToCheck)
+        compose.onNodeWithText(string(R.string.date_to_check)).assertIsDisplayed()
+        compose.onNodeWithText(string(R.string.no_date_found)).assertDoesNotExist()
+
+        compose.runOnIdle { viewModel.updateDraft { it.withDate(LocalDate(2026, 5, 6)) } }
+        compose.waitForIdle()
+        assertFalse(viewModel.draft.dateToCheck)
+        compose.onNodeWithText(string(R.string.date_to_check)).assertDoesNotExist()
     }
 
     @Test

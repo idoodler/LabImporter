@@ -196,6 +196,7 @@
     </plurals>
     <string name="correct_or_deselect">Can\'t be saved as written. Correct or deselect it.</string>
     <string name="no_date_found">No date found in the report. Check that this date is right.</string>
+    <string name="date_to_check">This date may be misread. Check that it matches the report.</string>
     <string name="patient_and_lab">Patient and Lab</string>
     <string name="not_filled_in">Not filled in</string>
     <plurals name="exportable_count">

@@ -27,7 +27,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -52,6 +54,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -82,6 +85,7 @@ import dev.idoodler.labimporter.data.ReportsLoadProblem
 import dev.idoodler.labimporter.R
 import dev.idoodler.labimporter.ai.AiAvailability
 import dev.idoodler.labimporter.ai.AiEngine
+import dev.idoodler.labimporter.ai.AiProblem
 import dev.idoodler.labimporter.ai.PreparingStage
 import dev.idoodler.labimporter.ai.gemma.GemmaModel
 import dev.idoodler.labimporter.ui.components.ModelStatusCard
@@ -160,6 +164,16 @@ fun DashboardScreen(
         metrics.filter { (filter == null || it.category == filter) && (query.isBlank() || it.name.contains(query, true) || it.code.contains(query)) }
     }
     val wash = remember(metrics, filter) { filter?.let { listOf(it.color) } ?: Dashboard.backgroundCategories(metrics).map { it.color } }
+    // A personal welcome when the patient's name is known (iOS shows the same).
+    val firstName = patientName.trim().substringBefore(' ')
+    val gridState = rememberLazyGridState()
+    KeepTopInView(
+        gridState,
+        listOfNotNull(
+            "loadFailed".takeIf { loadProblem != null }, "notices".takeIf { notices != null }, "greeting".takeIf { firstName.isNotEmpty() },
+            "filters".takeIf { categories.size > 1 }, "search".takeIf { searching },
+        ),
+    )
 
     Box(modifier.fillMaxSize()) {
         CategoryWash(wash)
@@ -183,6 +197,7 @@ fun DashboardScreen(
             },
         ) { padding ->
             LazyVerticalGrid(
+                state = gridState,
                 columns = GridCells.Adaptive(minSize = if (isLargeText) 300.dp else 164.dp),
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = padding.calculateTopPadding(), bottom = 112.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -195,8 +210,6 @@ fun DashboardScreen(
                 notices?.let { content ->
                     item(span = { GridItemSpan(maxLineSpan) }, key = "notices") { content() }
                 }
-                // A personal welcome when the patient's name is known (iOS shows the same).
-                val firstName = patientName.trim().substringBefore(' ')
                 if (firstName.isNotEmpty()) {
                     item(span = { GridItemSpan(maxLineSpan) }, key = "greeting") {
                         Text(
@@ -235,6 +248,22 @@ fun DashboardScreen(
                 }
             }
         }
+    }
+}
+
+/**
+ * Keeps the grid at its top when what sits above the metrics changes there. Those rows can arrive
+ * after the grid is on screen (the model's state, a failed read, the patient's name, the search
+ * field), and a lazy grid keeps its first visible item in place: a card added above it would land
+ * in the top padding, behind the expanded, clear top bar, over the title. Someone who has scrolled
+ * down stays where they are.
+ */
+@Composable
+private fun KeepTopInView(state: LazyGridState, leadingKeys: List<String>) {
+    val atTop by remember(state) { derivedStateOf { state.firstVisibleItemIndex == 0 && state.firstVisibleItemScrollOffset == 0 } }
+    remember(leadingKeys) {
+        // In composition, so the grid's next measure applies it together with the new rows.
+        if (atTop) state.requestScrollToItem(0)
     }
 }
 
@@ -579,6 +608,42 @@ private fun DashboardWaitingPreview() {
         DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, previewActions, notices = {
             ModelStatusCard(AiAvailability.Preparing(0, GemmaModel.SIZE_BYTES, PreparingStage.WAITING_FOR_WIFI), AiEngine.GEMMA, {}, {})
         })
+    }
+}
+
+private val modelLoadFailed: @Composable () -> Unit = {
+    ModelStatusCard(AiAvailability.PreparationFailed(AiProblem.LOAD_FAILED), AiEngine.GEMMA, {}, {})
+}
+
+@Preview(name = "Populated – model couldn't load", widthDp = 400, heightDp = 900)
+@Composable
+private fun DashboardModelLoadFailedPreview() {
+    LabImporterTheme(dynamicColor = false) {
+        DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, previewActions, notices = modelLoadFailed)
+    }
+}
+
+@Preview(name = "Populated – model couldn't load, dark", widthDp = 400, heightDp = 900, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun DashboardModelLoadFailedDarkPreview() {
+    LabImporterTheme(darkTheme = true, dynamicColor = false) {
+        DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, previewActions, notices = modelLoadFailed)
+    }
+}
+
+@Preview(name = "Populated – model couldn't load, largest text", widthDp = 400, heightDp = 900, fontScale = 2f)
+@Composable
+private fun DashboardModelLoadFailedLargestTextPreview() {
+    LabImporterTheme(dynamicColor = false) {
+        DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, previewActions, notices = modelLoadFailed)
+    }
+}
+
+@Preview(name = "Populated – model couldn't load, two-line title", widthDp = 400, heightDp = 900, locale = "el")
+@Composable
+private fun DashboardModelLoadFailedLongTitlePreview() {
+    LabImporterTheme(dynamicColor = false) {
+        DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, previewActions, notices = modelLoadFailed)
     }
 }
 

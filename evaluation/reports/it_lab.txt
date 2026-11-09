@@ -1,0 +1,13 @@
+Laboratorio Analisi Mediche Santa Chiara
+Paziente: Bianchi Marco      Nato il: 03/12/1969
+Data accettazione: 04/11/2026
+
+ESAME                     ESITO       U.M.          INTERVALLO DI RIFERIMENTO
+Emoglobina                14,8        g/dL          13,0 - 17,0
+Leucociti                 6,40        10^3/µL       4,00 - 10,00
+Glucosio                  92          mg/dL         60 - 110
+Creatinina                1,02        mg/dL         0,70 - 1,20
+eGFR (CKD-EPI)            > 90        mL/min        > 60
+Proteina C reattiva       < 0,30      mg/dL         < 0,50
+PSA totale                0,82        ng/mL         < 4,00
+Bilirubina diretta        < 0,10      mg/dL         0,00 - 0,30

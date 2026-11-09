@@ -7,8 +7,9 @@ number and unit were read (the read test name is replaced by the catalog's in
 post-processing; the unit must be the same after case, spacing, µ/u,
 superscripts and the decimal comma, so a cut-off "mg" for "mg/dl" is wrong),
 then its resolved LOINC code, numbers made up from text,
-results that aren't numbers kept as text (`notNumeric`),
-extra numbers, the report date and the patient. `SOURCE CHECK` scores Review's
+results that aren't numbers kept as text (`notNumeric`; with its `result`, only
+that one: ">1500" for a printed ">150" is wrong), extra numbers, the report date
+(a wrong one Review flags to check isn't silently wrong) and the patient. `SOURCE CHECK` scores Review's
 "compare with report" badge (`LabValue.needsSourceCheck`): wrong values flagged,
 wrong values not flagged, right values falsely flagged. A wrong value is one
 that matches nothing expected.
@@ -20,10 +21,14 @@ test's value, a dropped "<"/">", another test's unit, and the report date a day
 or a year off or with day and month swapped — deterministically, without the
 model (`PlantedErrors.kt`), and each through the shared post-processing. A
 planted value counts as caught when it comes out flagged, a planted date when it
-doesn't come out as planted (corrected, or left empty for Review to show). The
+doesn't come out as planted unflagged (corrected, left empty, or flagged for the
+user to check, all of which Review shows) — by its flag only where the report's
+right date comes out unflagged, since a flag on both tells nothing apart. The
 right values, as read and respelled harmlessly (the decimal comma for the point,
-"mg/dL" for "mg/dl"), measure false alarms. `./gradlew :evaluation:test` tests
-the scoring and the planting.
+"mg/dL" for "mg/dl"), and each report's right date measure false alarms
+("right dates flagged"). Everything reads on a fixed day (`EVALUATION_DAY`), as a
+date after it is no report's: move it on when a report dated later joins.
+`./gradlew :evaluation:test` tests the scoring and the planting.
 
 The reports are synthetic, written to look like real OCR output in several
 formats and languages. Add a report by writing `name.txt` and
@@ -165,3 +170,53 @@ The new extra number is the model reading WBC 11.8 as 111.8, which is flagged.
 Another test's unit on a unit-first row was missed 6 times in 8 before (the whole
 report prints it); the word in front of the result now catches it. What slips
 through is the same 10 as before.
+
+Planted "<"/">" dropped (3) and day-and-month swaps (4) were too few to say much, so
+twelve reports joined (2026-11-09), each written by hand without the check in mind:
+results below or above what an assay measures ("<0,5", "> 90", ">1476", Quest's
+"< OR = 0.2"), and report dates with day and month both 12 or under, day-first and
+month-first, in English (UK, US, Australian), German, French, Spanish, Italian,
+Dutch (dashes), Portuguese and Swedish (ISO). Their replies come from a model run
+with the same settings as above; the other replies came back unchanged. The model
+read 63 of their 64 values and 35 of their 36 text results right; it read
+en_us_wellness' HDL 44 as 444 and Vitamin D ">150" as ">1500" (both flagged),
+en_us_wellness' "11/04/2026" day-first (a US report whose birth date, 05/07/1958,
+says nothing either), nl_uitslag's birth date as the report's, and en_us_summit's
+date as "2026-02-52" (no date). Replayed with the check as it was:
+
+```
+TOTAL  correct 159/162 (recall 98%), extra numbers 3, precision 98%, invalid replies 0, LOINC 115/122, text results 49/52, dates 18/22
+SOURCE CHECK  wrong values flagged 4, wrong values NOT flagged 0, right values falsely flagged 0/208
+PLANTED ERRORS  flagged 989/1007 (98%), right values falsely flagged 0/478
+    tenfold 159/159, a tenth 159/159, digit dropped 153/154, digit doubled 159/159, neighbouring test's value 126/132,
+    "<"/">" dropped 36/38, another test's unit 156/157, date a day off 18/18, date a year off 18/18, day and month swapped 5/13
+```
+
+and two read dates silently wrong. The dropped qualifiers missed are Quest's: the
+reference "> OR = 60" and "< OR = 0.2" print the bare number on the result's row. The
+swaps missed are every date with slashes or dashes, which the check read both ways.
+Now a row's result is the first printing of the number behind the test's name (or the
+value the next line starts with), so a plain 60 where that is ">60" is flagged and a
+plain 100 beside a reference "<100" is not; and a date's day and month are ordered
+by another date of the report that reads one way only (DOB 23/04/1979, 12/19/1970),
+else by a language that writes the day first (not English): a swap is then corrected
+(flagged too where only the language said so). Where nothing orders them, the date is
+kept and flagged for the user to check ("This date may be misread"), as is a date more
+than a year before another printed one (a birth date):
+
+```
+TOTAL  correct 159/162 (recall 98%), extra numbers 3, precision 98%, invalid replies 0, LOINC 115/122, text results 49/52, dates 18/22 (flagged 2, right ones 0; wrong unflagged 0)
+SOURCE CHECK  wrong values flagged 4, wrong values NOT flagged 0, right values falsely flagged 0/208
+PLANTED ERRORS  flagged 999/1007 (99%), right values falsely flagged 0/478, right dates flagged 1/22
+    tenfold 159/159, a tenth 159/159, digit dropped 153/154, digit doubled 159/159, neighbouring test's value 126/132,
+    "<"/">" dropped 38/38, another test's unit 156/157, date a day off 18/18, date a year off 18/18, day and month swapped 13/13
+```
+
+The two flagged dates are the model's two wrong ones; no right date the model read
+is flagged here. As a control, each report's right date is flagged once: en_us_wellness'
+11/04/2026, which nothing in that report orders (`right dates flagged 1/22`). A
+reading after the day it's read on is no report date (08/12/2026 on 9 November 2026
+is 12 August), a two-digit year after this year is 19xx ("geb. 12.03.58"), a date
+ahead (a next appointment) doesn't make the report's date look like a birth date,
+and a region in the language tag orders day and month (en-GB, en-AU the day first,
+en-US the month). What still slips through is 8 planted values, all in the earlier reports: six neighbouring values on de_patmed's one-line rows, 12 for 512 ("Vitamin B12") and Ferritin's flag "A" as its unit.

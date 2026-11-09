@@ -38,7 +38,7 @@ enum StandInReport {
 
     /// The report, long enough to be read in more than one part.
     static var text: String {
-        let header = "Function Health · Quest Diagnostics\nPatient: Jane Roe     DOB: 02/11/1984\nCollected: 08/12/2026"
+        let header = "Function Health · Quest Diagnostics\nPatient: Jane Roe     DOB: 02/11/1984\nCollected: 08/10/2026"
         let prose = (1...24).map { index in
             "Note \(index): This marker reflects how your body is doing over time; discuss changes with your clinician."
         }
@@ -51,7 +51,7 @@ enum StandInReport {
         let entries = rows.filter { part.contains($0.key) }.map(\.entry)
         onProgress(ParseProgress(entryCount: entries.count, latestName: entries.last?.name))
         return AILabReport(
-            entries: entries, reportDate: ScreenshotMode.readsNoDate ? "" : "2026-08-12", patientName: "Jane Roe",
+            entries: entries, reportDate: ScreenshotMode.readsNoDate ? "" : "2026-08-10", patientName: "Jane Roe",
             authorName: "Function Health", reportLanguage: "en"
         )
     }

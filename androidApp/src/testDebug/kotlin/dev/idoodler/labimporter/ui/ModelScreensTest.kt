@@ -1,10 +1,12 @@
 package dev.idoodler.labimporter.ui
 
 import android.text.format.Formatter
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.onParent
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -21,8 +23,13 @@ import dev.idoodler.labimporter.ai.AiProblem
 import dev.idoodler.labimporter.ai.PreparingStage
 import dev.idoodler.labimporter.ai.UnsupportedReason
 import dev.idoodler.labimporter.ai.gemma.GemmaModel
+import dev.idoodler.labimporter.core.model.Dashboard
+import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.core.model.LabValue
 import dev.idoodler.labimporter.ui.components.ModelStatusCard
+import dev.idoodler.labimporter.ui.dashboard.DashboardScreen
+import dev.idoodler.labimporter.ui.importflow.ImportActions
+import dev.idoodler.labimporter.ui.preview.PreviewSamples
 import dev.idoodler.labimporter.ui.onboarding.UnsupportedDeviceScreen
 import dev.idoodler.labimporter.ui.review.ReviewScreen
 import dev.idoodler.labimporter.ui.settings.AiSettings
@@ -31,6 +38,8 @@ import dev.idoodler.labimporter.ui.settings.SettingsScreen
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
 import kotlinx.datetime.LocalDate
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -141,6 +150,55 @@ class ModelScreensTest {
 
         availability = AiAvailability.Ready
         compose.onNodeWithText(string(R.string.try_again)).assertDoesNotExist()
+    }
+
+    /**
+     * The model's state arrives after the dashboard is on screen. A card added above the filters
+     * must push them down, not slide in behind the expanded (clear) top bar over the title.
+     */
+    @Test
+    fun aModelCardArrivingLaterSitsBelowTheDashboardTitle() = modelCardArrivesLater()
+
+    // The taller title of the largest text once put the card over it, from the top of the screen.
+    @Test
+    @Config(qualifiers = "w411dp-h914dp", fontScale = 2f)
+    fun aModelCardArrivingLaterSitsBelowTheDashboardTitleWithTheLargestText() = modelCardArrivesLater()
+
+    // The longest title wraps onto a second line, the same at the default text size.
+    @Test
+    @Config(qualifiers = "el-w411dp-h914dp")
+    fun aModelCardArrivingLaterSitsBelowATwoLineDashboardTitle() = modelCardArrivesLater()
+
+    private fun modelCardArrivesLater() {
+        var availability: AiAvailability by mutableStateOf(AiAvailability.Ready)
+        compose.setContent {
+            LabImporterTheme {
+                val current = availability
+                val notices: (@Composable () -> Unit)? = if (current is AiAvailability.PreparationFailed) {
+                    { ModelStatusCard(current, AiEngine.GEMMA, onTryAgain = {}, onUseMobileData = {}) }
+                } else {
+                    null
+                }
+                DashboardScreen(PreviewSamples.reports, LabDisplayPreferences(), {}, ImportActions({}, {}, {}, {}, {}), notices = notices)
+            }
+        }
+        compose.onNodeWithText(string(R.string.filter_all)).assertIsDisplayed()
+
+        availability = AiAvailability.PreparationFailed(AiProblem.LOAD_FAILED)
+        compose.waitForIdle()
+
+        val title = compose.onNodeWithText(string(R.string.dashboard_title)).fetchSemanticsNode().boundsInRoot
+        val metrics = Dashboard.dashboardMetrics(PreviewSamples.reports).size
+        val subtitle = compose.onNodeWithText(app.resources.getQuantityString(R.plurals.metric_count, metrics, metrics)).fetchSemanticsNode().boundsInRoot
+        val message = compose.onNodeWithText(string(R.string.ai_problem_load_failed))
+        val card = message.onParent().fetchSemanticsNode().boundsInRoot
+        assertTrue("the card ($card) holds its message", card.contains(message.fetchSemanticsNode().boundsInRoot.center))
+        assertFalse("the card ($card) overlaps the title ($title)", card.overlaps(title))
+        assertTrue("the card ($card) starts below the subtitle ($subtitle)", card.top >= subtitle.bottom)
+        message.assertIsDisplayed()
+        // The filters moved down with it rather than staying where the card now is.
+        val filters = compose.onNodeWithText(string(R.string.filter_all)).fetchSemanticsNode().boundsInRoot
+        assertTrue("the filters ($filters) sit below the card ($card)", filters.top >= card.bottom)
     }
 
     @Test

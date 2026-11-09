@@ -61,7 +61,25 @@ data class ExpectedValue(
 data class Alternative(val value: Double, val unit: String)
 
 @Serializable
-data class ExpectedText(val names: List<String>)
+data class ExpectedText(
+    val names: List<String>,
+    /**
+     * The result as printed ("> 90", "<0,5"), where it's given: a reading of another one
+     * (">1500" for ">150") is then wrong, not a text result kept. Without it, any text
+     * result for the test counts.
+     */
+    val result: String? = null,
+) {
+    /** Whether [read] (a text result) is this one: the same after case, spacing and the decimal comma. */
+    fun readsAs(read: String): Boolean = result == null || textForm(read) == textForm(result)
+}
+
+private fun textForm(text: String) = text.lowercase().filterNot { it.isWhitespace() }.replace(',', '.').let { form ->
+    // "<0,30" is "<0.3": a threshold's number compared as a number.
+    THRESHOLD_TEXT.matchEntire(form)?.let { "${it.groupValues[1]}${it.groupValues[2].toBigDecimal().stripTrailingZeros().toPlainString()}" } ?: form
+}
+
+private val THRESHOLD_TEXT = Regex("^([<>≤≥]=?)(\\d+(?:\\.\\d+)?)$")
 
 /** Also list the LOINC every value resolved to where the sample doesn't state one. */
 private val verbose = System.getProperty("eval.verbose") == "true"
@@ -108,7 +126,7 @@ fun main(args: Array<String>) {
         conversation.close()
         val reply = message.contents.contents.filterIsInstance<Content.Text>().joinToString("") { it.text }
         replyFile(report).apply { parentFile.mkdirs() }.writeText(reply)
-        score(report.nameWithoutExtension, expected, LabParsePrompt.decodeJsonReply(reply)?.let { LabParsePipeline.postProcess(it, report.readText()) },
+        score(report.nameWithoutExtension, expected, LabParsePrompt.decodeJsonReply(reply)?.let { LabParsePipeline.postProcess(it, report.readText(), EVALUATION_DAY) },
             elapsed.inWholeMilliseconds, reply.length)
     }
     engine.close()
@@ -120,7 +138,7 @@ private fun replay() {
     printTotal(
         reports().map { report ->
             val reply = replyFile(report).readText()
-            score(report.nameWithoutExtension, expectedFor(report), LabParsePrompt.decodeJsonReply(reply)?.let { LabParsePipeline.postProcess(it, report.readText()) },
+            score(report.nameWithoutExtension, expectedFor(report), LabParsePrompt.decodeJsonReply(reply)?.let { LabParsePipeline.postProcess(it, report.readText(), EVALUATION_DAY) },
                 0, reply.length)
         },
         mode = "replay",
@@ -157,8 +175,11 @@ data class Summary(
     val textKept: Int,
     val datesExpected: Int,
     val datesRight: Int,
-    /** A date that is there but wrong: the silent kind. A missing date is visible in Review. */
+    /** A date that is there but wrong, and not flagged: the silent kind. A missing or flagged date is visible in Review. */
     val datesWrong: Int,
+    /** Dates Review asks the user to check (day and month either way, a later date printed), and how many of them are right. */
+    val datesFlagged: Int,
+    val rightDatesFlagged: Int,
     val wrongValuesFlagged: Int,
     val wrongValuesNotFlagged: Int,
     val rightValues: Int,
@@ -173,6 +194,9 @@ data class Summary(
     val plantedByKind: Map<String, KindScore>,
     val plantedControls: Int,
     val plantedFalseFlags: Int,
+    /** The reports' right dates, and how many of them Review asks the user to check anyway. */
+    val plantedDateControls: Int,
+    val plantedDateFalseFlags: Int,
 )
 
 private fun ratio(a: Int, b: Int) = if (b == 0) null else a.toDouble() / b
@@ -191,7 +215,9 @@ private fun printTotal(scores: List<Score>, mode: String = "model") {
         "extra numbers ${scores.sumOf { it.extra }}, precision ${pct(correct, read)}, " +
         "invalid replies ${scores.count { !it.valid }}, LOINC ${scores.sumOf { it.loincRight }}/${scores.sumOf { it.loincExpected }}, " +
         "text results ${scores.sumOf { it.textKept }}/${scores.sumOf { it.textExpected }}, " +
-        "dates ${scores.count { it.dateRight }}/${scores.count { it.dateExpected }}, " +
+        "dates ${scores.count { it.dateRight }}/${scores.count { it.dateExpected }} " +
+        "(flagged ${scores.count { it.dateFlagged }}, right ones ${scores.count { it.dateFlagged && it.dateRight }}; " +
+        "wrong unflagged ${scores.count { it.dateWrong }}), " +
         "median time ${scores.map { it.millis }.sorted()[scores.size / 2] / 1000.0} s")
     println("SOURCE CHECK  wrong values flagged ${scores.sumOf { it.wrongFlagged }}, " +
         "wrong values NOT flagged ${scores.sumOf { it.wrongNotFlagged }}, " +
@@ -199,7 +225,8 @@ private fun printTotal(scores: List<Score>, mode: String = "model") {
     println("\nPlanting errors in the right readings")
     val planted = plantErrors(plantedReports())
     println("PLANTED ERRORS  flagged ${planted.flagged}/${planted.planted} (${pct(planted.flagged, planted.planted)}), " +
-        "right values falsely flagged ${planted.falseFlags}/${planted.controls}")
+        "right values falsely flagged ${planted.falseFlags}/${planted.controls}, " +
+        "right dates flagged ${planted.dateFalseFlags}/${planted.dateControls}")
     println("    " + planted.byKind.entries.joinToString(", ") { (kind, s) -> "${Fault.valueOf(kind).label} ${s.flagged}/${s.planted}" })
     val summaryPath = System.getProperty("eval.summary")?.takeIf { it.isNotBlank() } ?: return
     val summary = Summary(
@@ -219,6 +246,8 @@ private fun printTotal(scores: List<Score>, mode: String = "model") {
         datesExpected = scores.count { it.dateExpected },
         datesRight = scores.count { it.dateRight },
         datesWrong = scores.count { it.dateWrong },
+        datesFlagged = scores.count { it.dateFlagged },
+        rightDatesFlagged = scores.count { it.dateFlagged && it.dateRight },
         wrongValuesFlagged = scores.sumOf { it.wrongFlagged },
         wrongValuesNotFlagged = scores.sumOf { it.wrongNotFlagged },
         rightValues = scores.sumOf { it.rightValues },
@@ -229,6 +258,8 @@ private fun printTotal(scores: List<Score>, mode: String = "model") {
         plantedByKind = planted.byKind,
         plantedControls = planted.controls,
         plantedFalseFlags = planted.falseFlags,
+        plantedDateControls = planted.dateControls,
+        plantedDateFalseFlags = planted.dateFalseFlags,
     )
     File(summaryPath).apply { parentFile?.mkdirs() }.writeText(json.encodeToString(Summary.serializer(), summary) + "\n")
     println("Summary written to $summaryPath")
@@ -254,10 +285,12 @@ data class Score(
     val rightFlagged: Int = 0,
     val wrongFlagged: Int = 0,
     val wrongNotFlagged: Int = 0,
-    /** The report prints a date; the read one is it, or another one (a missing date isn't "wrong"). */
+    /** The report prints a date; the read one is it, or another one unflagged (a missing or flagged date isn't silently wrong). */
     val dateExpected: Boolean = false,
     val dateRight: Boolean = false,
     val dateWrong: Boolean = false,
+    /** Review asks the user to check the date (`ParseResult.reportDateNeedsCheck`). */
+    val dateFlagged: Boolean = false,
 )
 
 private fun pct(a: Int, b: Int) = if (b == 0) "—" else "${(100.0 * a / b).toInt()}%"
@@ -316,19 +349,21 @@ private fun score(name: String, expected: Expected, result: ParseResult?, millis
         when {
             v == null -> problems += "MISSED TEXT ${t.names.first()}"
             v.numericValue != null -> problems += "NUMBER FROM TEXT ${t.names.first()}: ${v.displayValue}"
-            v.qualitativeResult != null -> {
+            v.qualitativeResult != null && t.readsAs(v.displayValue) -> {
                 textKept++
                 right += v
             }
+            // Another text than the printed one: wrong, scored with the wrong values below.
+            v.qualitativeResult != null -> problems += "WRONG TEXT ${t.names.first()}: '${v.displayValue}' (expected '${t.result}')"
             else -> problems += "TEXT NOT KEPT ${t.names.first()}: '${v.displayValue}'"
         }
-        if (v != null) used += v
+        if (v != null && (v.qualitativeResult == null || t.readsAs(v.displayValue))) used += v
     }
     if (verbose) values.filter { it !in used && it.numericValue == null }.forEach { problems += "unscored ${it.name} (${it.code}) = '${it.displayValue}'" }
     val extras = values.filter { it !in used && it.numericValue != null }
     extras.forEach { problems += "EXTRA ${it.name} (${it.code}) = ${it.displayValue} ${it.unit}" }
     if (expected.reportDate != null && result?.reportDate?.toString() != expected.reportDate) {
-        problems += "DATE ${result?.reportDate} (expected ${expected.reportDate})"
+        problems += "DATE ${result?.reportDate}${if (result?.reportDateNeedsCheck == true) ", flagged" else ""} (expected ${expected.reportDate})"
     }
     if (expected.patientName != null && result?.patientName?.contains(expected.patientName, ignoreCase = true) != true) {
         problems += "PATIENT '${result?.patientName}' (expected ${expected.patientName})"
@@ -348,6 +383,8 @@ private fun score(name: String, expected: Expected, result: ParseResult?, millis
         right.size, right.count { it.needsSourceCheck }, wrong.count { it.needsSourceCheck }, wrong.count { !it.needsSourceCheck },
         dateExpected = expected.reportDate != null,
         dateRight = expected.reportDate != null && result?.reportDate?.toString() == expected.reportDate,
-        dateWrong = expected.reportDate != null && result?.reportDate != null && result.reportDate.toString() != expected.reportDate,
+        dateWrong = expected.reportDate != null && result?.reportDate != null && result.reportDate.toString() != expected.reportDate &&
+            !result.reportDateNeedsCheck,
+        dateFlagged = result?.reportDate != null && result.reportDateNeedsCheck,
     )
 }

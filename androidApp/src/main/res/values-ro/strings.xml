@@ -179,6 +179,7 @@
     </plurals>
     <string name="correct_or_deselect">Nu poate fi salvată în această formă. Corectați valoarea sau debifați-o.</string>
     <string name="no_date_found">Nu s-a găsit nicio dată în raport. Verifică dacă această dată este corectă.</string>
+    <string name="date_to_check">Este posibil ca această dată să fi fost citită greșit. Verifică dacă se potrivește cu raportul.</string>
     <string name="patient_and_lab">Pacient și laborator</string>
     <string name="not_filled_in">Necompletat</string>
     <plurals name="exportable_count">

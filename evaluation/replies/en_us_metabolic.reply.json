@@ -1,0 +1,90 @@
+{"entries":
+[{"code":
+"Glucose",
+"name":
+"Glucose",
+"rawValue":
+"118",
+"unit":
+"mg/dL"
+},
+{"code":
+"BUN",
+"name":
+"BUN",
+"rawValue":
+"21",
+"unit":
+"mg/dL"
+},
+{"code":
+"Creatinine",
+"name":
+"Creatinine",
+"rawValue":
+"1.08",
+"unit":
+"mg/dL"
+},
+{"code":
+"eGFR",
+"name":
+"glomerular Filtration rate (eGFR)",
+"rawValue":
+">60",
+"unit":
+"mL/min/1.73m2"
+},
+{"code":
+"Albumin",
+"name":
+"Albumin",
+"rawValue":
+"4.3",
+"unit":
+"g/dL"
+},
+{"code":
+"Bilirubin, Total",
+"name":
+"Bilirubin, Total",
+"rawValue":
+"0.6",
+"unit":
+"mg/dL"
+},
+{"code":
+"Ketones, Urine",
+"name":
+"Ketones, Urine",
+"rawValue":
+"<5",
+"unit":
+"mg/dL"
+},
+{"code":
+"Microalbumin, Urine",
+"name":
+"Microalbumin, Urine",
+"rawValue":
+"<3.0",
+"unit":
+"mg/L"
+},
+{"code":
+"Hemoglobin A1c",
+"name":
+"HbA1c",
+"rawValue":
+"6.3",
+"unit":
+"%"
+}],
+"reportDate":
+"2026-01-07",
+"patientName":
+"Kevin O'Brien",
+"authorName":
+"",
+"reportLanguage":
+"en"}

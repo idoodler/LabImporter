@@ -61,6 +61,27 @@ import SwiftUI
     .preferredColorScheme(.dark)
 }
 
+#Preview("Date to Check") {
+    NavigationStack {
+        ReviewView(
+            labValues: LabValue.sampleValues,
+            isDateToCheck: true,
+            extractedPatientName: "Max Mustermann"
+        )
+    }
+}
+
+#Preview("Date to Check – Dark") {
+    NavigationStack {
+        ReviewView(
+            labValues: LabValue.sampleValues,
+            isDateToCheck: true,
+            extractedPatientName: "Max Mustermann"
+        )
+    }
+    .preferredColorScheme(.dark)
+}
+
 #Preview("Editing Saved Report") {
     NavigationStack {
         ReviewView(

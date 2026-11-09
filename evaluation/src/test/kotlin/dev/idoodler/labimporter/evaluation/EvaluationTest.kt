@@ -89,6 +89,38 @@ class EvaluationTest {
     }
 
     @Test
+    fun aTextResultMustBeThePrintedOne() {
+        // en_us_wellness: the model read Vitamin D ">150" as ">1500"; Review flags it, and that's no false alarm.
+        val vitaminD = ExpectedText(listOf("Vitamin D"), ">150")
+        assertTrue(vitaminD.readsAs(">150"))
+        assertTrue(vitaminD.readsAs("> 150"))
+        assertFalse(vitaminD.readsAs(">1500"))
+        assertFalse(vitaminD.readsAs("<150"))
+        assertTrue(ExpectedText(listOf("PCR"), "< 0,30").readsAs("<0.3"))
+        assertTrue(ExpectedText(listOf("HBs")).readsAs("NON-REACTIVE"), "without a printed result, any text counts")
+    }
+
+    @Test
+    fun aDateIsCaughtByItsFlagOnlyWhereTheRightOneIsntFlagged() {
+        LabCore.start(System.getProperty("loinc.db"), "en-US") { LabDisplayPreferences() }
+        fun planted(text: String, date: String): PlantedSummary {
+            val reply = AiLabReport(listOf(AiLabEntry(name = "TSH", rawValue = "2.84", unit = "mIU/L")), reportDate = date, reportLanguage = "en")
+            val expected = Expected(reportDate = date, values = listOf(ExpectedValue(listOf("TSH"), 2.84, "mIU/L")))
+            return plantErrors(listOf(PlantedReport("us", "$text\nTSH 2.84 mIU/L\n", reply, expected)))
+        }
+        // 08/12/2026 on the evaluation's day: 8 December hasn't come, so 12 August stands unflagged
+        // and its swap, kept, is caught by its flag.
+        val august = planted("Collected: 08/12/2026", "2026-08-12")
+        assertEquals(KindScore(1, 1), august.byKind.getValue(Fault.DATE_SWAPPED.name))
+        assertEquals(1 to 0, august.dateControls to august.dateFalseFlags)
+        // 11/04/2026 reads either way: the right date is flagged too, which counts as a false alarm,
+        // and a flag that is on either reading catches nothing.
+        val either = planted("DOB: 05/07/1958\nCollected: 11/04/2026", "2026-11-04")
+        assertEquals(KindScore(1, 0), either.byKind.getValue(Fault.DATE_SWAPPED.name))
+        assertEquals(1 to 1, either.dateControls to either.dateFalseFlags)
+    }
+
+    @Test
     fun controlsAreHarmlessRespellings() {
         val respelled = controls(AiLabEntry(name = "Kalium", rawValue = "4,1", unit = "mmol/l")).associate { (kind, e) -> kind to (e.rawValue to e.unit) }
         assertEquals(

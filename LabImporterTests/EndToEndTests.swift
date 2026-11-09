@@ -34,7 +34,7 @@ struct EndToEndTests {
         let result = try await parser.parseLabValues(from: text)
         #expect(await log.parts.count > 1)
         #expect(result.reportDate.map { Calendar.current.dateComponents([.year, .month, .day], from: $0) }
-            == DateComponents(year: 2026, month: 8, day: 12))
+            == DateComponents(year: 2026, month: 8, day: 10))
         #expect(result.patientName == "Jane Roe")
 
         // 3. What review shows: English names resolved, labels and flags gone,

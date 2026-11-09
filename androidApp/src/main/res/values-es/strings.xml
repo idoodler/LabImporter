@@ -179,6 +179,7 @@
     </plurals>
     <string name="correct_or_deselect">No se puede guardar tal como está escrito. Corrígelo o desmárcalo.</string>
     <string name="no_date_found">No se encontró ninguna fecha en el informe. Comprueba que esta fecha sea correcta.</string>
+    <string name="date_to_check">Es posible que esta fecha se haya leído mal. Comprueba que coincida con el informe.</string>
     <string name="patient_and_lab">Paciente y laboratorio</string>
     <string name="not_filled_in">Sin rellenar</string>
     <plurals name="exportable_count">

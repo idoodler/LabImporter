@@ -1,0 +1,16 @@
+{
+  "reportDate": "2026-07-08",
+  "patientName": "Ana Rita Sousa",
+  "values": [
+    {"names": ["Hemoglobina", "Hemoglobin"], "value": 13.2, "unit": "g/dL", "loinc": "718-7"},
+    {"names": ["Leucócitos", "Leucocitos", "Leukocytes"], "value": 5.60, "unit": "x10^9/L"},
+    {"names": ["Glicose", "Glucose"], "value": 89, "unit": "mg/dL"},
+    {"names": ["Creatinina", "Creatinine"], "value": 0.64, "unit": "mg/dL", "loinc": "2160-0"},
+    {"names": ["Ferritina", "Ferritin"], "value": 27, "unit": "ng/mL", "loinc": "2276-4"}
+  ],
+  "notNumeric": [
+    {"names": ["filtração", "filtracao", "GFR"], "result": "> 90"},
+    {"names": ["C reativa", "C-reativa", "PCR", "CRP", "C reactive"], "result": "< 0,5"},
+    {"names": ["anti-TPO", "TPO", "Thyroperoxidase"], "result": "< 9"}
+  ]
+}

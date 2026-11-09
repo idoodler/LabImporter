@@ -111,6 +111,38 @@ class ReportSourceTextTest {
         assertTrue(prints("Test 1: 5.1", "5.1"), "Nor a numbered row")
     }
 
+    private fun dropsQualifier(text: String, result: String, vararg names: String) = ReportSourceText(text).dropsQualifier(result, names.toList())
+
+    /** ">60" read as 60, where the row prints 60 again in its reference: the row's result is the first 60 behind the name. */
+    @Test
+    fun aQualifierDroppedFromTheRowsResultIsCaught() {
+        // evaluation/README.md: Quest's reference "> OR = 60" printed the 60 that hid it.
+        val quest = "eGFR                    >60              mL/min/1.73m2  > OR = 60"
+        assertTrue(dropsQualifier(quest, "60", "eGFR"))
+        assertFalse(ReportSourceText(quest).backs("60", "mL/min/1.73m2", listOf("eGFR")))
+        assertTrue(ReportSourceText(quest).backs(">60", "mL/min/1.73m2", listOf("eGFR")))
+        assertTrue(dropsQualifier("Bilirubin, Direct           <0.2           mg/dL          < OR = 0.2", "0.2", "Bilirubin, Direct"))
+        // Spelled out, or a previous result behind it.
+        assertTrue(dropsQualifier("Vitamin D >150 ng/ml (150 and above: possibly toxic)", "150", "Vitamin D"))
+        assertTrue(dropsQualifier("CRP < 0,5 mg/dl  vorher: 0,5", "0,5", "CRP"))
+        // A row that goes on to the next line, starting with its result.
+        assertTrue(dropsQualifier("eGFR (CKD-EPI)\n> 90 ml/min   > OR = 90", "90", "eGFR"))
+    }
+
+    @Test
+    fun aPlainResultBesideAThresholdReferenceIsNoDroppedQualifier() {
+        assertFalse(dropsQualifier("LDL Cholesterol               100      H      mg/dL     <100", "100", "LDL Cholesterol"))
+        assertFalse(dropsQualifier("CRP 0,5 mg/dl < 0,5", "0.5", "CRP"))
+        // Another test's threshold on the same line isn't this one's result.
+        assertFalse(dropsQualifier("KREA: < 0,5 mg/dl; HARNS: 0,5 mg/dl", "0,5", "HARNS"))
+        assertTrue(dropsQualifier("KREA: < 0,5 mg/dl; HARNS: 0,5 mg/dl", "0,5", "KREA"))
+        // A reading that keeps its qualifier, or isn't a number, drops none.
+        assertFalse(dropsQualifier("eGFR >60 mL/min", ">60", "eGFR"))
+        assertFalse(dropsQualifier("eGFR >60 mL/min", "Negativ", "eGFR"))
+        // No row of the test prints it: nothing claimed.
+        assertFalse(dropsQualifier("Natrium 141 mmol/l", "60", "eGFR"))
+    }
+
     @Test
     fun aSignIsPartOfTheNumber() {
         assertTrue(prints("Base Excess -2,1 mmol/l", "-2.1"))
@@ -633,7 +665,7 @@ class ReportSourceTextTest {
 
     private fun sampleReports(): List<Pair<String, List<Triple<String, String, List<String>>>>> {
         val reports = File("../evaluation/reports").listFiles { file -> file.name.endsWith(".txt") }!!.sortedBy { it.name }
-        assertEquals(11, reports.size)
+        assertEquals(23, reports.size)
         return reports.map { report ->
             val expected = Json.parseToJsonElement(File(report.parentFile, report.nameWithoutExtension + ".expected.json").readText())
             report.readText() to expected.jsonObject.getValue("values").jsonArray.map { value ->
@@ -708,5 +740,31 @@ class ReportSourceTextTest {
             }
         }
         assertTrue(moved > 500, "$moved")
+    }
+
+    /**
+     * Every result with "<" or ">" the sample reports print (their text results with the
+     * printed `result`), as printed, backs; without it, it's caught.
+     */
+    @Test
+    fun aQualifierDroppedFromASampleReportIsCaught() {
+        var dropped = 0
+        val reports = File("../evaluation/reports").listFiles { file -> file.name.endsWith(".txt") }!!
+        for (report in reports) {
+            val expected = Json.parseToJsonElement(File(report.parentFile, report.nameWithoutExtension + ".expected.json").readText())
+            val source = ReportSourceText(report.readText())
+            val texts = expected.jsonObject["notNumeric"]?.jsonArray.orEmpty().map { it.jsonObject }
+            for (text in texts) {
+                val result = text["result"]?.jsonPrimitive?.content ?: continue
+                val number = Regex("^[<>]=?\\s*(\\d.*)$").matchEntire(result)?.groupValues?.get(1) ?: continue
+                val names = text.getValue("names").jsonArray.map { it.jsonPrimitive.content }
+                // The scorer's names are parts of words ("Filtrado"): only the rows the check can find.
+                if (report.readLines().none { line -> names.any { Regex("(?<![\\p{L}\\p{N}])${Regex.escape(it)}(?![\\p{L}\\p{N}])", RegexOption.IGNORE_CASE) in line } }) continue
+                assertFalse(source.dropsQualifier(result, names), "$result of ${names.first()} in ${report.name}")
+                assertTrue(source.dropsQualifier(number, names), "$number for $result of ${names.first()} in ${report.name}")
+                dropped++
+            }
+        }
+        assertTrue(dropped >= 20, "$dropped")
     }
 }

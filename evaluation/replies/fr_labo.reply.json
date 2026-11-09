@@ -1,0 +1,82 @@
+{"entries":
+[
+{"code":
+"CRP",
+"name":
+"Protéine C réactive",
+"rawValue":
+"< 1,0",
+"unit":
+"mg/L"
+},
+{"code":
+"Créatinine",
+"name":
+"Créatinine",
+"rawValue":
+"82",
+"unit":
+"µmol/L"
+},
+{"code":
+"DFG estimé (CKD-EPI)",
+"name":
+"DFG estimé (CKD-EPI)",
+"rawValue":
+"> 90",
+"unit":
+"mL/min/1,73m²"
+},
+{"code":
+"Glycémie à jeun",
+"name":
+"Glycémie à jeun",
+"rawValue":
+"5,1",
+"unit":
+"mmol/L"
+},
+{"code":
+"ASAT",
+"name":
+"ASAT",
+"rawValue":
+"24",
+"unit":
+"UI/L"
+},
+{"code":
+"ALAT",
+"name":
+"ALAT",
+"rawValue":
+"< 10",
+"unit":
+"UI/L"
+},
+{"code":
+"Hémoglobine",
+"name":
+"Hémoglobine",
+"rawValue":
+"14,9",
+"unit":
+"g/dL"
+},
+{"code":
+"Plaquettes",
+"name":
+"Plaquettes",
+"rawValue":
+"212",
+"unit":
+"G/L"}
+],
+"reportDate":
+"2026-02-07",
+"patientName":
+"M. Julien Moreau",
+"authorName":
+"Laboratoire de Biologie Médicale des Alpes",
+"reportLanguage":
+"fr"}
