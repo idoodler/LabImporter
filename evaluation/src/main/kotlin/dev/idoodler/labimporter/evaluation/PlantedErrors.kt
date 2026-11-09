@@ -1,5 +1,6 @@
 package dev.idoodler.labimporter.evaluation
 
+import dev.idoodler.labimporter.core.export.Ucum
 import dev.idoodler.labimporter.core.model.LabValue
 import dev.idoodler.labimporter.core.parse.AiLabEntry
 import dev.idoodler.labimporter.core.parse.AiLabReport
@@ -84,7 +85,8 @@ fun plantedFaults(entries: List<AiLabEntry>, index: Int): List<Pair<Fault, AiLab
         QUALIFIED.matchEntire(raw)?.let { add(Fault.QUALIFIER_DROPPED to entry.copy(rawValue = it.groupValues[1].trim())) }
         if (entry.unit.isNotBlank()) {
             val others = entries.indices.map { entries[(index + 1 + it) % entries.size].unit }
-            others.firstOrNull { it.isNotBlank() && !unitMatches(it, entry.unit) }
+            // Another unit, not the same one with a printed note ("mg/dL (calc)" is mg/dL, read right).
+            others.firstOrNull { it.isNotBlank() && !unitMatches(Ucum.withoutAnnotation(it), Ucum.withoutAnnotation(entry.unit)) }
                 ?.let { add(Fault.WRONG_UNIT to entry.copy(unit = it)) }
         }
     }

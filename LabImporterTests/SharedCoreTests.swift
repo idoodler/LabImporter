@@ -37,9 +37,9 @@ struct SharedCoreTests {
         #expect(report.patientName == "Max Mustermann")
         #expect(report.authorName == "Labor & Co")
         // Only exportable values were written: mapped, selected, numeric.
-        #expect(report.entries.map(\.code) == ["2160-0", "2823-3", "4548-4", "1742-6"])
-        #expect(report.entries.map(\.numericValue) == [0.8, 4.1, 6.53, 12_345.6])
-        #expect(report.entries.map(\.unit) == ["mg/dL", "mmol/L", "%", "U/L"])
+        #expect(report.entries.map(\.code) == ["2160-0", "2823-3", "4548-4", "1742-6", "6690-2"])
+        #expect(report.entries.map(\.numericValue) == [0.8, 4.1, 6.53, 12_345.6, 7.2])
+        #expect(report.entries.map(\.unit) == ["mg/dL", "mmol/L", "%", "U/L", "10*9/L"])
         // Documents this app didn't write are skipped, never guessed at.
         #expect(HealthKitService.report(fromCDA: "<ClinicalDocument/>", id: id) == nil)
     }
@@ -259,9 +259,9 @@ struct SharedCoreTests {
             labValues: report(Fixtures.date(2026, 5, 6), [("2160-0", 0.8)]).asLabValues, date: Fixtures.date(2026, 5, 6)
         )
         #expect(throws: ReportTransferService.Failure.newerVersion) {
-            try ReportTransferService.plan(contents: cda.replacingOccurrences(of: "LabImporter CDA v1", with: "LabImporter CDA v99"), existing: [])
+            try ReportTransferService.plan(contents: cda.replacingOccurrences(of: "LabImporter CDA v2", with: "LabImporter CDA v99"), existing: [])
         }
-        let current = "\"code\":\"1\""
+        let current = "\"code\":\"2\""
         let file = ReportTransferService.export(of: [report(Fixtures.date(2026, 5, 6), [("2160-0", 0.8)])]).contents
         #expect(file.contains(current))
         #expect(throws: ReportTransferService.Failure.newerVersion) {

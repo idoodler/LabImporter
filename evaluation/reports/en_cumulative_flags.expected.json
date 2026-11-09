@@ -1,0 +1,19 @@
+{
+  "reportDate": "2026-10-14",
+  "patientName": "Jane Roe",
+  "values": [
+    {"names": ["Glucose"], "value": 65, "unit": "mg/dL", "loinc": "2345-7"},
+    {"names": ["Creatinine"], "value": 1.32, "unit": "mg/dL", "loinc": "2160-0"},
+    {"names": ["Sodium"], "value": 138, "unit": "mmol/L", "loinc": "2951-2"},
+    {"names": ["Potassium"], "value": 5.6, "unit": "mmol/L", "loinc": "2823-3"},
+    {"names": ["WBC", "Leukocytes", "White"], "value": 11.8, "unit": "x10E3/uL", "loinc": "6690-2"},
+    {"names": ["Hemoglobin"], "value": 11.0, "unit": "g/dL", "loinc": "718-7"},
+    {"names": ["Platelets", "PLT"], "value": 212, "unit": "x10E3/uL", "loinc": "777-3"},
+    {"names": ["TSH", "Thyrotropin"], "value": 2.10, "unit": "uIU/mL", "loinc": "3016-3"},
+    {"names": ["T4", "Thyroxine"], "value": 1.21, "unit": "ng/dL", "loinc": "3024-7"},
+    {"names": ["Cholesterol"], "value": 198, "unit": "mg/dL", "loinc": "2093-3"},
+    {"names": ["ALT", "Alanine"], "value": 24, "unit": "U/L", "loinc": "1742-6"},
+    {"names": ["Ferritin"], "value": 38, "unit": "ng/mL", "loinc": "2276-4"},
+    {"names": ["Albumin"], "value": 4.4, "unit": "g/dL", "loinc": "1751-7"}
+  ]
+}

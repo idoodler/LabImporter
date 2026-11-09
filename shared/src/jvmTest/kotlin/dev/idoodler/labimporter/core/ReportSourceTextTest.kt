@@ -548,9 +548,92 @@ class ReportSourceTextTest {
         assertEquals(listOf(false), flagged(AiLabEntry("K", "Kalium", "5,6", "H mmol/l")))
     }
 
+    private fun unitBeside(text: String, result: String, unit: String, vararg names: String) =
+        ReportSourceText(text).printsUnitBesideTest(result, unit, names.toList())
+
+    @Test
+    fun anotherTestsUnitOnTheRowIsCaught() {
+        val line = "KREA: 0,80 mg/dl; HARNS: 5,1 mg/dl; GPT: 59 U/l; GGT: 31 U/l"
+        assertFalse(unitBeside(line, "0,80", "U/l", "Kreatinin", "KREA"), "printed on the line, but as GPT's unit")
+        assertTrue(unitBeside(line, "0,80", "mg/dl", "Kreatinin", "KREA"))
+        assertTrue(unitBeside(line, "59", "U/l", "GPT"))
+        assertFalse(unitBeside("TSH: 1,9 mU/l; Ferritin: 88 ng/ml", "88", "mU/l", "Ferritin"), "in front of the result: the test before's")
+        assertFalse(unitBeside(table, "141", "mg/dl", "Natrium"), "the unit of the rows below")
+        assertFalse(unitBeside(table, "5,6", "ml/min/1,73m²", "Kalium"))
+        val glucose = "Glycémie à jeun ........ 5,4 mmol/L (0,97 g/L)     [3,9 - 5,8]"
+        assertFalse(unitBeside(glucose, "5,4", "g/L", "Glycémie à jeun"), "the unit of the result in the second unit")
+        assertTrue(unitBeside(glucose, "0,97", "g/L", "Glycémie à jeun"), "the result in the second unit")
+        assertFalse(unitBeside("Hémoglobine ...... 12,8 g/dL\nLeucocytes ..... 7,2 G/L", "12,8", "G/L", "Hémoglobine"))
+    }
+
+    @Test
+    fun aUnitBehindItsResultIsNotFlagged() {
+        assertTrue(unitBeside(table, "5,6", "mmol/l", "Kalium"), "behind a flag")
+        assertTrue(unitBeside(table, "58", "ml/min/1,73m²", "eGFR"), "a unit with a number of its own")
+        assertTrue(unitBeside(table, "<0,5", "mg/dl", "CRP"))
+        assertTrue(unitBeside("Natrium 141 136 - 145 mmol/l", "141", "mmol/l", "Natrium"), "behind the reference range")
+        assertTrue(unitBeside("Kalium 4,1  4,3  4,0 mmol/l", "4,1", "mmol/l", "Kalium"), "a cumulative report's columns")
+        assertTrue(unitBeside("Leukozyten 6,8 H 10^9/l 3,9 - 10,2", "6,8", "10^9/l", "Leukozyten"))
+        assertTrue(unitBeside("WBC 6.8 x10E3/uL", "6.8", "10E3/uL", "WBC"))
+        assertTrue(unitBeside("Thrombozyten 263/nl", "263", "/nl", "Thrombozyten"))
+        assertTrue(unitBeside("Hemoglobin A1c 5.9 H % of total Hgb <5.7", "5.9", "%", "Hemoglobin A1c"))
+        assertTrue(unitBeside("Kreatinin  1,12 mg/dl  Befund vom 06.05.2026", "1,12", "mg/dl", "Kreatinin"), "a date is no next result")
+        assertTrue(unitBeside("Hämoglobin\n14,2 g/dl  12 - 16", "14,2", "g/dl", "Hämoglobin"), "on the line that continues the row")
+        assertTrue(unitBeside("血红蛋白145克/升", "145", "克/升", "血红蛋白"))
+    }
+
+    /** As with the result, a row that can't tell says nothing: the whole report decides. */
+    @Test
+    fun aRowWithoutAUnitBehindItsResultSaysNothing() {
+        // The unit in a column a PDF's text put elsewhere, or a short label behind the result.
+        assertTrue(unitBeside("Glucose 92 H\nBUN 18\nmg/dL\nmg/dL", "92", "mg/dL", "Glucose"))
+        assertTrue(unitBeside("Hb 14,2   MCV 88\nEinheiten: g/dl, fl", "14,2", "g/dl", "Hb"), "the next test's label is no unit")
+        assertFalse(unitBeside("Glucose 92 H\nBUN 18 mmol/l", "92", "mg/dL", "Glucose"), "printed nowhere")
+        // No row prints the result.
+        assertTrue(unitBeside("Natrium\nKalium\n141\n5,6\nmmol/l", "141", "mmol/l", "Kalium"))
+        assertTrue(unitBeside("Kalium 4,1 mmol/l", "4,1", "mmol/l", "Potassium"), "no row names the test")
+        // A result in words, no result, no unit.
+        assertTrue(unitBeside("Eiweiß positiv (+) mg/dl", "positiv (+)", "mg/dl", "Eiweiß"))
+        assertTrue(unitBeside(table, "-", "U/l", "Kalium"))
+        assertTrue(unitBeside(table, "141", " ", "Natrium"))
+    }
+
+    /** What stands behind a result before its unit, or instead of it, is no unit of it. */
+    @Test
+    fun aWordOrTheNextTestBehindTheResultIsNoUnit() {
+        // A cumulative report's flag, written out, and its previous result's column.
+        val cumulative = "Glucose     65   Low    92    04/02/2026   mg/dL   70-99\n" +
+            "Creatinine  1.32 High   1.10  04/02/2026   mg/dL   0.57-1.00\nSodium 138 mmol/L"
+        assertTrue(unitBeside(cumulative, "65", "mg/dL", "Glucose"))
+        assertTrue(unitBeside(cumulative, "1.32", "mg/dL", "Creatinine"))
+        assertFalse(unitBeside(cumulative, "1.32", "mmol/L", "Creatinine"), "the unit of the next row")
+        // The unit's column first, a word behind the result.
+        val unitFirst = "CRP          mg/dl   0,3    bis 0,5\nTSH          mU/l    1,82   0,27 - 4,20"
+        assertTrue(unitBeside(unitFirst, "0,3", "mg/dl", "CRP"))
+        assertFalse(unitBeside(unitFirst, "0,3", "mU/l", "CRP"))
+        assertFalse(unitBeside(unitFirst, "1,82", "mg/dl", "TSH"), "the unit in front of the result")
+        // Two tests on a line, each unit in its label: the next one's is no unit of this result.
+        val columns = "TSH (uIU/mL)   2.10    Free T4 (ng/dL)   1.21\nGlucose (mg/dL)  92   HbA1c (%) 5.6"
+        assertTrue(unitBeside(columns, "2.10", "uIU/mL", "TSH"))
+        assertFalse(unitBeside(columns, "2.10", "ng/dL", "TSH"))
+        assertTrue(unitBeside(columns, "1.21", "ng/dL", "T4"))
+        assertTrue(unitBeside(columns, "92", "mg/dL", "Glucose"))
+        assertFalse(unitBeside(columns, "92", "%", "Glucose"))
+        assertTrue(unitBeside(columns, "5.6", "%", "HbA1c"))
+    }
+
+    @Test
+    fun postProcessingFlagsAnotherTestsUnitOnTheSameLine() {
+        val text = "KREA: 0,80 mg/dl; HARNS: 5,1 mg/dl; GPT: 59 U/l\nTSH: 1,9 mU/l; Ferritin: 88 ng/ml"
+        fun flagged(vararg entries: AiLabEntry) =
+            LabParsePipeline.postProcess(AiLabReport(entries.toList(), reportLanguage = "de"), text).values.map { it.needsSourceCheck }
+        assertEquals(listOf(true, false), flagged(AiLabEntry("KREA", "Kreatinin", "0,80", "U/l"), AiLabEntry("GPT", "GPT", "59", "U/l")))
+        assertEquals(listOf(true, false), flagged(AiLabEntry("FERR", "Ferritin", "88", "mU/l"), AiLabEntry("TSH", "TSH", "1,9", "mU/l")))
+    }
+
     private fun sampleReports(): List<Pair<String, List<Triple<String, String, List<String>>>>> {
         val reports = File("../evaluation/reports").listFiles { file -> file.name.endsWith(".txt") }!!.sortedBy { it.name }
-        assertEquals(9, reports.size)
+        assertEquals(11, reports.size)
         return reports.map { report ->
             val expected = Json.parseToJsonElement(File(report.parentFile, report.nameWithoutExtension + ".expected.json").readText())
             report.readText() to expected.jsonObject.getValue("values").jsonArray.map { value ->
@@ -577,9 +660,32 @@ class ReportSourceTextTest {
                 assertTrue(source.prints(number), "$number in ${names.first()}")
                 assertTrue(source.printsUnit(unit), "$unit of ${names.first()}")
                 assertTrue(source.printsBesideTest(number, names), "$number beside ${names.first()}")
+                assertTrue(source.printsUnitBesideTest(number, unit, names), "$unit behind ${names.first()}'s $number")
                 assertTrue(source.backs(number, unit, names), "${names.first()}")
             }
         }
+    }
+
+    /** Each other unit of a sample report put on a test whose row is found is caught. */
+    @Test
+    fun anotherUnitOfASampleReportIsCaught() {
+        var swapped = 0
+        for ((text, values) in sampleReports()) {
+            val source = ReportSourceText(text)
+            fun List<String>.namedIn(line: String) = any { Regex("(?<![\\p{L}\\p{N}])${Regex.escape(it)}(?![\\p{L}\\p{N}])", RegexOption.IGNORE_CASE) in line }
+            for ((number, unit, names) in values) {
+                // The scorer's names are parts of words ("Triglyc"): no row of those is found.
+                // Without a unit, the row prints none behind it to compare with ("Specific Gravity 1.018").
+                if (unit.isEmpty() || text.lines().none { names.namedIn(it) }) continue
+                for (other in values.map { it.second }.filter { it.isNotEmpty() }.distinct()) {
+                    // The same unit, whatever the case ("G/L" and "g/L" too: the check reads units case-blind).
+                    if (other.lowercase().replace('µ', 'u') == unit.lowercase().replace('µ', 'u')) continue
+                    assertFalse(source.printsUnitBesideTest(number, other, names), "$other behind ${names.first()}'s $number")
+                    swapped++
+                }
+            }
+        }
+        assertTrue(swapped > 150, "$swapped")
     }
 
     /** Each result of a sample report moved onto another test's row is caught; one row can't tell its tests apart. */

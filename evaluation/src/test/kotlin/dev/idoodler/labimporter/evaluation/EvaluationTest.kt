@@ -47,6 +47,18 @@ class EvaluationTest {
     }
 
     @Test
+    fun aUnitWithAPrintedNoteIsNoOtherUnit() {
+        // "mg/dL (calc)" is LDL's mg/dL with the lab's note: planting it on total cholesterol plants nothing wrong.
+        val entries = listOf(
+            AiLabEntry(name = "Cholesterol", rawValue = "214", unit = "mg/dL"),
+            AiLabEntry(name = "LDL", rawValue = "138", unit = "mg/dL (calc)"),
+            AiLabEntry(name = "HbA1c", rawValue = "5.9", unit = "%"),
+        )
+        assertEquals("%", plantedFaults(entries, 0).single { it.first == Fault.WRONG_UNIT }.second.unit)
+        assertEquals("%", plantedFaults(entries, 1).single { it.first == Fault.WRONG_UNIT }.second.unit)
+    }
+
+    @Test
     fun faultsArePlantedDeterministically() {
         val entries = listOf(AiLabEntry(name = "Kreatinin", rawValue = "0,80", unit = "mg/dl"), AiLabEntry(name = "GPT", rawValue = "59", unit = "U/l"))
         val faults = plantedFaults(entries, 0).associate { (kind, entry) -> kind to (entry.rawValue to entry.unit) }

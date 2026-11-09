@@ -7,11 +7,15 @@ import dev.idoodler.labimporter.core.export.FhirLabCodec
 import dev.idoodler.labimporter.core.export.ReportEncodingException
 import dev.idoodler.labimporter.core.export.ReportReadProblem
 import dev.idoodler.labimporter.core.export.ReportSchema
+import dev.idoodler.labimporter.core.export.Ucum
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.core.model.LabMapping
 import dev.idoodler.labimporter.core.model.LabReport
 import dev.idoodler.labimporter.core.model.LabValue
 import dev.idoodler.labimporter.core.model.QualitativeResult
+import dev.idoodler.labimporter.core.parse.AiLabEntry
+import dev.idoodler.labimporter.core.parse.AiLabReport
+import dev.idoodler.labimporter.core.parse.LabParsePipeline
 import dev.idoodler.labimporter.core.transfer.ReportTransfer
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.Json
@@ -43,7 +47,7 @@ class ExportTest {
     @Test
     fun cdaRoundTrip() {
         val xml = CdaExport.generate(values, LocalDate(2026, 5, 6), "LabImporter test", GoldenCda.narrative, "Max Mustermann", "Labor & Co")
-        assertTrue(xml.contains("<softwareName>LabImporter CDA v1</softwareName>"))
+        assertTrue(xml.contains("<softwareName>LabImporter CDA v${ReportSchema.VERSION}</softwareName>"))
         assertTrue(xml.contains("value=\"0.8\" unit=\"mg/dL\""))
         assertTrue(xml.contains("<name>Labor &amp; Co</name>"))
         val report = assertNotNull(CdaParser.parse(xml, "id-1"))
@@ -67,8 +71,8 @@ class ExportTest {
     @Test
     fun unversionedOrForeignCdaIsSkipped() {
         val xml = CdaExport.generate(values, LocalDate(2026, 5, 6), "LabImporter test", GoldenCda.narrative)
-        assertNull(CdaParser.parse(xml.replace("LabImporter CDA v1", "Other App")))
-        assertNull(CdaParser.parse(xml.replace("LabImporter CDA v1", "LabImporter CDA v99")))
+        assertNull(CdaParser.parse(xml.replace("LabImporter CDA v${ReportSchema.VERSION}", "Other App")))
+        assertNull(CdaParser.parse(xml.replace("LabImporter CDA v${ReportSchema.VERSION}", "LabImporter CDA v99")))
         assertNull(CdaParser.parse("not xml at all"))
         assertNull(CdaParser.parse("<ClinicalDocument><broken"))
     }
@@ -92,7 +96,8 @@ class ExportTest {
         val report = assertNotNull(CdaParser.parse(german.replace("root=\"UUID\"", "root=\"00000000-0000-0000-0000-000000000000\"")))
         assertEquals(LocalDate(2026, 5, 6), report.date)
         assertEquals("Labor & Co", report.authorName)
-        assertEquals(listOf("2160-0", "2823-3", "4548-4", "1742-6"), report.entries.map { it.code })
+        assertEquals(listOf("2160-0", "2823-3", "4548-4", "1742-6", "6690-2"), report.entries.map { it.code })
+        assertEquals("10*9/L", report.entries.last().unit, "a count read back as UCUM writes it")
     }
 
     @Test
@@ -175,7 +180,7 @@ class ExportTest {
         assertEquals(listOf(true, true, true, true, true, false, false), qualitative.map { it.isExportable })
         val xml = CdaExport.generate(qualitative, LocalDate(2026, 5, 6), "LabImporter test", GoldenCda.narrative)
         // Additive: the schema version stays, and older builds skip ST observations.
-        assertTrue(xml.contains("<softwareName>LabImporter CDA v1</softwareName>"))
+        assertTrue(xml.contains("<softwareName>LabImporter CDA v${ReportSchema.VERSION}</softwareName>"))
         assertTrue(xml.contains("<value xsi:type=\"ST\">nicht reaktiv</value>"))
         assertTrue(xml.contains("<value xsi:type=\"ST\">&lt;0,5 mg/l</value>"))
         val report = assertNotNull(CdaParser.parse(xml))
@@ -380,5 +385,121 @@ class ExportTest {
         )
         assertEquals(listOf("new", "mid", "old"), stored.reports.map { it.id })
         assertEquals(1, stored.unreadableReports, "Both of its resources are damaged, but it's one report")
+    }
+
+    private val counts = listOf(
+        // French labs print leukocytes and platelets in G/L, German ones in Gpt/l: 10⁹ cells a litre.
+        LabValue(code = "6690-2", name = "Leucocytes", displayValue = "7,2", numericValue = 7.2, unit = "G/L"),
+        LabValue(code = "777-3", name = "Thrombozyten", displayValue = "263", numericValue = 263.0, unit = "Gpt/l"),
+        LabValue(code = "789-8", name = "Erythrocytes", displayValue = "4,52", numericValue = 4.52, unit = "T/L"),
+        // A real mass concentration in grams a litre.
+        LabValue(code = "2885-2", name = "Protéines", displayValue = "70", numericValue = 70.0, unit = "g/L"),
+    )
+
+    private fun quantityCodes(resources: List<String>) = resources.map {
+        Json.parseToJsonElement(it).jsonObject.getValue("valueQuantity").jsonObject.getValue("code").jsonPrimitive.content
+    }
+
+    @Test
+    fun aCountPerLitreIsExportedAsACountNeverAsGrams() {
+        val xml = CdaExport.generate(counts, LocalDate(2026, 5, 6), "x", GoldenCda.narrative)
+        assertEquals(listOf("10*9/L", "10*9/L", "10*12/L", "g/L"), assertNotNull(CdaParser.parse(xml)).entries.map { it.unit })
+        val resources = FhirLabCodec.encode(LabReport.fromValues(counts, LocalDate(2026, 5, 6), "", ""), "x").map { it.json }
+        assertEquals(listOf("10*9/L", "10*9/L", "10*12/L", "g/L"), quantityCodes(resources))
+        // Health Connect shows the unit as printed.
+        assertEquals(listOf("G/L", "Gpt/l", "T/L", "g/L"), FhirLabCodec.decode(resources).single().entries.map { it.unit })
+    }
+
+    @Test
+    fun theTermDecidesBetweenGigaAndGramsWhereTheLetterCaseCanNot() {
+        assertEquals("g/L", Ucum.fromPrinted("G/L", "2885-2"), "an all-capitals report's protein is still grams")
+        assertEquals("10*9/L", Ucum.fromPrinted("g/l", "6690-2"), "a count per volume is never grams")
+        assertEquals("10*9/L", Ucum.fromPrinted("G/l", "NOT-A-CODE"), "without a known term, the capital G decides")
+        assertEquals("g/L", Ucum.fromPrinted("g/L"))
+        assertEquals("10*9/L", Ucum.fromPrinted("GPT/L"))
+        assertEquals("10*12/L", Ucum.fromPrinted("Tpt/l"))
+    }
+
+    @Test
+    fun aPrintedNoteIsNoPartOfTheUnit() {
+        assertEquals("mg/dL", Ucum.fromPrinted("mg/dL (calc)"))
+        assertEquals("U/L", Ucum.fromPrinted("U/l (37 °C)"))
+        assertEquals("mL/min/{1.73_m2}", Ucum.fromPrinted("mL/min/1.73 m2 (CKD-EPI)"))
+        assertEquals("mg/dL", Ucum.withoutAnnotation("mg/dL(calc)"))
+        // A part of the unit in parentheses, or a unit all in parentheses, is no note.
+        assertEquals("mL/min/(1.73 m2)", Ucum.withoutAnnotation("mL/min/(1.73 m2)"))
+        assertEquals("(mmol/l)", Ucum.withoutAnnotation("(mmol/l)"))
+        // Nor is a power in parentheses (Cerner, MyChart): "x10/L" would be off by 10⁸.
+        assertEquals("x10(9)/L", Ucum.withoutAnnotation("x10(9)/L"))
+        assertEquals("x10(3)/mcL", Ucum.fromPrinted("x10(3)/mcL"))
+        assertEquals("10(12)/L", Ucum.withoutAnnotation("10(12)/L (calc)"))
+        assertEquals("mL/min/1.73m2", Ucum.withoutAnnotation("mL/min/1.73m2(CKD-EPI)"), "a note behind a digit is still a note")
+        val ldl = LabValue(code = "13457-7", name = "LDL", displayValue = "138", numericValue = 138.0, unit = "mg/dL (calc)")
+        val xml = CdaExport.generate(listOf(ldl), LocalDate(2026, 5, 6), "x", GoldenCda.narrative)
+        assertTrue(xml.contains("value=\"138\" unit=\"mg/dL\""), xml)
+        // Review shows the unit without the note, and the report printing it backs it.
+        val read = LabParsePipeline.postProcess(
+            AiLabReport(listOf(AiLabEntry("LDL-Cholesterol", "LDL-Cholesterol", "138", "H mg/dL (calc)")), reportLanguage = "en"),
+            "LDL-Cholesterol         138       H      mg/dL (calc)   <100",
+        ).values.single()
+        assertEquals("mg/dL", read.unit)
+        assertFalse(read.needsSourceCheck)
+    }
+
+    @Test
+    fun aVersion1DocumentsCountInGramsReadsBackAsACount() {
+        val ldl = LabValue(code = "13457-7", name = "LDL", displayValue = "138", numericValue = 138.0, unit = "mg/dL")
+        val current = CdaExport.generate(counts.take(1) + counts.last() + ldl, LocalDate(2026, 5, 6), "x", GoldenCda.narrative)
+        // What version 1 wrote for the same report: G/L as grams, and the printed note in the unit.
+        val old = current.replace("LabImporter CDA v${ReportSchema.VERSION}", "LabImporter CDA v1")
+            .replace("unit=\"10*9/L\"", "unit=\"g/L\"")
+            .replace("unit=\"mg/dL\"", "unit=\"mg/dL (calc)\"")
+        assertEquals(2, Regex("unit=\"g/L\"").findAll(old).count())
+        val report = assertNotNull(CdaParser.parse(old))
+        assertEquals(listOf(7.2, 70.0, 138.0), report.entries.map { it.numericValue })
+        // Apple Health shows the leukocytes as a count again; the protein stays grams.
+        assertEquals(listOf("10*9/L", "g/L", "mg/dL"), report.entries.map { it.unit })
+        // Saved again, it has the units of a version 2 document.
+        fun units(xml: String) = Regex("unit=\"([^\"]*)\"").findAll(xml).map { it.groupValues[1] }.toList()
+        assertEquals(units(current), units(CdaExport.generate(report.asLabValues, report.date, "x", GoldenCda.narrative)))
+    }
+
+    @Test
+    fun aVersion1PowerInParenthesesStaysPartOfTheUnit() {
+        val entries = listOf(
+            LabReport.Entry("1", "6690-2", "WBC", "6.8", 6.8, "x10(9)/L"),
+            LabReport.Entry("2", "777-3", "Platelets", "245", 245.0, "x10(3)/mcL"),
+        )
+        val report = LabReport("r", LocalDate(2026, 5, 6), "", "", entries)
+        val version1 = FhirLabCodec.encode(report, "x").map {
+            it.json.replace("\"code\":\"${ReportSchema.VERSION}\"", "\"code\":\"1\"")
+        }
+        assertEquals(listOf("x10(9)/L", "x10(3)/mcL"), FhirLabCodec.decode(version1).single().entries.map { it.unit })
+        val cda = CdaExport.generate(report.asLabValues, report.date, "x", GoldenCda.narrative)
+            .replace("LabImporter CDA v${ReportSchema.VERSION}", "LabImporter CDA v1")
+        assertEquals(listOf("x10(9)/L", "x10(3)/mcL"), assertNotNull(CdaParser.parse(cda)).entries.map { it.unit })
+    }
+
+    @Test
+    fun aVersion1FhirRecordKeepsItsPrintedUnitUnlessItWasGrams() {
+        val entries = listOf(
+            LabReport.Entry("1", "6690-2", "Leucocytes", "7.2", 7.2, "G/L"),
+            LabReport.Entry("2", "777-3", "Plaquettes", "245", 245.0, "g/l"),
+            LabReport.Entry("3", "2885-2", "Protéines", "70", 70.0, "g/L"),
+            LabReport.Entry("4", "13457-7", "LDL", "138", 138.0, "mg/dL (calc)"),
+            LabReport.Entry("5", "5196-1", "HBsAg", "negativ", null, ""),
+        )
+        val report = LabReport("r", LocalDate(2026, 5, 6), "", "", entries)
+        val version1 = FhirLabCodec.encode(report, "x").map {
+            it.json.replace("\"code\":\"${ReportSchema.VERSION}\"", "\"code\":\"1\"")
+        }
+        assertTrue(version1.all { "\"code\":\"1\"" in it })
+        val migrated = FhirLabCodec.decode(version1).single()
+        // "G/L" was always shown right; a count printed "g/l" wasn't, nor was the note.
+        assertEquals(listOf("G/L", "10*9/L", "g/L", "mg/dL", ""), migrated.entries.map { it.unit })
+        assertEquals(
+            listOf("10*9/L", "10*9/L", "g/L", "mg/dL"),
+            quantityCodes(FhirLabCodec.encode(migrated, "x").map { it.json }.filter { "valueQuantity" in it }),
+        )
     }
 }

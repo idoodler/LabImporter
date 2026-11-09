@@ -1,6 +1,7 @@
 package dev.idoodler.labimporter.core.parse
 
 import dev.idoodler.labimporter.core.platform.NumberFormatting
+import kotlin.math.abs
 
 /**
  * The text a report was read from, to tell whether what the model returned is
@@ -9,12 +10,13 @@ import dev.idoodler.labimporter.core.platform.NumberFormatting
  * wrong test, and the wrong value looks just as plausible as the right one, so
  * a value the text doesn't back is shown to the user to compare.
  *
- * Three checks ([prints], [printsUnit], [printsBesideTest]), none of which
- * flags a value the report prints, with its unit, on its row. The last one reads rows,
- * but only where a row can be trusted: OCR keeps one recognised line per line,
- * yet a PDF's text can put a table's names and values apart, so a line that
- * names the test and prints no result at all says nothing. A false alarm on
- * every other value would teach people to ignore the badge.
+ * Four checks ([prints], [printsUnit], [printsBesideTest], [printsUnitBesideTest]),
+ * none of which flags a value the report prints, with its unit, on its row. The
+ * last two read rows, but only where a row can be trusted: OCR keeps one
+ * recognised line per line, yet a PDF's text can put a table's names and values
+ * apart, so a line that names the test and prints no result at all says nothing,
+ * nor does a row that prints no unit beside its result. A false alarm on every
+ * other value would teach people to ignore the badge.
  */
 internal class ReportSourceText(text: String) {
     private val decimalSeparator: Char? = decimalSeparatorIn(undated(text))
@@ -25,12 +27,13 @@ internal class ReportSourceText(text: String) {
     /**
      * Whether the report backs a value the model read: its [result] printed, on
      * a line of its test (by [names]) where one prints a result, and its [unit]
-     * printed. A value without a result claims nothing, its unit included.
+     * printed, behind that result where its row prints one. A value without a
+     * result claims nothing, its unit included.
      */
     fun backs(result: String, unit: String, names: List<String>): Boolean {
         val trimmed = result.trim()
         if (trimmed.isEmpty() || trimmed == "-") return true
-        return prints(trimmed) && printsUnit(unit) && printsBesideTest(trimmed, names)
+        return prints(trimmed) && printsBesideTest(trimmed, names) && printsUnitBesideTest(trimmed, unit, names)
     }
 
     /** Whether [result] is printed. No result (empty, `-`) claims nothing, so there's nothing to contradict. */
@@ -65,19 +68,55 @@ internal class ReportSourceText(text: String) {
     fun printsBesideTest(result: String, names: List<String>): Boolean {
         val trimmed = result.trim()
         if (trimmed.isEmpty() || trimmed == "-") return true
-        val wanted = names.map { normalize(it).filterNot { char -> char.isWhitespace() } }.filter { it.isNotEmpty() }.distinct()
-        if (wanted.isEmpty()) return true
-        val naming = lines.indices.mapNotNull { index ->
-            val named = wanted.filter { lines[index].names(it) }
-            if (named.isEmpty()) null else index to named
-        }
-        val labelled = naming.filter { (index, named) -> named.any { lines[index].startsWithName(it) } }
-        val rows = labelled.ifEmpty { naming }
+        val rows = rowsOf(names)
         val onItsRow = rows.any { (index, _) ->
             lines[index].printsOnRow(trimmed) || lines.getOrNull(index + 1)?.startsWithResult(trimmed) == true
         }
         if (onItsRow) return true
         return rows.none { (index, named) -> lines[index].printsAResultBesides(named) }
+    }
+
+    /**
+     * Whether [unit] is printed as [result]'s unit on the row of its test (by [names]),
+     * the row [printsBesideTest] finds it on, or on the line that continues that row:
+     * behind it, or right in front of it ("CRP mg/dl 0,3", "Glucose (mg/dL) 92").
+     * "KREA: 0,80 mg/dl; GPT: 59 U/l" prints U/l, but not as Kreatinin's unit. A row
+     * that prints no unit beside its result ("Hb 14,2  MCV 88") says nothing, and
+     * where no row prints the result, the unit is looked for in the whole report
+     * ([printsUnit]). No result or no unit claims nothing.
+     */
+    fun printsUnitBesideTest(result: String, unit: String, names: List<String>): Boolean {
+        val trimmed = result.trim()
+        val wanted = unitForm(unit).filterNot { it.isWhitespace() }
+        if (wanted.isEmpty() || trimmed.isEmpty() || trimmed == "-") return true
+        val verdicts = rowsOf(names).flatMap { (index, _) ->
+            listOfNotNull(
+                lines[index].takeIf { it.printsOnRow(trimmed) }?.unitBehind(trimmed, wanted),
+                // The line that continues the row, starting with its result: the test isn't named there.
+                lines.getOrNull(index + 1)?.takeIf { it.startsWithResult(trimmed) }?.unitBehind(trimmed, wanted),
+            )
+        }
+        return when {
+            true in verdicts -> true
+            false in verdicts -> false
+            else -> printsUnit(unit)
+        }
+    }
+
+    /**
+     * The lines that name a test by any of [names] (the model's test name and printed
+     * code), with the names each one prints. Where some line starts with one, only
+     * those: "HDL Cholesterin" names Cholesterin too.
+     */
+    private fun rowsOf(names: List<String>): List<Pair<Int, List<String>>> {
+        val wanted = names.map { normalize(it).filterNot { char -> char.isWhitespace() } }.filter { it.isNotEmpty() }.distinct()
+        if (wanted.isEmpty()) return emptyList()
+        val naming = lines.indices.mapNotNull { index ->
+            val named = wanted.filter { lines[index].names(it) }
+            if (named.isEmpty()) null else index to named
+        }
+        val labelled = naming.filter { (index, named) -> named.any { lines[index].startsWithName(it) } }
+        return labelled.ifEmpty { naming }
     }
 
     /**
@@ -91,7 +130,7 @@ internal class ReportSourceText(text: String) {
     fun numberFrom(result: String): Double? = numberIn(result, decimalSeparator)
 
     /** A piece of the report — all of it, or one line — and what it prints. */
-    private class Printed(text: String, private val decimalSeparator: Char?) {
+    private class Printed(private val text: String, private val decimalSeparator: Char?) {
         private val undated: String = undated(text)
         private val numbers: Set<Double> = numbersIn(undated, decimalSeparator)
 
@@ -99,7 +138,64 @@ internal class ReportSourceText(text: String) {
         private val results: Set<Double> by lazy { numbersIn(undated.replace(RANGE, " "), decimalSeparator) }
         private val normalized: String = normalize(text)
 
+        /** The text with its dates blanked out, so that every position is still the printed one. */
+        private val blanked: String by lazy { blankDates(text) }
+
+        /** Each number printed, where it is and what it reads as, without its sign. */
+        private val tokens: List<NumberToken> by lazy {
+            NUMBER.findAll(blanked).filterNot { isInsideWord(blanked, it.range) }
+                .map { match -> NumberToken(match.range, numbersIn(match.value, decimalSeparator).mapTo(mutableSetOf()) { abs(it) }) }
+                .toList()
+        }
+
+        private val unitIndexed: Pair<String, IntArray> by lazy { unitFormIndexed(text) }
+
         fun prints(result: String): Boolean = prints(result, numbers)
+
+        /**
+         * Whether [wanted] (a unit in [unitForm], without spacing) is the unit printed for [result]
+         * here ([unitOf]): true where it is, false where another unit is printed there instead,
+         * null where this line can't tell (no unit beside the result, or the result isn't found
+         * as a number).
+         */
+        fun unitBehind(result: String, wanted: String): Boolean? {
+            val value = numberIn(result.trim().trimStart(*THRESHOLDS, '=').trim(), decimalSeparator)?.let { abs(it) } ?: return null
+            val units = unitsAt(wanted)
+            var verdict: Boolean? = null
+            for (token in tokens.filter { value in it.values }) {
+                val unit = unitOf(token) ?: continue
+                if (units.any { it in unit }) return true
+                verdict = false
+            }
+            return verdict
+        }
+
+        /**
+         * Where the unit of the result at [token] is printed: the first unit behind it, before
+         * a word that labels the next test ("0,80 mg/dl; HARNS: 5,1", "2.10  Free T4 (ng/dL) 1.21",
+         * "0,3 bis 0,5") — flags and other numbers may stand between, a previous result's column
+         * ("65 Low 92 mg/dL") or a reference range ("141 136 - 145 mmol/l"). Without one there,
+         * the word right in front of it, where the unit's column comes first or the test's label
+         * holds it ("CRP mg/dl 0,3", "Glucose (mg/dL) 92"). Null where neither is a unit.
+         */
+        private fun unitOf(token: NumberToken): IntRange? {
+            for (word in SPACED_WORD.findAll(blanked, token.range.last + 1)) {
+                val bare = word.value.trim(*UNIT_WRAPPING)
+                if (isUnit(bare)) return word.range
+                if (isLabel(bare)) break
+            }
+            val before = SPACED_WORD.findAll(blanked.substring(0, token.range.first)).lastOrNull() ?: return null
+            return before.range.takeIf { isUnit(before.value.trim(*UNIT_WRAPPING)) }
+        }
+
+        /** Where [wanted] is printed as a whole unit, by its first character's position in the line. */
+        private fun unitsAt(wanted: String): List<Int> {
+            val (form, from) = unitIndexed
+            return form.indices.filter { start ->
+                val end = unitMatchEnd(form, wanted, start)
+                end != null && unitStartsCleanly(form, start) && unitEndsCleanly(form, end)
+            }.map { from[it] }
+        }
 
         /** Whether this prints [result] as a row's result: as [prints], but a reference range's limit isn't one. */
         fun printsOnRow(result: String): Boolean = prints(result, results)
@@ -171,7 +267,57 @@ internal class ReportSourceText(text: String) {
         }
     }
 
+    /** A number printed at [range] of a line, and what it reads as. */
+    private class NumberToken(val range: IntRange, val values: Set<Double>)
+
     private companion object {
+        /** A word: a run of letters. */
+        val WORD = Regex("\\p{L}+")
+
+        /** What a row prints beside a result that is no unit: a high/low flag, also written out, the x of a power, a sign's words. */
+        val FLAG_WORDS = setOf("h", "l", "hh", "ll", "a", "n", "x", "hi", "lo", "high", "low", "abn", "pos", "neg")
+
+        /** Units printed as a bare word, without a unit's marks: "fl", "pg", "U". */
+        val BARE_UNITS = setOf("u", "iu", "mu", "miu", "fl", "pg", "g", "mg", "ug", "µg", "μg", "ng", "kg", "ml", "s", "sec", "min", "mm", "mmhg")
+
+        /** What a unit is wrapped in on a row: "(mmol/l)", "mg/dl;". */
+        val UNIT_WRAPPING = charArrayOf('(', ')', '[', ']', ';', ',', ':')
+
+        /** A run of printed characters between spaces, a no-break space too. */
+        val SPACED_WORD = Regex("[^\\s\\u00A0\\u202F]+")
+
+        /**
+         * Whether [word] labels a test: it holds a word of two letters or more that isn't a flag
+         * ("MCV", "Free", "bis"), or letters and digits together ("T4", "B12").
+         */
+        fun isLabel(word: String): Boolean =
+            WORD.findAll(word).any { it.value.length >= 2 && it.value.lowercase() !in FLAG_WORDS } ||
+                (word.any { it.isLetter() } && word.any { it.isDigit() })
+
+        /** Whether [word] is shaped like a unit: with a unit's marks ("mg/dl", "10^9/l", "%", "m²") or one of the [BARE_UNITS]. */
+        fun isUnit(word: String): Boolean {
+            val marked = word.any { it in "/%^" || it in SUPERSCRIPT_DIGITS } && (word.any { it.isLetter() } || '%' in word)
+            return marked || word.lowercase() in BARE_UNITS
+        }
+
+        /** [text] with its dates blanked out, character for character. */
+        fun blankDates(text: String): String =
+            text.replace(LabParsePipeline.ISO_DATE) { " ".repeat(it.value.length) }
+                .replace(LabParsePipeline.NUMERIC_DATE) { " ".repeat(it.value.length) }
+
+        /** [unitForm] of [text], with the position in [text] each of its characters comes from. */
+        fun unitFormIndexed(text: String): Pair<String, IntArray> {
+            val form = StringBuilder(text.length)
+            val from = mutableListOf<Int>()
+            text.forEachIndexed { index, char ->
+                for (formed in unitForm(char.toString())) {
+                    form.append(formed)
+                    from += index
+                }
+            }
+            return form.toString() to from.toIntArray()
+        }
+
         /** Digits with decimal or grouping separators inside: "5", "5,1", "1.234,5", "1.2.3". */
         val NUMBER = Regex("\\d+(?:[.,]\\d+)*")
 

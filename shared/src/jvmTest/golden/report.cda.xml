@@ -30,7 +30,7 @@
       <id nullFlavor="UNK"/>
       <assignedAuthoringDevice>
         <manufacturerModelName>IDENTITY</manufacturerModelName>
-        <softwareName>LabImporter CDA v1</softwareName>
+        <softwareName>LabImporter CDA v2</softwareName>
       </assignedAuthoringDevice>
       <representedOrganization>
         <name>Labor &amp; Co</name>
@@ -63,6 +63,7 @@
               <tr><td>Potassium [Moles/Vol]</td><td>4,1 mmol/l</td></tr>
               <tr><td>HbA1c (Bld) [Mass fraction]</td><td>6,53 %</td></tr>
               <tr><td>ALT [Catalytic activity/Vol]</td><td>12345,6 U/l</td></tr>
+              <tr><td>WBC Auto (Bld) [#/Vol]</td><td>7,2 G/L</td></tr>
               </tbody>
             </table>
           </text>
@@ -126,6 +127,19 @@
                   <statusCode code="completed"/>
                   <effectiveTime value="20260506"/>
                   <value xsi:type="PQ" value="12345.6" unit="U/L"/>
+                </observation>
+              </component>
+              <component>
+                <observation classCode="OBS" moodCode="EVN">
+                  <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+                  <id root="UUID"/>
+                  <code code="6690-2"
+                        displayName="WBC Auto (Bld) [#/Vol]"
+                        codeSystem="2.16.840.1.113883.6.1"
+                        codeSystemName="LOINC"/>
+                  <statusCode code="completed"/>
+                  <effectiveTime value="20260506"/>
+                  <value xsi:type="PQ" value="7.2" unit="10*9/L"/>
                 </observation>
               </component>
             </organizer>

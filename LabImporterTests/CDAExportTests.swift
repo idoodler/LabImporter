@@ -40,7 +40,7 @@ struct CDAExportTests {
         let german = try Fixtures.golden("report.cda.xml")
         #expect(german.contains("<languageCode code=\"de-DE\"/>") && german.contains("<th>Ergebnis</th>"))
         let oldReport = try #require(HealthKitService.report(fromCDA: german, id: UUID()))
-        #expect(oldReport.entries.map(\.code) == ["2160-0", "2823-3", "4548-4", "1742-6"])
+        #expect(oldReport.entries.map(\.code) == ["2160-0", "2823-3", "4548-4", "1742-6", "6690-2"])
 
         let english = CDAExportService().generateCDA(labValues: values, date: Fixtures.date(2026, 5, 6))
         #expect(HealthKitService.report(fromCDA: english, id: UUID())?.entries.map(\.code) == ["2160-0"])
@@ -51,13 +51,13 @@ struct CDAExportTests {
         let xml = CDAExportService().generateCDA(labValues: values, date: Fixtures.date(2026, 5, 6))
         let stored = HealthKitService.storedReports(fromDocuments: [
             (Data(xml.utf8), UUID()),
-            (Data(xml.replacingOccurrences(of: "LabImporter CDA v1", with: "LabImporter CDA v98").utf8), UUID()),
-            (Data(xml.replacingOccurrences(of: "LabImporter CDA v1", with: "LabImporter CDA v99").utf8), UUID()),
+            (Data(xml.replacingOccurrences(of: "LabImporter CDA v2", with: "LabImporter CDA v98").utf8), UUID()),
+            (Data(xml.replacingOccurrences(of: "LabImporter CDA v2", with: "LabImporter CDA v99").utf8), UUID()),
             // Cut off, but still recognizably this app's.
             (Data(xml.components(separatedBy: "</assignedAuthor>")[0].utf8), UUID()),
             (nil, UUID()),
             // An unversioned legacy export is ignored by design, without a word.
-            (Data(xml.replacingOccurrences(of: "LabImporter CDA v1", with: "Other App").utf8), UUID())
+            (Data(xml.replacingOccurrences(of: "LabImporter CDA v2", with: "Other App").utf8), UUID())
         ])
         #expect(stored.reports.count == 1)
         #expect(stored.newerVersion == 2)

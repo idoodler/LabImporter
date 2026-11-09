@@ -119,3 +119,49 @@ first digit dropped from 512 because the line's own name, "Vitamin B12", prints 
 swapped date because "03/10/2026" reads either way. Catching those needs the
 unit and the value checked against the test's own part of a line, not the line
 or the report as a whole.
+
+Since the unit is checked behind the result on its own row (2026-11-09: up to the
+next number with a word in front of it, so "KREA: 0,80 mg/dl; GPT: 59 U/l" no
+longer lends U/l to Kreatinin; a row with no unit behind its result still leaves
+it to the whole report), and a printed note is no part of a unit ("mg/dL (calc)"
+is mg/dL, shown and saved; the planting skips such a unit as "another" one):
+
+```
+TOTAL  correct 76/77 (recall 98%), extra numbers 1, precision 98%, invalid replies 0, LOINC 62/64, text results 14/16, dates 7/8
+SOURCE CHECK  wrong values flagged 1, wrong values NOT flagged 0, right values falsely flagged 0/90
+PLANTED ERRORS  flagged 460/470 (97%), right values falsely flagged 0/198
+    tenfold 76/76, a tenth 76/76, digit dropped 73/74, digit doubled 76/76, neighbouring test's value 67/73,
+    "<"/">" dropped 2/3, another test's unit 73/74, date a day off 7/7, date a year off 7/7, day and month swapped 3/4
+```
+
+The unit one left is Ferritin read with "A", the ANA row's flag, which the
+post-processing drops as a flag: no unit claims nothing. Neighbouring values gained
+too, where the neighbour's unit differs (TSH '88' mU/l). What still slips through is
+the value check reading a whole line: a neighbour on the same line with the same
+unit (de_patmed), ">60" for 60 (the reference "> OR = 60" prints 60), 12 for 512
+("Vitamin B12"), and the swapped date.
+
+Up to the next number with a word in front read too much as the result's part of
+the row: a written-out flag ("65 Low 92 mg/dL", a previous result's column), a
+reference's "bis 0,5" or the next test's label ("2.10  Free T4 (ng/dL)") counted
+as another unit, and none of the sample reports printed such a row. Two joined
+(2026-11-09; their replies from the model run above, the other replies unchanged):
+`en_cumulative_flags` (a cumulative report's flag and previous-result columns,
+two tests a line with each unit in its label) and `de_einheit_vorn` (the unit's
+column first). Replayed with the check as it was, they gave 7 of 110 right values
+and 17 of 249 planted controls flagged falsely. The unit is now the first unit
+behind the result before a word that labels the next test (flags, other numbers
+and a reference range may stand between), else the word right in front of it:
+
+```
+TOTAL  correct 96/98 (recall 97%), extra numbers 2, precision 97%, invalid replies 0, LOINC 81/84, text results 14/16, dates 9/10
+SOURCE CHECK  wrong values flagged 2, wrong values NOT flagged 0, right values falsely flagged 0/110
+PLANTED ERRORS  flagged 583/593 (98%), right values falsely flagged 0/249
+    tenfold 96/96, a tenth 96/96, digit dropped 92/93, digit doubled 96/96, neighbouring test's value 87/93,
+    "<"/">" dropped 2/3, another test's unit 93/94, date a day off 9/9, date a year off 9/9, day and month swapped 3/4
+```
+
+The new extra number is the model reading WBC 11.8 as 111.8, which is flagged.
+Another test's unit on a unit-first row was missed 6 times in 8 before (the whole
+report prints it); the word in front of the result now catches it. What slips
+through is the same 10 as before.

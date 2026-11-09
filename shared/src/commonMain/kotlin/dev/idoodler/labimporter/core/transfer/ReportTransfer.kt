@@ -129,7 +129,7 @@ object ReportTransfer {
             .mapNotNull { entry ->
                 val value = entry.numericValue?.let(NumberFormatting::cdaValue)
                     ?: QualitativeResult.of(entry.displayValue)?.let { QualitativeResult.stored(it, entry.unit).lowercase() }
-                value?.let { "${entry.code}=$it${if (entry.numericValue != null) Ucum.fromPrinted(entry.unit) else ""}" }
+                value?.let { "${entry.code}=$it${if (entry.numericValue != null) Ucum.fromPrinted(entry.unit, entry.code) else ""}" }
             }
             .sorted()
             .joinToString(";")

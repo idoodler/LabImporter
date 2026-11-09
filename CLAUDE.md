@@ -233,7 +233,11 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
 - **Export:** the shared `CdaExport.generate` (via `CDAExportService.generateCDA`)
   emits a C-CDA R2.1 Lab Report. Only values that are `isSelected`, have a
   result and have a LOINC mapping are included (`LabValue.isExportable`). A
-  number is a `PQ` with its unit normalized to UCUM (`Ucum`); a qualitative
+  number is a `PQ` with its unit normalized to UCUM (`Ucum`: without a printed
+  note like "mg/dL (calc)", though a power in parentheses, "x10(9)/L", is kept;
+  "G/L" and "Gpt/l" are `10*9/L`, "T/L" `10*12/L`, and
+  the term's LOINC property tells them from grams where it's known — schema 2,
+  whose migration reads a v1 count stored as `g/L` as `10*9/L`); a qualitative
   result — words, a titer "1:160", a threshold "<0.5", a strip grade "2+"
   (`QualitativeResult`) — is an `ST` (FHIR: `valueString`) with the printed unit
   appended, split off again on read-back. A number with stray text ("6.5 %") is

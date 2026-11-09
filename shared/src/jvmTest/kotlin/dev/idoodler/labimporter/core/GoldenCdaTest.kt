@@ -40,6 +40,8 @@ object GoldenCda {
         LabValue(code = "2823-3", name = "Potassium", displayValue = "4,1", numericValue = 4.1, unit = "mmol/l"),
         LabValue(code = "4548-4", name = "HbA1c", displayValue = "6,53", numericValue = 6.53, unit = "%"),
         LabValue(code = "1742-6", name = "ALT", displayValue = "12345,6", numericValue = 12345.6, unit = "U/l"),
+        // Giga-particles per litre, as French labs print leukocytes: 10*9/L, never grams.
+        LabValue(code = "6690-2", name = "Leukocytes", displayValue = "7,2", numericValue = 7.2, unit = "G/L"),
         LabValue(code = "KREA", name = "unmapped", displayValue = "1", numericValue = 1.0, unit = ""),
         LabValue(code = "2093-3", name = "deselected", displayValue = "198", numericValue = 198.0, unit = "mg/dl", isSelected = false),
         LabValue(code = "2951-2", name = "no value", displayValue = "-", numericValue = null, unit = "mmol/l"),

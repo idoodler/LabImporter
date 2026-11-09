@@ -71,7 +71,7 @@ class TransferTest {
         for (content in listOf("", "hello", "{}", "{\"resourceType\":\"Patient\"}", "[1,2]", "<html></html>")) {
             assertIs<ReportTransfer.ReadResult.Unsupported>(ReportTransfer.read(content), content)
         }
-        val unversioned = CdaExport.generate(may.asLabValues, may.date, "x", GoldenCda.narrative).replace("LabImporter CDA v1", "Other")
+        val unversioned = CdaExport.generate(may.asLabValues, may.date, "x", GoldenCda.narrative).replace("LabImporter CDA v${ReportSchema.VERSION}", "Other")
         assertIs<ReportTransfer.ReadResult.Unsupported>(ReportTransfer.read(unversioned))
     }
 

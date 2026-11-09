@@ -1,6 +1,7 @@
 package dev.idoodler.labimporter.core.parse
 
 import dev.idoodler.labimporter.core.LabCore
+import dev.idoodler.labimporter.core.export.Ucum
 import dev.idoodler.labimporter.core.loinc.LoincDirectory
 import dev.idoodler.labimporter.core.loinc.LoincMatch
 import dev.idoodler.labimporter.core.model.LabMapping
@@ -166,7 +167,8 @@ object LabParsePipeline {
     fun postProcess(report: AiLabReport, sourceText: String): ParseResult {
         val source = ReportSourceText(sourceText)
         val entries = report.entries.filter { it.code.isNotBlank() || it.name.isNotBlank() }
-        val units = entries.map { unitWithoutFlag(it.unit) }
+        // "mg/dL (calc)": what the report prints beside a unit is no part of it, shown or saved.
+        val units = entries.map { Ucum.withoutAnnotation(unitWithoutFlag(it.unit)) }
         val results = entries.mapIndexed { index, entry -> valueWithoutUnit(valueWithoutFlag(entry.rawValue), units[index]) }
         val resolved = entries.mapIndexed { index, entry ->
             resolveLoinc(entry.code, entry.name, report.reportLanguage, units[index], results[index])

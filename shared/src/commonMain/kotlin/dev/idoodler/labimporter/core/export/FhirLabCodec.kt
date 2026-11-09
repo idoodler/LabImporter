@@ -104,7 +104,7 @@ object FhirLabCodec {
                         if (entry.unit.isNotBlank()) {
                             put("unit", entry.unit)
                             put("system", UCUM_SYSTEM)
-                            put("code", Ucum.fromPrinted(entry.unit))
+                            put("code", Ucum.fromPrinted(entry.unit, loinc.loinc))
                         }
                     })
                 } else if (qualitative != null) {

@@ -78,7 +78,7 @@ class RoundTripPropertyTest {
 
     /** What a report says, by code. CDA writes numbers' units in UCUM by design, and doesn't carry entry ids or printed names. */
     private fun readings(report: LabReport) = report.entries.associate { entry ->
-        entry.code to Triple(entry.numericValue, entry.displayValue, if (entry.numericValue != null) Ucum.fromPrinted(entry.unit) else entry.unit)
+        entry.code to Triple(entry.numericValue, entry.displayValue, if (entry.numericValue != null) Ucum.fromPrinted(entry.unit, entry.code) else entry.unit)
     }
 
     private fun Random.report(id: String): LabReport {
