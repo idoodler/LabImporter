@@ -578,6 +578,23 @@ class ScorecardTest(unittest.TestCase):
         collect = (scorecard.ROOT / "tools/quality/collect.sh").read_text()
         self.assertRegex(collect, r"-Pheldout=true \"-Psummary=\$OUT/evaluation_heldout\.json\"")
 
+    def test_the_audit_runs_on_its_pinned_simulator_only(self):
+        # Its exemptions and page counts hold on one device and OS: every place that runs it goes through
+        # `ios_test.sh audit` (the simulator audit_simulator.sh names), and every other run leaves it out.
+        root = scorecard.ROOT
+        ios_test = (root / "tools/ios_test.sh").read_text()
+        self.assertIn('DEVICE=$(tools/quality/audit_simulator.sh)', ios_test)
+        self.assertRegex(ios_test, r'all\) ARGS\+=\("-skip-testing:\$AUDIT"\)')
+        self.assertRegex(ios_test, r'ui\) ARGS\+=\(-only-testing:LabImporterUITests "-skip-testing:\$AUDIT"\)')
+        for workflow in ("build_pr.yml", "quality.yml"):
+            text = (root / ".github/workflows" / workflow).read_text()
+            self.assertIn("tools/quality/audit_simulator.sh --create", text, workflow)
+            self.assertIn("tools/ios_test.sh audit", text, workflow)
+            self.assertNotIn("-only-testing:LabImporterUITests/AccessibilityAuditUITests", text, workflow)
+        collect = (root / "tools/quality/collect.sh").read_text()
+        self.assertIn("tools/ios_test.sh audit", collect)
+        self.assertRegex(collect, r'reports\.py audit "\$LOGS/ios-audit\.log"')
+
     def test_the_evaluation_floor_holds_each_kind(self):
         floor = {"plantedNotFlagged": {"max": 0},
                  "plantedByKind": {"TENFOLD": {"planted": {"min": 60}, "notFlagged": {"max": 0}},

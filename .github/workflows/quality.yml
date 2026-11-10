@@ -192,21 +192,11 @@ jobs:
         env:
           TEST_RUNNER_QUALITY_AUDIT_ALL_PAGES: "1"
         run: |
-          # The simulator build_pr.yml uses: the iPhone Duo if this Xcode has one, else the newest iPhone.
-          SIMULATOR=$(xcrun simctl list devices available --json | python3 -c '
-          import json, sys
-          runtimes = json.load(sys.stdin)["devices"]
-          ios = sorted((k for k in runtimes if ".iOS-" in k), key=lambda k: [int(p) for p in k.rsplit("iOS-", 1)[1].split("-") if p.isdigit()])
-          phones = [d for k in ios for d in runtimes[k] if d["name"].startswith("iPhone")]
-          duos = [d for d in phones if d["name"] == "iPhone Duo"]
-          print((duos or phones)[-1]["udid"])')
+          # The simulator build_pr.yml audits on, and the only one the audit's exemptions and page counts
+          # hold on: an iPhone 17 Pro with iOS 27.0 (tools/quality/audit_simulator.sh), created here.
+          SIMULATOR=$(tools/quality/audit_simulator.sh --create)
           xcrun simctl bootstatus "$SIMULATOR" -b
-          mkdir -p build/quality
-          set -o pipefail
-          xcodebuild test -project LabImporter.xcodeproj -scheme LabImporter \
-            -destination "id=$SIMULATOR" -only-testing:LabImporterUITests/AccessibilityAuditUITests \
-            -testLanguage en -testRegion en_US -collect-test-diagnostics never \
-            -derivedDataPath build/ios-dd CODE_SIGNING_ALLOWED=NO 2>&1 | tee build/quality/audit-all-pages.log
+          IOS_BUILD_LOG=build/quality/audit-all-pages.log tools/ios_test.sh audit
 
       # The pages each screen audited, and the exemptions applied and measured on the run: fails when the
       # log has no AUDIT exemptions line, a screen of QualityScreen.all has no AUDIT screen line, or one had a page limit.

@@ -80,6 +80,14 @@ tasks.withType<Test>().configureEach {
     systemProperty("golden.dir", layout.projectDirectory.dir("src/jvmTest/golden").asFile.absolutePath)
     // ./gradlew :shared:jvmTest -Pgolden.record=true rewrites the golden files.
     systemProperty("golden.record", providers.gradleProperty("golden.record").getOrElse("false"))
+    // CI shows only the log: print a failure's message, causes and stack, not just its type and line.
+    testLogging {
+        events(org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED)
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showExceptions = true
+        showCauses = true
+        showStackTraces = true
+    }
 }
 
 // Line and branch coverage of the JVM tests (`koverXmlReport`), for orientation only:

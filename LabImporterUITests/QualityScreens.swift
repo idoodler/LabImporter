@@ -52,8 +52,9 @@ struct QualityScreen: Sendable {
     /// A pull request's run only: the weekly one (`QUALITY_AUDIT_ALL_PAGES=1`) audits every page.
     var laterPages: String?
 
-    // Why a screen's later pages at the largest text are left alone (pages counted on the iPhone 17 Pro
-    // simulator): an audit of every page of every screen takes far longer than CI's runs allow.
+    // Why a screen's later pages at the largest text are left alone (pages counted on the audit's pinned
+    // simulator, an iPhone 17 Pro with iOS 27.0: tools/quality/audit_simulator.sh): an audit of every page
+    // of every screen takes far longer than CI's runs allow.
     private static let moreCards = "more metric cards like the audited ones (9 to 12 pages)"
     private static let moreRows = "more rows like the audited ones, the same kinds of text and controls"
     private static let moreOnboarding = "more of the same onboarding page, in rows styled like the audited ones (5 to 8 pages)"

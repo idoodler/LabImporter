@@ -48,6 +48,7 @@ jobs:
       # the tests pass without touching App Store Connect, Match, or any repo
       # secret. No IPA is produced (a signed archive needs real signing
       # credentials, which this repo doesn't have configured).
+      # Every test but the accessibility audit, which has a step of its own below.
       - name: Unit and UI tests (Simulator SDK, unsigned)
         run: |
           # The iPhone Duo simulator if the selected Xcode has one (the layouts
@@ -64,6 +65,19 @@ jobs:
           xcrun simctl bootstatus "$SIMULATOR" -b
           # The log feeds `swiftlint analyze` below: a clean checkout, so it holds every compile.
           IOS_BUILD_LOG=build/xcodebuild.log tools/ios_test.sh all "$SIMULATOR"
+          # The runner's memory is for one simulator at a time.
+          xcrun simctl shutdown "$SIMULATOR"
+
+      # The accessibility audit on the one device and OS its exemptions and page counts were measured
+      # on (tools/quality/audit_simulator.sh: an iPhone 17 Pro with iOS 27.0, which this image has the
+      # runtime for but no simulator of, so it's created here). On the Duo it flags other texts and its
+      # pages begin elsewhere.
+      - name: Accessibility audit (pinned iPhone 17 Pro, iOS 27.0)
+        if: success() || failure()
+        run: |
+          SIMULATOR=$(tools/quality/audit_simulator.sh --create)
+          xcrun simctl bootstatus "$SIMULATOR" -b
+          tools/ios_test.sh audit
 
       # The analyzer rules of .swiftlint.yml (unused_import) need the compiler's
       # arguments, so they run here, against that build, and not in `swiftlint lint`.

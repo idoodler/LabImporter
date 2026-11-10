@@ -348,7 +348,12 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   weekly `quality.yml` job does (~36 min; the clipped-text check, which scrolls the whole list
   itself, still starts on the page a pull request's run starts it; where Apple's contrast check
   gives up three times, every text on that page is measured to 4.5:1 instead). New screens and states go in that list (`--ss-data`, `--ss-onboarding`,
-  `--ss-screen` in `ScreenshotMode`). Text goes in `.textSecondary`/`.textTertiary` and
+  `--ss-screen` in `ScreenshotMode`). The audit runs on **one pinned simulator only**, here and in
+  CI — an iPhone 17 Pro with iOS 27.0 (`tools/quality/audit_simulator.sh`, `tools/ios_test.sh audit`;
+  the only iPhone and iOS this Mac and the `xcode-27` image both run, their iOS 27.1 runtimes running
+  only the iPhone Duo): its exemptions and page counts were measured there, and on the Duo the audit
+  flags other texts and pages begin elsewhere. `ui`/`all` leave it out. Moving the pin means
+  recalibrating: every new finding checked on its screenshot, the baseline's pages updated. Text goes in `.textSecondary`/`.textTertiary` and
   the `status*` colours, not `.secondary` or `.orange`: the system's are 3.4:1 on white,
   less over a wash, and a `List` takes `.readableListText()` for its headers and footers. Text
   is never cut or shrunk to fit: `AdaptiveRow` stacks at accessibility sizes, `FittingRow`
@@ -695,7 +700,9 @@ manual dispatch): **`build_pr.yml`** — SwiftLint 0.63.2 (the release binary, i
 SHA-256 checked) plus the iOS unit and UI
 tests (`tools/ios_test.sh all`, which builds the app) on the `xcode-27` image /
 Xcode 27.1, on the iPhone Duo simulator (booted up front — left to
-`xcodebuild`, its first boot can stall the run)
+`xcodebuild`, its first boot can stall the run), then, in a step of its own, the
+accessibility audit (`tools/ios_test.sh audit`) on its pinned iPhone 17 Pro with
+iOS 27.0, which the step creates (`tools/quality/audit_simulator.sh --create`),
 against the **Simulator SDK** with `CODE_SIGNING_ALLOWED=NO`. It calls no
 Fastlane lane and needs **no secrets at all** — no App Store Connect API key,
 no Match, no signing identity — so it works even before this repo's release
@@ -737,7 +744,8 @@ tools/quality/collect.sh [--ios] [--mutation] [--simulator <udid>]
 
 It runs one step at a time (8 GB Macs): `static_metrics.py` and SwiftLint, the Gradle
 tests with Kover, Android `lintRelease`, the evaluation replay, then with `--ios` the
-iOS tests with coverage (clean build; the accessibility audit is one of the UI suites),
+iOS tests with coverage (clean build, on `--simulator`, by default the audit's), then the accessibility
+audit on its pinned simulator (the step fails, saying so, when there's none),
 `swiftlint analyze` and the privacy manifests in the built bundles, and with
 `--mutation` PIT (`tools/quality/mutation.sh`, ~4 min). Each writes JSON to
 `build/quality/`; `scorecard.py` turns them into the scorecard, where a missing
@@ -783,7 +791,7 @@ digest; the evaluation replay, with the errors it plants in the replies' right r
 mutation score is what counts — at least 80% in export, parse, model and loinc, run
 weekly by `quality.yml` and on pull requests that change `core/export` or `core/parse` (`shared:mutationTest`, `-Pmutation.classes=…` to narrow it
 while writing tests; PIT's RUN_ERROR is inconclusive, never killed). Also weekly, on the
-`xcode-27` runner: the iOS audit of every page of every screen (`QUALITY_AUDIT_ALL_PAGES=1`; a pull
+`xcode-27` runner, on the audit's pinned simulator: the iOS audit of every page of every screen (`QUALITY_AUDIT_ALL_PAGES=1`; a pull
 request's run keeps its page limits to stay under 20 minutes): every page in every condition — the
 largest text, the standard size and dark — and clipped text from each page, checked by
 `scorecard.py --check-audit … --all-pages` (every screen of `QualityScreen.all` printed its
@@ -878,7 +886,9 @@ measured commit).
   - Shared Kotlin: `./gradlew :shared:jvmTest` (catalog, resolution, CDA golden,
     transfer, dashboard, number formatting — values pinned against iOS).
   - iOS: `tools/ios_test.sh unit|ui|all [simulator]` (Swift Testing unit tests
-    incl. the Swift ⇄ Kotlin bridge, share inbox, parser errors; XCUITest launch).
+    incl. the Swift ⇄ Kotlin bridge, share inbox, parser errors; XCUITest launch),
+    and `tools/ios_test.sh audit` (the accessibility audit, on its pinned iPhone 17 Pro
+    with iOS 27.0 only; it fails when there's none: `tools/quality/audit_simulator.sh --create`).
   - Android: `./gradlew :androidApp:testDebugUnitTest` (JVM + Robolectric/Compose
     UI tests against the real LOINC catalog: AI gating, import flow, transfer,
     screens).

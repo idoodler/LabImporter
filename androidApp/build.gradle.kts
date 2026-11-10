@@ -232,6 +232,14 @@ tasks.withType<Test>().configureEach {
     systemProperty("robolectric.graphicsMode", "NATIVE")
     // `-PqualityScreens=<folder>`: ScreenMatrixTest saves every screen there.
     providers.gradleProperty("qualityScreens").orNull?.let { systemProperty("quality.screens", it) }
+    // CI shows only the log: print a failure's message, causes and stack, not just its type and line.
+    testLogging {
+        events(org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED)
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showExceptions = true
+        showCauses = true
+        showStackTraces = true
+    }
 }
 
 // Line and branch coverage of the debug unit tests (`koverXmlReportDebug`), for orientation

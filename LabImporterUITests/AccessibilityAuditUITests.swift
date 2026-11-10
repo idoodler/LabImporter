@@ -6,6 +6,10 @@ import XCTest
 /// too for the screens whose tinted cards, badges, chips or buttons take other colours there. An issue fails the
 /// test unless `AuditExemption` names it, each entry with its reason.
 ///
+/// It runs on one simulator only, here and in CI (`tools/ios_test.sh audit`, `tools/quality/audit_simulator.sh`:
+/// an iPhone 17 Pro with iOS 27.0): the exemptions and page counts were measured there, and on another device
+/// (the iPhone Duo) the audit flags other texts and pages begin elsewhere.
+///
 /// Dynamic Type is measured, not probed: the audit's probe loses rows that its larger
 /// text pushes out of a lazy list and reports them as "partially unsupported", so each
 /// text's height is compared between the two sizes instead, on every screen.

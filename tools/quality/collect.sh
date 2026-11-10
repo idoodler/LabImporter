@@ -8,9 +8,11 @@
 #   (always)    static_metrics.py (+ SwiftLint when installed), the Gradle tests
 #               with Kover coverage, Android lintRelease, the evaluation replay
 #               with its planted errors, and the same for the held-out set (reported only)
-#   --ios       the iOS unit and UI tests with coverage (the accessibility audit
-#               is one of the UI test suites), `swiftlint analyze` on that build's
-#               log, and the privacy manifests in the built .app and .appex
+#   --ios       the iOS unit and UI tests with coverage, on --simulator (default: the
+#               audit's), then the accessibility audit on its pinned simulator
+#               (tools/quality/audit_simulator.sh; the step fails when there's none),
+#               `swiftlint analyze` on the first build's log, and the privacy manifests
+#               in the built .app and .appex
 #   --mutation  PIT mutation testing of shared/ (tools/quality/mutation.sh)
 #
 # Steps run one at a time, and Gradle is stopped before the simulator starts: on an
@@ -29,7 +31,7 @@ OUT=build/quality
 LOGS=$OUT/logs
 IOS=0
 MUTATION=0
-SIMULATOR="${IOS_SIMULATOR:-iPhone 17 Pro}"
+SIMULATOR="${IOS_SIMULATOR:-}"
 while [ $# -gt 0 ]; do
   case "$1" in
     --ios) IOS=1 ;;
@@ -115,16 +117,39 @@ step evaluation-heldout ./gradlew --console=plain :evaluation:run --args=replay 
 # --- 5. iOS (optional) -------------------------------------------------------
 if [ $IOS -eq 1 ]; then
   ./gradlew --stop > /dev/null 2>&1
-  case "$SIMULATOR" in
-    *-*-*-*-*) xcrun simctl boot "$SIMULATOR" > /dev/null 2>&1; xcrun simctl bootstatus "$SIMULATOR" -b > /dev/null 2>&1 ;;
-  esac
+  # The accessibility audit runs on one pinned simulator only (its exemptions and page counts were
+  # measured there): without it, the audit's step fails and says how to create it.
+  AUDIT_SIMULATOR=$(tools/quality/audit_simulator.sh 2> "$LOGS/audit-simulator.log") || cat "$LOGS/audit-simulator.log"
+  # The other tests run there too unless --simulator names another: one simulator at a time on 8 GB.
+  [ -n "$SIMULATOR" ] || SIMULATOR=$AUDIT_SIMULATOR
+  boot() {
+    case "$1" in
+      *-*-*-*-*) xcrun simctl boot "$1" > /dev/null 2>&1; xcrun simctl bootstatus "$1" -b > /dev/null 2>&1 ;;
+    esac
+  }
   ios_tests() {
-    IOS_CLEAN=1 IOS_BUILD_LOG="$LOGS/xcodebuild.log" IOS_RESULT_BUNDLE="$OUT/ios.xcresult" tools/ios_test.sh all "$SIMULATOR"
+    [ -n "$SIMULATOR" ] || { echo "no simulator: pass --simulator, or create the audit's (see $LOGS/audit-simulator.log)"; return 1; }
+    boot "$SIMULATOR"
+    IOS_CLEAN=1 IOS_BUILD_LOG="$LOGS/xcodebuild.log" IOS_RESULT_BUNDLE="$OUT/ios-tests.xcresult" tools/ios_test.sh all "$SIMULATOR"
   }
   step ios-tests ios_tests
+  ios_audit() {
+    [ -n "$AUDIT_SIMULATOR" ] || { cat "$LOGS/audit-simulator.log"; return 1; }
+    [ "$SIMULATOR" = "$AUDIT_SIMULATOR" ] || xcrun simctl shutdown "$SIMULATOR" > /dev/null 2>&1
+    boot "$AUDIT_SIMULATOR"
+    IOS_RESULT_BUNDLE="$OUT/ios-audit.xcresult" tools/ios_test.sh audit
+  }
+  step ios-audit ios_audit
+  # One result bundle for the scorecard and coverage: both runs' tests.
+  rm -rf "$OUT/ios.xcresult"
+  if [ -d "$OUT/ios-tests.xcresult" ] && [ -d "$OUT/ios-audit.xcresult" ]; then
+    xcrun xcresulttool merge --output-path "$OUT/ios.xcresult" "$OUT/ios-tests.xcresult" "$OUT/ios-audit.xcresult" > /dev/null
+  elif [ -d "$OUT/ios-tests.xcresult" ]; then
+    cp -R "$OUT/ios-tests.xcresult" "$OUT/ios.xcresult"
+  fi
   python3 tools/quality/reports.py xcresult "$OUT/ios.xcresult" > "$OUT/ios.json"
   # The exemptions the accessibility audit applied and measured on this run, from its AUDIT lines.
-  python3 tools/quality/reports.py audit "$LOGS/xcodebuild.log" > "$OUT/audit.json"
+  python3 tools/quality/reports.py audit "$LOGS/ios-audit.log" > "$OUT/audit.json"
   python3 tools/quality/ios_coverage.py "$OUT/ios.xcresult" > "$OUT/ios_coverage.json" 2> "$LOGS/ios-coverage.log" || rm -f "$OUT/ios_coverage.json"
   # What App Store Connect reads: the manifests inside the built bundles, not the sources.
   python3 - "$OUT/ios_bundles.json" build/ios-dd/Build/Products/Debug-iphonesimulator/LabImporter.app <<'EOF'

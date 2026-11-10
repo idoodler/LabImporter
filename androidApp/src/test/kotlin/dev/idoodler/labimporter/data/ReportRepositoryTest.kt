@@ -147,6 +147,39 @@ class ReportRepositoryTest {
         assertEquals(listOf(edited), repository.reports.value)
     }
 
+    /**
+     * The launch reload reads an empty store, then its thread stalls (a busy phone, a busy CI runner)
+     * while a report arrives and a second reload lists it. Side by side, the stalled reload finished
+     * last and wrote its empty list over the newer one: the report vanished from the dashboard.
+     */
+    @Test
+    fun aReloadThatReadEarlierNeverHidesANewerReport() = runTest {
+        val read = CompletableDeferred<Unit>()
+        val release = CompletableDeferred<Unit>()
+        val store = object : MemoryStore() {
+            override suspend fun loadReports(): List<LabReport> {
+                val reports = super.loadReports()
+                if (!read.isCompleted) {
+                    read.complete(Unit)
+                    release.await() // The first reload holds here, with the empty list in hand.
+                }
+                return reports
+            }
+        }
+        val repository = ReportRepository(store, healthConnect, preferences)
+
+        val launchReload = launch { repository.reload() }
+        read.await()
+        store.reports["a"] = report("a", 1) // Saved meanwhile (another reload, an import, a share).
+        val laterReload = launch { repository.reload() }
+        yield() // The later reload goes as far as it can while the first one waits.
+        release.complete(Unit)
+        launchReload.join()
+        laterReload.join()
+
+        assertEquals(listOf("a"), repository.reports.value.map { it.id })
+    }
+
     @Test
     fun aReportInBothStoresIsListedOnceAndCleanedUpLater() = runTest {
         val repository = repository()
