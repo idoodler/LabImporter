@@ -1,0 +1,22 @@
+{
+  "reportDate": "2026-10-07",
+  "patientName": "Kovács",
+  "values": [
+    {"names": ["Fajsúly", "Specific gravity"], "value": 1.025, "unit": ""},
+    {"names": ["pH"], "value": 5.5, "unit": ""}
+  ],
+  "notNumeric": [
+    {"names": ["Fehérje", "Protein"], "result": "nyomokban"},
+    {"names": ["Glükóz", "Glucose"], "result": "negatív"},
+    {"names": ["Keton", "Ketone"], "result": "+"},
+    {"names": ["Bilirubin"], "result": "negatív"},
+    {"names": ["Urobilinogén", "Urobilinogen"], "result": "normál"},
+    {"names": ["Nitrit", "Nitrite"], "result": "negatív"},
+    {"names": ["Leukocita", "Leukocyte esterase", "Leukocytes"], "result": "negatív"},
+    {"names": ["Vér", "Blood", "Hemoglobin"], "result": "++"},
+    {"names": ["Vörösvérsejt", "Erythrocytes", "RBC"]},
+    {"names": ["Fehérvérsejt", "Leukocytes", "WBC"]},
+    {"names": ["Laphámsejt", "Hámsejt", "Epithelial", "Squamous"], "result": "kevés"},
+    {"names": ["Baktérium", "Bacteria"], "result": "nem látható"}
+  ]
+}

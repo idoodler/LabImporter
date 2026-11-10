@@ -76,8 +76,9 @@ struct ReviewActionBar: View {
             }
 
             buttonLayout {
-                // White whatever the list around it sets (`readableListText`), when the bar is one of its rows.
-                Button(action: onSave) { buttonTitle("Save to Health Records").foregroundStyle(.white) }
+                // White whatever the list around it sets (`readableListText`), when the bar is one of its rows;
+                // disabled, the system's dimmed grey (white would vanish on its grey fill).
+                Button(action: onSave) { buttonTitle("Save to Health Records").foregroundStyle(isEnabled ? Color.white : Color.textSecondary) }
                     .buttonStyle(.borderedProminent)
                     .tint(.prominentFill)
                     .controlSize(.large)
@@ -90,8 +91,9 @@ struct ReviewActionBar: View {
             }
             // A capsule around three lines of text is a circle that cuts them off.
             .buttonBorderShape(dynamicTypeSize.isAccessibilitySize ? .roundedRectangle(radius: 20) : .automatic)
-            .opacity(isEnabled ? 1 : 0.4)
-            .allowsHitTesting(isEnabled)
+            // Disabled, not just dimmed and untappable: VoiceOver says so and can't activate them. The
+            // system dims them; dimming them again on top made them all but invisible.
+            .disabled(!isEnabled)
         }
         .padding(.horizontal, isPinned ? nil : 0)
         .padding(.bottom, isPinned ? nil : 0)
@@ -242,8 +244,12 @@ struct ReviewHeaderCard: View {
 
             if groups.count > 1 {
                 if dynamicTypeSize.isAccessibilitySize {
-                    // One line held a chip and a half at the largest text ("Ho…"): they wrap instead.
-                    FlowLayout(spacing: 8) { chips }
+                    // Wrapped, the chips filled the first screen at the largest text, and one scrolling line
+                    // held a chip and a half ("Ho…"): a count lets the values start on the first screen. Each value
+                    // section's header names its category.
+                    Text("\(groups.count) categories")
+                        .font(.footnote)
+                        .foregroundStyle(.textSecondary)
                 } else {
                     // One scrolling line, however many categories: the values must start on the first screen.
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -344,6 +350,7 @@ struct CategorySectionHeader: View {
         }
         .textCase(nil)
         .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("category-section-header")
     }
 }
 
@@ -411,7 +418,7 @@ struct CategorySectionHeader: View {
     .background(Color(.systemGroupedBackground))
 }
 
-// The largest text: the chips wrap rather than cut off at the card's edge.
+// The largest text: a count of the categories, so the values start on the first screen.
 #Preview("Header Card – Largest Text") {
     ScrollView {
         ReviewHeaderCard(

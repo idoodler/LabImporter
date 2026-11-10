@@ -1,0 +1,22 @@
+SRL  D1AGNOSTICS  PVT. LTD.             NABL Accredited Lab   MC-2143
+Patient Name : Mr. RAJESH KUMAR SHARMA        Age/Sex : 52 Y / M
+Ref. By      : Dr. A. Menon                   Lab No. : 0912 4471 22
+Collected    : 02/11/2026 08:21 AM            Reported : 03/11/2026 06:40 PM
+_______________________________________________________________________
+TEST NAME                        RESULT          UNIT           BIO. REF. INTERVAL
+COMPLETE BLOOD COUNT (CBC) , WH0LE BLOOD EDTA
+Haemoglobin                       13.1           g/dL           13.0 - 17.0
+Total Leucocyte Count             8,450          cells/cumm     4000 - 10000
+Platelet Count                    1.85           lakhs/cumm     1.5 - 4.1
+Neutrophils                       62             %              40 - 80
+Lymphocytes                       29             %              20 - 40
+ . ~  '   .
+GLYCOSYLATED HAEMOGLOBIN (HbA1c) , WHOLE BLOOD EDTA
+HbA1c                             7.4    H       %              4.0 - 5.6
+Estimated Average Glucose (eAG)   166            mg/dL
+LIPID PROFILE , SERUM
+Cholesterol Total                 186            mg/dL          < 200
+Triglycerides                     203    H       mg/dL          < 150
+HDL Cholesterol                   39     L       mg/dL          > 40
+VLDL Cholesterol                  40.6   H       mg/dL          < 30
+   . . . End of Report . . .          Page 1 of 1       Pathologist: Dr. S. Iyer, MD

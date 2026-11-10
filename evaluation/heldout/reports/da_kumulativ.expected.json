@@ -1,0 +1,18 @@
+{
+  "reportDate": "2026-11-03",
+  "patientName": "Mette Kjær Hansen",
+  "values": [
+    {"names": ["Hæmoglobin", "Hemoglobin"], "value": 8.1, "unit": "mmol/L"},
+    {"names": ["Leukocytter", "Leukocytes", "WBC"], "value": 6.3, "unit": "10^9/L", "loinc": "6690-2"},
+    {"names": ["Trombocytter", "Platelets"], "value": 268, "unit": "10^9/L", "loinc": "777-3"},
+    {"names": ["Kreatinin", "Creatinine"], "value": 74, "unit": "µmol/L", "loinc": "14682-9"},
+    {"names": ["Kalium", "Potassium"], "value": 4.1, "unit": "mmol/L", "loinc": "2823-3"},
+    {"names": ["Natrium", "Sodium"], "value": 140, "unit": "mmol/L", "loinc": "2951-2"},
+    {"names": ["Glukose", "Glucose"], "value": 5.4, "unit": "mmol/L", "loinc": "14749-6"},
+    {"names": ["Hæmoglobin A1c", "HbA1c", "Hemoglobin A1c"], "value": 39, "unit": "mmol/mol", "loinc": "59261-8"},
+    {"names": ["Thyrotropin", "TSH"], "value": 1.8, "unit": "x10^-3 IU/L", "loinc": "3016-3"}
+  ],
+  "notNumeric": [
+    {"names": ["C-reaktivt", "CRP", "C reactive", "C-reactive"], "result": "<4"}
+  ]
+}

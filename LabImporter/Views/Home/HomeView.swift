@@ -8,6 +8,7 @@ struct HomeView: View {
     @State private var isLoaded = false
     /// What the last read of Apple Health couldn't show.
     @State private var loadStatus = ReportLoadStatus()
+    @State private var latestLoad = LatestReportLoad() // Reads overlap (becoming active during a save's reload).
 
     // Import flow state
     @State private var importEngine = LabImportEngine()
@@ -414,14 +415,14 @@ private extension HomeView {
 
     func loadReports() async {
         guard !ScreenshotMode.isActive else { return }
-        do {
-            let stored = try await HealthKitService.shared.loadStoredReports()
+        guard let result = await latestLoad.load(from: HealthKitService.shared) else { return } // A newer read's list wins.
+        switch result {
+        case .success(let stored):
             reports = stored.reports
             loadStatus = ReportLoadStatus(newerVersion: stored.newerVersion, unreadable: stored.unreadable)
-            // Publish the tracked metrics to Spotlight so they're searchable
-            // system-wide (names only — never a reading).
+            // Publish the tracked metrics to Spotlight so they're searchable system-wide (names only — never a reading).
             SpotlightIndexService.shared.reindex(reports: reports)
-        } catch {
+        case .failure:
             // Keeps what's on screen, and the callers' guard means this isn't the time before access
             // was asked for: it's a failure to read reports that exist, which must not look like none.
             loadStatus.failed = true

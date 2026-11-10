@@ -1,0 +1,20 @@
+{
+  "reportDate": "2026-09-21",
+  "patientName": "Virtanen",
+  "values": [
+    {"names": ["Hb", "Hemoglobiini", "Hemoglobin"], "value": 128, "unit": "g/l", "loinc": "718-7"},
+    {"names": ["Leuk", "Leukosyytit", "Leukocytes"], "value": 5.8, "unit": "E9/l", "loinc": "6690-2"},
+    {"names": ["Trom", "Trombosyytit", "Platelets"], "value": 231, "unit": "E9/l", "loinc": "777-3"},
+    {"names": ["Hkr", "Hematokriitti", "Hematocrit"], "value": 0.39, "unit": ""},
+    {"names": ["MCV"], "value": 88, "unit": "fl", "loinc": "787-2"},
+    {"names": ["Krea", "Kreatiniini", "Creatinine"], "value": 66, "unit": "µmol/l", "loinc": "14682-9"},
+    {"names": ["Kalium", "Potassium"], "value": 3.9, "unit": "mmol/l", "loinc": "2823-3"},
+    {"names": ["Natrium", "Sodium"], "value": 141, "unit": "mmol/l", "loinc": "2951-2"},
+    {"names": ["ALAT", "ALT", "Alanine"], "value": 31, "unit": "U/l", "loinc": "1742-6"},
+    {"names": ["GT", "Glutamyl"], "value": 58, "unit": "U/l", "loinc": "2324-2"},
+    {"names": ["Kol", "Kolesteroli", "Cholesterol"], "value": 6.2, "unit": "mmol/l"},
+    {"names": ["Trigly", "Triglyseridit", "Triglyceride"], "value": 1.3, "unit": "mmol/l"},
+    {"names": ["HDL"], "value": 1.62, "unit": "mmol/l"},
+    {"names": ["LDL"], "value": 4.0, "unit": "mmol/l"}
+  ]
+}

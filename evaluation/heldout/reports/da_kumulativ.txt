@@ -1,0 +1,16 @@
+Region Hovedstaden - Klinisk Biokemisk Afdeling, Rigshospitalet
+Patient: Mette Kjær Hansen          CPR: 120366-XXXX
+Svar udskrevet: 06.11.2026
+
+KUMULATIVT SVAR
+Analyse                     Enhed          03.11.2026   18.08.2026   14.02.2026   Ref.interval
+B-Hæmoglobin                mmol/L         8,1          7,6 L        8,4          7,3 - 9,5
+B-Leukocytter               10^9/L         6,3          5,9          7,0          3,5 - 10,0
+B-Trombocytter              10^9/L         268          251          290          145 - 390
+P-Kreatinin                 µmol/L         74           81           70           45 - 90
+P-Kalium                    mmol/L         4,1          4,4          3,9          3,5 - 4,4
+P-Natrium                   mmol/L         140          139          141          137 - 144
+P-Glukose                   mmol/L         5,4          6,4 H        5,1          4,2 - 6,3
+B-Hæmoglobin A1c (IFCC)     mmol/mol       39           41           38           < 48
+P-Thyrotropin (TSH)         x10^-3 IU/L    1,8          2,2          1,6          0,3 - 4,0
+P-C-reaktivt protein        mg/L           <4           12 H         <4           < 10

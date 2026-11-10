@@ -53,6 +53,94 @@ bounds each kind of planted error on its own.
 Run it before changing the prompt (`LabParsePrompt`), the LOINC lookup or the
 model the app downloads.
 
+## Held-out set
+
+The reports above are also the ones the Review check and the LOINC ranking were
+tuned on, so their scores measure fit, not how either does on a report it hasn't
+seen. `heldout/` is the other half: ten synthetic reports in languages and layouts
+the tuning set doesn't have — Czech with scan noise and katal units, a Danish and a
+Swiss cumulative table (newest column, Hb in mmol/L, "1'240"), Finnish in two
+columns, Turkish with the unit in the section heading or the label, a Hungarian
+urine strip and sediment, a Greek and a Russian serology panel (Cyrillic units),
+Indian English with scan noise ("8,450 cells/cumm", lakhs), Japanese. Each was
+written by hand from what it shows, before any check scored it, and is never
+changed after.
+
+**Never change the Review check, the LOINC ranking or the prompt to read the
+held-out set better**, and never move a report between the sets: a held-out
+report that something was fixed for is a tuning report. When it shows a failure,
+write a new tuning report of that kind and fix it there; the held-out set then says
+whether the fix generalises. It is reported beside Extraction safety in the
+scorecard, never scored and never gated (`tools/quality/collect.sh`): a held-out
+score that becomes a gate starts being tuned against.
+
+```
+./gradlew :evaluation:run -Pheldout=true --args="replay" -Psummary=build/quality/evaluation_heldout.json
+./gradlew :evaluation:run -Pheldout=true --args="$HOME/.cache/labimporter-eval/gemma-4-E2B-it.litertlm gpu schema"
+```
+
+`-Pheldout=true` reads `heldout/reports` and `heldout/replies` in either mode, with
+the same planted errors; the JSON summary says `"set": "heldout"`.
+
+Scored once (2026-11-10, at commit `069247f` with this set's uncommitted changes;
+no rule in `shared/` changed): replies from Gemma 4 E2B with the settings of the
+last result below (GPU, constrained JSON, no thinking), then the replay. The
+tuning set's replay at the same commit for comparison:
+
+```
+HELD-OUT  correct 78/88 (recall 88%), extra numbers 6, precision 92%, invalid replies 0, LOINC 42/66, text results 14/24, dates 4/10 (flagged 0, right ones 0; wrong unflagged 3)
+SOURCE CHECK  wrong values flagged 3, wrong values NOT flagged 7, right values falsely flagged 1/92
+PLANTED ERRORS  flagged 451/466 (96%), right values falsely flagged 3/188, right dates flagged 1/10
+    tenfold 78/78, a tenth 78/78, digit dropped 77/78, digit doubled 78/78, neighbouring test's value 65/66,
+    "<"/">" dropped 2/2, another test's unit 66/76, date a day off 3/4, date a year off 3/4, day and month swapped 1/2
+
+TUNING  correct 159/162 (recall 98%), extra numbers 3, precision 98%, invalid replies 0, LOINC 115/122, text results 49/52, dates 18/22 (flagged 2, right ones 0; wrong unflagged 0)
+SOURCE CHECK  wrong values flagged 4, wrong values NOT flagged 0, right values falsely flagged 0/208
+PLANTED ERRORS  flagged 999/1007 (99%), right values falsely flagged 0/478, right dates flagged 1/22
+    tenfold 159/159, a tenth 159/159, digit dropped 153/154, digit doubled 159/159, neighbouring test's value 126/132,
+    "<"/">" dropped 38/38, another test's unit 156/157, date a day off 18/18, date a year off 18/18, day and month swapped 13/13
+```
+
+Against the 9.5 thresholds the held-out set would miss: another test's unit (87%;
+Turkish units printed in a section heading, the Swiss cumulative table), the planted
+dates (3 of 10 let through, all in `hu_vizelet`'s "2026.10.07"), 7 of 10 wrong
+values unflagged (a cumulative table's older columns read as values, a reference
+range read as a unit, "nyomokban" read as "negatív", a reference appended to a
+result; two of them, `el_orologikos`' HBsAg and Toxoplasma IgM, were read right and
+resolved to catalog names the expected file doesn't list, "HBV surface Ag" and
+"T. gondii IgM IF" — a gap of the set's names, left as written), and 3 silent
+wrong dates (a print date for the draw date, `da_kumulativ`, `ja_kensa`,
+`ru_analiz`). LOINC drops most (42/66): names in Finnish, Greek, Russian and
+Japanese the catalog lookup didn't place. The model also read B12 289 as 2899 and
+rubella 64 as 644 (both flagged).
+
+Then the Review check began judging a result by its test's own part of a line, from
+its name up to the next test's, as it already judged the unit — so a neighbour's
+value on the same line is caught (`de_patmed`'s "KREA: 0,80 mg/dl; HARNS: 5,1
+mg/dl"), and a number of the test's own name (the 12 of "Vitamin B12") is no result
+of it. Tuned on the tuning set only; the held-out set was then replayed once,
+unchanged (2026-11-10):
+
+```
+TUNING    PLANTED ERRORS  flagged 1006/1007 (99%), right values falsely flagged 0/478, right dates flagged 1/22
+    digit dropped 154/154 (was 153), neighbouring test's value 132/132 (was 126), another test's unit 156/157; the rest as above
+HELD-OUT  PLANTED ERRORS  flagged 452/466 (96%), right values falsely flagged 3/188, right dates flagged 1/10
+    digit dropped 78/78 (was 77), neighbouring test's value 65/66, another test's unit 66/76; the rest as above
+HELD-OUT  SOURCE CHECK  wrong values flagged 3, wrong values NOT flagged 7, right values falsely flagged 1/92 (unchanged)
+```
+
+The one planted error the tuning set still lets through is `en_serology`'s ANA flag
+"A" put on Ferritin as its unit: post-processing drops a flag read as a unit, and a
+value without a unit claims nothing about its unit. The held-out set's neighbour
+left through is `de_ch_kumulativ`'s Albumin 29 for 31, a cumulative table's older
+column on the test's own row.
+
+A review then found three false alarms the parts brought (none in either set): a
+result in words in front of a number ("Toxoplasma IgG  negative  <3.0 IU/mL"), a line
+whose results stand before their names ("141 mmol/l Natrium  4,1 mmol/l Kalium") and a
+whole number of the name one space before a word ("Vitamin D 25 OH  32 ng/ml"). With
+them fixed, both replays gave the numbers above unchanged.
+
 ## Last result
 
 Gemma 4 E2B (`gemma-4-E2B-it.litertlm`, revision `a790a85`) on an M-series Mac

@@ -32,7 +32,8 @@ import kotlin.time.TimeSource
  * `--args="replay"` re-scores the replies saved by the last run without the
  * model — quick when only the shared post-processing (LOINC lookup) changed.
  * The replies are committed (evaluation/replies), so CI replays them too;
- * `-Psummary=<file>` also writes the totals as JSON.
+ * `-Psummary=<file>` also writes the totals as JSON. `-Pheldout=true` reads the
+ * held-out set (evaluation/heldout) instead, in either mode.
  */
 
 /** What a sample report contains (written by hand from the report text). */
@@ -134,7 +135,7 @@ fun main(args: Array<String>) {
 }
 
 private fun replay() {
-    println("Replaying the saved replies\n")
+    println("Replaying the saved replies${if (heldOut) " of the held-out set" else ""}\n")
     printTotal(
         reports().map { report ->
             val reply = replyFile(report).readText()
@@ -145,7 +146,16 @@ private fun replay() {
     )
 }
 
-private fun reports() = File("evaluation/reports").listFiles { f -> f.name.endsWith(".txt") }!!.sortedBy { it.name }
+/**
+ * `-Pheldout=true`: the held-out set (evaluation/heldout), scored to see how the Review check and the LOINC
+ * ranking do on reports they weren't tuned on. Never change either to read it better (README.md, "Held-out set").
+ */
+private val heldOut = System.getProperty("eval.heldout") == "true"
+
+/** The folder of the set being read: evaluation/ (the tuning set) or evaluation/heldout/. */
+internal fun setFolder(heldOut: Boolean) = if (heldOut) "evaluation/heldout" else "evaluation"
+
+private fun reports() = File(setFolder(heldOut), "reports").listFiles { f -> f.name.endsWith(".txt") }!!.sortedBy { it.name }
 
 private fun expectedFor(report: File) =
     json.decodeFromString(Expected.serializer(), File(report.parentFile, report.nameWithoutExtension + ".expected.json").readText())
@@ -154,12 +164,14 @@ private fun expectedFor(report: File) =
  * Committed, so replay works on a fresh checkout (and in CI) without the model;
  * a model run overwrites them, and the diff shows what the model now reads differently.
  */
-private fun replyFile(report: File) = File("evaluation/replies", report.nameWithoutExtension + ".reply.json")
+private fun replyFile(report: File) = File(File(setFolder(heldOut), "replies"), report.nameWithoutExtension + ".reply.json")
 
 /** The totals as JSON, for tools/quality/scorecard.py and the CI floor (`-Psummary=<file>`). */
 @Serializable
 data class Summary(
     val mode: String,
+    /** "tuning" (evaluation/reports, the set the check was built against) or "heldout" (evaluation/heldout/reports). */
+    val set: String,
     val reports: Int,
     val invalidReplies: Int,
     val valuesExpected: Int,
@@ -231,6 +243,7 @@ private fun printTotal(scores: List<Score>, mode: String = "model") {
     val summaryPath = System.getProperty("eval.summary")?.takeIf { it.isNotBlank() } ?: return
     val summary = Summary(
         mode = mode,
+        set = if (heldOut) "heldout" else "tuning",
         reports = scores.size,
         invalidReplies = scores.count { !it.valid },
         valuesExpected = expectedCount,

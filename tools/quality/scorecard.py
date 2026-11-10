@@ -9,6 +9,9 @@ wrote nothing — shows as "not run", never as passed. Standard library only.
     python3 tools/quality/scorecard.py --check-evaluation build/quality/evaluation.json   # CI's floor
     python3 tools/quality/scorecard.py --check-mutation build/quality/mutation.json       # CI, weekly
     python3 tools/quality/scorecard.py --check-audit build/quality/audit.json --all-pages # CI, weekly
+    python3 tools/quality/scorecard.py --record-run build/quality/run.json                # collect.sh, at its start
+    python3 tools/quality/scorecard.py --finish-run build/quality/run.json                # collect.sh, at its end
+    python3 tools/quality/scorecard.py --consistency build/quality-consistency            # consistency.sh, at its end
 """
 from __future__ import annotations
 
@@ -23,8 +26,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 FLOOR = ROOT / "tools/quality/evaluation_floor.json"
+# The run's own output: a working tree whose only change is this file is the commit it measured.
+SCORECARD = "docs/quality/SCORECARD.md"
 
 PASS, FAIL, NOT_RUN = "pass", "FAIL", "not run"
+# A measure that is shown and never scored: it neither passes nor fails, and has no weight.
+REPORTED = "reported"
 
 # Extraction safety at 9.5 (RUBRIC.md): of the errors planted in the right readings, Review flags
 # at least this share overall and of each kind, flags at most this share of right values, and lets
@@ -53,11 +60,14 @@ class Measure:
     # What the script can't see: said, but it neither passes nor fails the measure.
     note: str = ""
     panel: bool = False
+    reported: bool = False
 
     @property
     def status(self) -> str:
         if self.panel:
             return "panel"
+        if self.reported:
+            return REPORTED
         if not self.parts:
             return NOT_RUN
         return max((p.status for p in self.parts), key=SEVERITY.__getitem__)
@@ -175,6 +185,7 @@ def code_quality(inputs: Inputs, pr_checks=None) -> list[Measure]:
                   f"wrong values flagged {evaluation['wrongValuesFlagged']}/{wrong}, false flags {evaluation['falseFlags']}/{evaluation['rightValues']}. "
                   "A model run is done by hand (evaluation/README.md).")
     measures.append(m)
+    measures.append(held_out_measure(inputs.get("evaluation_heldout")))
 
     m = Measure("Code quality", "Test effectiveness", 15, f"At least {MUTATION_MIN}% of mutants killed in export, parse, model and loinc")
     if mutation is None:
@@ -183,7 +194,7 @@ def code_quality(inputs: Inputs, pr_checks=None) -> list[Measure]:
         m.parts = mutation_parts(mutation)
         total = mutation["total"]
         m.note = (f"All of shared/ that was mutated: {pct(total['score_pct'])}; inconclusive (PIT's RUN_ERROR, counted as not killed): "
-                  f"{total.get('inconclusive', 0)}. Scheduled weekly in CI (quality.yml).")
+                  f"{total.get('inconclusive', 0)}. In CI weekly, and on pull requests that change export or parse (quality.yml).")
     measures.append(m)
 
     m = Measure("Code quality", "Round trips", 10, "No value, unit or date lost")
@@ -256,7 +267,7 @@ def code_quality(inputs: Inputs, pr_checks=None) -> list[Measure]:
             check({"github-actions", "gradle"} <= set(ci["dependabot_ecosystems"]),
                   f"dependency updates: {', '.join(ci['dependabot_ecosystems']) or 'none'}"),
         ]
-    m.parts.append((pr_checks or pull_request_checks)())
+    m.parts.append(pr_checks() if pr_checks else pull_request_checks(*measured_commit(inputs)))
     measures.append(m)
     return measures
 
@@ -292,6 +303,30 @@ def replay_parts(evaluation: dict) -> list[Part]:
     ]
 
 
+def held_out_measure(held_out: dict | None) -> Measure:
+    """Extraction safety on the held-out set (evaluation/heldout): reported beside the measure, never scored.
+
+    The tuning set's numbers show how well the Review check and the LOINC ranking fit the reports they were
+    built against; these show how they do on reports nothing was tuned on. Not a gate (yet): a held-out score
+    that becomes one starts being tuned against. Each part says whether it would meet the 9.5 threshold.
+    """
+    m = Measure("Code quality", "Extraction safety, held-out set", 0,
+                "Reported, not scored: never used to change the Review check or the LOINC ranking", reported=True)
+    if held_out is None:
+        m.parts = [not_run("held-out replay (evaluation/heldout)")]
+        return m
+    if held_out.get("set") != "heldout" or "plantedErrors" not in held_out:
+        m.parts = [Part(NOT_RUN, "held-out replay: the summary is not the held-out set's (`-Pheldout=true`)")]
+        return m
+    gated = planted_parts(held_out) + replay_parts(held_out)
+    m.parts = [Part(REPORTED, p.text + ("" if p.status == PASS else " (under the 9.5 threshold)")) for p in gated]
+    wrong = held_out["wrongValuesFlagged"] + held_out["wrongValuesNotFlagged"]
+    m.note = (f"{held_out['reports']} reports. Replay: recall {pct(100 * held_out['recall'])}, precision {pct(100 * held_out['precision'])}, "
+              f"LOINC {held_out['loincRight']}/{held_out['loincExpected']}, text results {held_out['textKept']}/{held_out['textExpected']}, "
+              f"wrong values flagged {held_out['wrongValuesFlagged']}/{wrong}, false flags {held_out['falseFlags']}/{held_out['rightValues']}.")
+    return m
+
+
 def mutation_parts(mutation: dict) -> list[Part]:
     parts = []
     for package in MUTATION_PACKAGES:
@@ -303,8 +338,8 @@ def mutation_parts(mutation: dict) -> list[Part]:
     return parts
 
 
-def pull_request_checks() -> Part:
-    """"All green on a clean machine": the CI checks of this branch's pull request, for this very commit.
+def pull_request_checks(commit: str, clean: bool) -> Part:
+    """"All green on a clean machine": the CI checks of this branch's pull request, for the measured [commit].
 
     Without a pull request, without `gh`, or with checks for another commit or uncommitted changes,
     nothing says CI ran on what this scorecard measured: "not run", never a pass.
@@ -316,9 +351,9 @@ def pull_request_checks() -> Part:
     if view.returncode != 0:
         return Part(NOT_RUN, f"{label}: not run (no pull request for this branch)")
     pr = json.loads(view.stdout)
-    if pr["headRefOid"] != git("rev-parse", "HEAD") or git("status", "--porcelain"):
+    if pr["headRefOid"] != commit or not clean:
         return Part(NOT_RUN, f"{label}: not run for this code (#{pr['number']} checks {pr['headRefOid'][:7]}; this run is "
-                             f"{git('rev-parse', '--short', 'HEAD')}{' with uncommitted changes' if git('status', '--porcelain') else ''})")
+                             f"{commit[:7]}{'' if clean else ' with uncommitted changes'})")
     checks = subprocess.run(["gh", "pr", "checks", str(pr["number"]), "--json", "name,bucket"], cwd=ROOT, capture_output=True, text=True)
     if not checks.stdout.strip().startswith("["):
         return Part(NOT_RUN, f"{label}: not run (#{pr['number']} has no checks)")
@@ -498,8 +533,34 @@ def orientation(inputs: Inputs) -> list[str]:
 
 # --- Writing it ------------------------------------------------------------------
 
-def git(*args: str) -> str:
-    return subprocess.run(["git", *args], cwd=ROOT, capture_output=True, text=True).stdout.strip()
+def git(*args: str, cwd: Path = ROOT) -> str:
+    return subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True).stdout.strip()
+
+
+def uncommitted(root: Path = ROOT) -> list[str]:
+    """The working tree's changes, but for the scorecard itself: committing a run's scorecard leaves the commit
+    it measured with that one file changed, and a second run there measures the same code."""
+    return git("status", "--porcelain", "--", ".", f":(exclude){SCORECARD}", cwd=root).splitlines()
+
+
+def record_run(path: Path, finished: bool = False, root: Path = ROOT) -> None:
+    """collect.sh, at its start: the commit it measures and whether anything but the scorecard was uncommitted.
+    With [finished], at its end: the same again beside them, since the tree can change while it runs."""
+    now = {"commit": git("rev-parse", "HEAD", cwd=root), "uncommitted": len(uncommitted(root))}
+    if finished:
+        start = json.loads(path.read_text()) if path.exists() else {}
+        now = {**start, "finished_commit": now["commit"], "finished_uncommitted": now["uncommitted"]}
+    path.write_text(json.dumps(now))
+
+
+def measured_commit(inputs: Inputs) -> tuple[str, bool]:
+    """The commit collect.sh measured and whether the tree was clean then (`run.json`): clean at its start and at
+    its end, at the same commit; a run that didn't record its end isn't. Without it, the checkout's now."""
+    run = inputs.get("run")
+    if not run:
+        return git("rev-parse", "HEAD"), not uncommitted()
+    clean = run["uncommitted"] == 0 and run.get("finished_uncommitted") == 0 and run.get("finished_commit") == run["commit"]
+    return run["commit"], clean
 
 
 def table(measures: list[Measure]) -> list[str]:
@@ -508,34 +569,83 @@ def table(measures: list[Measure]) -> list[str]:
         measured = "<br>".join(f"{'✗ ' if p.status == FAIL else '– ' if p.status == NOT_RUN else ''}{p.text}" for p in m.parts)
         if m.note:
             measured = f"{measured}<br>*{m.note}*" if measured else f"*{m.note}*"
-        result = {PASS: "pass", FAIL: "**FAIL**", NOT_RUN: "not run", "panel": "panel"}[m.status]
+        result = {PASS: "pass", FAIL: "**FAIL**", NOT_RUN: "not run", "panel": "panel", REPORTED: "reported"}[m.status]
         rows.append(f"| {m.name} | {m.weight} | {measured} | {m.threshold} | {result} |")
     return rows
 
 
+def score(measures: list[Measure]) -> float:
+    """The weighted share of the scripted measures that pass, out of 10. "not run" counts as not passing, and the
+    panel's and the reported measures aren't scripted. The 9.5 itself also needs the council (RUBRIC.md)."""
+    scripted = [m for m in measures if not m.panel and not m.reported]
+    total = sum(m.weight for m in scripted)
+    return 10 * sum(m.weight for m in scripted if m.status == PASS) / total if total else 0.0
+
+
 def summary(measures: list[Measure]) -> str:
-    scored = [m for m in measures if not m.panel]
+    scored = [m for m in measures if not m.panel and not m.reported]
     by = {s: [m for m in scored if m.status == s] for s in (PASS, FAIL, NOT_RUN)}
     weight = lambda ms: sum(m.weight for m in ms)  # noqa: E731
+    panel = [m for m in measures if m.panel]
+    reported = [m for m in measures if m.reported]
     return (f"{len(by[PASS])} pass (weight {weight(by[PASS])}), {len(by[FAIL])} fail (weight {weight(by[FAIL])}), "
             f"{len(by[NOT_RUN])} not run (weight {weight(by[NOT_RUN])}); "
-            f"{len(measures) - len(scored)} judged by the panel (weight {sum(m.weight for m in measures if m.panel)})")
+            f"{len(panel)} judged by the panel (weight {weight(panel)})"
+            + (f"; {len(reported)} reported, not scored" if reported else ""))
+
+
+STEPS = ["static", "swiftlint", "gradle-tests", "android-lint", "evaluation", "evaluation-heldout", "ios-tests",
+         "swiftlint-analyze", "mutation"]
 
 
 def steps(inputs: Inputs) -> list[str]:
     rows = ["| Step | Exit | Time |", "|---|---:|---:|"]
-    names = ["static", "swiftlint", "gradle-tests", "android-lint", "evaluation", "ios-tests", "swiftlint-analyze", "mutation"]
-    for name in names:
+    for name in STEPS:
         s = inputs.step(name)
         rows.append(f"| {name} | {s['exit_code']} | {s['seconds']} s |" if s else f"| {name} | not run | |")
     return rows
 
 
-def write(folder: Path, output: Path) -> None:
+def consistency(folder: Path) -> dict:
+    """consistency.sh: the runs it kept in [folder]/run-<n> (each run's `scorecard.json` and collect.sh's exit code),
+    and whether every one was green: collect.sh and each step exited 0, every scripted measure passed, and all ran
+    on the first run's commit with nothing but the scorecard uncommitted."""
+    runs, commit = [], None
+    for run_folder in sorted(folder.glob("run-*"), key=lambda f: int(f.name.split("-")[1])):
+        read = lambda name: (run_folder / name).read_text() if (run_folder / name).exists() else None  # noqa: E731
+        card = json.loads(read("scorecard.json") or "{}")
+        exit_code = int(read("exit") or 1)
+        commit = commit or card.get("commit")
+        problems = ([] if exit_code == 0 else [f"collect.sh exit {exit_code}"]) + ([] if card else ["no scorecard"])
+        problems += [f"step {name} exit {code}" for name, code in card.get("steps", {}).items() if code not in (0, None)]
+        problems += [f"{name} {status}" for name, status in card.get("measures", {}).items() if status not in (PASS, "panel", REPORTED)]
+        if card and card["commit"] != commit:
+            problems.append(f"at {card['commit'][:7]}, not {commit[:7]}")
+        if card and not card["clean"]:
+            problems.append("with uncommitted changes")
+        runs.append({"run": int(run_folder.name.split("-")[1]), "commit": card.get("commit"), "collect_exit": exit_code,
+                     "steps": card.get("steps", {}), "measures": card.get("measures", {}), "green": not problems, "problems": problems})
+    return {"commit": commit, "runs": runs, "all_green": bool(runs) and all(r["green"] for r in runs)}
+
+
+def consistency_line(data: dict | None, commit: str) -> str:
+    """The scorecard's line on consistency.sh: how many of its consecutive runs were green at this commit."""
+    if data is None or not data["runs"]:
+        return "not run (`tools/quality/consistency.sh`)"
+    if data["commit"] != commit:
+        return f"not run at this commit (the last runs were at {str(data['commit'])[:7]})"
+    runs = data["runs"]
+    line = f"{sum(r['green'] for r in runs)} of {len(runs)} consecutive runs green at `{commit[:7]}`"
+    failed = [f"run {r['run']}: {', '.join(r['problems'])}" for r in runs if not r["green"]]
+    return line + ("; " + "; ".join(failed) if failed else "")
+
+
+def write(folder: Path, output: Path, pr_checks=None) -> None:
     inputs = Inputs(folder)
-    code, design = code_quality(inputs), design_quality(inputs)
-    commit = git("rev-parse", "--short", "HEAD") or "unknown"
-    dirty = " with uncommitted changes" if git("status", "--porcelain") else ""
+    code, design = code_quality(inputs, pr_checks), design_quality(inputs)
+    full_commit, clean = measured_commit(inputs)
+    commit = full_commit[:7] or "unknown"
+    dirty = "" if clean else " with uncommitted changes"
     generated = (folder / "step-static.json")
     when = datetime.datetime.fromtimestamp(generated.stat().st_mtime) if generated.exists() else datetime.datetime.now()
     rubric = (ROOT / "docs/quality/RUBRIC.md").read_text(encoding="utf-8")
@@ -548,10 +658,12 @@ def write(folder: Path, output: Path) -> None:
         "says \"not run\", never \"pass\". Regenerate it with `tools/quality/collect.sh --ios --mutation`.",
         "",
         "A 9.5 also needs every gate to pass three runs in a row, two fresh council rounds at 9.5 or higher, "
-        "and no open data-loss defect (RUBRIC.md, \"What 9.5 means\"). This page is one run.",
+        "and no open data-loss defect (RUBRIC.md, \"What 9.5 means\"). This page is one run; the scripted score "
+        "is the weighted share of scripted measures that pass, \"not run\" counted as not passing.",
         "",
-        f"**Code quality:** {summary(code)}.  ",
-        f"**Design quality:** {summary(design)}.",
+        f"**Code quality:** scripted score {score(code):.1f} of 10; {summary(code)}.  ",
+        f"**Design quality:** scripted score {score(design):.1f} of 10; {summary(design)}.  ",
+        f"**Three runs in a row:** {consistency_line(inputs.get('consistency'), full_commit)}.",
         "",
         "## Code quality",
         "",
@@ -579,6 +691,12 @@ def write(folder: Path, output: Path) -> None:
     if inputs.missing:
         text += ["Inputs that were missing: " + ", ".join(f"`{name}.json` ({why})" for name, why in sorted(inputs.missing.items())) + ".", ""]
     output.write_text("\n".join(text), encoding="utf-8")
+    # What consistency.sh keeps of each run.
+    (folder / "scorecard.json").write_text(json.dumps({
+        "commit": full_commit, "clean": clean, "score": {"code": score(code), "design": score(design)},
+        "measures": {m.name: m.status for m in code + design},
+        "steps": {name: (inputs.step(name) or {}).get("exit_code") for name in STEPS},
+    }, indent=2))
 
 
 def check_evaluation(path: Path) -> int:
@@ -649,7 +767,18 @@ def main() -> None:
     parser.add_argument("--check-mutation", metavar="MUTATION")
     parser.add_argument("--check-audit", metavar="AUDIT")
     parser.add_argument("--all-pages", action="store_true", help="with --check-audit: every screen audited without a page limit")
+    parser.add_argument("--record-run", metavar="RUN")
+    parser.add_argument("--finish-run", metavar="RUN", help="collect.sh, at its end: adds the tree's state then to RUN")
+    parser.add_argument("--consistency", metavar="RUNS_FOLDER", help="prints consistency.json from consistency.sh's runs")
     args = parser.parse_args()
+    if args.record_run:
+        return record_run(Path(args.record_run))
+    if args.finish_run:
+        return record_run(Path(args.finish_run), finished=True)
+    if args.consistency:
+        data = consistency(Path(args.consistency))
+        print(json.dumps(data, indent=2))
+        sys.exit(0 if data["all_green"] else 1)
     if args.check_audit:
         sys.exit(check_audit(json.loads(Path(args.check_audit).read_text()), args.all_pages, audit_screens()))
     if args.check_evaluation:

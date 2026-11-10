@@ -4,7 +4,8 @@ run-name: Quality gates (${{ github.ref_name }})
 # The gates of docs/quality/RUBRIC.md that hold today, so they can't erode
 # unnoticed: tools/quality/static_metrics.py --gate, and the evaluation replay
 # (with its planted errors) above its floor (tools/quality/evaluation_floor.json).
-# Mutation testing runs weekly ("Scheduled" in RUBRIC.md) and on demand. Coverage
+# Mutation testing runs weekly, on demand and on pull requests that change the shared
+# export or parse code. Coverage
 # is reported as an artifact, never gated (RUBRIC.md: it's for orientation). No
 # secrets needed.
 on:
@@ -110,32 +111,50 @@ jobs:
 
   mutation:
     name: Mutation testing
-    # Weekly, and when started by hand: PIT takes minutes, not seconds.
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    # Weekly, when started by hand, and on a pull request that changes the shared export or parse code
+    # (the path filter below; every other pull request skips its steps): PIT takes minutes, not seconds.
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          # A pull request's checkout is its merge into the base branch, whose first parent is the base.
+          fetch-depth: 2
+
+      - name: Path filter (core/export, core/parse)
+        id: scope
+        run: |
+          CORE=shared/src/commonMain/kotlin/dev/idoodler/labimporter/core
+          if [ "${{ github.event_name }}" != "pull_request" ] \
+            || git diff --name-only HEAD^1 HEAD -- "$CORE/export" "$CORE/parse" | grep -q .; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No change under $CORE/export or $CORE/parse: mutation testing is left to the weekly run."
+          fi
 
       - name: Set up JDK
+        if: steps.scope.outputs.run == 'true'
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
           distribution: temurin
           java-version: "21"
 
       - name: Set up Gradle
+        if: steps.scope.outputs.run == 'true'
         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
 
       - name: PIT
+        if: steps.scope.outputs.run == 'true'
         run: tools/quality/mutation.sh
 
       # At least 80% killed in export, parse, model and loinc (RUBRIC.md, "Test effectiveness");
       # a mutant PIT couldn't run (RUN_ERROR) is inconclusive, never counted as killed.
       - name: Mutation score
+        if: steps.scope.outputs.run == 'true'
         run: python3 tools/quality/scorecard.py --check-mutation build/quality/mutation.json
 
       - name: Upload the mutation report
-        if: always()
+        if: always() && steps.scope.outputs.run == 'true'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: mutation

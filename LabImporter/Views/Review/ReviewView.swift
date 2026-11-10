@@ -32,6 +32,8 @@ struct ReviewView: View {
     @State var scrollTarget: UUID?
 
     @State private var showAddValue = false
+    /// Save writes once: Save and Share are off while it runs, and a repeated tap is ignored.
+    @State private var saving = SaveInFlight()
     @State private var importEngine = LabImportEngine()
     @AppStorage(SiriExposurePreferences.storageKey) private var siriPrefs = SiriExposurePreferences()
     @State private var siriPromptCodes: [CodeName] = []
@@ -126,14 +128,14 @@ struct ReviewView: View {
         .listSectionSpacing(.compact)
         .scrollContentBackground(.hidden)
         .background { CategoryBackground(colors: backgroundColors) }
-        .interactiveDismissDisabled(hasEdits) // Avoids a swipe bypassing the discard confirmation below.
+        .interactiveDismissDisabled(hasEdits || saving.isSaving) // Avoids a swipe bypassing the discard confirmation, or a running save.
         .navigationTitle("Lab Report")
         .navigationBarTitleDisplayMode(.inline) // A large title would push the first value off a small iPhone.
         .toolbar {
             keyboardDoneButton
             ToolbarItem(placement: .topBarLeading) {
                 Button(role: .close) { attemptClose() }
-                    .disabled(importEngine.isProcessing) // HUD overlay can't cover this bar.
+                    .disabled(importEngine.isProcessing || saving.isSaving) // HUD overlay can't cover this bar.
             }
         }
         .alert("Discard Report?", isPresented: $showDiscardAlert) {
@@ -360,7 +362,7 @@ private extension ReviewView {
 
     func bottomButtons(isPinned: Bool = true) -> some View {
         ReviewActionBar(
-            isEnabled: exportableCount > 0 && duplicateLoincCodes.isEmpty && labValues.valuesToCorrectCount() == 0,
+            isEnabled: exportableCount > 0 && duplicateLoincCodes.isEmpty && labValues.valuesToCorrectCount() == 0 && !saving.isSaving,
             hasDuplicates: !duplicateLoincCodes.isEmpty,
             valuesToCorrect: labValues.valuesToCorrectCount(),
             onSave: { request(.save) },
@@ -393,7 +395,11 @@ private extension ReviewView {
         return pasteboard.hasImages || pasteboard.hasStrings
     }
 
-    func attemptClose() { if hasEdits { showDiscardAlert = true } else { dismiss() } }
+    /// Not while a save runs: it would finish anyway, after Discard said nothing was saved.
+    func attemptClose() {
+        guard !saving.isSaving else { return }
+        if hasEdits { showDiscardAlert = true } else { dismiss() }
+    }
 
     /// Whether the report date, its names or any lab value differs from what the sheet opened with — drives the
     /// discard confirmation. Birthday and gender live in `@AppStorage` and persist, so they aren't discardable edits.
@@ -434,6 +440,7 @@ private extension ReviewView {
 
     /// Saves or shares the report file, or first asks when a value is flagged "Compare with report" or would be left out.
     func request(_ action: SaveConfirmation.Action) {
+        guard !saving.isSaving else { return }
         if let confirmation = labValues.saveConfirmation(for: action) {
             saveConfirmation = confirmation
         } else {
@@ -443,7 +450,7 @@ private extension ReviewView {
 
     func perform(_ action: SaveConfirmation.Action) {
         switch action {
-        case .save: Task { await performCDAImport() }
+        case .save: saving.start { await performCDAImport() }
         case .share: shareCDA()
         }
     }

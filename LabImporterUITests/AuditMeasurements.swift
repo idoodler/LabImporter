@@ -120,8 +120,22 @@ enum PixelContrast {
         element.screenshot().image.cgImage.flatMap(of)
     }
 
-    /// WCAG contrast between the image's background (its median pixel) and its ink, the
-    /// percentile furthest from it: what a person's eye gets.
+    /// Where a pixel stops being background and starts being ink: this far from the background's luminance.
+    /// Low enough that faint text counts as ink (text fainter than this can hardly be seen at all), high enough
+    /// that a surface's shading doesn't: a bordered button's fill measured 1.2:1 to 1.3:1 against the card
+    /// showing at its rounded ends, on more pixels than its 9:1 text.
+    static let inkThreshold = 1.5
+    /// How wide a step of contrast `commonest` counts as one colour: a glyph's own colour over a slightly
+    /// shaded background stays within one, an anti-aliased edge spreads over many.
+    private static let colourStep = 1.04
+
+    /// WCAG contrast between the image's background (its median pixel) and its ink: the colour most of the
+    /// pixels that differ clearly from the background (`inkThreshold`) are drawn in, darker or lighter, whichever
+    /// reads better (white text on a button whose rounded corners show the darker page). Most of the ink, not
+    /// its extreme: a dark glyph smaller than the faint text beside it can't carry that text, and a small text's
+    /// anti-aliased edges don't sink its colour. Pixels can't tell a glyph from a text, though: a glyph with more
+    /// ink than its text decides instead, and so does a light glyph beside faint dark text (the better direction
+    /// counts). Apple's own contrast audit runs on every page too. 1 when nothing differs clearly from the background.
     static func of(_ image: CGImage) -> Double? {
         let width = image.width
         let height = image.height
@@ -137,10 +151,25 @@ enum PixelContrast {
         let luminances = stride(from: 0, to: pixels.count, by: 4).map { index in
             relativeLuminance(red: pixels[index], green: pixels[index + 1], blue: pixels[index + 2])
         }.sorted()
+        return inkContrast(sortedLuminances: luminances)
+    }
+
+    /// `of(_:)` on an image's relative luminances, sorted ascending.
+    static func inkContrast(sortedLuminances luminances: [Double]) -> Double? {
+        guard !luminances.isEmpty else { return nil }
         let background = luminances[luminances.count / 2]
-        let darkest = luminances[luminances.count / 500]
-        let lightest = luminances[luminances.count - 1 - luminances.count / 500]
-        return max(ratio(background, darkest), ratio(background, lightest))
+        let ink = luminances.map { ratio(background, $0) }
+        let darker = zip(luminances, ink).filter { $0.0 < background && $0.1 >= inkThreshold }.map(\.1)
+        let lighter = zip(luminances, ink).filter { $0.0 > background && $0.1 >= inkThreshold }.map(\.1)
+        return [darker, lighter].compactMap(commonest).max() ?? 1
+    }
+
+    /// The contrast most of [ratios] share, counted in steps of `colourStep` (a tie goes to the fainter step),
+    /// as that step's median; nil for none.
+    private static func commonest(_ ratios: [Double]) -> Double? {
+        let steps = Dictionary(grouping: ratios) { Int((log($0) / log(colourStep)).rounded(.down)) }
+        guard let most = steps.max(by: { ($0.value.count, -$0.key) < ($1.value.count, -$1.key) }) else { return nil }
+        return most.value.sorted()[most.value.count / 2]
     }
 
     private static func ratio(_ first: Double, _ second: Double) -> Double {
@@ -158,6 +187,49 @@ enum PixelContrast {
 
 /// What the audit checks on each page besides Apple's audit.
 extension AccessibilityAuditUITests {
+    /// An element's ink decides by most of it: a dark glyph smaller than the faint text beside it doesn't make the text readable.
+    func testFaintTextBesideADarkGlyphMeasuresFaint() throws {
+        // White, a black glyph on 1% of it, and grey text on 10% (#A8A8A8 on white is about 2.4:1).
+        let faint = try XCTUnwrap(Self.image(background: 255, inks: [(0, 100), (168, 1_000)]))
+        let measured = try XCTUnwrap(PixelContrast.of(faint))
+        XCTAssertLessThan(measured, 3, "the black glyph carried the faint text")
+        // Black text alone is black text.
+        let black = try XCTUnwrap(Self.image(background: 255, inks: [(0, 1_000)]))
+        XCTAssertGreaterThan(try XCTUnwrap(PixelContrast.of(black)), 20)
+        // White on near-black, the dark appearance's way round.
+        let white = try XCTUnwrap(Self.image(background: 20, inks: [(255, 1_000)]))
+        XCTAssertGreaterThan(try XCTUnwrap(PixelContrast.of(white)), 15)
+        // A small grey text (#555, about 7.5:1) whose anti-aliased edges outnumber its own colour still reads at its colour.
+        let edges = (86...235).map { (level: UInt8($0), pixels: 3) }
+        let small = try XCTUnwrap(Self.image(background: 255, inks: [(85, 200)] + edges))
+        XCTAssertGreaterThan(try XCTUnwrap(PixelContrast.of(small)), 7)
+        // White text on a grey button whose rounded corners show the darker page behind it: the text decides.
+        let button = try XCTUnwrap(Self.image(background: 110, inks: [(30, 1_500), (255, 800)]))
+        XCTAssertGreaterThan(try XCTUnwrap(PixelContrast.of(button)), 4.5)
+        // Light text on a dark fill whose surroundings, a shade apart (1.3:1), outnumber the text: the text decides.
+        let shaded = try XCTUnwrap(Self.image(background: 20, inks: [(44, 2_000), (200, 800)]))
+        XCTAssertGreaterThan(try XCTUnwrap(PixelContrast.of(shaded)), 4.5)
+        // Nothing but background has no ink to read.
+        XCTAssertEqual(try XCTUnwrap(PixelContrast.of(try XCTUnwrap(Self.image(background: 255, inks: [])))), 1)
+    }
+
+    /// A 100 × 100 grey image of [background], with each ink's grey level on its count of pixels, row by row.
+    private static func image(background: UInt8, inks: [(level: UInt8, pixels: Int)]) -> CGImage? {
+        var pixels = [UInt8](repeating: background, count: 100 * 100)
+        var next = 0
+        for ink in inks {
+            for index in next..<(next + ink.pixels) { pixels[index] = ink.level }
+            next += ink.pixels
+        }
+        let data = Data(pixels) as CFData
+        guard let provider = CGDataProvider(data: data) else { return nil }
+        return CGImage(
+            width: 100, height: 100, bitsPerComponent: 8, bitsPerPixel: 8, bytesPerRow: 100, space: CGColorSpaceCreateDeviceGray(),
+            bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue), provider: provider, decode: nil,
+            shouldInterpolate: false, intent: .defaultIntent
+        )
+    }
+
     /// The audit can't tell a label that's there from one that says which of twenty rows it is.
     func assertEveryValueFieldSpeaksItsTest(in app: XCUIApplication) {
         let fields = app.textFields.matching(identifier: "review-value-field").allElementsBoundByIndex

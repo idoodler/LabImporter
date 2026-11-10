@@ -5,12 +5,27 @@ import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.core.parse.AiLabEntry
 import dev.idoodler.labimporter.core.parse.AiLabReport
 import kotlinx.datetime.LocalDate
+import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class EvaluationTest {
+
+    @Test
+    fun theHeldOutSetIsItsOwnWithEveryReply() {
+        // A held-out report that is also a tuning report would be scored on what the check was tuned against.
+        fun reports(heldOut: Boolean) = File(setFolder(heldOut), "reports").listFiles { f -> f.name.endsWith(".txt") }!!.toList()
+        val tuning = reports(heldOut = false)
+        val heldOut = reports(heldOut = true)
+        assertTrue(heldOut.size >= 10, "held-out reports: ${heldOut.size}")
+        assertTrue(heldOut.none { h -> tuning.any { it.name == h.name || it.readText() == h.readText() } })
+        for (report in heldOut) {
+            assertTrue(File(report.parentFile, report.nameWithoutExtension + ".expected.json").isFile, "${report.name} has no expected values")
+            assertTrue(File(File(setFolder(true), "replies"), report.nameWithoutExtension + ".reply.json").isFile, "${report.name} has no reply")
+        }
+    }
 
     @Test
     fun aCutOffUnitIsNoMatch() {

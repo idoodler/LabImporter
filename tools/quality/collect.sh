@@ -7,7 +7,7 @@
 #
 #   (always)    static_metrics.py (+ SwiftLint when installed), the Gradle tests
 #               with Kover coverage, Android lintRelease, the evaluation replay
-#               with its planted errors
+#               with its planted errors, and the same for the held-out set (reported only)
 #   --ios       the iOS unit and UI tests with coverage (the accessibility audit
 #               is one of the UI test suites), `swiftlint analyze` on that build's
 #               log, and the privacy manifests in the built .app and .appex
@@ -44,6 +44,9 @@ done
 rm -rf "$OUT"/*.json "$LOGS"
 mkdir -p "$LOGS"
 FAILED=()
+# The commit this run measures, and whether anything but docs/quality/SCORECARD.md (an earlier run's output)
+# was uncommitted: a committed scorecard's run is clean, and so is a second run at its commit.
+python3 tools/quality/scorecard.py --record-run "$OUT/run.json"
 
 # step <name> <command…>: runs it, logs to build/quality/logs/<name>.log, records the outcome.
 step() {
@@ -105,6 +108,9 @@ python3 tools/quality/reports.py lint androidApp/build/reports/lint-results-rele
 # --- 4. Evaluation replay ----------------------------------------------------
 # With the planted errors (evaluation/…/PlantedErrors.kt) and the evaluation's own tests.
 step evaluation ./gradlew --console=plain :evaluation:test :evaluation:run --args=replay "-Psummary=$OUT/evaluation.json"
+# The held-out set (evaluation/heldout): reported beside Extraction safety, never scored or gated, and never
+# used to change the Review check or the LOINC ranking (evaluation/README.md, "Held-out set").
+step evaluation-heldout ./gradlew --console=plain :evaluation:run --args=replay -Pheldout=true "-Psummary=$OUT/evaluation_heldout.json"
 
 # --- 5. iOS (optional) -------------------------------------------------------
 if [ $IOS -eq 1 ]; then
@@ -154,6 +160,8 @@ if [ $MUTATION -eq 1 ]; then
 fi
 
 # --- Scorecard ---------------------------------------------------------------
+# The tree again, now the steps are done: an edit made while they ran leaves the run unclean.
+python3 tools/quality/scorecard.py --finish-run "$OUT/run.json"
 python3 tools/quality/scorecard.py --input "$OUT" --output docs/quality/SCORECARD.md
 echo "Scorecard: $ROOT/docs/quality/SCORECARD.md"
 if [ ${#FAILED[@]} -gt 0 ]; then

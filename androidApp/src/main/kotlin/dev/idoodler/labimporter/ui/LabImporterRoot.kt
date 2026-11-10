@@ -205,11 +205,12 @@ fun LabImporterRoot(viewModel: AppViewModel) {
     }
 
     val importState by viewModel.importState.collectAsStateWithLifecycle()
+    val isSaving by viewModel.isSaving.collectAsStateWithLifecycle()
     var pasting by rememberSaveable { mutableStateOf(false) }
 
     when (val state = importState) {
         is ImportState.Reviewing -> {
-            BackHandler { viewModel.cancelImport() }
+            BackHandler { if (!isSaving) viewModel.cancelImport() } // Like Close: not while the save runs.
             ReviewScreen(
                 draft = state.draft,
                 onUpdateDraft = viewModel::updateDraft,
@@ -218,6 +219,7 @@ fun LabImporterRoot(viewModel: AppViewModel) {
                 onRemoveValue = viewModel::removeValue,
                 onCancel = viewModel::cancelImport,
                 onSave = viewModel::saveDraft,
+                isSaving = isSaving,
             )
             return
         }

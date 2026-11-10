@@ -1,0 +1,126 @@
+{"entries":
+[
+{"code":
+"B -Hb",
+"name":
+"Hemogeeninen hemoglobin",
+"rawValue":
+"128",
+"unit":
+"g/l"
+},
+{"code":
+"B -Leuk",
+"name":
+"Leukosytot",
+"rawValue":
+"5,8",
+"unit":
+"E9/l"
+},
+{"code":
+"B -Trom",
+"name":
+"Tromboattivitys",
+"rawValue":
+"231",
+"unit":
+"E9/l"
+},
+{"code":
+"B -Hkr",
+"name":
+"Hapoksihemoglobinaasi",
+"rawValue":
+"0,39",
+"unit":
+"0,35-0,46"
+},
+{"code":
+"B -MCV",
+"name":
+"Makrosyytos-volume",
+"rawValue":
+"88",
+"unit":
+"fl"
+},
+{"code":
+"fP -Kol",
+"name":
+"Fosfolipidi-Kolesterol",
+"rawValue":
+"6,2 +",
+"unit":
+"mmol/l"
+},
+{"code":
+"fP -Trigly",
+"name":
+"Fosfolipidi-Triglyceridi",
+"rawValue":
+"1,3",
+"unit":
+"mmol/l"
+},
+{"code":
+"fP -Kol-HDL",
+"name":
+"Fosfolipidi-Kolesterol-HDL",
+"rawValue":
+"1,62",
+"unit":
+"mmol/l"
+},
+{"code":
+"fP -Kol-LDL",
+"name":
+"Fosfolipidi-Kolesterol-LDL",
+"rawValue":
+"4,0 +",
+"unit":
+"mmol/l"
+},
+{"code":
+"P -Krea",
+"name":
+"Kreatini",
+"rawValue":
+"66",
+"unit":
+"µmol/l"
+},
+{"code":
+"P -Na",
+"name":
+"Natrium",
+"rawValue":
+"141",
+"unit":
+"mmol/l"
+},
+{"code":
+"P -ALAT",
+"name":
+"Alat",
+"rawValue":
+"31",
+"unit":
+"U/l"
+},{"code":
+"P -GT","name":
+" : "
+,"rawValue":
+"58 +",
+"unit":
+"U/l"
+}]
+,
+"reportDate":
+"2020-00-00",
+"patientName":
+"Virtanen, Aino Maria",
+"authorName":
+"",
+"reportLanguage":
+"fi"}

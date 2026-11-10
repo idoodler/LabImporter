@@ -1,0 +1,22 @@
+Semmelweis Egyetem - Laboratóriumi Medicina Intézet
+Beteg neve: Kovács Péter               Születési dátum: 1990.03.14
+TAJ: 123 456 789                        Mintavétel: 2026.10.07 07:55
+Kérő orvos: Dr. Szabó Éva
+
+VIZELET VIZSGÁLAT (tesztcsík)          Eredmény            Referencia
+  Fajsúly                              1,025               1,005 - 1,030
+  pH                                   5,5                 5,0 - 8,0
+  Fehérje                              nyomokban           negatív
+  Glükóz                               negatív             negatív
+  Keton                                +                   negatív
+  Bilirubin                            negatív             negatív
+  Urobilinogén                         normál              normál
+  Nitrit                               negatív             negatív
+  Leukocita                            negatív             negatív
+  Vér (hemoglobin)                     ++                  negatív
+
+ÜLEDÉK (mikroszkópos)
+  Vörösvérsejt                         8-10 /LF            0-2
+  Fehérvérsejt                         1-2 /LF             0-5
+  Laphámsejt                           kevés
+  Baktérium                            nem látható

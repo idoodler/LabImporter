@@ -1,0 +1,15 @@
+Universitätsspital Zürich - Institut für Klinische Chemie
+Patient/in: Brunner, Lukas      geb. 09.12.1966      Fall-Nr. 40'118'227
+Auftrag: 31.10.2026 07:12       Visiert: 31.10.2026 15:30
+
+Kumulativbefund              31.10.26     17.10.26     03.10.26     Einheit    Referenz
+Hämatologie
+  Hämoglobin                 131          124 L        118 L        g/L        134-170
+  Leukozyten                 11.2 H       14.8 H       9.1          G/L        3.0-9.6
+  Thrombozyten               412 H        388          301          G/L        143-400
+Chemie
+  Kreatinin                  88           102          95           µmol/L     59-104
+  CRP                        18 H         64 H         3            mg/L       <5
+  Procalcitonin              0.12 H       0.41 H       <0.05        µg/L       <0.10
+  Ferritin                   1'240 H      980 H        410 H        µg/L       30-400
+  Albumin                    31 L         29 L         36           g/L        35-52

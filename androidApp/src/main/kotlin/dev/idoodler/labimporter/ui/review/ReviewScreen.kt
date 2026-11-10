@@ -132,6 +132,8 @@ fun ReviewScreen(
     onRemoveValue: (String) -> Unit,
     onCancel: () -> Unit,
     onSave: () -> Unit,
+    /** A save is under way: Save and Close stay off until it ends, so a second tap can't save the report twice. */
+    isSaving: Boolean = false,
 ) {
     var pickingFor by remember { mutableStateOf<String?>(null) }
     var pickingDate by remember { mutableStateOf(false) }
@@ -147,6 +149,7 @@ fun ReviewScreen(
     val exportable = remember(draft.values) { draft.values.count { it.isExportable } }
     val valuesToCorrect = remember(draft.values) { draft.values.valuesToCorrectCount() }
     val canSave = exportable > 0 && duplicates.isEmpty() && valuesToCorrect == 0
+    val saveEnabled = canSave && !isSaving
     val valuesToCheck = remember(draft.values) { draft.values.valuesToCheckCount() }
     val categories = remember(draft.values) {
         draft.values.filter { LabMapping.loincCode(it.code) != null }.map { LabCategory.forCode(it.code) }
@@ -163,9 +166,10 @@ fun ReviewScreen(
             topBar = {
                 TopAppBar(
                     title = { Text(stringResource(if (draft.original != null) R.string.edit_report else R.string.review_title), fontWeight = FontWeight.SemiBold) },
-                    navigationIcon = { IconButton(onClick = onCancel) { Icon(Icons.Rounded.Close, stringResource(R.string.cancel)) } },
+                    // Off while saving: the save would finish anyway, after the review was left.
+                    navigationIcon = { IconButton(onClick = onCancel, enabled = !isSaving) { Icon(Icons.Rounded.Close, stringResource(R.string.cancel)) } },
                     actions = {
-                        Button(onClick = requestSave, enabled = canSave, modifier = Modifier.padding(end = 8.dp)) {
+                        Button(onClick = requestSave, enabled = saveEnabled, modifier = Modifier.padding(end = 8.dp)) {
                             Text(stringResource(R.string.save))
                         }
                     },
@@ -218,7 +222,7 @@ fun ReviewScreen(
                 item(key = "details") { DetailsCard(draft, onUpdateDraft) }
                 item(key = "save") {
                     Button(
-                        onClick = requestSave, enabled = canSave,
+                        onClick = requestSave, enabled = saveEnabled,
                         modifier = Modifier.fillMaxWidth().height(64.dp),
                         contentPadding = ButtonDefaults.MediumContentPadding,
                     ) {
@@ -638,6 +642,13 @@ private val previewDraft = ReviewDraft(
 @Composable
 private fun ReviewPreview() {
     LabImporterTheme(dynamicColor = false) { ReviewScreen(previewDraft, {}, { _, _ -> }, { "" }, {}, {}, {}) }
+}
+
+/** While the report is being saved: Save is off until it ends. */
+@Preview(name = "Saving", widthDp = 400, heightDp = 1100)
+@Composable
+private fun ReviewSavingPreview() {
+    LabImporterTheme(dynamicColor = false) { ReviewScreen(previewDraft, {}, { _, _ -> }, { "" }, {}, {}, {}, isSaving = true) }
 }
 
 /** A misread value to compare, no date in the report, and names found in it. */

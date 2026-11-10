@@ -67,6 +67,7 @@ extension AppInfo {
     /// stamped when the binary was linked. Used to derive the TestFlight 90-day window.
     private static var buildDate: Date? {
         guard let url = Bundle.main.executableURL,
+              // Build details, not reports: without the date the card leaves the expiry out.
               let values = try? url.resourceValues(forKeys: [.contentModificationDateKey]) else {
             return nil
         }
@@ -79,6 +80,7 @@ extension AppInfo {
     /// App Store / TestFlight builds carry no embedded profile, so this returns `nil`.
     private static func provisioningProfileExpiration() -> Date? {
         guard let url = Bundle.main.url(forResource: "embedded", withExtension: "mobileprovision"),
+              // Build details, not reports: an unreadable profile only leaves its expiry out.
               let data = try? Data(contentsOf: url),
               let raw = String(data: data, encoding: .isoLatin1),
               let start = raw.range(of: "<?xml"),
@@ -87,6 +89,7 @@ extension AppInfo {
         }
         let plistSlice = String(raw[start.lowerBound..<end.upperBound])
         guard let plistData = plistSlice.data(using: .isoLatin1),
+              // Build details, not reports: a profile that doesn't parse only leaves its expiry out.
               let plist = try? PropertyListSerialization.propertyList(from: plistData, format: nil) as? [String: Any] else {
             return nil
         }

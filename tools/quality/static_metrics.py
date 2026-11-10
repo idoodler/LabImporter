@@ -308,8 +308,8 @@ def is_measured(e: dict) -> bool:
     `AuditExemption.reason` lets such an issue go only while that element's own pixels measure 4.5:1.
     Everything else is unmeasured and the baseline holds it: hit regions, clipped text, element
     detection, and contrast without a named element — `nil` (an issue without one) and `""` (whichever
-    element the audit points at). Those are checked against the page or the flagged element's
-    strongest ink, so a faint label beside a dark icon still passes. The audit counts the same at
+    element the audit points at). Those are checked against the page or the flagged element, but
+    neither says which text it lets go. The audit counts the same at
     runtime (`AUDIT exemptions … measured … unmeasured …`, read by `reports.audit_log`).
     """
     return e["type"] == "contrast" and bool(e["element"])
@@ -669,7 +669,8 @@ def swallow_sites(text: str, suffix: str) -> list[tuple[int, int]]:
 # The places that read, save, delete and import reports.
 SWALLOW_PATHS = (
     ["LabImporter/Services", "LabImporter/Views/Home", "LabImporter/Views/Import", "LabImporter/Views/Review",
-     "LabImporter/Views/History", "LabImporterShare"],
+     "LabImporter/Views/History", "LabImporter/Views/Dashboard", "LabImporter/Views/Settings", "LabImporter/Views/Export",
+     "LabImporter/Intents", "LabImporterShare"],
     ["androidApp/src/main/kotlin/dev/idoodler/labimporter/data", "androidApp/src/main/kotlin/dev/idoodler/labimporter/ui/AppViewModel.kt",
      "shared/src/commonMain/kotlin/dev/idoodler/labimporter/core/export", "shared/src/commonMain/kotlin/dev/idoodler/labimporter/core/transfer"],
 )

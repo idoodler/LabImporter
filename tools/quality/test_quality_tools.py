@@ -95,6 +95,9 @@ class SwallowedErrorTest(unittest.TestCase):
         swift, kotlin = static_metrics.SWALLOW_PATHS
         self.assertIn("LabImporter/Views/Review", swift)
         self.assertIn("LabImporter/Views/History", swift)
+        # Siri, the dashboard, Settings and the PDF export read reports too.
+        for path in ["LabImporter/Intents", "LabImporter/Views/Dashboard", "LabImporter/Views/Settings", "LabImporter/Views/Export"]:
+            self.assertIn(path, swift)
         self.assertTrue(any(p.endswith("ui/AppViewModel.kt") for p in kotlin))
 
 
@@ -157,8 +160,8 @@ class ExemptionTest(unittest.TestCase):
             return static_metrics.is_measured({"condition": "a/light/ax5", "type": kind, "element": element})
 
         self.assertTrue(measured("contrast", "On-Device AI"))
-        # Any element: checked against the flagged element's strongest ink, so a faint label beside a dark icon
-        # passes. It's unmeasured and listed in the baseline.
+        # Any element: checked against whichever element the audit flags, so it says nothing about a given
+        # text. It's unmeasured and listed in the baseline.
         self.assertFalse(measured("contrast", ""))
         self.assertFalse(measured("contrast", None))
         self.assertFalse(measured("hitRegion", ""))
@@ -295,7 +298,7 @@ class ExemptionTest(unittest.TestCase):
         self.assertIn("count(AuditExemption.reason(for: issue, element: element, on: &page)", source)
 
     def test_only_a_named_element_counts_as_measured_at_runtime(self):
-        # "" (any element) and nil are let go on the flagged element's strongest ink or the page's texts: unmeasured.
+        # "" (any element) and nil are let go on the flagged element or the page's texts: unmeasured.
         source = static_metrics.AUDIT_TESTS.read_text(encoding="utf-8")
         self.assertIn("namesContrastElement: entry.element?.isEmpty == false", source)
         count = source[source.index("private func count(_ granted: AuditExemption.Granted?"):source.index("/// The audit gives up on a long screen")]
@@ -335,9 +338,18 @@ class AuditRunTest(unittest.TestCase):
         self.assertNotIn("types == .contrast", body)
         last = body[body.index("catch let error as NSError where error.code == -56 {"):]
         self.assertLess(last.index("XCTFail("), last.index("return nil"))
-        # Only the bits Apple doesn't document are logged, and only when nothing documented is among them.
-        logged = body[body.rindex("catch let error as NSError where error.code == -56 && Self.documentedTypes.isDisjoint(with: types) {"):]
-        self.assertLess(logged.index("print(\"AUDIT unfinished undocumented type"), logged.index("catch let error as NSError where error.code == -56 {"))
+        # Every type that gives up fails: none is logged and let go.
+        self.assertEqual(body.count("catch let error as NSError where error.code == -56"), 3)
+        self.assertNotIn("undocumented", body)
+
+    def test_only_the_documented_types_are_audited(self):
+        # `.all` also sets bits Apple names no check for: what they find, or a time-out, no one could look into.
+        self.assertNotIn("XCUIAccessibilityAuditType.all", self.SOURCE)
+        self.assertNotIn("for: .all", self.SOURCE)
+        types = re.search(r"private static let auditTypes: XCUIAccessibilityAuditType = \[(.*?)\]", self.SOURCE, re.S)
+        self.assertIsNotNone(types)
+        self.assertEqual({t.strip() for t in types.group(1).split(",") if t.strip()},
+                         {".contrast", ".elementDetection", ".hitRegion", ".sufficientElementDescription", ".textClipped", ".trait"})
 
     def test_every_page_mode_audits_every_condition_to_its_end(self):
         test = self.SOURCE[self.SOURCE.index("func testEveryScreen()"):self.SOURCE.index("private func printTally()")]
@@ -529,6 +541,43 @@ class ScorecardTest(unittest.TestCase):
         self.assertEqual(measure.status, scorecard.FAIL)
         self.assertIn("replay: wrong values not flagged 1 of 2", "\n".join(p.text for p in measure.parts))
 
+    def code_measures(self, files: dict) -> list[scorecard.Measure]:
+        with tempfile.TemporaryDirectory() as folder:
+            for name, data in files.items():
+                Path(folder, f"{name}.json").write_text(json.dumps(data))
+            return scorecard.code_quality(scorecard.Inputs(Path(folder)), pr_checks=lambda: scorecard.not_run("CI"))
+
+    def test_the_held_out_set_is_reported_beside_extraction_safety_never_scored(self):
+        weak = {**self.EVALUATION, "set": "heldout", "reports": 10, "wrongValuesFlagged": 1, "wrongValuesNotFlagged": 3,
+                "plantedFlagged": 80, "plantedNotFlagged": 20}
+        measures = self.code_measures({"evaluation": {**self.EVALUATION, "set": "tuning"}, "evaluation_heldout": weak})
+        names = [m.name for m in measures]
+        self.assertEqual(names.index("Extraction safety, held-out set"), names.index("Extraction safety") + 1)
+        held_out = measures[names.index("Extraction safety, held-out set")]
+        # Numbers under the 9.5 threshold are said, but neither fail it nor weigh in: a gate would be tuned against.
+        self.assertEqual(held_out.status, scorecard.REPORTED)
+        self.assertEqual(held_out.weight, 0)
+        self.assertNotIn(scorecard.FAIL, [p.status for p in held_out.parts])
+        text = "\n".join(p.text for p in held_out.parts)
+        self.assertIn("planted errors flagged 80/100 (80.0%) (under the 9.5 threshold)", text)
+        self.assertIn("replay: wrong values not flagged 3 of 4 (under the 9.5 threshold)", text)
+        self.assertEqual(measures[names.index("Extraction safety")].status, scorecard.PASS)
+        self.assertNotIn("reported", scorecard.summary([m for m in measures if m.name != held_out.name]))
+        self.assertIn("1 reported, not scored", scorecard.summary(measures))
+
+    def test_a_held_out_measure_needs_the_held_out_summary(self):
+        def held_out(files: dict) -> scorecard.Measure:
+            return next(m for m in self.code_measures(files) if m.name == "Extraction safety, held-out set")
+        self.assertEqual([p.status for p in held_out({}).parts], [scorecard.NOT_RUN])
+        # The tuning set's summary in its place would pass the fit for generalisation.
+        self.assertEqual([p.status for p in held_out({"evaluation_heldout": {**self.EVALUATION, "set": "tuning"}}).parts],
+                         [scorecard.NOT_RUN])
+        self.assertEqual([p.status for p in held_out({"evaluation_heldout": self.EVALUATION}).parts], [scorecard.NOT_RUN])
+
+    def test_collect_writes_the_held_out_summary(self):
+        collect = (scorecard.ROOT / "tools/quality/collect.sh").read_text()
+        self.assertRegex(collect, r"-Pheldout=true \"-Psummary=\$OUT/evaluation_heldout\.json\"")
+
     def test_the_evaluation_floor_holds_each_kind(self):
         floor = {"plantedNotFlagged": {"max": 0},
                  "plantedByKind": {"TENFOLD": {"planted": {"min": 60}, "notFlagged": {"max": 0}},
@@ -549,6 +598,104 @@ class ScorecardTest(unittest.TestCase):
                  "DATE_DAY", "DATE_YEAR", "DATE_SWAPPED"}
         self.assertEqual(set(floor["plantedByKind"]), kinds)
         self.assertTrue(all({"planted", "notFlagged"} <= set(b) for b in floor["plantedByKind"].values()))
+
+    def test_the_scripted_score_counts_not_run_as_not_passing(self):
+        def measure(weight, status=None, **kind):
+            m = scorecard.Measure("Code quality", f"m{weight}", weight, "", **kind)
+            m.parts = [scorecard.Part(status, "")] if status else []
+            return m
+        measures = [measure(25, scorecard.PASS), measure(15, scorecard.FAIL), measure(10), measure(15, panel=True),
+                    measure(0, scorecard.REPORTED, reported=True)]
+        # 25 of the 50 scripted weight passes: the panel's and the reported don't count, the one not run does.
+        self.assertEqual(scorecard.score(measures), 5.0)
+        self.assertEqual(scorecard.score([measure(10), measure(15, panel=True)]), 0.0)
+
+    def test_only_a_changed_scorecard_leaves_the_tree_clean(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            run = lambda *args: scorecard.git(*args, cwd=root)  # noqa: E731
+            run("init", "-q")
+            (root / "docs/quality").mkdir(parents=True)
+            (root / scorecard.SCORECARD).write_text("one run")
+            (root / "code.py").write_text("x = 1")
+            run("add", ".")
+            run("-c", "user.email=q@example.com", "-c", "user.name=q", "commit", "-qm", "measured")
+            (root / scorecard.SCORECARD).write_text("the next run")
+            self.assertEqual(scorecard.uncommitted(root), [])
+            (root / "code.py").write_text("x = 2")
+            self.assertEqual([line.split()[-1] for line in scorecard.uncommitted(root)], ["code.py"])
+        self.assertRegex((scorecard.ROOT / "tools/quality/collect.sh").read_text(), r"scorecard\.py --record-run \"\$OUT/run\.json\"")
+
+    def test_a_tree_changed_while_the_run_ran_is_not_clean(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            run = lambda *args: scorecard.git(*args, cwd=root)  # noqa: E731
+            run("init", "-q")
+            (root / "code.py").write_text("x = 1")
+            run("add", ".")
+            run("-c", "user.email=q@example.com", "-c", "user.name=q", "commit", "-qm", "measured")
+            # Where collect.sh keeps it, build/, isn't tracked either.
+            (root / ".gitignore").write_text("run.json\n.gitignore\n")
+            record = root / "run.json"
+            scorecard.record_run(record, root=root)
+            (root / "code.py").write_text("x = 2")  # edited while the steps run
+            scorecard.record_run(record, finished=True, root=root)
+            data = json.loads(record.read_text())
+        self.assertEqual((data["uncommitted"], data["finished_uncommitted"]), (0, 1))
+        clean = lambda run: scorecard.measured_commit({"run": run})[1]  # noqa: E731
+        self.assertFalse(clean(data))
+        self.assertTrue(clean({**data, "finished_uncommitted": 0}))
+        self.assertFalse(clean({"commit": data["commit"], "uncommitted": 0}), "a run that didn't record its end")
+        self.assertFalse(clean({**data, "finished_uncommitted": 0, "finished_commit": "0" * 40}), "committed while it ran")
+        collect = (scorecard.ROOT / "tools/quality/collect.sh").read_text()
+        self.assertRegex(collect, r"scorecard\.py --finish-run \"\$OUT/run\.json\"\n.*scorecard\.py --input")
+
+    def test_the_scorecard_reports_the_measured_commit(self):
+        with tempfile.TemporaryDirectory() as folder:
+            Path(folder, "run.json").write_text(json.dumps({
+                "commit": "abcdef1234567", "uncommitted": 0, "finished_commit": "abcdef1234567", "finished_uncommitted": 0,
+            }))
+            output = Path(folder, "SCORECARD.md")
+            scorecard.write(Path(folder), output, pr_checks=lambda: scorecard.not_run("CI"))
+            text = output.read_text()
+            card = json.loads(Path(folder, "scorecard.json").read_text())
+        self.assertIn("at commit `abcdef1`. ", text)
+        self.assertIn("**Code quality:** scripted score 0.0 of 10;", text)
+        self.assertIn("**Three runs in a row:** not run (`tools/quality/consistency.sh`).", text)
+        self.assertEqual((card["commit"], card["clean"], card["measures"]["Write-path safety"]), ("abcdef1234567", True, scorecard.NOT_RUN))
+        self.assertEqual(card["steps"]["static"], None)
+
+    def consistency(self, runs: list[tuple[int, dict | None]]) -> dict:
+        with tempfile.TemporaryDirectory() as folder:
+            for number, (exit_code, card) in enumerate(runs, 1):
+                run = Path(folder, f"run-{number}")
+                run.mkdir()
+                Path(run, "exit").write_text(f"{exit_code}\n")
+                if card is not None:
+                    Path(run, "scorecard.json").write_text(json.dumps(card))
+            return scorecard.consistency(Path(folder))
+
+    GREEN = {"commit": "abcdef1234567", "clean": True, "steps": {"static": 0, "ios-tests": 0, "mutation": None},
+             "measures": {"Write-path safety": "pass", "Screenshot matrix": "panel", "Extraction safety, held-out set": "reported"}}
+
+    def test_three_green_runs_in_a_row(self):
+        data = self.consistency([(0, self.GREEN)] * 3)
+        self.assertTrue(data["all_green"])
+        self.assertEqual(scorecard.consistency_line(data, "abcdef1234567"), "3 of 3 consecutive runs green at `abcdef1`")
+        self.assertEqual(scorecard.consistency_line(data, "1234567abcdef"), "not run at this commit (the last runs were at abcdef1)")
+        self.assertEqual(scorecard.consistency_line(None, "abcdef1234567"), "not run (`tools/quality/consistency.sh`)")
+
+    def test_a_run_that_is_not_green_says_what_failed(self):
+        flaky = {**self.GREEN, "steps": {"static": 0, "ios-tests": 65}, "measures": {"Accessibility": "FAIL", "Round trips": "not run"}}
+        moved = {**self.GREEN, "commit": "9999999000000"}
+        data = self.consistency([(0, self.GREEN), (1, flaky), (0, moved), (0, {**self.GREEN, "clean": False}), (1, None)])
+        self.assertFalse(data["all_green"])
+        self.assertEqual([r["green"] for r in data["runs"]], [True, False, False, False, False])
+        self.assertEqual(scorecard.consistency_line(data, "abcdef1234567"),
+                         "1 of 5 consecutive runs green at `abcdef1`; run 2: collect.sh exit 1, step ios-tests exit 65, "
+                         "Accessibility FAIL, Round trips not run; run 3: at 9999999, not abcdef1; run 4: with uncommitted changes; "
+                         "run 5: collect.sh exit 1, no scorecard")
+        self.assertRegex((scorecard.ROOT / "tools/quality/consistency.sh").read_text(), r"\nRUNS=3\n")
 
     def test_the_write_path_measure_needs_the_ios_fault_tests(self):
         with tempfile.TemporaryDirectory() as folder:

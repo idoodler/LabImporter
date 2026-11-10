@@ -87,10 +87,15 @@ enum ScreenshotMode {
 
     /// Where Review saves in screenshot mode: nowhere, successfully. A UI test can't grant Apple Health
     /// access, and what it checks is that Save went through Review's confirmation to the writer.
-    static var reportStore: (any ReportDocumentStore)? { isActive ? DiscardingReportStore() : nil }
+    /// `--ss-slow-save`: each save takes 8 seconds, for a test of what Review allows while it writes.
+    static var reportStore: (any ReportDocumentStore)? {
+        isActive ? DiscardingReportStore(delay: CommandLine.arguments.contains("--ss-slow-save") ? .seconds(8) : .zero) : nil
+    }
 
     private struct DiscardingReportStore: ReportDocumentStore {
-        func importCDADocument(_ xmlString: String, date: Date) async throws {}
+        let delay: Duration
+
+        func importCDADocument(_ xmlString: String, date: Date) async throws { try await Task.sleep(for: delay) }
         func deleteCDADocument(id: UUID) async throws {}
         func loadStoredReports() async throws -> StoredReports { StoredReports() }
     }

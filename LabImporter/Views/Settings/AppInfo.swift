@@ -25,6 +25,7 @@ enum AppInfo {
     static var fundingLinks: [FundingLink] {
         guard let encoded = string("FundingConfig"),
               let data = Data(base64Encoded: encoded),
+              // Build metadata, not reports: a malformed stamp only hides the Support section.
               let config = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             return []
         }
@@ -48,6 +49,7 @@ enum AppInfo {
     /// it in source. Returns a short message if the file is missing.
     static var licenseText: String {
         guard let url = Bundle.main.url(forResource: "LICENSE", withExtension: nil),
+              // A bundled text file, not a report: unreadable, the screen says the license is unavailable.
               let text = try? String(contentsOf: url, encoding: .utf8) else {
             return String(localized: "The license is unavailable in this build.")
         }

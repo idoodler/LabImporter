@@ -1,0 +1,103 @@
+{"entries":
+[
+{"code":
+"HBsAg",
+"name":
+"Hepatitis B surface antigen",
+"rawValue":
+"Αρνητικό",
+"unit":
+"",
+"unit_of_measurement":
+""},
+{"code":
+"Anti-HBs",
+"name":
+"Anti-Hepatitis B surface antibody",
+"rawValue":
+"152",
+"unit":
+"mIU/mL"
+},
+{"code":
+"Anti-HCV",
+"name":
+"Anti-Hepatitis C virus",
+"rawValue":
+"Αρνητικό",
+"unit":
+""},
+{"code":
+"HIV 1/2 Ag/Ab",
+"name":
+"Human Immunodeficiency Virus type 1/2 Antigen/Antibody",
+"rawValue":
+"Αρνητικό",
+"unit":""},
+{"code":
+"VDRL",
+"name":
+"Vitre Detergent Resistant",
+"rawValue":
+"Μη αντιδρών",
+"unit":""},
+{"code":
+"Toxoplasma IgG",
+"name":
+"Toxoplasma gondii IgG antibody",
+"rawValue":
+"86",
+"unit":
+"IU/mL"
+},
+{"code":
+"Toxoplasma IgM",
+"name":
+"Toxoplasma gondii IgM antibody",
+"rawValue":
+"Αρνητικό",
+"unit":""},
+{"code":
+"Αιμοσφαιρίνη (Hb)",
+"name":
+"Hemoglobin",
+"rawValue":
+"14,8",
+"unit":
+"g/dL"
+},
+{"code":
+"Λευκά αιμοσφαίρια (WBC)",
+"name":
+"White blood cell count",
+"rawValue":
+"7,20",
+"unit":
+"K/μL"
+},
+{"code":
+"Αιμοπετάλια (PLT)",
+"name":
+"Platelet count",
+"rawValue":
+"198",
+"unit":
+"K/μL"
+},
+{"code":
+"ΤΚΕ",
+"name":
+"Time to coagulation",
+"rawValue":
+"126-118734",
+"unit":
+""}
+],
+"reportDate":
+"2026-11-04",
+"patientName":
+"ΠΑΠΑΔΟΠΟΥΛΟΣ ΓΕΩΡΓΙΟΣ",
+"authorName":
+"",
+"reportLanguage":
+"el"}

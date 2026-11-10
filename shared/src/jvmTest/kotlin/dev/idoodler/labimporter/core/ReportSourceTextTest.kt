@@ -497,6 +497,65 @@ class ReportSourceTextTest {
         assertTrue(beside(table, "141", " "))
     }
 
+    /** On a line of several tests, a result counts only in its test's own part: from its name up to the next test's. */
+    @Test
+    fun aNeighboursResultOnTheSameLineIsCaught() {
+        val line = "KREA: 0,80 mg/dl; HARNS: 5,1 mg/dl; GPT: 59 U/l; GGT: 31 U/l"
+        assertFalse(beside(line, "5,1", "Kreatinin", "KREA"), "printed on Kreatinin's line, but as HARNS's result")
+        assertFalse(beside(line, "31", "Glutamin-Phosphat-Transaminase", "GPT"))
+        assertTrue(beside(line, "0,80", "Kreatinin", "KREA"))
+        assertTrue(beside(line, "5,1", "Harnsäure", "HARNS"))
+        assertTrue(beside(line, "31", "GGT"))
+        val lipids = "Cholesterin: 198 mg/dl; HDL-Cholesterin: 52 mg/dl; LDL-Cholesterin: 121 mg/dl"
+        assertFalse(beside(lipids, "52", "Cholesterin"))
+        assertFalse(beside(lipids, "121", "HDL-Cholesterin"))
+        assertTrue(beside(lipids, "198", "Cholesterin"))
+        assertTrue(beside(lipids, "121", "LDL-Cholesterin"))
+        assertFalse(beside("Kreatinin:0,80mg/dl; Kalium:4,1mmol/l", "4,1", "Kreatinin"), "glued to its label and unit")
+        val columns = "TSH (uIU/mL)   2.10    Free T4 (ng/dL)   1.21"
+        assertFalse(beside(columns, "1.21", "TSH"))
+        assertTrue(beside(columns, "2.10", "TSH"), "the unit in the label")
+        // What stands between the name and its result is still the name's.
+        assertTrue(beside("Glucose nüchtern: 104 mg/dl; Kalium: 4,1 mmol/l", "104", "Glucose"))
+        // A row's own reference range, flag and previous result stay in its part.
+        assertTrue(beside("Glucose     65   Low    92    04/02/2026   mg/dL   70-99", "92", "Glucose"))
+        // Where the test's part prints no result, the whole line decides, as before.
+        assertTrue(beside("141 mmol/l Natrium", "141", "Natrium"))
+        // A line whose results stand in front of their names: each name's part is the next test's.
+        assertTrue(beside("141 mmol/l Natrium   4,1 mmol/l Kalium", "141", "Natrium"))
+        assertTrue(beside("141 mmol/l Natrium   4,1 mmol/l Kalium", "4,1", "Kalium"))
+    }
+
+    /** A result in words is no label of the next test, even where the row goes on to print a number. */
+    @Test
+    fun aResultInWordsBeforeANumberStaysTheTestsResult() {
+        assertTrue(beside("Toxoplasma IgG   negative   <3.0 IU/mL", "negative", "Toxoplasma IgG"))
+        assertTrue(beside("Rubella IgG   positiv   64 IU/ml", "positiv", "Rubella IgG"))
+        assertTrue(beside("HIV-1/2 Ag/Ak   nicht reaktiv   0,2 S/CO", "nicht reaktiv", "HIV-1/2 Ag/Ak"))
+    }
+
+    /** A bare number one space in front of a word, as in "Vitamin D 25 OH", may still be part of the name. */
+    @Test
+    fun aSpacedNumberOfTheNameDoesNotEndItsPart() {
+        assertTrue(beside("Vitamin D 25 OH   32 ng/ml", "32", "Vitamin D"))
+        assertTrue(beside("Vitamin D 25 OH   32 ng/ml", "32", "Vitamin D 25 OH"))
+        // A decimal result, or one with its unit or a column gap behind it, still ends at the next test's label.
+        assertFalse(beside("Hb 14,2 MCV 88", "88", "Hb"))
+        assertFalse(beside("KREA 0,80 mg/dl HARNS 5,1 mg/dl", "5,1", "KREA"))
+        assertFalse(beside("Leukozyten 7   Erythrozyten 5", "5", "Leukozyten"))
+    }
+
+    @Test
+    fun aNumberOfTheTestsOwnNameIsNoResult() {
+        val b12 = "Vitamin B12                       512                  pg/mL      200-1100"
+        assertFalse(beside(b12, "12", "Vitamin B12"), "the 12 of B12")
+        assertTrue(beside(b12, "512", "Vitamin B12"))
+        assertFalse(beside("Vitamin D 25-OH   32 ng/ml", "25", "Vitamin D"), "behind the name, still part of it")
+        assertTrue(beside("Vitamin D 25-OH   32 ng/ml", "32", "Vitamin D"))
+        assertFalse(beside("CD4 Lymphozyten 450 /µl", "4", "CD4"))
+        assertTrue(beside("CD4 Lymphozyten 450 /µl", "450", "CD4"))
+    }
+
     @Test
     fun aNameIsMatchedAsAWholeWord() {
         val rows = "TEST1: 15 mg/dl\nTEST10: 105 mg/dl"
@@ -720,7 +779,7 @@ class ReportSourceTextTest {
         assertTrue(swapped > 150, "$swapped")
     }
 
-    /** Each result of a sample report moved onto another test's row is caught; one row can't tell its tests apart. */
+    /** Each result of a sample report moved onto another test's row is caught, also onto another test of its own line. */
     @Test
     fun aResultMovedToAnotherTestOfASampleReportIsCaught() {
         var moved = 0
@@ -728,18 +787,21 @@ class ReportSourceTextTest {
             val source = ReportSourceText(text)
             // The scorer's names are parts of words ("Triglycerid"); the check names a test by whole words only.
             fun List<String>.namedIn(line: String) = any { Regex("(?<![\\p{L}\\p{N}])${Regex.escape(it)}(?![\\p{L}\\p{N}])", RegexOption.IGNORE_CASE) in line }
+            // What each line prints before its first number: its first test's label.
+            val labels = text.lines().map { line -> line.takeWhile { !it.isDigit() } }
             for ((number, _, names) in values) {
                 for ((otherNumber, _, otherNames) in values) {
                     if (otherNumber.toDouble() == number.toDouble()) continue
                     if (text.lines().none { otherNames.namedIn(it) }) continue
-                    // "KREA: 0,80 mg/dl; HARNS: 5,1 mg/dl" is one line.
-                    if (text.lines().any { line -> names.any { line.contains(it, ignoreCase = true) } && otherNames.namedIn(line) }) continue
+                    // One label naming both ("Colesterolo HDL", "Albumin/Kreatinin-Quotient") is both tests' row;
+                    // "KREA: 0,80 mg/dl; HARNS: 5,1 mg/dl" names each in its own part and is caught.
+                    if (labels.any { label -> names.any { label.contains(it, ignoreCase = true) } && otherNames.namedIn(label) }) continue
                     assertFalse(source.printsBesideTest(number, otherNames), "$number beside ${otherNames.first()}")
                     moved++
                 }
             }
         }
-        assertTrue(moved > 500, "$moved")
+        assertTrue(moved > 1000, "$moved")
     }
 
     /**

@@ -83,13 +83,16 @@ internal class ReportSourceText(text: String) {
      * to the next line when that one starts with the result (a PDF often puts a
      * bold result on a line of its own). Where some row starts with the test's
      * name, only those are its rows: "HDL Cholesterin" names Cholesterin too.
+     * On a row of several tests, only the test's own part counts, as for its unit:
+     * "KREA: 0,80 mg/dl; HARNS: 5,1 mg/dl" prints 5,1, but not as Kreatinin's. Nor
+     * is a number of the test's own name its result (the 12 of "Vitamin B12").
      */
     fun printsBesideTest(result: String, names: List<String>): Boolean {
         val trimmed = result.trim()
         if (trimmed.isEmpty() || trimmed == "-") return true
         val rows = rowsOf(names)
-        val onItsRow = rows.any { (index, _) ->
-            lines[index].printsOnRow(trimmed) || lines.getOrNull(index + 1)?.startsWithResult(trimmed) == true
+        val onItsRow = rows.any { (index, named) ->
+            lines[index].printsInPartOf(trimmed, named) || lines.getOrNull(index + 1)?.startsWithResult(trimmed) == true
         }
         if (onItsRow) return true
         return rows.none { (index, named) -> lines[index].printsAResultBesides(named) }
@@ -247,6 +250,65 @@ internal class ReportSourceText(text: String) {
         /** Whether this prints [result] as a row's result: as [prints], but a reference range's limit isn't one. */
         fun printsOnRow(result: String): Boolean = prints(result, results)
 
+        /**
+         * Whether this prints [result] as the result of the test named by [names] (normalized,
+         * without spacing): in the test's own part of the line ([partsOf]) where one prints a
+         * result. Where none does (the name stands behind its result, or positions can't be
+         * compared), the whole line decides, but a number of the test's own name (the 12 of
+         * "Vitamin B12") is still no result of it. So does it for a result in words
+         * ("negative" of "Toxoplasma IgG  negative  <3.0 IU/mL": a part keeps only numbers
+         * apart) and on a line that starts with a result ("141 mmol/l Natrium  4,1 mmol/l
+         * Kalium": its names stand behind their results, so a name's part is the next test's).
+         */
+        fun printsInPartOf(result: String, names: List<String>): Boolean {
+            if (result.none { it.isDigit() } || LEADING_VALUE.containsMatchIn(undated)) return printsOnRow(result)
+            val parts = partsOf(names).filter { it.printsAResultBesides(emptyList()) }
+            if (parts.isNotEmpty()) return parts.any { it.printsOnRow(result) }
+            val ofNames = names.flatMapTo(mutableSetOf()) { numbersIn(it, decimalSeparator) }
+            return prints(result, results - ofNames)
+        }
+
+        /**
+         * The test's own parts of this line, one behind each place one of [names] is printed: from
+         * the name's end up to the next test's label behind its result ("0,80 mg/dl;" of "KREA:
+         * 0,80 mg/dl; HARNS: 5,1 mg/dl"), as [unitOf] reads a result's unit. Words between the name
+         * and its result are still the name's and blanked out: the 25 of "Vitamin D 25-OH 32", the
+         * "nüchtern" of "Glucose nüchtern: 104". None where normalizing changed the line's length.
+         */
+        private fun partsOf(names: List<String>): List<Printed> {
+            if (normalized.length != text.length) return emptyList()
+            val ends = normalized.indices.mapNotNull { start ->
+                names.filter { namesAt(it, start) }.mapNotNull { matchEnd(normalized, it, start) }.maxOrNull()
+            }
+            return ends.distinct().map { partFrom(it) }
+        }
+
+        /**
+         * The part of [partsOf] that starts where a name ends, at [from]. A whole number one space
+         * in front of a word may still be the name's ("Vitamin D 25 OH   32 ng/ml"), so that word
+         * doesn't end the part; a decimal, a unit or flag, a column's gap or a ";" in between does.
+         */
+        private fun partFrom(from: Int): Printed {
+            val part = StringBuilder(text)
+            var end = text.length
+            var inResult = false
+            var previous: MatchResult? = null
+            for (word in PART_WORD.findAll(blanked, from)) {
+                val bare = word.value.trim(*UNIT_WRAPPING)
+                val labels = isLabel(bare) && !isUnit(bare)
+                val ofTheName = previous != null && previous.value.all { it.isDigit() } &&
+                    word.range.first == previous.range.last + 2 && blanked[previous.range.last + 1] == ' '
+                when {
+                    inResult && labels && !ofTheName -> { end = word.range.first; break }
+                    inResult -> Unit
+                    labels -> for (at in word.range) part[at] = ' '
+                    word.value.any { it.isDigit() } -> inResult = true
+                }
+                previous = word
+            }
+            return Printed(part.substring(from, end), decimalSeparator)
+        }
+
         /** Whether this line starts with [result] as a value of its own ("14,2", "245 H", "58 ml/min"), continuing the row above. */
         fun startsWithResult(result: String): Boolean {
             val value = LEADING_VALUE.find(undated)?.value ?: return false
@@ -332,6 +394,9 @@ internal class ReportSourceText(text: String) {
 
         /** A run of printed characters between spaces, a no-break space too. */
         val SPACED_WORD = Regex("[^\\s\\u00A0\\u202F]+")
+
+        /** A [SPACED_WORD] that a colon or semicolon also ends: "KREA:0,80mg/dl;" is a label, a result and a unit. */
+        val PART_WORD = Regex("[^\\s\\u00A0\\u202F:;]+")
 
         /**
          * Whether [word] labels a test: it holds a word of two letters or more that isn't a flag

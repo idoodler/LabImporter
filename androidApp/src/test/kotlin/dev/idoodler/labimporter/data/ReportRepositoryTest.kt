@@ -7,6 +7,10 @@ import dev.idoodler.labimporter.TestApplication
 import dev.idoodler.labimporter.core.LabReportStore
 import dev.idoodler.labimporter.core.model.LabReport
 import dev.idoodler.labimporter.ui.HealthConnectState
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import org.junit.Assert.assertEquals
@@ -42,6 +46,14 @@ class FakeHealthConnect : MemoryStore(), HealthConnectStore {
     var available = HealthConnectAvailability.AVAILABLE
     var granted = true
     var loadError: Exception? = null
+
+    /** Runs before each save is stored: a test can hold one there. */
+    var beforeSave: suspend (LabReport) -> Unit = {}
+
+    override suspend fun save(report: LabReport) {
+        beforeSave(report)
+        super.save(report)
+    }
 
     override suspend fun loadReports(): List<LabReport> {
         loadError?.let { throw it }
@@ -99,6 +111,40 @@ class ReportRepositoryTest {
         assertTrue(local.reports.isEmpty())
         assertEquals(setOf("a", "b", "c"), healthConnect.reports.keys)
         assertEquals(3, repository.reports.value.size)
+    }
+
+    /**
+     * A reload on resume moves a waiting report into Health Connect while the user saves an edit of it.
+     * Side by side, the move wrote the old version over the edit and deleted the edited local copy.
+     */
+    @Test
+    fun anEditSavedWhileAReloadMovesTheReportSurvives() = runTest {
+        local.reports.clear()
+        val old = report("a", 1)
+        local.reports[old.id] = old // Waiting to move into Health Connect.
+        preferences.setStorageMode(StorageMode.HEALTH_CONNECT)
+        val repository = repository()
+        val moving = CompletableDeferred<Unit>()
+        val release = CompletableDeferred<Unit>()
+        healthConnect.beforeSave = { saved ->
+            if (saved == old && !moving.isCompleted) {
+                moving.complete(Unit)
+                release.await() // The move holds here, with the old version in hand.
+            }
+        }
+
+        val reload = launch { repository.reload() }
+        moving.await()
+        val edited = old.copy(entries = listOf(old.entries.single().copy(displayValue = "1.4", numericValue = 1.4)))
+        val replace = async { repository.replace(old, edited) }
+        yield() // The edit goes as far as it can while the move waits.
+        release.complete(Unit)
+        reload.join()
+        replace.await()
+
+        assertEquals(edited, healthConnect.reports["a"])
+        assertTrue(local.reports.isEmpty())
+        assertEquals(listOf(edited), repository.reports.value)
     }
 
     @Test

@@ -1,0 +1,110 @@
+{"entries":
+[
+{"code":
+"Haemoglobin",
+"name":
+"Haemoglobin",
+"rawValue":
+"13.1",
+"unit":
+"g/dL"
+},
+{"code":
+"Total Leucocyte Count",
+"name":
+"Total Leucocyte Count",
+"rawValue":
+"8,450",
+"unit":
+"cells/cumm"
+},
+{"code":
+"Platelet Count",
+"name":
+"Platelet Count",
+"rawValue":
+"1.85",
+"unit":
+"lakhs/cumm"
+},
+{"code":
+"Neutrophils",
+"name":
+"Neutrophils",
+"rawValue":
+"62",
+"unit":
+"%"
+},
+{"code":
+"Lymphocytes",
+"name":
+"Lymphocytes",
+"rawValue":
+"29",
+"unit":
+"%"
+},
+{"code":
+"HbA1c",
+"name":
+"HbA1c",
+"rawValue":
+"7.4",
+"unit":
+"%"
+},
+{"code":
+"Estimated Average Glucose (eAG)",
+"name":
+"Estimated Average Glucose (eAG)",
+"rawValue":
+"166",
+"unit":
+"mg/dL"
+},
+{"code":
+"Cholesterol Total",
+"name":
+"Cholesterol Total",
+"rawValue":
+"186",
+"unit":
+"mg/dL"
+},
+{"code":
+"Triglycerides",
+"name":
+"Triglycerides",
+"rawValue":
+"203",
+"unit":
+"mg/dL"
+},
+{"code":
+"HDL Cholesterol",
+"name":
+"HDL Cholesterol",
+"rawValue":
+"39",
+"unit":
+"mg/dL"
+},
+{"code":
+"VLDL Cholesterol",
+"name":
+"VLDL Cholesterol",
+"rawValue":
+"40.6",
+"unit":
+"mg/dL"
+}
+],
+"reportDate":
+"2031-11-20",
+"patientName":
+"Mr. RAJESH KUMAR SHARMA",
+"authorName":
+"Dr. A. Menon",
+"reportLanguage":
+"en"}

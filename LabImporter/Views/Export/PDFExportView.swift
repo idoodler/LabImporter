@@ -65,6 +65,7 @@ struct PDFExportView: View {
                 }
             }
             .task {
+                // Optional cover lines: without Health's answer the cover leaves birth date and sex off, as when they're unset.
                 patient = try? await HealthKitService.shared.readPatientCharacteristics()
             }
             .alert("Export Error", isPresented: .constant(errorMessage != nil)) {

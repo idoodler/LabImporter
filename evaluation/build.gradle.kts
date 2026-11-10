@@ -30,6 +30,8 @@ tasks.named<JavaExec>("run") {
     systemProperty("eval.verbose", providers.gradleProperty("verbose").getOrElse("false"))
     // `-Psummary=build/quality/evaluation.json`: the totals as JSON (relative to the repo root).
     systemProperty("eval.summary", providers.gradleProperty("summary").getOrElse(""))
+    // `-Pheldout=true`: the held-out set (evaluation/heldout), never used to tune the Review check or the LOINC ranking.
+    systemProperty("eval.heldout", providers.gradleProperty("heldout").getOrElse("false"))
     systemProperty("loinc.db", project(":androidApp").layout.buildDirectory.file("generated/loincAssets/loinc.db").get().asFile.absolutePath)
 }
 

@@ -96,6 +96,14 @@ enum ReportTransferService {
     /// the duplicates once reading works again. A report that can't be saved doesn't stop the rest; the
     /// summary counts it. `store` is Apple Health, except in tests.
     static func importFile(at url: URL, store: any ReportDocumentStore = HealthKitService.shared) async throws -> Summary {
+        try await imports.run { try await importNow(at: url, store: store) }
+    }
+
+    /// One import at a time: two overlapping imports of one file would both read the list before
+    /// either saved, find every report new and save each twice. The next one reads what this one saved.
+    private static let imports = OneAtATime()
+
+    private static func importNow(at url: URL, store: any ReportDocumentStore) async throws -> Summary {
         let accessing = url.startAccessingSecurityScopedResource()
         defer { if accessing { url.stopAccessingSecurityScopedResource() } }
         // Reported below as a file that can't be read.
@@ -114,5 +122,21 @@ enum ReportTransferService {
             imported: plan.reports.count - notSaved, alreadyPresent: plan.alreadyPresent,
             needingNewerVersion: plan.needingNewerVersion, damaged: plan.damaged, notSaved: notSaved
         )
+    }
+}
+
+/// Runs work one piece at a time, in the order it was asked for, each after the previous one ended.
+private actor OneAtATime {
+    private var last: Task<Void, Never>?
+
+    func run<T: Sendable>(_ work: @escaping @Sendable () async throws -> T) async throws -> T {
+        let previous = last
+        let task = Task {
+            await previous?.value
+            return try await work()
+        }
+        // Only waits for it to end: its caller gets the error from `task.value` below.
+        last = Task { _ = try? await task.value }
+        return try await task.value
     }
 }

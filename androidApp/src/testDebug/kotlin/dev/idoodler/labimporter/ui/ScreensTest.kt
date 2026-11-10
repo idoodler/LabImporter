@@ -90,9 +90,23 @@ class ScreensTest {
     private fun value(id: String, code: String, number: Double?) =
         LabValue(id = id, code = code, name = code, displayValue = number?.toString() ?: "-", numericValue = number, unit = "mg/dl")
 
-    private fun review(values: List<LabValue>, engine: AiEngine? = AiEngine.GEMINI_NANO, onSave: () -> Unit = {}) {
+    private fun review(values: List<LabValue>, engine: AiEngine? = AiEngine.GEMINI_NANO, isSaving: Boolean = false, onSave: () -> Unit = {}) {
         val draft = ReviewDraft(values, LocalDate(2026, 5, 6), "Max Mustermann", "Labor", engine)
-        compose.setContent { LabImporterTheme { ReviewScreen(draft, {}, { _, _ -> }, { "" }, {}, {}, onSave) } }
+        compose.setContent { LabImporterTheme { ReviewScreen(draft, {}, { _, _ -> }, { "" }, {}, {}, onSave, isSaving) } }
+    }
+
+    @Test
+    fun saveIsOffWhileTheReportIsBeingSaved() {
+        review(listOf(value("a", "2160-0", 0.8)), isSaving = true)
+        val saves = compose.onAllNodesWithText(string(R.string.save))
+        saves.fetchSemanticsNodes().indices.forEach { saves[it].assertIsNotEnabled() }
+    }
+
+    /** Leaving while the save runs would let it finish behind a closed review (or a newer one). */
+    @Test
+    fun closeIsOffWhileTheReportIsBeingSaved() {
+        review(listOf(value("a", "2160-0", 0.8)), isSaving = true)
+        compose.onNodeWithContentDescription(string(R.string.cancel)).assertIsNotEnabled()
     }
 
     @Test

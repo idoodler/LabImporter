@@ -49,12 +49,20 @@ final class EndToEndUITests: XCTestCase {
         XCTAssertFalse(field("In Range· 5.1", in: app).exists)
     }
 
+    /// The first value is on screen as Review opens, without scrolling. Returns it.
+    @discardableResult
+    private func assertAValueIsOnScreenWhenReviewOpens(in app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) -> XCUIElement {
+        let firstValue = app.textFields["review-value-field"].firstMatch
+        XCTAssertTrue(firstValue.waitForExistence(timeout: 60), "The review sheet opens once the report is read", file: file, line: line)
+        // Nothing scrolls here, but the field exists before the sheet has finished sliding in.
+        let onScreen = expectation(for: NSPredicate(format: "isHittable == true"), evaluatedWith: firstValue)
+        XCTAssertEqual(XCTWaiter().wait(for: [onScreen], timeout: 10), .completed, "A value is on the first screen", file: file, line: line)
+        return firstValue
+    }
+
     func testReviewFlagsAValueTheReportDoesNotPrintAndShowsTheValuesFirst() {
         let app = launch(["--ss-import"])
-        let firstValue = app.textFields["review-value-field"].firstMatch
-        XCTAssertTrue(firstValue.waitForExistence(timeout: 60), "The review sheet opens once the report is read")
-        // Nothing scrolls here, but the field exists before the sheet has finished sliding in.
-        wait(for: [expectation(for: NSPredicate(format: "isHittable == true"), evaluatedWith: firstValue)], timeout: 10)
+        let firstValue = assertAValueIsOnScreenWhenReviewOpens(in: app)
         let save = app.buttons["Save to Health Records"]
         XCTAssertLessThanOrEqual(firstValue.frame.maxY, save.frame.minY, "…above the pinned Save bar, not behind it")
         XCTAssertFalse(app.textFields["Full Name (optional)"].exists, "Patient and lab are folded away")
@@ -77,6 +85,43 @@ final class EndToEndUITests: XCTestCase {
         let gone = expectation(for: NSPredicate(format: "exists == false"), evaluatedWith: badge)
         wait(for: [gone], timeout: 10)
         XCTAssertFalse(app.descendants(matching: .any)["review-values-to-check"].exists)
+    }
+
+    /// At the largest text the summary stays short enough that the values start on the first screen
+    /// (the sample report, whose date needs no warning above them). The category chips, one per line,
+    /// once filled it and the next.
+    func testReviewStartsTheValuesOnTheFirstScreenAtTheLargestText() {
+        let app = launch(["--ss-screen", "review", "--ss-data", "empty", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
+        XCTAssertTrue(app.navigationBars["Lab Report"].waitForExistence(timeout: 60))
+        _ = waitUntilSettled(app) // The sheet slides in: frames are final once it has.
+        let shot = XCTAttachment(screenshot: app.screenshot())
+        shot.name = "review-largest-text-first-screen"
+        shot.lifetime = .keepAlways
+        add(shot)
+        let firstSection = app.descendants(matching: .any)["category-section-header"].firstMatch
+        XCTAssertTrue(firstSection.exists, "The values' first section is built: it's near the screen")
+        XCTAssertLessThan(firstSection.frame.midY, app.windows.firstMatch.frame.maxY, "…and its heading is on the first screen")
+    }
+
+    /// Save held back by a value to correct is disabled, not only dimmed: VoiceOver says so and can't press it.
+    func testSaveIsDisabledWhileAValueNeedsCorrecting() {
+        let app = launch(["--ss-import"])
+        let firstValue = assertAValueIsOnScreenWhenReviewOpens(in: app)
+        let save = app.buttons["Save to Health Records"]
+        XCTAssertTrue(save.isEnabled)
+
+        firstValue.tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 10))
+        app.typeText(" zz") // Text after a number: it can't be saved as written.
+        app.toolbars.buttons["Done"].firstMatch.tap()
+        XCTAssertTrue(save.waitForExistence(timeout: 10), "The bar is back once the keyboard is gone")
+        XCTAssertTrue(app.descendants(matching: .any)["review-values-to-correct"].waitForExistence(timeout: 10))
+        let shot = XCTAttachment(screenshot: app.screenshot())
+        shot.name = "review-save-disabled"
+        shot.lifetime = .keepAlways
+        add(shot)
+        XCTAssertFalse(save.isEnabled, "Save is disabled, not just dimmed")
+        XCTAssertFalse(app.buttons["Share Report File"].isEnabled)
     }
 
     /// Flag, don't block: the tenfold glucose doesn't save with one tap. The question lists it, and Go Back stays.
@@ -113,6 +158,25 @@ final class EndToEndUITests: XCTestCase {
         // Saved, the Review sheet closes; a failed save would keep it open with an error.
         wait(for: [expectation(for: NSPredicate(format: "exists == false"), evaluatedWith: save)], timeout: 15)
         XCTAssertFalse(app.alerts["Export Error"].exists)
+    }
+
+    /// While Save writes, Review can't be closed: Discard would say nothing was saved, and the save would finish anyway.
+    func testReviewCantBeClosedWhileItSaves() {
+        let app = launch(["--ss-import", "--ss-slow-save"])
+        let save = app.buttons["Save to Health Records"]
+        XCTAssertTrue(save.waitForExistence(timeout: 60))
+        let close = app.navigationBars["Lab Report"].buttons["Close"]
+        XCTAssertTrue(close.isEnabled)
+        save.tap()
+        let alert = app.alerts["Check Before Saving"]
+        XCTAssertTrue(alert.waitForExistence(timeout: 10))
+        alert.buttons["Save Anyway"].tap()
+
+        let closeOff = expectation(for: NSPredicate(format: "isEnabled == false"), evaluatedWith: close)
+        XCTAssertEqual(XCTWaiter().wait(for: [closeOff], timeout: 5), .completed, "Close is off while the report is written")
+        XCTAssertFalse(save.isEnabled)
+        // Saved, the sheet closes.
+        wait(for: [expectation(for: NSPredicate(format: "exists == false"), evaluatedWith: save)], timeout: 30)
     }
 
     /// The report file leaves out and carries the same values as a save, so sharing it asks the same question.

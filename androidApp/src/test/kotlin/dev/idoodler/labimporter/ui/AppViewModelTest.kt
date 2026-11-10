@@ -233,6 +233,44 @@ class AppViewModelTest {
     }
 
     @Test
+    fun aSecondTapOnSaveWhileTheFirstIsSavingSavesOnce() {
+        reviewAReport()
+        viewModel.saveDraft()
+        assertTrue("Save is off from the first tap", viewModel.isSaving.value)
+        viewModel.saveDraft()
+        await(viewModel.message) { it != null }
+        await(viewModel.isSaving) { !it }
+        idle()
+        assertEquals(1, runBlocking { LocalReportStore(app, "test").loadReports() }.size)
+        assertEquals(1, viewModel.reports.value.size)
+    }
+
+    /** A save that ends after a newer review opened (a shared report, a new entry) leaves that review alone. */
+    @Test
+    fun aSaveThatEndsLateNeverClosesANewerReview() {
+        reviewAReport()
+        viewModel.saveDraft()
+        assertTrue("Still saving", viewModel.isSaving.value)
+        viewModel.startManualEntry()
+        await(viewModel.isSaving) { !it }
+        idle()
+        assertEquals(1, viewModel.reports.value.size)
+        val draft = (viewModel.importState.value as? ImportState.Reviewing)?.draft
+        assertTrue("The new entry is still open: $draft", draft != null && draft.engine == null && draft.values.size == 1)
+    }
+
+    /** Import Reports picked again while the file is still importing: its reports are saved once. */
+    @Test
+    fun twoOverlappingImportsOfOneFileSaveItsReportsOnce() {
+        val transfer = file("report.xml", cda)
+        viewModel.importReports(transfer)
+        viewModel.importReports(transfer)
+        await(viewModel.message) { it == app.getString(R.string.transfer_summary, 0, 1) || viewModel.reports.value.size > 1 }
+        idle()
+        assertEquals(1, runBlocking { LocalReportStore(app, "test").loadReports() }.size)
+    }
+
+    @Test
     fun aFailedSaveSaysSoInTheUsersWordsAndKeepsTheReview() {
         reviewAReport()
         breakTheReportStore()

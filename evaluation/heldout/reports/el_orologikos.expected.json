@@ -1,0 +1,19 @@
+{
+  "reportDate": "2026-11-04",
+  "patientName": "ΠΑΠΑΔΟΠΟΥΛΟΣ",
+  "values": [
+    {"names": ["Anti-HBs", "Hepatitis B surface Ab", "HBs"], "value": 152, "unit": "mIU/mL"},
+    {"names": ["Toxoplasma"], "value": 86, "unit": "IU/mL"},
+    {"names": ["Αιμοσφαιρίνη", "Hb", "Hemoglobin"], "value": 14.8, "unit": "g/dL", "loinc": "718-7"},
+    {"names": ["Λευκά", "WBC", "Leukocytes"], "value": 7.20, "unit": "K/μL", "loinc": "6690-2"},
+    {"names": ["Αιμοπετάλια", "PLT", "Platelets"], "value": 198, "unit": "K/μL", "loinc": "777-3"},
+    {"names": ["ΤΚΕ", "Erythrocyte sedimentation", "ESR"], "value": 12, "unit": "mm/1h"}
+  ],
+  "notNumeric": [
+    {"names": ["HBsAg", "Hepatitis B virus surface Ag", "HBs"], "result": "Αρνητικό"},
+    {"names": ["Anti-HCV", "HCV", "Hepatitis C"], "result": "Αρνητικό"},
+    {"names": ["HIV"], "result": "Αρνητικό"},
+    {"names": ["VDRL", "Reagin"], "result": "Μη αντιδρών"},
+    {"names": ["Toxoplasma"], "result": "Αρνητικό"}
+  ]
+}

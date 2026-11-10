@@ -28,8 +28,11 @@ final class AccessibilityAuditUITests: XCTestCase {
         case largestAccessibility = "UICTContentSizeCategoryAccessibilityXXXL"
     }
 
-    /// The probe is replaced by `assertTextsGrow`, see above.
-    private static let auditTypes = XCUIAccessibilityAuditType.all.subtracting(.dynamicType)
+    /// The types Apple documents, without the Dynamic Type probe (replaced by `assertTextsGrow`, see above). Never
+    /// `.all`: it also sets bits Apple names no check for, whose findings and time-outs no one could look into.
+    private static let auditTypes: XCUIAccessibilityAuditType = [
+        .contrast, .elementDetection, .hitRegion, .sufficientElementDescription, .textClipped, .trait,
+    ]
     /// The clipped-text check scrolls each text it looks at into view, over the whole list: down, back to the
     /// top, and past the last row, where it leaves the list blank. In one audit with the rest, contrast was
     /// judged on a screen moving under it (black on white failed at 21:1) and issues lost their element; and
@@ -37,9 +40,6 @@ final class AccessibilityAuditUITests: XCTestCase {
     /// after its pages, and the rest on each page while it's still.
     private static let clippedTypes = XCUIAccessibilityAuditType.textClipped
     private static let stillTypes = auditTypes.subtracting(clippedTypes)
-    private static let documentedTypes: XCUIAccessibilityAuditType = [
-        .contrast, .elementDetection, .hitRegion, .sufficientElementDescription, .dynamicType, .textClipped, .trait,
-    ]
 
     private static let allPages = ProcessInfo.processInfo.environment["QUALITY_AUDIT_ALL_PAGES"] == "1"
 
@@ -206,28 +206,20 @@ final class AccessibilityAuditUITests: XCTestCase {
                 found.issues.append((issue, issue.element))
                 return evidence == nil || issue.element != nil
             }
-        } catch let error as NSError where error.code == -56 && types.rawValue.nonzeroBitCount > 1 && !Self.documentedTypes.isDisjoint(with: types) {
-            // What it found before giving up comes again, from the part that finds it: each documented type, and the rest together.
+        } catch let error as NSError where error.code == -56 && types.rawValue.nonzeroBitCount > 1 {
+            // What it found before giving up comes again, from the part that finds it: each type on its own.
             found.issues.removeAll()
-            var parts = (0..<UInt64.bitWidth).map { XCUIAccessibilityAuditType(rawValue: 1 << $0) }
-                .filter { types.contains($0) && Self.documentedTypes.contains($0) }
-            if !types.subtracting(Self.documentedTypes).isEmpty { parts.append(types.subtracting(Self.documentedTypes)) }
+            let parts = (0..<UInt64.bitWidth).map { XCUIAccessibilityAuditType(rawValue: 1 << $0) }.filter { types.contains($0) }
             for part in parts {
                 guard let issues = runAudit(of: app, label: label, evidence: evidence, types: part) else { return nil }
                 found.issues += issues.issues
             }
-        } catch let error as NSError where error.code == -56 && retries > 0 && !Self.documentedTypes.isDisjoint(with: types) {
+        } catch let error as NSError where error.code == -56 && retries > 0 {
             print("AUDIT retry \(label) [\(types.rawValue)] after \(error.localizedDescription)")
             waitUntilSettled(app)
             return runAudit(of: app, label: label, evidence: evidence, types: types, retries: retries - 1)
-        } catch let error as NSError where error.code == -56 && Self.documentedTypes.isDisjoint(with: types) {
-            // `.all` sets every bit of the mask, Apple's seven documented types and the bits it doesn't document. Only
-            // those bits, together, come here: 1 << 4 gave up on Review's sixth page at the largest text. Logged, not
-            // failed: Apple names no check for them, so neither the issue nor its fix could be looked into.
-            print("AUDIT unfinished undocumented type \(types.rawValue) \(label): \(error.localizedDescription)")
-            return FoundIssues()
         } catch let error as NSError where error.code == -56 {
-            // A documented type that gave up three times: nothing stands in for it, so the page fails unjudged.
+            // A type that gave up three times: nothing stands in for it, so the page fails unjudged.
             XCTFail("\(label): Apple's audit for type \(types.rawValue) gave up three times (\(error.localizedDescription)): the page wasn't judged")
             return nil
         } catch {

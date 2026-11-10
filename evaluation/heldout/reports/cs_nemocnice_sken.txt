@@ -1,0 +1,16 @@
+FAKULTNI NEMOCNICE BRNO  -  Oddělení kIinické biochemie        str. 1/1
+|Pacient: NOVÁK Jan             Rodné číslo: 580412/1234         |
+|Datum odběru: 15.10.2026 07:40      Tisk: 15.10.2026 13:02       |
+'—————————————————————————————————————————————————————————————————'
+ Vyšetřeni                   Výsledek       Jednotka    Ref. meze
+ S_Glukóza ............        6,4    *     mmol/l      3,9 - 5,6
+ S_Kreatinin ..........       98            µmol/l      64 - 104
+ S_Kyselina močová ...       412            µmol/l      202 - 417
+ S_ALT ...............         0,62         µkat/l      0,10 - 0,78
+ S_AST .................       0,48         µkat/l      0,05 - 0,72
+ S_Cholesterol .......         5,9    *     mmol/l      2,9 - 5,0
+ S_Triacylglyceroly ..         1,84   *     mmol/l      0,45 - 1,70
+ S_CRP ...............       < 5            mg/l        0 - 5
+ B_Glykovaný hemoglobin       48      *     mmol/mol    20 - 42
+ ,                                                                 '
+ Poznámka: Vzorek mírně hemolytický.     Ověřil: MUDr. P. Dvořák

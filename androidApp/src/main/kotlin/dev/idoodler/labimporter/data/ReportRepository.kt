@@ -7,6 +7,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.io.IOException
 
 /** How [ReportRepository.replace] went, given that the new version is saved either way. */
@@ -39,6 +41,11 @@ enum class ReportsLoadProblem {
  * The single source of saved reports for the UI. There is no app database of
  * record: reports are re-read from the active store (Health Connect or the
  * on-device fallback) on launch, on resume and after every change.
+ *
+ * Every change and every reload runs behind one lock: a reload on resume moves waiting reports
+ * into Health Connect, and run beside an edit it could move the old version over the edit and
+ * then delete the edited local copy. The lock isn't reentrant, so nothing inside it calls a public
+ * function: they reload with [reloadLocked].
  */
 class ReportRepository(
     private val local: LabReportStore,
@@ -86,7 +93,12 @@ class ReportRepository(
 
     suspend fun isUsingHealthConnect(): Boolean = store() === healthConnect
 
-    suspend fun reload() {
+    /** One change or reload at a time (see the class comment). */
+    private val lock = Mutex()
+
+    suspend fun reload() = lock.withLock { reloadLocked() }
+
+    private suspend fun reloadLocked() {
         _isLoading.value = true
         var read: LabReportStore? = null
         try {
@@ -165,17 +177,17 @@ class ReportRepository(
         false
     }
 
-    suspend fun save(report: LabReport) {
+    suspend fun save(report: LabReport) = lock.withLock {
         store().save(report)
-        reload()
+        reloadLocked()
     }
 
     /** Saves several reports (an imported transfer file), reloads once, and returns how many couldn't be saved. */
-    suspend fun saveAll(reports: List<LabReport>): Int {
+    suspend fun saveAll(reports: List<LabReport>): Int = lock.withLock {
         val target = store()
         val failed = reports.count { report -> !succeeds("Couldn't save an imported report") { target.save(report) } }
-        reload()
-        return failed
+        reloadLocked()
+        failed
     }
 
     /**
@@ -184,7 +196,7 @@ class ReportRepository(
      * A read-only [old] (values this build can't read, see [LabReport.isReadOnly]) is refused with
      * [ReadOnlyReportException]: the new version would drop them.
      */
-    suspend fun replace(old: LabReport, updated: LabReport): ReplaceOutcome {
+    suspend fun replace(old: LabReport, updated: LabReport): ReplaceOutcome = lock.withLock {
         if (old.isReadOnly) throw ReadOnlyReportException(old.unreadValues)
         val target = store()
         val waiting = target === healthConnect && local.loadReports().any { it.id == old.id }
@@ -194,8 +206,8 @@ class ReportRepository(
             target.save(updated)
             succeeds("Couldn't remove what an edit dropped from a report") { target.removeDropped(old, updated) }
         }
-        reload()
-        return if (removed) ReplaceOutcome.REPLACED else ReplaceOutcome.SAVED_WITH_LEFTOVERS
+        reloadLocked()
+        if (removed) ReplaceOutcome.REPLACED else ReplaceOutcome.SAVED_WITH_LEFTOVERS
     }
 
     /**
@@ -224,7 +236,7 @@ class ReportRepository(
      * would simply move back. Health Connect keeps one record per entry id, which a waiting report
      * may share with another report, so only the records it lists under this report's id go.
      */
-    suspend fun deleteAll(reports: List<LabReport>): Int {
+    suspend fun deleteAll(reports: List<LabReport>): Int = lock.withLock {
         val target = store()
         var stored: List<LabReport>? = null
         val failed = reports.count { report ->
@@ -236,8 +248,8 @@ class ReportRepository(
                 local.delete(report)
             }
         }
-        reload()
-        return failed
+        reloadLocked()
+        failed
     }
 
     /**
@@ -245,21 +257,21 @@ class ReportRepository(
      * user never ends up with data split across two stores. Returns how many
      * moved; any that couldn't are moved on a later [reload] and listed meanwhile.
      */
-    suspend fun enableHealthConnect(): Int {
+    suspend fun enableHealthConnect(): Int = lock.withLock {
         preferences.setStorageMode(StorageMode.HEALTH_CONNECT)
         if (!isUsingHealthConnect()) {
             preferences.setStorageMode(StorageMode.LOCAL)
-            return 0
+            return@withLock 0
         }
         val pending = local.loadReports().size
         val left = moveLocalReports()
-        reload()
-        return pending - left.size
+        reloadLocked()
+        pending - left.size
     }
 
-    suspend fun useLocalStorage() {
+    suspend fun useLocalStorage() = lock.withLock {
         preferences.setStorageMode(StorageMode.LOCAL)
-        reload()
+        reloadLocked()
     }
 
     private companion object {

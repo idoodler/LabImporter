@@ -233,7 +233,10 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   changes) before touching the prompt, the LOINC ranking or the downloaded model.
   The model's replies are committed (`evaluation/replies/`), so CI replays them on
   every pull request and fails below `tools/quality/evaluation_floor.json`; commit
-  a model run's new replies with its result.
+  a model run's new replies with its result. `evaluation/heldout/` is a held-out
+  set (`-Pheldout=true`), reported in the scorecard and never gated: never change
+  the Review check, the LOINC ranking or the prompt to read it better (README,
+  "Held-out set").
 
 ### CDA round-trip
 - **Export:** the shared `CdaExport.generate` (via `CDAExportService.generateCDA`)
@@ -738,12 +741,17 @@ iOS tests with coverage (clean build; the accessibility audit is one of the UI s
 `swiftlint analyze` and the privacy manifests in the built bundles, and with
 `--mutation` PIT (`tools/quality/mutation.sh`, ~4 min). Each writes JSON to
 `build/quality/`; `scorecard.py` turns them into the scorecard, where a missing
-input is "not run", never a pass. Python is stdlib-only plus lizard, pinned in
+input is "not run", never a pass, and each section gets a scripted score (the weighted
+share of scripted measures that pass, out of 10). `tools/quality/consistency.sh [--runs N]
+[collect.sh options]` runs collect.sh N times in a row (default 3) at one commit — the
+rubric's "three runs in a row" — writes `build/quality/consistency.json` and the scorecard
+reports it; a tree whose only change is `docs/quality/SCORECARD.md` counts as clean.
+Python is stdlib-only plus lizard, pinned in
 `tools/quality/requirements.txt` (collect.sh installs it into `build/quality/venv`).
 
 CI gates (`quality.yml`): the quality scripts' own tests (`tools/quality/test_*.py`), then
 `static_metrics.py --gate` fails on a swallowed error where reports are read, saved,
-deleted or imported (services, Home, Import, Review, History, the share extension,
+deleted or imported (services, Home, Import, Review, History, Dashboard, Settings, Export, the Siri intents, the share extension,
 Android's data layer and `AppViewModel`, shared export/transfer) without a stated reason —
 a comment of at least four words saying why, not a lint directive or a `///` doc comment
 (`try?`, an empty catch, a `runCatching` whose failure nothing looks at) —, an iOS audit
@@ -755,12 +763,13 @@ when it goes, never add or widen one; one without an element may give way to one
 the same or a narrower page with the same or a lower limit; CI checks it against the base branch's).
 Only a contrast exemption naming its element by its full label is measured and isn't listed: the
 audit lets it go only while that element's own pixels measure 4.5:1 on that run (whatever the text's
-size), and fails it otherwise. `""` and `nil` are checked too (the flagged element's strongest ink,
-every text on the page), but that can't catch a faint label beside a dark icon, so they count as
-unmeasured. Each test prints `AUDIT exemptions <test> applied <n> measured <m> unmeasured <k> rules <r>`,
+size), and fails it otherwise. An element's contrast is its ink's: the colour most of its pixels that differ
+clearly from the background are drawn in (`PixelContrast`), so one dark glyph can't carry faint text beside it.
+`""` and `nil` are checked too (the flagged element, every text on the page), but neither says which
+text it lets go, so they count as unmeasured. Each test prints `AUDIT exemptions <test> applied <n> measured <m> unmeasured <k> rules <r>`,
 every rule application among the unmeasured; `reports.py audit` reads it from the log for the
-scorecard. When Apple's audit for a documented type gives up three times on a page, the test fails:
-nothing stands in for it (only the bits `.all` sets that Apple doesn't document are logged instead).
+scorecard. It asks only for Apple's documented audit types, never `.all` (whose undocumented bits no one
+could look into); when one gives up three times on a page, the test fails: nothing stands in for it.
 The baseline also lists each screen's audited pages at the largest text and whether it leaves later
 pages alone: a screen may not audit fewer, nor newly leave pages alone),
 a missing translation, an iOS network API, a missing or
@@ -772,7 +781,7 @@ digest; the evaluation replay, with the errors it plants in the replies' right r
 (`evaluation/…/PlantedErrors.kt`), must stay at or above
 `tools/quality/evaluation_floor.json`, in total and for each kind of planted error. Coverage (Kover) is uploaded, never gated:
 mutation score is what counts — at least 80% in export, parse, model and loinc, run
-weekly by `quality.yml` (`shared:mutationTest`, `-Pmutation.classes=…` to narrow it
+weekly by `quality.yml` and on pull requests that change `core/export` or `core/parse` (`shared:mutationTest`, `-Pmutation.classes=…` to narrow it
 while writing tests; PIT's RUN_ERROR is inconclusive, never killed). Also weekly, on the
 `xcode-27` runner: the iOS audit of every page of every screen (`QUALITY_AUDIT_ALL_PAGES=1`; a pull
 request's run keeps its page limits to stay under 20 minutes): every page in every condition — the
@@ -806,7 +815,8 @@ measured commit).
   still downloading, busy, too long…). iOS 27 throws `LanguageModelError` and
   friends instead of `GenerationError` to apps built with its SDK —
   `LabParserError.from(_:)` maps both (the iOS 27 part behind
-  `#if compiler(>=6.4)`, since CI builds with Xcode 26). Android mirrors this
+  `#if compiler(>=6.4)`, so the code still builds with Xcode 26; CI builds with
+  Xcode 27.1). Android mirrors this
   (see below). There is no rule-based fallback on either platform.
 - **Long reports are read in parts.** The models' contexts (~4K tokens) hold
   the instructions, the schema, the text and the reply, so the shared

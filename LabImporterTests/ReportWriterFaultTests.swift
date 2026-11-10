@@ -187,4 +187,57 @@ struct ReportWriterFaultTests {
         // Scanning speaks no value and opens the app, which needs an unlocked phone anyway.
         #expect(StartLabScanIntent.openAppWhenRun)
     }
+
+    private var siriAllowsEverything: SiriExposurePreferences {
+        var prefs = SiriExposurePreferences()
+        prefs.isEnabled = true
+        prefs.allowAllValues = true
+        prefs.allowKnowledgeIndexing = true
+        return prefs
+    }
+
+    /// Apple Health refuses reads while the phone is locked: Siri says it couldn't read it, not that there's no reading.
+    @Test func siriSaysAFailedReadIsOneNotThatThereIsNoReading() async throws {
+        let (health, _) = try await storeWithOneReport()
+        let prefs = siriAllowsEverything
+        let answer = await AskLabValueIntent.answer(for: "2160-0", prefs: prefs, store: health)
+        guard case .latest(let reading) = answer else {
+            Issue.record("No reading: \(answer)")
+            return
+        }
+        #expect(reading.hasPrefix("0.8 "))
+        #expect(await AskLabValueIntent.answer(for: "2093-3", prefs: prefs, store: health) == .noReading)
+
+        await health.failLoads()
+        #expect(await AskLabValueIntent.answer(for: "2160-0", prefs: prefs, store: health) == .couldNotRead)
+        #expect(await AskLabValueIntent.answer(for: "2160-0", prefs: SiriExposurePreferences(), store: health) == .notAllowed)
+    }
+
+    /// The values Siri can name: a failed read is an error Siri explains, never an empty list.
+    @Test func siriSuggestionsAndNameMatchesFailOutLoudWhenHealthCantBeRead() async throws {
+        let (health, _) = try await storeWithOneReport()
+        let prefs = siriAllowsEverything
+        #expect(Set(try await LabMetricEntityQuery.suggestedEntities(prefs: prefs, store: health, onScreen: []).map(\.id)) == ["2160-0", "2823-3"])
+        let name = LabMapping.displayName(for: "2160-0")
+        #expect(try await LabMetricEntityQuery.entities(matching: name, prefs: prefs, store: health).map(\.id) == ["2160-0"])
+
+        await health.failLoads()
+        await #expect(throws: SiriHealthRead.Failure.self) {
+            _ = try await LabMetricEntityQuery.suggestedEntities(prefs: prefs, store: health, onScreen: [])
+        }
+        await #expect(throws: SiriHealthRead.Failure.self) {
+            _ = try await LabMetricEntityQuery.entities(matching: name, prefs: prefs, store: health)
+        }
+        #expect(String(localized: SiriHealthRead.Failure().localizedStringResource).contains("Apple Health"))
+    }
+
+    /// The values on screen need no read of Apple Health: Siri still suggests them when the read fails.
+    @Test func siriStillSuggestsTheValuesOnScreenWhenHealthCantBeRead() async throws {
+        let (health, _) = try await storeWithOneReport()
+        var prefs = siriAllowsEverything
+        prefs.allowOnScreenAwareness = true
+        await health.failLoads()
+        let suggested = try await LabMetricEntityQuery.suggestedEntities(prefs: prefs, store: health, onScreen: ["1558-6"])
+        #expect(suggested.map(\.id) == ["1558-6"])
+    }
 }

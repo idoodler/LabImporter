@@ -1,0 +1,25 @@
+T.C. SAĞLIK BAKANLIĞI
+Ankara Şehir Hastanesi - Biyokimya Laboratuvarı
+Hasta Adı Soyadı: Ayşe YILMAZ              Protokol No: 4471209
+Doğum Tarihi: 05.06.1981                   Numune Kabul: 28.10.2026 09:12
+Onay Tarihi: 28.10.2026 14:55
+
+LİPİD PROFİLİ (mg/dL)                      Sonuç        Referans
+  Total Kolesterol                          212  ↑       0 - 200
+  HDL Kolesterol                             48          > 40
+  LDL Kolesterol (hesaplanan)               138  ↑       0 - 130
+  Trigliserid                               131          0 - 150
+
+KARACİĞER FONKSİYON TESTLERİ (U/L)        Sonuç        Referans
+  ALT                                        19          0 - 33
+  AST                                        22          0 - 32
+  GGT                                        15          6 - 42
+  Alkalen Fosfataz                           74          35 - 104
+
+TİROİD                            Sonuç      Birim        Referans
+  TSH                              3,12       µIU/mL       0,27 - 4,2
+  Serbest T4                       1,08       ng/dL        0,93 - 1,7
+
+VİTAMİNLER
+  25-OH Vitamin D (ng/mL)          14,6  ↓    30 - 100
+  Vitamin B12 (pg/mL)              289        197 - 771

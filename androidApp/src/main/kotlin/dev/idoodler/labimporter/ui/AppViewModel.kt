@@ -48,6 +48,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
@@ -173,6 +175,17 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     val message: StateFlow<String?> = _message.asStateFlow()
 
     private var importJob: Job? = null
+
+    private val _isSaving = MutableStateFlow(false)
+
+    /** A review is being saved: Save is off meanwhile, and [saveDraft] ignores a repeated tap (it would save twice). */
+    val isSaving: StateFlow<Boolean> = _isSaving.asStateFlow()
+
+    /** Counts the reviews opened, so a save that ends only closes the review it saved, never a newer one. */
+    private var reviewsOpened = 0
+
+    /** One transfer import at a time: two of one file would both plan against the same list and save it twice. */
+    private val transferImport = Mutex()
 
     val showLatestValueInSearch: StateFlow<Boolean> = preferences.showLatestValueInSearch
 
@@ -348,7 +361,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             return fail(context.getString(e.problem.messageRes))
         }
         if (result.values.isEmpty()) return fail(context.getString(R.string.error_no_values))
-        _importState.value = ImportState.Reviewing(
+        openReview(
             ReviewDraft(
                 values = result.values,
                 date = result.reportDate ?: today(),
@@ -384,8 +397,14 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         _importState.value = ImportState.Failed(message)
     }
 
+    /** Shows [draft] for review: a new review, not an edit of the one on screen. */
+    private fun openReview(draft: ReviewDraft) {
+        reviewsOpened++
+        _importState.value = ImportState.Reviewing(draft)
+    }
+
     fun startManualEntry() {
-        _importState.value = ImportState.Reviewing(
+        openReview(
             ReviewDraft(
                 values = listOf(blankValue()),
                 date = today(),
@@ -399,7 +418,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     /** Opens [report] for editing, unless it's read-only: saving would drop the values this build can't read. */
     fun editReport(report: LabReport) {
         if (report.isReadOnly) return
-        _importState.value = ImportState.Reviewing(
+        openReview(
             ReviewDraft(report.asLabValues, report.date, report.patientName, report.authorName, null, original = report),
         )
     }
@@ -427,38 +446,50 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     fun saveDraft() {
         val draft = (_importState.value as? ImportState.Reviewing)?.draft ?: return
+        if (_isSaving.value) return
+        _isSaving.value = true
+        val review = reviewsOpened
         viewModelScope.launch {
-            val report = LabReport.fromValues(
-                values = draft.values,
-                date = draft.date,
-                patientName = draft.patientName,
-                authorName = draft.authorName,
-                id = draft.original?.id ?: kotlin.uuid.Uuid.random().toString(),
-            )
-            runCatching {
-                if (draft.original != null) {
-                    repository.replace(draft.original, report)
-                } else {
-                    repository.save(report)
-                    ReplaceOutcome.REPLACED
-                }
-            }.onSuccess { outcome ->
-                // A new report's names are remembered for the next one; editing an old report leaves them.
-                if (draft.original == null) {
-                    preferences.setPatientName(draft.patientName.trim())
-                    preferences.setAuthorName(draft.authorName.trim())
-                }
-                _importState.value = ImportState.Idle
-                _message.value = if (outcome == ReplaceOutcome.SAVED_WITH_LEFTOVERS) {
-                    context.getString(R.string.save_leftovers_warning)
-                } else {
-                    context.resources.getQuantityString(R.plurals.saved_values, report.entries.size, report.entries.size)
-                }
-            }.onFailure {
-                if (it is CancellationException) throw it
-                Log.w(TAG, "Couldn't save the report", it)
-                _message.value = context.getString(saveFailure(it))
+            try {
+                save(draft, review)
+            } finally {
+                _isSaving.value = false
             }
+        }
+    }
+
+    private suspend fun save(draft: ReviewDraft, review: Int) {
+        val report = LabReport.fromValues(
+            values = draft.values,
+            date = draft.date,
+            patientName = draft.patientName,
+            authorName = draft.authorName,
+            id = draft.original?.id ?: kotlin.uuid.Uuid.random().toString(),
+        )
+        runCatching {
+            if (draft.original != null) {
+                repository.replace(draft.original, report)
+            } else {
+                repository.save(report)
+                ReplaceOutcome.REPLACED
+            }
+        }.onSuccess { outcome ->
+            // A new report's names are remembered for the next one; editing an old report leaves them.
+            if (draft.original == null) {
+                preferences.setPatientName(draft.patientName.trim())
+                preferences.setAuthorName(draft.authorName.trim())
+            }
+            // A report shared meanwhile may be in review or on its way: it stays.
+            if (reviewsOpened == review && _importState.value is ImportState.Reviewing) _importState.value = ImportState.Idle
+            _message.value = if (outcome == ReplaceOutcome.SAVED_WITH_LEFTOVERS) {
+                context.getString(R.string.save_leftovers_warning)
+            } else {
+                context.resources.getQuantityString(R.plurals.saved_values, report.entries.size, report.entries.size)
+            }
+        }.onFailure {
+            if (it is CancellationException) throw it
+            Log.w(TAG, "Couldn't save the report", it)
+            _message.value = context.getString(saveFailure(it))
         }
     }
 
@@ -551,13 +582,15 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 ?: return@launch run { _message.value = context.getString(R.string.transfer_unsupported) }
             // Skipping what's already here needs the whole list. Everything imported gets fresh ids,
             // so nothing would merge the duplicates once the saved reports can be read again.
-            repository.reload()
-            if (repository.loadFailed.value) {
-                _message.value = context.getString(R.string.transfer_reports_unreadable)
-                return@launch
+            val (plan, failed) = transferImport.withLock {
+                repository.reload()
+                if (repository.loadFailed.value) {
+                    _message.value = context.getString(R.string.transfer_reports_unreadable)
+                    return@launch
+                }
+                val plan = ReportTransfer.plan(reports.value, read.reports)
+                plan to repository.saveAll(plan.toImport.map(::withFreshIds))
             }
-            val plan = ReportTransfer.plan(reports.value, read.reports)
-            val failed = repository.saveAll(plan.toImport.map(::withFreshIds))
             val imported = plan.toImport.size - failed
             val summary = if (failed > 0) {
                 context.getString(R.string.transfer_summary_failed, imported, plan.alreadyPresent, failed)

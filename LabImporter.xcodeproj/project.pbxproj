@@ -27,10 +27,14 @@
 		55AD043FD51A83E346BFA65E /* ParseSchemaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AC48436CB533C97960A62A4 /* ParseSchemaTests.swift */; };
 		5BA6A7689A9D2A90AF3551F3 /* LabImportEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0215FAE8DC2FBB7DF546727 /* LabImportEngineTests.swift */; };
 		636BA85E2FCC52EE006E8E71 /* HealthPermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 636BA85D2FCC52EE006E8E71 /* HealthPermissionView.swift */; };
+		691DF6269DB873A7EC0FCA81 /* LatestReportLoad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F073A2E13F4137082D58538 /* LatestReportLoad.swift */; };
+		6C7122A49A121D8DA9B8D45B /* OverlappingWritesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD9CC9495702DB19E1BF16AE /* OverlappingWritesTests.swift */; };
 		722132285A9D990634FD33F5 /* ReviewCheckTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83862F9A9F20E82821BA1533 /* ReviewCheckTests.swift */; };
 		73D3F8193A715FEBEC095F72 /* ReviewView+FoldLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3A8BA7574CA07A0AABF2E0F /* ReviewView+FoldLayout.swift */; };
 		80396BC045B0FE1CEEFB9AAE /* LaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E285DF31AC9A5A11C742F9F /* LaunchTests.swift */; };
+		80E51E95F64D1F4F1FE81A8D /* SaveInFlight.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA1AF35BD05BA85CACB0BA80 /* SaveInFlight.swift */; };
 		849D1937738CB997922A807B /* MetricGridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 080505D3CD8BB2B99BD6C4DC /* MetricGridLayout.swift */; };
+		879581667BCC32BC2864DF85 /* SiriHealthRead.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB98FC43960A4C820B935CC8 /* SiriHealthRead.swift */; };
 		8EDE12FEB078268601ECD96D /* ShareInbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D4C1275881023AFBBE0AC /* ShareInbox.swift */; };
 		90E17444A6DE71E71633BD10 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF39E6CDE0AAC7930FA57B0 /* ShareViewController.swift */; };
 		92D1FF1F915B80A52FB8CDA5 /* ReviewView+Details.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4596CF61399FD54AB81B4026 /* ReviewView+Details.swift */; };
@@ -198,6 +202,7 @@
 		4E285DF31AC9A5A11C742F9F /* LaunchTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LaunchTests.swift; sourceTree = "<group>"; };
 		50DD418C447113AB99B08897 /* ReportsSummaryCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReportsSummaryCard.swift; sourceTree = "<group>"; };
 		5C249C5104229F87EE9CF7B8 /* ResultHistoryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ResultHistoryView.swift; sourceTree = "<group>"; };
+		5F073A2E13F4137082D58538 /* LatestReportLoad.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LatestReportLoad.swift; sourceTree = "<group>"; };
 		5F8036BDF7FB2EE6D9FD1AF1 /* AuditMeasurements.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AuditMeasurements.swift; sourceTree = "<group>"; };
 		636BA85D2FCC52EE006E8E71 /* HealthPermissionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthPermissionView.swift; sourceTree = "<group>"; };
 		63C5596F066A74D848750899 /* EndToEndTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EndToEndTests.swift; sourceTree = "<group>"; };
@@ -333,14 +338,17 @@
 		C0215FAE8DC2FBB7DF546727 /* LabImportEngineTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LabImportEngineTests.swift; sourceTree = "<group>"; };
 		C3D324A0B5E9721D89AFB660 /* CDAExportTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CDAExportTests.swift; sourceTree = "<group>"; };
 		C897701053C6666E95989E84 /* ScreenshotMode.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScreenshotMode.swift; sourceTree = "<group>"; };
+		CA1AF35BD05BA85CACB0BA80 /* SaveInFlight.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SaveInFlight.swift; sourceTree = "<group>"; };
 		CD2DDB5C5E369BF255AB83F2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		D084E33B414D911400410893 /* ShareView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareView.swift; sourceTree = "<group>"; };
+		DB98FC43960A4C820B935CC8 /* SiriHealthRead.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SiriHealthRead.swift; sourceTree = "<group>"; };
 		DE0509DCBAD0DE0B9B9BFDB9 /* LabImporterShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = LabImporterShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		E511EDBF63DCFF379A0641D2 /* ExportFiles.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExportFiles.swift; sourceTree = "<group>"; };
 		ED3D8155A96425EDC36A74FD /* MetricGridLayoutTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MetricGridLayoutTests.swift; sourceTree = "<group>"; };
 		EF6109F139005B280A9DDC17 /* OCRServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OCRServiceTests.swift; sourceTree = "<group>"; };
 		FD24AABF9080FC1ABB8707AF /* FlowTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FlowTests.swift; sourceTree = "<group>"; };
 		FD58767C7178A49BAB8FBE6B /* report.cda.xml */ = {isa = PBXFileReference; includeInIndex = 1; path = report.cda.xml; sourceTree = "<group>"; };
+		FD9CC9495702DB19E1BF16AE /* OverlappingWritesTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OverlappingWritesTests.swift; sourceTree = "<group>"; };
 		FE0D199B97E02563880F592E /* LabParserErrorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LabParserErrorTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -420,6 +428,7 @@
 				BBBEB720795FBBBEFA5C7CFC /* ExportFilesTests.swift */,
 				C0215FAE8DC2FBB7DF546727 /* LabImportEngineTests.swift */,
 				08B7920150F826BF322002D1 /* ReportWriterFaultTests.swift */,
+				FD9CC9495702DB19E1BF16AE /* OverlappingWritesTests.swift */,
 			);
 			name = LabImporterTests;
 			path = LabImporterTests;
@@ -501,6 +510,8 @@
 				92C3A56423879B13EECC5A2D /* ReportTransferService.swift */,
 				E511EDBF63DCFF379A0641D2 /* ExportFiles.swift */,
 				8AC6697AAB49A0F6CDC1D619 /* ReportWriter.swift */,
+				5F073A2E13F4137082D58538 /* LatestReportLoad.swift */,
+				CA1AF35BD05BA85CACB0BA80 /* SaveInFlight.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -746,6 +757,7 @@
 				AASI000000000000000008AA /* LabMetricEntity.swift */,
 				AASI000000000000000004AA /* SiriOnScreenContext.swift */,
 				AASI000000000000000006AA /* SiriActionBridge.swift */,
+				DB98FC43960A4C820B935CC8 /* SiriHealthRead.swift */,
 			);
 			path = Intents;
 			sourceTree = "<group>";
@@ -1013,6 +1025,7 @@
 				DB85F367D3BABD0275992F51 /* ExportFilesTests.swift in Sources */,
 				5BA6A7689A9D2A90AF3551F3 /* LabImportEngineTests.swift in Sources */,
 				14CAE3AAD6A972B991482C39 /* ReportWriterFaultTests.swift in Sources */,
+				6C7122A49A121D8DA9B8D45B /* OverlappingWritesTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1128,6 +1141,9 @@
 				BDC0411CBD3D464121B40123 /* EmptyStateView.swift in Sources */,
 				2E3985CFC7BDD40037762E64 /* ReportWriter.swift in Sources */,
 				B91DB0F6C74A239665FA5449 /* UnsupportedValuesSection.swift in Sources */,
+				879581667BCC32BC2864DF85 /* SiriHealthRead.swift in Sources */,
+				691DF6269DB873A7EC0FCA81 /* LatestReportLoad.swift in Sources */,
+				80E51E95F64D1F4F1FE81A8D /* SaveInFlight.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
