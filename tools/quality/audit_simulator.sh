@@ -22,12 +22,15 @@ RUNTIME="com.apple.CoreSimulator.SimRuntime.iOS-${OS//./-}"
 CREATE=0
 [ "${1:-}" = "--create" ] && CREATE=1
 
+# Any simulator of this device type and OS renders the same. A "(Slim)" one (simslim, which only
+# turns off background daemons the audit doesn't use) is preferred where it exists.
 find_device() {
   xcrun simctl list devices available --json | python3 -c '
 import json, sys
-name, runtime = sys.argv[1], sys.argv[2]
-devices = json.load(sys.stdin)["devices"].get(runtime, [])
-print(next((d["udid"] for d in devices if d["name"] == name), ""))' "$NAME" "$RUNTIME"
+device_type, runtime = sys.argv[1], sys.argv[2]
+devices = [d for d in json.load(sys.stdin)["devices"].get(runtime, []) if d.get("deviceTypeIdentifier") == device_type]
+devices.sort(key=lambda d: "(Slim)" not in d["name"])
+print(devices[0]["udid"] if devices else "")' "$DEVICE_TYPE" "$RUNTIME"
 }
 
 UDID=$(find_device)
