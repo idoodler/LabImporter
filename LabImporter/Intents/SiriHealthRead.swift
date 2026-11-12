@@ -1,4 +1,3 @@
-import AppIntents
 import Foundation
 
 /// The saved reports, read for Siri. Apple Health refuses reads while the phone is locked, and a

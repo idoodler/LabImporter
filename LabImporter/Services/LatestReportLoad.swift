@@ -1,5 +1,3 @@
-import Foundation
-
 /// Reads the saved reports for a screen that may start several reads at once (becoming active
 /// while a save's reload is still running). Only the read started last is used: an older one
 /// that finishes later would put back a list without the report just saved.
