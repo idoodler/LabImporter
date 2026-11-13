@@ -1,5 +1,5 @@
 [versions]
-agp = "9.4.1"
+agp = "9.5.1"
 kotlin = "2.4.20"
 skie = "0.10.15"
 kover = "0.9.11"
