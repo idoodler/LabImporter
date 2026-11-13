@@ -1,7 +1,7 @@
 [versions]
 agp = "9.4.1"
 kotlin = "2.4.20"
-skie = "0.10.15"
+skie = "0.10.16"
 kover = "0.9.11"
 pitest = "1.30.2"
 coroutines = "1.11.0"
