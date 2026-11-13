@@ -201,6 +201,7 @@ struct CodePickerSheet: View {
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
                         Button(role: .close) { dismiss() }
+                            .accessibilityIdentifier("code-picker-close") // Beside the screen on a folded iPhone Duo.
                     }
                 }
         }

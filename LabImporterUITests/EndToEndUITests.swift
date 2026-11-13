@@ -165,7 +165,9 @@ final class EndToEndUITests: XCTestCase {
         let app = launch(["--ss-import", "--ss-slow-save"])
         let save = app.buttons["Save to Health Records"]
         XCTAssertTrue(save.waitForExistence(timeout: 60))
-        let close = app.navigationBars["Lab Report"].buttons["Close"]
+        // In the navigation bar, or in the toolbar beside a folded iPhone Duo's screen.
+        let close = app.buttons["review-close"]
+        XCTAssertTrue(close.isHittable, "Review can be closed")
         XCTAssertTrue(close.isEnabled)
         save.tap()
         let alert = app.alerts["Check Before Saving"]
@@ -279,9 +281,9 @@ final class EndToEndUITests: XCTestCase {
         let search = app.searchFields.matching(NSPredicate(format: "placeholderValue == %@", "Search lab tests")).firstMatch
         XCTAssertTrue(search.waitForExistence(timeout: 10))
         search.coordinate(withNormalizedOffset: CGVector(dx: 1, dy: 0.5)).withOffset(CGVector(dx: 35, dy: 0)).tap()
-        let picker = app.navigationBars["Lab Test"]
-        XCTAssertTrue(picker.waitForExistence(timeout: 10))
-        picker.buttons["Close"].tap()
+        XCTAssertTrue(app.navigationBars["Lab Test"].waitForExistence(timeout: 10))
+        // In the navigation bar, or in the toolbar beside a folded iPhone Duo's screen.
+        app.buttons["code-picker-close"].tap()
         wait(for: [expectation(for: NSPredicate(format: "exists == false"), evaluatedWith: search)], timeout: 10)
         XCTAssertTrue(confirm.exists, "Closing without choosing confirms nothing")
 

@@ -136,6 +136,8 @@ struct ReviewView: View {
             ToolbarItem(placement: .topBarLeading) {
                 Button(role: .close) { attemptClose() }
                     .disabled(importEngine.isProcessing || saving.isSaving) // HUD overlay can't cover this bar.
+                    // The folded iPhone Duo puts it in a toolbar beside the screen, not in the navigation bar.
+                    .accessibilityIdentifier("review-close")
             }
         }
         .alert("Discard Report?", isPresented: $showDiscardAlert) {

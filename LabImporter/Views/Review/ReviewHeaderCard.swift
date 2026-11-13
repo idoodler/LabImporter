@@ -216,21 +216,10 @@ struct ReviewHeaderCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 12) {
-                ZStack {
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [dominantColor, dominantColor.opacity(0.65)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                    Image(systemName: "checklist")
-                        .decorativeIcon(size: 18, weight: .semibold)
-                        .foregroundStyle(.white)
+                // Decorative: at accessibility sizes its width goes to the count and status, which then wrap less.
+                if !dynamicTypeSize.isAccessibilitySize {
+                    icon
                 }
-                .frame(width: 44, height: 44)
-                .shadow(color: dominantColor.opacity(0.35), radius: 5, x: 0, y: 2)
 
                 // The status has its own line and may wrap: some languages' words don't fit beside the count.
                 VStack(alignment: .leading, spacing: 4) {
@@ -242,21 +231,15 @@ struct ReviewHeaderCard: View {
                 Spacer(minLength: 0)
             }
 
-            if groups.count > 1 {
-                if dynamicTypeSize.isAccessibilitySize {
-                    // Wrapped, the chips filled the first screen at the largest text, and one scrolling line
-                    // held a chip and a half ("Ho…"): a count lets the values start on the first screen. Each value
-                    // section's header names its category.
-                    Text("\(groups.count) categories")
-                        .font(.footnote)
-                        .foregroundStyle(.textSecondary)
-                } else {
-                    // One scrolling line, however many categories: the values must start on the first screen.
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) { chips }
-                    }
-                    .edgeFadeScroll()
+            // One scrolling line, however many categories: the values must start on the first screen. Not at
+            // accessibility sizes: wrapped, the chips filled the first screen, one scrolling line held a chip and
+            // a half ("Ho…"), and even a count of them kept the values off the first screen of a folded iPhone
+            // Duo. Each value section's header names its category and count.
+            if groups.count > 1, !dynamicTypeSize.isAccessibilitySize {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) { chips }
                 }
+                .edgeFadeScroll()
             }
 
             if duplicateCount > 0 {
@@ -274,6 +257,24 @@ struct ReviewHeaderCard: View {
         .cardSurface(cornerRadius: 22)
     }
 
+    private var icon: some View {
+        ZStack {
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: [dominantColor, dominantColor.opacity(0.65)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+            Image(systemName: "checklist")
+                .decorativeIcon(size: 18, weight: .semibold)
+                .foregroundStyle(.white)
+        }
+        .frame(width: 44, height: 44)
+        .shadow(color: dominantColor.opacity(0.35), radius: 5, x: 0, y: 2)
+    }
+
     @ViewBuilder
     private var statusBadge: some View {
         if valuesToCorrect > 0 {
@@ -289,8 +290,12 @@ struct ReviewHeaderCard: View {
 
     private func badge(_ title: LocalizedStringKey, systemImage: String, color: Color) -> some View {
         HStack(spacing: 4) {
-            Image(systemName: systemImage)
-                .accessibilityHidden(true)
+            // The words and color say it; at accessibility sizes the glyph took a third of the line and
+            // wrapped "Ready to save" onto a second one.
+            if !dynamicTypeSize.isAccessibilitySize {
+                Image(systemName: systemImage)
+                    .accessibilityHidden(true)
+            }
             Text(title)
         }
             .font(.caption.weight(.semibold))
@@ -418,7 +423,7 @@ struct CategorySectionHeader: View {
     .background(Color(.systemGroupedBackground))
 }
 
-// The largest text: a count of the categories, so the values start on the first screen.
+// The largest text: the count and the status, without icons or categories, so the values start on the first screen.
 #Preview("Header Card – Largest Text") {
     ScrollView {
         ReviewHeaderCard(
