@@ -175,6 +175,7 @@
     <string name="correct_or_deselect">Не може да се запази в този вид. Коригирайте го или премахнете отметката.</string>
     <string name="no_date_found">В отчета не е открита дата. Проверете дали тази дата е правилна.</string>
     <string name="date_to_check">Тази дата може да е разчетена грешно. Проверете дали съвпада с отчета.</string>
+    <string name="several_result_dates">Този отчет съдържа резултати от няколко дати. Проверете дали датата и всяка стойност са от една и съща колона.</string>
     <string name="patient_and_lab">Пациент и лаборатория</string>
     <string name="not_filled_in">Не е попълнено</string>
     <plurals name="exportable_count">

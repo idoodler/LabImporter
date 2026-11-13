@@ -91,9 +91,8 @@ struct OnboardingExtrasView: View {
                 color: .blue,
                 title: "iCloud Sync",
                 description: """
-                Sync your dashboard layout — the card order, what you pin and hide, your \
-                nicknames, and your reference ranges — across your devices. Your lab values \
-                stay in Apple Health.
+                Syncs through iCloud: the tests you track and their order, pins and hidden ones, \
+                your nicknames, and your personal reference ranges. Lab values stay in Apple Health.
                 """,
                 isOn: $iCloudSync
             )

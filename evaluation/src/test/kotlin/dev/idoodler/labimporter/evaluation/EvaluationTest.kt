@@ -167,4 +167,52 @@ class EvaluationTest {
         assertEquals(6, summary.controls)
         assertEquals(0, summary.falseFlags)
     }
+
+    @Test
+    fun anotherDatesResultIsPlantedAsWritten() {
+        val entry = AiLabEntry(name = "Kalium", rawValue = "4,8", unit = "mmol/l")
+        assertEquals(listOf("5,4", "4,2"), otherDateFaults(entry, listOf(5.4, 4.2)).map { it.second.rawValue })
+        assertTrue(otherDateFaults(entry, listOf(5.4)).all { it.first == Fault.DATE_COLUMN })
+        // The same value in another column is no error; a whole number stays whole; a text result gets none.
+        assertEquals(listOf("118"), otherDateFaults(entry.copy(rawValue = "96"), listOf(96.0, 118.0)).map { it.second.rawValue })
+        assertEquals(emptyList(), otherDateFaults(entry.copy(rawValue = "<5"), listOf(41.0)))
+    }
+
+    @Test
+    fun reviewFlagsAnotherDatesResultInACumulativeReport() {
+        LabCore.start(System.getProperty("loinc.db"), "nl-NL") { LabDisplayPreferences() }
+        val text = "Bepaling   Eenheid   02-11-2026   19-10-2026\nKalium     mmol/l    4,8          5,4 H\nNatrium    mmol/l    138          135 L\n"
+        val reply = AiLabReport(
+            entries = listOf(AiLabEntry(name = "Kalium", rawValue = "4,8", unit = "mmol/l"), AiLabEntry(name = "Natrium", rawValue = "138", unit = "mmol/l")),
+            reportDate = "2026-11-02",
+            reportLanguage = "nl",
+        )
+        val expected = Expected(
+            reportDate = "2026-11-02",
+            values = listOf(ExpectedValue(listOf("Kalium"), 4.8, "mmol/l", otherDates = listOf(5.4)), ExpectedValue(listOf("Natrium"), 138.0, "mmol/l", otherDates = listOf(135.0))),
+        )
+        val summary = plantErrors(listOf(PlantedReport("cumulative", text, reply, expected)))
+        assertEquals(KindScore(2, 2), summary.byKind.getValue(Fault.DATE_COLUMN.name))
+        assertEquals(0, summary.falseFlags)
+        assertEquals(0, summary.dateFalseFlags)
+        // Under each other header a report prints: planted again, caught again, the right values left alone.
+        val variants = plantErrors(listOf(PlantedReport("cumulative", text, reply, expected)), withHeaderVariants = true)
+        assertEquals(KindScore(10, 10), variants.byKind.getValue(Fault.DATE_COLUMN.name))
+        assertEquals(summary.controls + 8, variants.controls)
+        assertEquals(0, variants.falseFlags)
+    }
+
+    @Test
+    fun aCumulativeHeaderIsRewrittenAsReportsPrintIt() {
+        val text = "Lab\nBepaling   Eenheid   02-11-2026   19-10-2026   Referentie\nKalium     mmol/l    4,8          5,4 H        3,5-5,0"
+        val variants = headerVariants(text).toMap()
+        assertEquals(listOf("month names", "no year", "times with Uhr", "one date a line"), variants.keys.toList())
+        assertEquals("Bepaling   Eenheid   02-Nov-26    19-Oct-26    Referentie", variants.getValue("month names").lines()[1])
+        assertEquals("Bepaling   Eenheid   02.11.       19.10.       Referentie", variants.getValue("no year").lines()[1])
+        assertEquals("Bepaling   Eenheid   02.11.26 07:12 Uhr   19.10.26 09:30 Uhr   Referentie", variants.getValue("times with Uhr").lines()[1])
+        assertEquals(listOf("Bepaling   Eenheid   Referentie", "02-11-2026", "19-10-2026"), variants.getValue("one date a line").lines().subList(1, 4))
+        // The rows stay as printed; a report without such a header has none.
+        assertTrue(variants.values.all { it.endsWith("Kalium     mmol/l    4,8          5,4 H        3,5-5,0") })
+        assertEquals(emptyList(), headerVariants("Date Collected: 10/14/2026      Date Reported: 10/14/2026\nGlucose 65 92 04/02/2026"))
+    }
 }

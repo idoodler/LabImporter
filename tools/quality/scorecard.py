@@ -65,7 +65,8 @@ class Measure:
     @property
     def status(self) -> str:
         if self.panel:
-            return "panel"
+            # The panel judges what the run gave it: without that (screenshots of this commit), it has nothing to judge.
+            return NOT_RUN if any(p.status != PASS for p in self.parts) else "panel"
         if self.reported:
             return REPORTED
         if not self.parts:
@@ -360,17 +361,31 @@ def pull_request_checks(commit: str, clean: bool) -> Part:
     return checks_part(label, pr["number"], json.loads(checks.stdout))
 
 
+# Checks a pull request skips by design (quality.yml runs them weekly and on demand): reported as such, and
+# counted neither as green nor as missing. Any other skipped check is "not run".
+WEEKLY_CHECKS = {"Accessibility audit of every page"}
+
+
 def checks_part(label: str, number: int, checks: list[dict]) -> Part:
-    """`gh pr checks --json name,bucket`: all passed (or skipped) passes, any failure fails, any still running is "not run"."""
+    """`gh pr checks --json name,bucket`: all passed passes, any failure fails, any still running or skipped is
+    "not run" — a skipped check didn't run, so it can't count as green. Only the weekly checks (WEEKLY_CHECKS),
+    skipped on every pull request by design, are left out of the count and said so."""
     if not checks:
         return Part(NOT_RUN, f"{label}: not run (#{number} has no checks)")
-    buckets = {c["bucket"] for c in checks}
+    weekly = sorted(c["name"] for c in checks if c["bucket"] == "skipping" and c["name"] in WEEKLY_CHECKS)
+    checks = [c for c in checks if not (c["bucket"] == "skipping" and c["name"] in WEEKLY_CHECKS)]
+    aside = f"; {', '.join(weekly)}: runs weekly, not on pull requests" if weekly else ""
     failed = sorted(c["name"] for c in checks if c["bucket"] in ("fail", "cancel"))
     if failed:
-        return Part(FAIL, f"{label}: #{number}, {len(failed)} of {len(checks)} failed ({', '.join(failed)})")
-    if buckets - {"pass", "skipping"}:
-        return Part(NOT_RUN, f"{label}: #{number} still running")
-    return Part(PASS, f"{label}: #{number}, {len(checks)} green")
+        return Part(FAIL, f"{label}: #{number}, {len(failed)} of {len(checks)} failed ({', '.join(failed)}){aside}")
+    skipped = sorted(c["name"] for c in checks if c["bucket"] == "skipping")
+    if skipped:
+        return Part(NOT_RUN, f"{label}: #{number}, {len(skipped)} of {len(checks)} skipped, not run ({', '.join(skipped)}){aside}")
+    if not checks:
+        return Part(NOT_RUN, f"{label}: not run (#{number} has only weekly checks){aside}")
+    if {c["bucket"] for c in checks} - {"pass"}:
+        return Part(NOT_RUN, f"{label}: #{number} still running{aside}")
+    return Part(PASS, f"{label}: #{number}, {len(checks)} green{aside}")
 
 
 def kotlin_warnings(inputs: Inputs) -> Part:
@@ -447,7 +462,9 @@ def design_quality(inputs: Inputs) -> list[Measure]:
     m.note = "The iOS contrast check is part of the accessibility audit."
     measures.append(m)
 
+    screens = screenshots_parts(inputs.folder, measured_commit(inputs)[0])
     m = Measure("Design quality", "Screenshot matrix", 15, "No clipped label or value", panel=True)
+    m.parts = screens
     m.note = "Captured by ScreenshotMatrixUITests (iOS) and ScreenMatrixTest (Android, -PqualityScreens); judged by the panel."
     measures.append(m)
 
@@ -481,9 +498,39 @@ def design_quality(inputs: Inputs) -> list[Measure]:
     measures.append(m)
 
     m = Measure("Design quality", "Heuristic panel", 5, "No severity 3 or 4 finding", panel=True)
+    m.parts = screens
     m.note = "Independent council reviewers with the screenshots; not a script."
     measures.append(m)
     return measures
+
+
+# The screenshot matrices the panel judges (collect.sh --ios), each folder with the commit it was taken at.
+SCREENSHOT_FOLDERS = (("iOS", "ios-screens"), ("Android", "android-screens"))
+
+
+def screenshots_parts(folder: Path, commit: str) -> list[Part]:
+    """Whether the panel's screenshots show the measured [commit]: each matrix's `commit.json` (as run.json, recorded
+    when it was taken and again when it was done) at that commit with nothing uncommitted. Older screenshots, or ones
+    taken from uncommitted code, are "not run": the panel would judge other code than this scorecard measured."""
+    parts = []
+    for platform, name in SCREENSHOT_FOLDERS:
+        label = f"{platform} screenshots ({name})"
+        record = folder / name / "commit.json"
+        if not record.exists():
+            parts.append(Part(NOT_RUN, f"{label}: not run (collect.sh --ios)"))
+            continue
+        run = json.loads(record.read_text())
+        count = len(list((folder / name).glob("*.png")))
+        taken = run.get("commit", "")
+        if taken != commit or run.get("finished_commit") != taken:
+            parts.append(Part(NOT_RUN, f"{label}: not run at this commit (taken at {taken[:7] or 'unknown'}, measured {commit[:7]})"))
+        elif run.get("uncommitted") != 0 or run.get("finished_uncommitted") != 0:
+            parts.append(Part(NOT_RUN, f"{label}: not run on committed code (taken at {taken[:7]} with uncommitted changes)"))
+        elif not count:
+            parts.append(Part(NOT_RUN, f"{label}: no screenshots"))
+        else:
+            parts.append(Part(PASS, f"{label}: {count} taken at `{taken[:7]}`"))
+    return parts
 
 
 # --- Orientation: reported, never scored ------------------------------------------
@@ -587,15 +634,17 @@ def summary(measures: list[Measure]) -> str:
     by = {s: [m for m in scored if m.status == s] for s in (PASS, FAIL, NOT_RUN)}
     weight = lambda ms: sum(m.weight for m in ms)  # noqa: E731
     panel = [m for m in measures if m.panel]
+    panel_not_run = [m for m in panel if m.status == NOT_RUN]
     reported = [m for m in measures if m.reported]
     return (f"{len(by[PASS])} pass (weight {weight(by[PASS])}), {len(by[FAIL])} fail (weight {weight(by[FAIL])}), "
             f"{len(by[NOT_RUN])} not run (weight {weight(by[NOT_RUN])}); "
             f"{len(panel)} judged by the panel (weight {weight(panel)})"
+            + (f", {len(panel_not_run)} of them not run (no screenshots of this commit)" if panel_not_run else "")
             + (f"; {len(reported)} reported, not scored" if reported else ""))
 
 
-STEPS = ["static", "swiftlint", "gradle-tests", "android-lint", "evaluation", "evaluation-heldout", "ios-tests",
-         "swiftlint-analyze", "mutation"]
+STEPS = ["static", "swiftlint", "gradle-tests", "android-lint", "evaluation", "evaluation-heldout", "android-screens",
+         "ios-tests", "ios-audit", "ios-screens", "swiftlint-analyze", "mutation"]
 
 
 def steps(inputs: Inputs) -> list[str]:

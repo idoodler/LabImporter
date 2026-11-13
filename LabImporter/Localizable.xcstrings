@@ -39142,150 +39142,150 @@
         }
       }
     },
-    "Sync your dashboard layout — the card order, what you pin and hide, your nicknames, and your reference ranges — across your devices. Your lab values stay in Apple Health." : {
+    "Syncs through iCloud: the tests you track and their order, pins and hidden ones, your nicknames, and your personal reference ranges. Lab values stay in Apple Health." : {
       "localizations" : {
         "bg" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Синхронизирайте оформлението на таблото си — реда на картите, какво закачате и скривате, псевдонимите и референтните си диапазони — между устройствата си. Лабораторните ви стойности остават в Apple Здраве."
+            "value" : "Синхронизира се чрез iCloud: изследванията, които следите, и редът им, закачените и скритите, псевдонимите ви и личните ви референтни диапазони. Лабораторните стойности остават в Apple Здраве."
           }
         },
         "ca" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sincronitza la disposició del tauler —l'ordre de les targetes, el que fixes i amagues, els teus sobrenoms i els teus rangs de referència— entre els teus dispositius. Els teus valors de laboratori es queden a Apple Salut."
+            "value" : "Se sincronitza a través d'iCloud: les proves que segueixes i el seu ordre, les fixades i les amagades, els teus sobrenoms i els teus rangs de referència personals. Els valors de laboratori es queden a Apple Salut."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchronizujte rozložení svého přehledu — pořadí karet, co připnete a skryjete, své přezdívky a referenční rozsahy — mezi svými zařízeními. Vaše laboratorní hodnoty zůstávají v Apple Zdraví."
+            "value" : "Synchronizuje se přes iCloud: testy, které sledujete, a jejich pořadí, připnuté a skryté, vaše přezdívky a vaše osobní referenční rozsahy. Laboratorní hodnoty zůstávají v Apple Zdraví."
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synkronisér dit oversigtslayout – kortrækkefølgen, hvad du fastgør og skjuler, dine kælenavne og dine referenceintervaller – på tværs af dine enheder. Dine laboratorieværdier forbliver i Apple Helbred."
+            "value" : "Synkroniseres via iCloud: de prøver, du følger, og deres rækkefølge, fastgjorte og skjulte, dine kælenavne og dine personlige referenceintervaller. Laboratorieværdier forbliver i Apple Helbred."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchronisiere dein Dashboard-Layout – die Kartenreihenfolge, was du anheftest und ausblendest, deine Spitznamen sowie deine Referenzbereiche – über deine Geräte hinweg. Deine Laborwerte bleiben in Apple Health."
+            "value" : "Wird über iCloud synchronisiert: die Werte, die du verfolgst, und ihre Reihenfolge, angeheftete und ausgeblendete, deine Spitznamen und deine persönlichen Referenzbereiche. Laborwerte bleiben in Apple Health."
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Συγχρονίστε τη διάταξη του πίνακά σας — τη σειρά των καρτών, τι καρφιτσώνετε και αποκρύπτετε, τα ψευδώνυμά σας και τα εύρη αναφοράς σας — σε όλες τις συσκευές σας. Οι εργαστηριακές σας τιμές παραμένουν στο Apple Υγεία."
+            "value" : "Συγχρονίζεται μέσω iCloud: οι εξετάσεις που παρακολουθείτε και η σειρά τους, οι καρφιτσωμένες και οι κρυφές, τα ψευδώνυμά σας και τα προσωπικά σας εύρη αναφοράς. Οι εργαστηριακές τιμές παραμένουν στο Apple Υγεία."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sincroniza el diseño de tu panel —el orden de las tarjetas, lo que fijas y ocultas, tus apodos y tus rangos de referencia— entre tus dispositivos. Tus valores de laboratorio permanecen en Apple Salud."
+            "value" : "Se sincroniza a través de iCloud: las pruebas que sigues y su orden, las fijadas y ocultas, tus apodos y tus rangos de referencia personales. Los valores de laboratorio permanecen en Apple Salud."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synkronoi koontinäyttösi asettelu – korttien järjestys, kiinnittämäsi ja piilottamasi kohteet, lempinimesi ja viiterajasi – laitteidesi välillä. Laboratorioarvosi pysyvät Apple Terveydessä."
+            "value" : "Synkronoidaan iCloudin kautta: seuraamasi testit ja niiden järjestys, kiinnitetyt ja piilotetut, lempinimesi ja henkilökohtaiset viiterajasi. Laboratorioarvot pysyvät Apple Terveydessä."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchronisez la disposition de votre tableau de bord — l’ordre des cartes, ce que vous épinglez et masquez, vos surnoms et vos plages de référence — sur tous vos appareils. Vos valeurs de laboratoire restent dans Apple Santé."
+            "value" : "Se synchronise via iCloud : les analyses que vous suivez et leur ordre, celles épinglées et masquées, vos surnoms et vos plages de référence personnelles. Les valeurs de laboratoire restent dans Apple Santé."
           }
         },
         "hr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sinkronizirajte raspored svoje nadzorne ploče — redoslijed kartica, ono što prikvačite i sakrijete, svoje nadimke i svoje referentne raspone — na svim uređajima. Vaše laboratorijske vrijednosti ostaju u Apple Zdravlju."
+            "value" : "Sinkronizira se putem iClouda: pretrage koje pratite i njihov redoslijed, prikvačene i skrivene, vaši nadimci i vaši osobni referentni rasponi. Laboratorijske vrijednosti ostaju u Apple Zdravlju."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Szinkronizáld a vezérlőpult elrendezését – a kártyák sorrendjét, a rögzített és elrejtett elemeket, a beceneveidet és a referenciatartományaidat – az eszközeid között. A laborértékeid az Apple Egészségben maradnak."
+            "value" : "Szinkronizálás az iCloudon keresztül: a követett vizsgálatok és sorrendjük, a rögzítettek és rejtettek, a beceneveid és a személyes referenciatartományaid. A laborértékek az Apple Egészségben maradnak."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sincronizza il layout della dashboard — l’ordine delle schede, ciò che fissi e nascondi, i tuoi soprannomi e i tuoi intervalli di riferimento — su tutti i tuoi dispositivi. I tuoi valori di laboratorio restano in Apple Salute."
+            "value" : "Si sincronizza tramite iCloud: gli esami che segui e il loro ordine, quelli fissati e nascosti, i tuoi soprannomi e i tuoi intervalli di riferimento personali. I valori di laboratorio restano in Apple Salute."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ダッシュボードのレイアウト（カードの順序、固定・非表示の設定、ニックネーム、基準範囲）をデバイス間で同期します。検査値はAppleヘルスケアに残ります。"
+            "value" : "iCloudで同期されます：記録している検査項目とその順序、固定・非表示の設定、ニックネーム、あなた個人の基準範囲。検査値はAppleヘルスケアに残ります。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchroniseer je dashboardindeling — de kaartvolgorde, wat je vastzet en verbergt, je bijnamen plus je referentiebereiken — op al je apparaten. Je labwaarden blijven in Apple Gezondheid."
+            "value" : "Synchroniseert via iCloud: de tests die je volgt en hun volgorde, vastgezette en verborgen, je bijnamen en je persoonlijke referentiebereiken. Labwaarden blijven in Apple Gezondheid."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchronizuj układ pulpitu — kolejność kart, to, co przypinasz i ukrywasz, pseudonimy oraz zakresy referencyjne — między urządzeniami. Twoje wyniki badań pozostają w Apple Zdrowiu."
+            "value" : "Synchronizuje się przez iCloud: śledzone badania i ich kolejność, przypięte i ukryte, Twoje pseudonimy i Twoje osobiste zakresy referencyjne. Wyniki badań pozostają w Apple Zdrowiu."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sincronize o layout do seu painel — a ordem dos cartões, o que você fixa e oculta, seus apelidos e suas faixas de referência — entre seus dispositivos. Seus valores de exames ficam no Apple Saúde."
+            "value" : "Sincroniza pelo iCloud: os exames que você acompanha e a ordem deles, os fixados e ocultos, seus apelidos e suas faixas de referência pessoais. Os valores de exames ficam no Apple Saúde."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sincronize a disposição do seu painel — a ordem dos cartões, o que fixa e oculta, as suas alcunhas e os seus intervalos de referência — entre os seus dispositivos. Os seus valores laboratoriais permanecem na Apple Saúde."
+            "value" : "Sincroniza através do iCloud: as análises que acompanha e a ordem delas, as fixadas e ocultas, as suas alcunhas e os seus intervalos de referência pessoais. Os valores laboratoriais permanecem na Apple Saúde."
           }
         },
         "ro" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sincronizează aspectul panoului — ordinea cardurilor, ce fixezi și ascunzi, aliasurile tale și intervalele de referință — pe toate dispozitivele. Valorile tale de laborator rămân în Apple Sănătate."
+            "value" : "Se sincronizează prin iCloud: analizele pe care le urmărești și ordinea lor, cele fixate și ascunse, aliasurile tale și intervalele tale de referință personale. Valorile de laborator rămân în Apple Sănătate."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Синхронизируйте оформление панели — порядок карточек, что закреплено и скрыто, ваши псевдонимы, а также референсные диапазоны — между устройствами. Ваши лабораторные значения остаются в Apple Здоровье."
+            "value" : "Синхронизируется через iCloud: отслеживаемые анализы и их порядок, закреплённые и скрытые, ваши псевдонимы и ваши личные референсные диапазоны. Лабораторные значения остаются в Apple Здоровье."
           }
         },
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchronizujte rozloženie prehľadu — poradie kariet, čo pripnete a skryjete, vaše prezývky a referenčné rozsahy — medzi zariadeniami. Vaše laboratórne hodnoty zostávajú v Apple Zdravie."
+            "value" : "Synchronizuje sa cez iCloud: testy, ktoré sledujete, a ich poradie, pripnuté a skryté, vaše prezývky a vaše osobné referenčné rozsahy. Laboratórne hodnoty zostávajú v Apple Zdravie."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synkronisera din översiktslayout – kortordningen, vad du fäster och döljer, dina smeknamn och dina referensvärden – mellan dina enheter. Dina labbvärden stannar i Apple Hälsa."
+            "value" : "Synkroniseras via iCloud: proverna du följer och deras ordning, fästa och dolda, dina smeknamn och dina personliga referensvärden. Labbvärden stannar i Apple Hälsa."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pano düzeninizi — kart sırası, sabitlediğiniz ve gizlediğiniz öğeler, takma adlarınız ve referans aralıklarınızı — cihazlarınız arasında senkronlayın. Laboratuvar değerleriniz Apple Sağlık’ta kalır."
+            "value" : "iCloud üzerinden eşzamanlanır: takip ettiğiniz testler ve sıraları, sabitlenenler ve gizlenenler, takma adlarınız ve kişisel referans aralıklarınız. Laboratuvar değerleri Apple Sağlık’ta kalır."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Синхронізуйте вигляд панелі — порядок карток, що закріплено й приховано, ваші псевдоніми, а також референсні діапазони — між пристроями. Ваші лабораторні значення залишаються в Apple Здоров’я."
+            "value" : "Синхронізується через iCloud: аналізи, які ви відстежуєте, та їхній порядок, закріплені й приховані, ваші псевдоніми та ваші особисті референсні діапазони. Лабораторні значення залишаються в Apple Здоров’я."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在你的设备间同步仪表板布局——卡片顺序、置顶和隐藏的设置、你的昵称，以及你的参考范围。你的化验数值保留在 Apple 健康中。"
+            "value" : "通过 iCloud 同步：你跟踪的检验项目及其顺序、置顶和隐藏的项目、你的昵称，以及你的个人参考范围。化验数值保留在 Apple 健康中。"
           }
         }
       }
@@ -62519,6 +62519,154 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "暂时无法读取 Apple 健康。请稍后再试。"
+          }
+        }
+      }
+    },
+    "This report lists results from several dates. Check that the date and each value come from the same column." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Този отчет съдържа резултати от няколко дати. Проверете дали датата и всяка стойност са от една и съща колона."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aquest informe mostra resultats de diverses dates. Comprova que la data i cada valor siguin de la mateixa columna."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tato zpráva uvádí výsledky z několika dat. Zkontrolujte, že datum i každá hodnota pocházejí ze stejného sloupce."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denne rapport viser resultater fra flere datoer. Kontrollér, at datoen og hver værdi kommer fra samme kolonne."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieser Befund enthält Ergebnisse mehrerer Daten. Prüfe, ob das Datum und jeder Wert aus derselben Spalte stammen."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αυτή η αναφορά περιέχει αποτελέσματα από διάφορες ημερομηνίες. Ελέγξτε ότι η ημερομηνία και κάθε τιμή προέρχονται από την ίδια στήλη."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este informe muestra resultados de varias fechas. Comprueba que la fecha y cada valor sean de la misma columna."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tässä raportissa on tuloksia useilta päiviltä. Tarkista, että päivämäärä ja jokainen arvo ovat samasta sarakkeesta."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce compte rendu présente des résultats de plusieurs dates. Vérifiez que la date et chaque valeur proviennent de la même colonne."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ovaj nalaz navodi rezultate s više datuma. Provjerite jesu li datum i svaka vrijednost iz istog stupca."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ez a lelet több dátum eredményeit tartalmazza. Ellenőrizd, hogy a dátum és minden érték ugyanabból az oszlopból származik-e."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questo referto riporta risultati di più date. Controlla che la data e ogni valore provengano dalla stessa colonna."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このレポートには複数の日付の結果が記載されています。日付と各値が同じ列のものか確認してください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dit verslag bevat uitslagen van meerdere datums. Controleer of de datum en elke waarde uit dezelfde kolom komen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ten raport zawiera wyniki z kilku dat. Sprawdź, czy data i każda wartość pochodzą z tej samej kolumny."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este laudo traz resultados de várias datas. Verifique se a data e cada valor vêm da mesma coluna."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este relatório apresenta resultados de várias datas. Verifique se a data e cada valor vêm da mesma coluna."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acest buletin conține rezultate din mai multe date. Verifică dacă data și fiecare valoare provin din aceeași coloană."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В этом отчёте есть результаты за несколько дат. Проверьте, что дата и каждое значение взяты из одного столбца."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Táto správa uvádza výsledky z viacerých dátumov. Skontrolujte, či dátum aj každá hodnota pochádzajú z rovnakého stĺpca."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den här rapporten innehåller resultat från flera datum. Kontrollera att datumet och varje värde kommer från samma kolumn."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu raporda birden fazla tarihe ait sonuçlar var. Tarihin ve her değerin aynı sütundan geldiğini kontrol edin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "У цьому звіті є результати за кілька дат. Перевірте, що дата й кожне значення взято з одного стовпця."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此报告列出了多个日期的结果。请检查日期和每个数值是否来自同一列。"
           }
         }
       }

@@ -82,6 +82,29 @@ import SwiftUI
     .preferredColorScheme(.dark)
 }
 
+#Preview("Several Result Dates") {
+    NavigationStack {
+        ReviewView(
+            labValues: LabValue.sampleValues.map { var value = $0; value.needsSourceCheck = true; return value },
+            isDateToCheck: true,
+            hasSeveralResultDates: true,
+            extractedPatientName: "Max Mustermann"
+        )
+    }
+}
+
+#Preview("Several Result Dates – Dark") {
+    NavigationStack {
+        ReviewView(
+            labValues: LabValue.sampleValues.map { var value = $0; value.needsSourceCheck = true; return value },
+            isDateToCheck: true,
+            hasSeveralResultDates: true,
+            extractedPatientName: "Max Mustermann"
+        )
+    }
+    .preferredColorScheme(.dark)
+}
+
 #Preview("Editing Saved Report") {
     NavigationStack {
         ReviewView(

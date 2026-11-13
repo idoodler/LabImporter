@@ -305,6 +305,9 @@ private enum AuditExemption {
         // A different card's text on each run ("24", "Cholesterol in HDL"): any, but each still measured.
         Entry(condition: "dashboard/light/ax5", type: .contrast, element: "", reason: measured),
         Entry(condition: "trends/light/ax5", type: .contrast, element: "32", reason: measured),
+        // The iCloud opt-in's description (plain grey on the near-white card), flagged since it names all that syncs.
+        Entry(condition: "onboarding-extras/light/standard/1", type: .contrast, element: "Syncs through iCloud: the tests you track and their order, "
+              + "pins and hidden ones, your nicknames, and your personal reference ranges. Lab values stay in Apple Health.", reason: measured),
         Entry(condition: "history-load-failed/light/ax5", type: .contrast, element: "Couldn't Load Your Reports", reason: measured),
         Entry(condition: "report-detail/dark/standard/1", type: .contrast, element: "1", reason: measured),
         Entry(condition: "report-detail/dark/standard/1", type: .contrast, element: "2", reason: measured),

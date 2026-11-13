@@ -10,6 +10,7 @@ Standard library only. Each subcommand prints JSON:
     reports.py warnings gradle.log           # Kotlin compiler warnings ("w: ") in a Gradle log
     reports.py xcresult ios.xcresult         # iOS test counts and the failing tests
     reports.py audit xcodebuild.log          # the accessibility audit's exemptions and pages, from its AUDIT lines
+    reports.py fresh gradle.log :shared:jvmTest …   # every test (and lint analysis) task ran now; exits 1 otherwise
 """
 from __future__ import annotations
 
@@ -230,13 +231,47 @@ def audit(args: list[str]) -> dict:
     return audit_log(path.read_text(errors="replace"))
 
 
+# A Gradle task line of a plain console log, and its outcome when it didn't execute.
+GRADLE_TASK = re.compile(r"^> Task (:\S+)(?: (FROM-CACHE|UP-TO-DATE|SKIPPED|NO-SOURCE|FAILED))?\s*$")
+# Tasks whose result is a measure: a test run or a lint analysis. Restored from the build cache, or up to date,
+# they'd report an earlier run's outcome as this one's.
+MEASURING_TASK = re.compile(r"^(test|jvmTest|test\w*UnitTest|lintAnalyze\w*)$")
+
+
+def fresh_log(text: str, required: list[str]) -> dict:
+    """The measuring tasks in a Gradle log that didn't run now (FROM-CACHE, UP-TO-DATE, SKIPPED, NO-SOURCE), and the
+    [required] tasks that don't appear at all. Both empty: every result in the log is this run's."""
+    outcomes: dict[str, str] = {}
+    for line in text.splitlines():
+        if m := GRADLE_TASK.match(line.strip()):
+            outcomes[m.group(1)] = m.group(2) or "EXECUTED"
+    stale = sorted(f"{task} {outcome}" for task, outcome in outcomes.items()
+                   if outcome in ("FROM-CACHE", "UP-TO-DATE", "SKIPPED", "NO-SOURCE")
+                   and (task in required or MEASURING_TASK.match(task.rsplit(":", 1)[-1])))
+    return {"stale": stale, "missing": sorted(t for t in required if t not in outcomes)}
+
+
+def fresh(args: list[str]) -> dict:
+    """`fresh_log` of a Gradle log file (`--console=plain`)."""
+    path = Path(args[0])
+    if not path.exists():
+        return {"error": f"no log at {path}", "stale": [], "missing": args[1:]}
+    return fresh_log(path.read_text(errors="replace"), args[1:])
+
+
 def main() -> None:
     commands = {"kover": kover, "junit": junit, "lint": lint, "mutation": mutation, "warnings": warnings, "xcresult": xcresult,
-                "audit": audit}
+                "audit": audit, "fresh": fresh}
     if len(sys.argv) < 3 or sys.argv[1] not in commands:
         sys.exit(__doc__)
-    json.dump(commands[sys.argv[1]](sys.argv[2:]), sys.stdout, indent=2, ensure_ascii=False)
+    result = commands[sys.argv[1]](sys.argv[2:])
+    json.dump(result, sys.stdout, indent=2, ensure_ascii=False)
     print()
+    # `fresh` is a check: a result that isn't this run's fails the step it runs in.
+    if sys.argv[1] == "fresh" and (result.get("stale") or result.get("missing") or "error" in result):
+        print("Not run now (restored from the build cache, up to date or missing): "
+              + ", ".join(result.get("stale", []) + [f"{t} missing" for t in result.get("missing", [])]))
+        sys.exit(1)
 
 
 if __name__ == "__main__":

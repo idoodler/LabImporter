@@ -20,6 +20,8 @@ struct NewReportImportButton: View {
     @State private var isDateMissing = false
     /// An import whose date may be misread (`ParseResult.isReportDateToCheck`).
     @State private var isDateToCheck = false
+    /// An import of a cumulative report (`ParseResult.hasSeveralResultDates`): Review says why it asks to check.
+    @State private var hasSeveralResultDates = false
     @State private var patientName: String?
     @State private var authorName: String?
     @State private var showReview = false
@@ -51,6 +53,7 @@ struct NewReportImportButton: View {
                 reportDate = nil
                 isDateMissing = false
                 isDateToCheck = false
+                hasSeveralResultDates = false
                 patientName = nil
                 authorName = nil
                 showReview = true
@@ -69,6 +72,7 @@ struct NewReportImportButton: View {
                 reportDate = result.reportDate
                 isDateMissing = result.reportDate == nil
                 isDateToCheck = result.isReportDateToCheck
+                hasSeveralResultDates = result.hasSeveralResultDates
                 patientName = result.patientName
                 authorName = result.authorName
                 showReview = true
@@ -81,6 +85,7 @@ struct NewReportImportButton: View {
                     reportDate: reportDate ?? Date(),
                     isDateMissing: isDateMissing,
                     isDateToCheck: isDateToCheck,
+                    hasSeveralResultDates: hasSeveralResultDates,
                     extractedPatientName: patientName,
                     extractedAuthorName: authorName,
                     onSaved: onSaved

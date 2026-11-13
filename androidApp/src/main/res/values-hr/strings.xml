@@ -180,6 +180,7 @@
     <string name="correct_or_deselect">Ne može se spremiti ovako napisano. Ispravite ili poništite odabir.</string>
     <string name="no_date_found">U nalazu nije pronađen datum. Provjerite je li ovaj datum točan.</string>
     <string name="date_to_check">Ovaj je datum možda pogrešno pročitan. Provjerite odgovara li nalazu.</string>
+    <string name="several_result_dates">Ovaj nalaz navodi rezultate s više datuma. Provjerite jesu li datum i svaka vrijednost iz istog stupca.</string>
     <string name="patient_and_lab">Pacijent i laboratorij</string>
     <string name="not_filled_in">Nije ispunjeno</string>
     <plurals name="exportable_count">

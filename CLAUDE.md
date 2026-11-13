@@ -203,6 +203,14 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   table — resolution is entirely catalog/FTS driven. The model's report date
   is kept only if the report text prints it (`verifiedDate`; a mis-copied year
   falls back to the one printed date with that day and month, else no date).
+  A cumulative report — a header of two or more result dates (numeric, ISO, month
+  names, no year, with times, or one per line; not a birth date) over rows that print
+  several results (`ReportSourceText.resultColumns`, `ParseResult.hasSeveralResultDates`;
+  Review says why) — flags a value only where its own row prints more than one result
+  and it isn't the one in the report date's column (`isFromAnotherColumn`), and the date
+  only where it isn't the latest column's; an ordinary report raises nothing. A row's
+  previous result with its date behind it ("65 Low 92 04/02/2026") read for the current
+  one is flagged on its own (`ReportSourceText.isAnotherDatesResult`).
   Day and month of a date with slashes or dashes are ordered by another date of
   the report that reads one way only, else by a day-first language (not
   English); a swap is then corrected. Where nothing orders them (03/10/2026 in an
@@ -747,7 +755,12 @@ tests with Kover, Android `lintRelease`, the evaluation replay, then with `--ios
 iOS tests with coverage (clean build, on `--simulator`, by default the audit's), then the accessibility
 audit on its pinned simulator (the step fails, saying so, when there's none),
 `swiftlint analyze` and the privacy manifests in the built bundles, and with
-`--mutation` PIT (`tools/quality/mutation.sh`, ~4 min). Each writes JSON to
+`--mutation` PIT (`tools/quality/mutation.sh`, ~4 min). The test, lint-analysis and evaluation tasks run with
+Gradle's `--rerun` (the build cache stays on for compiling), and `reports.py fresh` fails the step when one of them
+is FROM-CACHE or UP-TO-DATE in its log: a cached result would pass for this run's. `--ios` also takes both screenshot
+matrices again (`build/quality/ios-screens`, `android-screens`, each with the `commit.json` it was taken at;
+`tools/ios_test.sh screens`, `ScreenMatrixTest -PqualityScreens`), and the panel's measures are "not run" when those
+aren't the measured commit's. Each writes JSON to
 `build/quality/`; `scorecard.py` turns them into the scorecard, where a missing
 input is "not run", never a pass, and each section gets a scripted score (the weighted
 share of scripted measures that pass, out of 10). `tools/quality/consistency.sh [--runs N]
@@ -797,7 +810,8 @@ largest text, the standard size and dark — and clipped text from each page, ch
 `scorecard.py --check-audit … --all-pages` (every screen of `QualityScreen.all` printed its
 `AUDIT screen` line, none stopped at a limit). The scorecard
 reads the pull request's checks with `gh pr checks` ("not run" without a PR for the
-measured commit).
+measured commit; a skipped check is "not run" too, but for the weekly every-page audit, which a pull
+request skips by design and the scorecard reports as "runs weekly, not on pull requests").
 
 ## Working in this repo
 

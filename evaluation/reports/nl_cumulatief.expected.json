@@ -1,0 +1,12 @@
+{
+  "reportDate": "2026-11-02",
+  "patientName": "De Vries",
+  "values": [
+    {"names": ["Natrium", "Sodium"], "value": 138, "unit": "mmol/l", "loinc": "2951-2", "otherDates": [135, 140]},
+    {"names": ["Kalium", "Potassium"], "value": 4.8, "unit": "mmol/l", "loinc": "2823-3", "otherDates": [5.4, 4.2]},
+    {"names": ["Kreatinine", "Creatinine"], "value": 96, "unit": "µmol/l", "loinc": "14682-9", "otherDates": [118, 89]},
+    {"names": ["Hemoglobine", "Hemoglobin"], "value": 8.6, "unit": "mmol/l", "otherDates": [7.9, 8.9]},
+    {"names": ["CRP", "C-reactive", "C reactive"], "value": 6, "unit": "mg/l", "loinc": "1988-5", "otherDates": [41]},
+    {"names": ["Glucose"], "value": 5.9, "unit": "mmol/l", "otherDates": [7.2, 5.6]}
+  ]
+}

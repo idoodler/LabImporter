@@ -12,14 +12,9 @@ struct HomeView: View {
 
     // Import flow state
     @State private var importEngine = LabImportEngine()
-    @State private var labValues: [LabValue] = []
-    @State private var parsedReportDate: Date?
-    /// An import that found no date, unlike a manual report, which has none to find.
-    @State private var isParsedDateMissing = false
-    /// An import whose date may be misread (`ParseResult.isReportDateToCheck`).
-    @State private var isParsedDateToCheck = false
-    @State private var parsedPatientName: String?
-    @State private var parsedAuthorName: String?
+    /// What the last import read, for Review: its values, its date (and whether it may be misread or is
+    /// missing, unlike a manual report's, which has none to find), names, a cumulative report. Nil: a manual report.
+    @State private var parsed: ParseResult?
     @State private var showReview = false
     @State private var clipboardHasContent = false
     /// An "Open With" file that arrived before onboarding was dismissed; held
@@ -103,12 +98,13 @@ struct HomeView: View {
         .sheet(isPresented: $showReview) {
             NavigationStack {
                 ReviewView(
-                    labValues: labValues,
-                    reportDate: parsedReportDate ?? Date(),
-                    isDateMissing: isParsedDateMissing,
-                    isDateToCheck: isParsedDateToCheck,
-                    extractedPatientName: parsedPatientName,
-                    extractedAuthorName: parsedAuthorName
+                    labValues: parsed?.values ?? [],
+                    reportDate: parsed?.reportDate ?? Date(),
+                    isDateMissing: parsed.map { $0.reportDate == nil } ?? false,
+                    isDateToCheck: parsed?.isReportDateToCheck ?? false,
+                    hasSeveralResultDates: parsed?.hasSeveralResultDates ?? false,
+                    extractedPatientName: parsed?.patientName,
+                    extractedAuthorName: parsed?.authorName
                 )
             }
             .interactiveDismissDisabled()
@@ -371,12 +367,7 @@ struct HomeView: View {
 
     private func configureImportEngine() {
         importEngine.onParsed = { result in
-            labValues = result.values
-            parsedReportDate = result.reportDate
-            isParsedDateMissing = result.reportDate == nil
-            isParsedDateToCheck = result.isReportDateToCheck
-            parsedPatientName = result.patientName
-            parsedAuthorName = result.authorName
+            parsed = result
             showReview = true
         }
     }
@@ -391,12 +382,7 @@ struct HomeView: View {
     // MARK: - Manual creation
 
     private func createManually() {
-        labValues = []
-        parsedReportDate = nil
-        isParsedDateMissing = false
-        isParsedDateToCheck = false
-        parsedPatientName = nil
-        parsedAuthorName = nil
+        parsed = nil
         showReview = true
     }
 }
@@ -485,10 +471,10 @@ private extension HomeView {
             return
         }
         if ScreenshotMode.initialScreen == "review" {
-            labValues = LabReport.sampleHistory[0].asLabValues
-            parsedPatientName = LabReport.sampleHistory[0].patientName
-            parsedAuthorName = LabReport.sampleHistory[0].authorName
-            parsedReportDate = LabReport.sampleHistory[0].date
+            let sample = LabReport.sampleHistory[0]
+            parsed = ParseResult(
+                values: sample.asLabValues, reportDate: sample.date, patientName: sample.patientName, authorName: sample.authorName
+            )
             showReview = true
         }
     }

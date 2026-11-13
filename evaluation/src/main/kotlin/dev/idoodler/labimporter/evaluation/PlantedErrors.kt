@@ -42,6 +42,7 @@ enum class Fault(val label: String) {
     NEIGHBOUR("neighbouring test's value"),
     QUALIFIER_DROPPED("\"<\"/\">\" dropped"),
     WRONG_UNIT("another test's unit"),
+    DATE_COLUMN("value from another date column"),
     DATE_DAY("date a day off"),
     DATE_YEAR("date a year off"),
     DATE_SWAPPED("day and month swapped"),
@@ -98,6 +99,53 @@ fun plantedFaults(entries: List<AiLabEntry>, index: Int): List<Pair<Fault, AiLab
                 ?.let { add(Fault.WRONG_UNIT to entry.copy(unit = it)) }
         }
     }
+}
+
+/**
+ * The test's results for other dates ([ExpectedValue.otherDates]: a cumulative report's older
+ * columns, a previous result) read for [entry]'s, a plain number: each written as [entry]'s is.
+ */
+fun otherDateFaults(entry: AiLabEntry, otherDates: List<Double>): List<Pair<Fault, AiLabEntry>> {
+    val raw = entry.rawValue.trim()
+    if (!PLAIN_NUMBER.matches(raw)) return emptyList()
+    return otherDates.mapNotNull { other ->
+        changedNumber(raw, written(BigDecimal(other.toString()).stripTrailingZeros(), raw))
+            ?.let { Fault.DATE_COLUMN to entry.copy(rawValue = it) }
+    }
+}
+
+/** A cumulative header's date, day first ("02-11-2026"): the tuning set's form, rewritten by [headerVariants]. */
+private val HEADER_DATE = Regex("(?<![\\d.-])(\\d{2})[-./](\\d{2})[-./](\\d{4})(?![\\d.-])")
+private val MONTHS = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+private val TIMES = listOf("07:12", "09:30", "08:05", "10:45")
+
+/**
+ * [text]'s cumulative header — two or more day-first dates side by side, nothing but spacing between —
+ * written the other ways reports print one: with the month's name ("02-Nov-26"), without a year
+ * ("02.11."), with a time ("02.11.26 07:12 Uhr", wider, so the rows no longer line up), and one date a
+ * line before the table. Each by name; none where [text] has no such header.
+ */
+fun headerVariants(text: String): List<Pair<String, String>> {
+    val lines = text.lines()
+    val at = lines.indexOfFirst { line ->
+        val dates = HEADER_DATE.findAll(line).toList()
+        dates.size >= 2 && dates.zipWithNext().all { (a, b) -> line.substring(a.range.last + 1, b.range.first).isBlank() } &&
+            dates.all { it.groupValues[2].toInt() in 1..12 }
+    }
+    if (at < 0) return emptyList()
+    val header = lines[at]
+    fun withHeader(vararg replacement: String) = (lines.take(at) + replacement + lines.drop(at + 1)).joinToString("\n")
+    fun rewritten(format: (MatchResult, Int) -> String): String {
+        var index = 0
+        return withHeader(HEADER_DATE.replace(header) { format(it, index++).padEnd(it.value.length) })
+    }
+    val dates = HEADER_DATE.findAll(header).map { it.value }.toList()
+    return listOf(
+        "month names" to rewritten { m, _ -> "${m.groupValues[1]}-${MONTHS[m.groupValues[2].toInt() - 1]}-${m.groupValues[3].takeLast(2)}" },
+        "no year" to rewritten { m, _ -> "${m.groupValues[1]}.${m.groupValues[2]}." },
+        "times with Uhr" to rewritten { m, i -> "${m.groupValues[1]}.${m.groupValues[2]}.${m.groupValues[3].takeLast(2)} ${TIMES[i % TIMES.size]} Uhr" },
+        "one date a line" to withHeader(HEADER_DATE.replace(header, "").replace(Regex("\\s{2,}"), "   ").trimEnd(), *dates.toTypedArray()),
+    )
 }
 
 /** The date faults planted in a right report [date], as the reply would write them. */
@@ -159,24 +207,35 @@ private fun rightReading(value: LabValue, expected: Expected): List<Alternative>
 private fun isRight(value: LabValue, options: List<Alternative>) =
     if (options.isEmpty()) value.numericValue == null && value.qualitativeResult != null else options.any { value.matchesValue(it.value, it.unit) }
 
-fun plantErrors(reports: List<PlantedReport>): PlantedSummary {
+/**
+ * Plants errors in [reports]' right readings ([plantedFaults], [otherDateFaults], [plantedDates]); with
+ * [withHeaderVariants], also another date's value under each [headerVariants] of a cumulative report's
+ * header (the tuning set only: the held-out set is scored as written).
+ */
+fun plantErrors(reports: List<PlantedReport>, withHeaderVariants: Boolean = false): PlantedSummary {
     val outcomes = mutableListOf<Outcome>()
     var controls = 0
     var falseFlags = 0
     var dateControls = 0
     var dateFalseFlags = 0
-    for (report in reports) {
+    /** Plants in [report]'s right readings: every kind, or with [onlyOtherDates] only another date's value (and the reading as is as the control). */
+    fun plantValues(report: PlantedReport, onlyOtherDates: Boolean) {
         val entries = report.reply.entries
         for (index in entries.indices) {
             val read = processed(report, entries[index]) ?: continue
             val options = rightReading(read, report.expected) ?: continue
-            for ((kind, faulty) in plantedFaults(entries, index)) {
+            val otherDates = report.expected.values.firstOrNull { expected ->
+                (listOf(Alternative(expected.value, expected.unit)) + expected.alternatives).any { read.matchesValue(it.value, it.unit) }
+            }?.otherDates.orEmpty()
+            val faults = otherDateFaults(entries[index], otherDates) + if (onlyOtherDates) emptyList() else plantedFaults(entries, index)
+            for ((kind, faulty) in faults) {
                 val value = processed(report, faulty) ?: continue
                 // A fault that still reads right (the value printed in a second unit) is no error.
                 if (isRight(value, options)) continue
                 outcomes += Outcome(kind, value.needsSourceCheck, "${report.name}: ${faulty.name} '${faulty.rawValue}' ${faulty.unit} (read '${entries[index].rawValue}' ${entries[index].unit})")
             }
-            for ((_, respelled) in controls(entries[index])) {
+            val respellings = if (onlyOtherDates) listOf(Control.AS_READ to entries[index]) else controls(entries[index])
+            for ((_, respelled) in respellings) {
                 val value = processed(report, respelled) ?: continue
                 // A respelling that changes the value isn't harmless ("1.018" as "1,018"): no control.
                 if (!isRight(value, options)) continue
@@ -185,6 +244,15 @@ fun plantErrors(reports: List<PlantedReport>): PlantedSummary {
                     falseFlags++
                     println("    FALSE ALARM ${report.name}: ${respelled.name} '${respelled.rawValue}' ${respelled.unit}")
                 }
+            }
+        }
+    }
+    for (report in reports) {
+        plantValues(report, onlyOtherDates = false)
+        // The same cumulative table under the other headers reports print: another date's value must be caught there too.
+        if (withHeaderVariants) {
+            for ((shape, text) in headerVariants(report.text)) {
+                plantValues(PlantedReport("${report.name} ($shape)", text, report.reply, report.expected), onlyOtherDates = true)
             }
         }
         val date = report.expected.reportDate?.let(LocalDate::parse) ?: continue

@@ -203,6 +203,7 @@ fun ReviewScreen(
                     ValueCard(
                         value = value,
                         isDuplicate = value.isDuplicate(duplicates),
+                        fromSeveralDates = draft.severalResultDates,
                         onUpdate = { onUpdateValue(value.id, it) },
                         onPickCode = { pickingFor = value.id },
                         onRemove = { onRemoveValue(value.id) },
@@ -403,7 +404,7 @@ private val CheckColor: Color get() = LabCategory.GLYCEMIC.color
 private fun DateRow(draft: ReviewDraft, onPickDate: () -> Unit) {
     val note = when {
         draft.dateNotFound -> stringResource(R.string.no_date_found)
-        draft.dateToCheck -> stringResource(R.string.date_to_check)
+        draft.dateToCheck -> stringResource(if (draft.severalResultDates) R.string.several_result_dates else R.string.date_to_check)
         else -> null
     }
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -526,9 +527,11 @@ private fun ValueCard(
     onPickCode: () -> Unit,
     onRemove: () -> Unit,
     modifier: Modifier = Modifier,
+    // A cumulative report's value is printed, maybe in another date's column: the badge says that, not "not found".
+    fromSeveralDates: Boolean = false,
 ) {
     val mapped = LabMapping.loincCode(value.code) != null
-    val compareDetail = stringResource(R.string.compare_with_report_detail)
+    val compareDetail = stringResource(if (fromSeveralDates) R.string.several_result_dates else R.string.compare_with_report_detail)
     val includeLabel = "${value.resolvedName}, ${stringResource(R.string.include_in_export)}"
     val correctDetail = stringResource(R.string.correct_or_deselect)
     val category = if (mapped) LabCategory.forCode(value.code) else null
@@ -702,6 +705,24 @@ private fun ReviewDateToCheckPreview() {
 @Composable
 private fun ReviewDateToCheckDarkPreview() {
     LabImporterTheme(darkTheme = true, dynamicColor = false) { ReviewScreen(previewDateToCheck, {}, { _, _ -> }, { "" }, {}, {}, {}) }
+}
+
+private val previewSeveralDates = previewDraft.copy(
+    values = previewDraft.values.map { it.copy(needsSourceCheck = true) },
+    dateToCheck = true,
+    severalResultDates = true,
+)
+
+@Preview(name = "Several result dates", widthDp = 400, heightDp = 1100)
+@Composable
+private fun ReviewSeveralDatesPreview() {
+    LabImporterTheme(dynamicColor = false) { ReviewScreen(previewSeveralDates, {}, { _, _ -> }, { "" }, {}, {}, {}) }
+}
+
+@Preview(name = "Several result dates – dark", widthDp = 400, heightDp = 1100, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun ReviewSeveralDatesDarkPreview() {
+    LabImporterTheme(darkTheme = true, dynamicColor = false) { ReviewScreen(previewSeveralDates, {}, { _, _ -> }, { "" }, {}, {}, {}) }
 }
 
 @Preview(name = "To check – small phone", widthDp = 360, heightDp = 640)

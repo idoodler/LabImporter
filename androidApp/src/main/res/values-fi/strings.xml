@@ -175,6 +175,7 @@
     <string name="correct_or_deselect">Ei voi tallentaa tässä muodossa. Korjaa arvo tai poista sen valinta.</string>
     <string name="no_date_found">Raportista ei löytynyt päivämäärää. Tarkista, että tämä päivämäärä on oikein.</string>
     <string name="date_to_check">Tämä päivämäärä on voitu lukea väärin. Tarkista, että se vastaa raporttia.</string>
+    <string name="several_result_dates">Tässä raportissa on tuloksia useilta päiviltä. Tarkista, että päivämäärä ja jokainen arvo ovat samasta sarakkeesta.</string>
     <string name="patient_and_lab">Potilas ja laboratorio</string>
     <string name="not_filled_in">Ei täytetty</string>
     <plurals name="exportable_count">

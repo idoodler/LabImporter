@@ -5,6 +5,9 @@ struct LabValueRowView: View {
     /// True when another exportable row carries the same LOINC code; surfaces a
     /// "Duplicate" badge so the user can resolve the collision before saving.
     var isDuplicate: Bool = false
+    /// The report prints results of several dates: the badge asks to check the value is the report date's,
+    /// not that it's missing from the text (it is printed, maybe in another date's column).
+    var isFromSeveralDates: Bool = false
 
     @State private var showCodePicker = false
     @FocusState private var isFocused: Bool
@@ -188,9 +191,9 @@ struct LabValueRowView: View {
             .background(Color.orange.opacity(0.15), in: Capsule())
             .foregroundStyle(.statusWarning)
             .fixedSize(horizontal: false, vertical: true)
-            .help(Self.compareExplanation)
+            .help(compareExplanation)
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel(Self.compareExplanation)
+            .accessibilityLabel(compareExplanation)
             // It explains, it doesn't act: the audit took it for a target 17 pt tall.
             .accessibilityRespondsToUserInteraction(false)
             .accessibilityIdentifier("review-compare-badge")
@@ -213,8 +216,13 @@ struct LabValueRowView: View {
             .accessibilityIdentifier("review-correct-badge")
     }
 
-    private static let compareExplanation: LocalizedStringKey =
-        "This value wasn't found in the report text. Compare it with your report."
+    private var compareExplanation: LocalizedStringKey {
+        isFromSeveralDates ? Self.severalDatesExplanation : "This value wasn't found in the report text. Compare it with your report."
+    }
+
+    /// Why a cumulative report's values and date are flagged; the date row says it too.
+    static let severalDatesExplanation: LocalizedStringKey =
+        "This report lists results from several dates. Check that the date and each value come from the same column."
 
     @ViewBuilder
     private var valueField: some View {
@@ -243,7 +251,7 @@ struct LabValueRowView: View {
                 // Every row's field says "Value" otherwise: VoiceOver has to say which test it is.
                 .accessibilityLabel(Text(verbatim: value.resolvedName))
                 .accessibilityIdentifier("review-value-field")
-                .accessibilityHint(value.needsSourceCheck ? Text(Self.compareExplanation) : Text(verbatim: ""))
+                .accessibilityHint(value.needsSourceCheck ? Text(compareExplanation) : Text(verbatim: ""))
         }
     }
 
@@ -304,6 +312,13 @@ struct LabValueRowView: View {
         LabValueRowView(value: $suggested)
     }
     .preferredColorScheme(.dark)
+}
+
+#Preview("Several Result Dates") {
+    @Previewable @State var misread = LabValue.sampleToCheck[0]
+    List {
+        LabValueRowView(value: $misread, isFromSeveralDates: true)
+    }
 }
 
 #Preview("Can't Be Saved") {

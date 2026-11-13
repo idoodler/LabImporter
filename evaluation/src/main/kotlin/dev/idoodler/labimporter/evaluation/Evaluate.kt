@@ -56,6 +56,11 @@ data class ExpectedValue(
     val loinc: String? = null,
     /** Other readings of the same line that are also right (e.g. a value printed in two units). */
     val alternatives: List<Alternative> = emptyList(),
+    /**
+     * The test's results the report prints for other dates (a cumulative report's older columns, a
+     * previous result with its date), in the value's unit: each one is planted as a wrong reading.
+     */
+    val otherDates: List<Double> = emptyList(),
 )
 
 @Serializable
@@ -235,7 +240,7 @@ private fun printTotal(scores: List<Score>, mode: String = "model") {
         "wrong values NOT flagged ${scores.sumOf { it.wrongNotFlagged }}, " +
         "right values falsely flagged ${scores.sumOf { it.rightFlagged }}/${scores.sumOf { it.rightValues }}")
     println("\nPlanting errors in the right readings")
-    val planted = plantErrors(plantedReports())
+    val planted = plantErrors(plantedReports(), withHeaderVariants = !heldOut)
     println("PLANTED ERRORS  flagged ${planted.flagged}/${planted.planted} (${pct(planted.flagged, planted.planted)}), " +
         "right values falsely flagged ${planted.falseFlags}/${planted.controls}, " +
         "right dates flagged ${planted.dateFalseFlags}/${planted.dateControls}")

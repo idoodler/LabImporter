@@ -10,6 +10,9 @@ struct ReviewView: View {
     /// The report prints the date, but it may be misread (day and month either way, a
     /// birth date); the date row says so until the user changes it.
     @State private var isDateToCheck: Bool
+    /// The report prints its results in columns of several dates (a cumulative report): where a value
+    /// or the date is flagged, the date row and its badge say why.
+    private let hasSeveralResultDates: Bool
     /// This report's names. Only saving a new report remembers them for the next one.
     @State var names: ReviewNames
     @AppStorage("patientBirthdateInterval") var birthdateInterval: Double = 0
@@ -101,6 +104,7 @@ struct ReviewView: View {
         reportDate: Date = Date(),
         isDateMissing: Bool = false,
         isDateToCheck: Bool = false,
+        hasSeveralResultDates: Bool = false,
         extractedPatientName: String? = nil,
         extractedAuthorName: String? = nil,
         replacingReport: LabReport? = nil,
@@ -110,6 +114,7 @@ struct ReviewView: View {
         _reportDate = State(initialValue: reportDate)
         _isDateMissing = State(initialValue: isDateMissing)
         _isDateToCheck = State(initialValue: isDateToCheck)
+        self.hasSeveralResultDates = hasSeveralResultDates
         let names = ReviewNames(replacing: replacingReport)
         _names = State(initialValue: names)
         _initialNames = State(initialValue: names)
@@ -256,7 +261,11 @@ struct ReviewView: View {
                     HStack(alignment: .firstTextBaseline, spacing: 6) {
                         Image(systemName: "exclamationmark.magnifyingglass")
                             .accessibilityHidden(true)
-                        Text("This date may be misread. Check that it matches the report.")
+                        if hasSeveralResultDates {
+                            Text(LabValueRowView.severalDatesExplanation)
+                        } else {
+                            Text("This date may be misread. Check that it matches the report.")
+                        }
                     }
                     .font(.footnote)
                     .foregroundStyle(.statusWarning)
@@ -273,7 +282,11 @@ struct ReviewView: View {
         ForEach(valueGroups, id: \.category) { group in
             Section {
                 ForEach(group.indices, id: \.self) { idx in
-                    LabValueRowView(value: $labValues[idx], isDuplicate: labValues[idx].isDuplicate(in: duplicateLoincCodes))
+                    LabValueRowView(
+                        value: $labValues[idx],
+                        isDuplicate: labValues[idx].isDuplicate(in: duplicateLoincCodes),
+                        isFromSeveralDates: hasSeveralResultDates
+                    )
                         .id(labValues[idx].id)
                         .listRowBackground(Rectangle().fill(.ultraThinMaterial))
                         .swipeActions(edge: .trailing) {

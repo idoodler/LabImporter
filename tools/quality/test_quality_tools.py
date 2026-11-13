@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -44,6 +45,54 @@ class MutationTest(unittest.TestCase):
         packages["loinc"] = {"killed": 7, "total": 10, "inconclusive": 0, "score_pct": 70.0}
         parts = scorecard.mutation_parts({"packages": packages})
         self.assertEqual([p.status for p in parts], [scorecard.PASS] * 3 + [scorecard.FAIL])
+
+
+class FreshGradleResultsTest(unittest.TestCase):
+    """collect.sh fails a step whose test or lint result came from the build cache or was up to date."""
+
+    LOG = "\n".join([
+        "> Task :shared:compileTestKotlinJvm FROM-CACHE",
+        "> Task :shared:jvmTestProcessResources NO-SOURCE",
+        "> Task :shared:jvmTest",
+        "> Task :shared:koverXmlReportJvm FROM-CACHE",
+        "> Task :androidApp:testDebugUnitTest",
+        "> Task :androidApp:lintAnalyzeRelease",
+        "> Task :evaluation:test",
+        "> Task :evaluation:run",
+    ])
+
+    def test_tests_that_ran_now_pass(self):
+        required = [":shared:jvmTest", ":androidApp:testDebugUnitTest", ":evaluation:test", ":evaluation:run"]
+        self.assertEqual(reports.fresh_log(self.LOG, required), {"stale": [], "missing": []})
+
+    def test_a_cached_or_up_to_date_test_is_stale(self):
+        for outcome in ("FROM-CACHE", "UP-TO-DATE"):
+            for task in (":shared:jvmTest", ":androidApp:testDebugUnitTest", ":evaluation:test", ":androidApp:lintAnalyzeRelease"):
+                log = self.LOG.replace(f"> Task {task}\n", f"> Task {task} {outcome}\n")
+                # Named or not: any test or lint analysis task counts.
+                self.assertEqual(reports.fresh_log(log, [])["stale"], [f"{task} {outcome}"])
+
+    def test_a_required_task_that_never_ran_is_missing(self):
+        self.assertEqual(reports.fresh_log(self.LOG, [":androidApp:lintRelease"])["missing"], [":androidApp:lintRelease"])
+
+    def test_the_command_fails_the_step(self):
+        with tempfile.TemporaryDirectory() as folder:
+            log = Path(folder, "gradle.log")
+            log.write_text(self.LOG.replace("> Task :shared:jvmTest\n", "> Task :shared:jvmTest FROM-CACHE\n"))
+            script = Path(__file__).resolve().parent / "reports.py"
+            run = subprocess.run([sys.executable, str(script), "fresh", str(log), ":shared:jvmTest"], capture_output=True, text=True)
+            self.assertEqual(run.returncode, 1)
+            run = subprocess.run([sys.executable, str(script), "fresh", str(log), ":androidApp:testDebugUnitTest"], capture_output=True, text=True)
+            self.assertEqual(run.returncode, 1)
+            log.write_text(self.LOG)
+            run = subprocess.run([sys.executable, str(script), "fresh", str(log), ":shared:jvmTest"], capture_output=True, text=True)
+            self.assertEqual(run.returncode, 0)
+
+    def test_collect_reruns_every_test_task(self):
+        collect = (Path(__file__).resolve().parent / "collect.sh").read_text()
+        for task in (":shared:jvmTest", ":androidApp:testDebugUnitTest", ":evaluation:test", ":androidApp:lintAnalyzeRelease"):
+            self.assertIn(f"{task} --rerun", collect)
+        self.assertEqual(collect.count("reports.py fresh"), 4)
 
 
 class CoverageTest(unittest.TestCase):
@@ -501,8 +550,19 @@ class AuditPagesTest(unittest.TestCase):
 
 class ScorecardTest(unittest.TestCase):
     def test_pull_request_checks(self):
-        part = scorecard.checks_part("CI", 7, [{"name": "lint", "bucket": "pass"}, {"name": "ui", "bucket": "skipping"}])
+        part = scorecard.checks_part("CI", 7, [{"name": "lint", "bucket": "pass"}, {"name": "ui", "bucket": "pass"}])
         self.assertEqual(part.status, scorecard.PASS)
+        # A skipped check didn't run: never green.
+        part = scorecard.checks_part("CI", 7, [{"name": "lint", "bucket": "pass"}, {"name": "ui", "bucket": "skipping"}])
+        self.assertEqual(part.status, scorecard.NOT_RUN)
+        self.assertIn("ui", part.text)
+        # The weekly audit is skipped on every pull request by design: said, and counted neither way.
+        weekly = {"name": "Accessibility audit of every page", "bucket": "skipping"}
+        part = scorecard.checks_part("CI", 7, [{"name": "lint", "bucket": "pass"}, weekly])
+        self.assertEqual(part.status, scorecard.PASS)
+        self.assertIn("1 green", part.text)
+        self.assertIn("runs weekly, not on pull requests", part.text)
+        self.assertEqual(scorecard.checks_part("CI", 7, [weekly]).status, scorecard.NOT_RUN)
         part = scorecard.checks_part("CI", 7, [{"name": "lint", "bucket": "pass"}, {"name": "ui", "bucket": "fail"}])
         self.assertEqual(part.status, scorecard.FAIL)
         self.assertEqual(scorecard.checks_part("CI", 7, [{"name": "ui", "bucket": "pending"}]).status, scorecard.NOT_RUN)
@@ -611,8 +671,12 @@ class ScorecardTest(unittest.TestCase):
 
     def test_the_committed_floor_bounds_every_kind(self):
         floor = json.loads(scorecard.FLOOR.read_text())
-        kinds = {"TENFOLD", "TENTH", "DIGIT_DROPPED", "DIGIT_DOUBLED", "NEIGHBOUR", "QUALIFIER_DROPPED", "WRONG_UNIT",
-                 "DATE_DAY", "DATE_YEAR", "DATE_SWAPPED"}
+        # Every kind PlantedErrors.kt plants, read from its enum: a new kind without a bound could read worse unseen.
+        planted = (scorecard.ROOT / "evaluation/src/main/kotlin/dev/idoodler/labimporter/evaluation/PlantedErrors.kt").read_text()
+        enum = planted.split("enum class Fault", 1)[1].split("}", 1)[0]
+        kinds = set(re.findall(r"^\s+([A-Z_]+)\(", enum, re.MULTILINE))
+        self.assertGreaterEqual(kinds, {"TENFOLD", "TENTH", "DIGIT_DROPPED", "DIGIT_DOUBLED", "NEIGHBOUR", "QUALIFIER_DROPPED",
+                                        "WRONG_UNIT", "DATE_COLUMN", "DATE_DAY", "DATE_YEAR", "DATE_SWAPPED"})
         self.assertEqual(set(floor["plantedByKind"]), kinds)
         self.assertTrue(all({"planted", "notFlagged"} <= set(b) for b in floor["plantedByKind"].values()))
 
@@ -713,6 +777,38 @@ class ScorecardTest(unittest.TestCase):
                          "Accessibility FAIL, Round trips not run; run 3: at 9999999, not abcdef1; run 4: with uncommitted changes; "
                          "run 5: collect.sh exit 1, no scorecard")
         self.assertRegex((scorecard.ROOT / "tools/quality/consistency.sh").read_text(), r"\nRUNS=3\n")
+
+    def test_the_panel_judges_screenshots_of_the_measured_commit_only(self):
+        commit, older = "abcdef1234567", "1234567abcdef"
+        taken = lambda at, dirty=0: {"commit": at, "uncommitted": 0, "finished_commit": at, "finished_uncommitted": dirty}  # noqa: E731
+
+        def panel(records: dict) -> list[str]:
+            with tempfile.TemporaryDirectory() as folder:
+                Path(folder, "run.json").write_text(json.dumps(taken(commit)))
+                for name, record in records.items():
+                    Path(folder, name).mkdir()
+                    Path(folder, name, "a.png").write_bytes(b"png")
+                    if record is not None:
+                        Path(folder, name, "commit.json").write_text(json.dumps(record))
+                measures = scorecard.design_quality(scorecard.Inputs(Path(folder)))
+            return [m.status for m in measures if m.panel]
+
+        self.assertEqual(panel({"ios-screens": taken(commit), "android-screens": taken(commit)}), ["panel", "panel"])
+        # Days older than the measured commit, from uncommitted code, without a record or missing: nothing to judge.
+        for records in ({"ios-screens": taken(older), "android-screens": taken(commit)},
+                        {"ios-screens": taken(commit), "android-screens": taken(commit, dirty=2)},
+                        {"ios-screens": taken(commit), "android-screens": None},
+                        {"ios-screens": taken(commit)}):
+            self.assertEqual(panel(records), [scorecard.NOT_RUN, scorecard.NOT_RUN], records)
+        parts = scorecard.screenshots_parts(Path("/nonexistent"), commit)
+        self.assertTrue(all(p.status == scorecard.NOT_RUN for p in parts))
+        # A panel not run keeps a consistency run from being green.
+        data = self.consistency([(0, {**self.GREEN, "measures": {"Screenshot matrix": scorecard.NOT_RUN}})])
+        self.assertFalse(data["all_green"])
+        collect = (scorecard.ROOT / "tools/quality/collect.sh").read_text()
+        self.assertIn("step ios-screens ios_screens", collect)
+        self.assertIn("step android-screens android_screens", collect)
+        self.assertIn("ScreenMatrixTest", collect)
 
     def test_the_write_path_measure_needs_the_ios_fault_tests(self):
         with tempfile.TemporaryDirectory() as folder:

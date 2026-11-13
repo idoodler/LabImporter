@@ -170,6 +170,7 @@
     <string name="correct_or_deselect">无法按此写法保存。请更正或取消选择。</string>
     <string name="no_date_found">报告中未找到日期。请确认此日期是否正确。</string>
     <string name="date_to_check">此日期可能读取有误。请确认它与报告一致。</string>
+    <string name="several_result_dates">此报告列出了多个日期的结果。请检查日期和每个数值是否来自同一列。</string>
     <string name="patient_and_lab">患者和医院</string>
     <string name="not_filled_in">未填写</string>
     <plurals name="exportable_count">

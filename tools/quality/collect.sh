@@ -11,8 +11,9 @@
 #   --ios       the iOS unit and UI tests with coverage, on --simulator (default: the
 #               audit's), then the accessibility audit on its pinned simulator
 #               (tools/quality/audit_simulator.sh; the step fails when there's none),
-#               `swiftlint analyze` on the first build's log, and the privacy manifests
-#               in the built .app and .appex
+#               `swiftlint analyze` on the first build's log, the privacy manifests
+#               in the built .app and .appex, and both screenshot matrices again
+#               (build/quality/ios-screens, android-screens, each with the commit it shows)
 #   --mutation  PIT mutation testing of shared/ (tools/quality/mutation.sh)
 #
 # Steps run one at a time, and Gradle is stopped before the simulator starts: on an
@@ -93,9 +94,15 @@ gradle_tests() {
   # that doesn't compile) would leave the last run's results to be scored as this one's.
   rm -rf shared/build/test-results/jvmTest androidApp/build/test-results/testDebugUnitTest \
     shared/build/reports/kover androidApp/build/reports/kover
+  # `--rerun` on each test task: the build cache (gradle.properties) stays on for compiling, but a test
+  # result restored from it, or one Gradle thinks up to date, is an earlier run's (consistency.sh's
+  # "three runs in a row" would run the tests once). `fresh` fails the step if one didn't run now.
   ./gradlew --console=plain --continue \
-    :shared:jvmTest :shared:koverXmlReportJvm \
-    :androidApp:testDebugUnitTest :androidApp:koverXmlReportDebug
+    :shared:jvmTest --rerun :shared:koverXmlReportJvm \
+    :androidApp:testDebugUnitTest --rerun :androidApp:koverXmlReportDebug
+  local code=$?
+  python3 tools/quality/reports.py fresh "$LOGS/gradle-tests.log" :shared:jvmTest :androidApp:testDebugUnitTest || return 1
+  return $code
 }
 step gradle-tests gradle_tests
 python3 tools/quality/reports.py junit shared=shared/build/test-results/jvmTest android=androidApp/build/test-results/testDebugUnitTest > "$OUT/tests.json"
@@ -104,15 +111,58 @@ python3 tools/quality/reports.py warnings "$LOGS/gradle-tests.log" > "$OUT/kotli
 
 # --- 3. Android lint ---------------------------------------------------------
 rm -f androidApp/build/reports/lint-results-release.*
-step android-lint ./gradlew --console=plain :androidApp:lintRelease
+# The analysis reruns (an up-to-date or cached one would report the last run's findings); `fresh` checks it did.
+android_lint() {
+  ./gradlew --console=plain :androidApp:lintAnalyzeRelease --rerun :androidApp:lintRelease
+  local code=$?
+  python3 tools/quality/reports.py fresh "$LOGS/android-lint.log" :androidApp:lintAnalyzeRelease :androidApp:lintRelease || return 1
+  return $code
+}
+step android-lint android_lint
 python3 tools/quality/reports.py lint androidApp/build/reports/lint-results-release.xml > "$OUT/lint.json"
 
 # --- 4. Evaluation replay ----------------------------------------------------
-# With the planted errors (evaluation/…/PlantedErrors.kt) and the evaluation's own tests.
-step evaluation ./gradlew --console=plain :evaluation:test :evaluation:run --args=replay "-Psummary=$OUT/evaluation.json"
+# With the planted errors (evaluation/…/PlantedErrors.kt) and the evaluation's own tests, which rerun
+# like the others. The replay itself (`run`) has no outputs, so Gradle runs it every time; `fresh` checks both.
+evaluation() {
+  ./gradlew --console=plain :evaluation:test --rerun :evaluation:run --args=replay "-Psummary=$OUT/evaluation.json"
+  local code=$?
+  python3 tools/quality/reports.py fresh "$LOGS/evaluation.log" :evaluation:test :evaluation:run || return 1
+  return $code
+}
+step evaluation evaluation
 # The held-out set (evaluation/heldout): reported beside Extraction safety, never scored or gated, and never
 # used to change the Review check or the LOINC ranking (evaluation/README.md, "Held-out set").
-step evaluation-heldout ./gradlew --console=plain :evaluation:run --args=replay -Pheldout=true "-Psummary=$OUT/evaluation_heldout.json"
+evaluation_heldout() {
+  ./gradlew --console=plain :evaluation:run --args=replay -Pheldout=true "-Psummary=$OUT/evaluation_heldout.json"
+  local code=$?
+  python3 tools/quality/reports.py fresh "$LOGS/evaluation-heldout.log" :evaluation:run || return 1
+  return $code
+}
+step evaluation-heldout evaluation_heldout
+
+# --- Screenshot matrices (with --ios) -------------------------------------------
+# What the panel judges (Screenshot matrix, Heuristic panel): taken again on every --ios run, with the commit
+# they were taken at beside them (`commit.json`, as run.json). scorecard.py shows the panel's measures as
+# "not run" when that isn't the measured commit, so screenshots of older code never stand in for this one's.
+# screens_start <folder>: empties it and records the commit; screens_finish <folder> <count>: records the
+# tree again at the end, or removes the record when the step took no screenshots.
+screens_start() {
+  rm -rf "$1" && mkdir -p "$1" && python3 tools/quality/scorecard.py --record-run "$1/commit.json"
+}
+screens_finish() {
+  local count
+  count=$(find "$1" -name '*.png' | wc -l | tr -d ' ')
+  echo "$count screenshots in $1"
+  if [ "$2" -ne 0 ] || [ "$count" -eq 0 ]; then rm -f "$1/commit.json"; return 1; fi
+  python3 tools/quality/scorecard.py --finish-run "$1/commit.json"
+}
+android_screens() {
+  screens_start "$OUT/android-screens" || return 1
+  ./gradlew --console=plain :androidApp:testDebugUnitTest --tests '*.ScreenMatrixTest' --rerun "-PqualityScreens=$ROOT/$OUT/android-screens"
+  screens_finish "$OUT/android-screens" $?
+}
+[ $IOS -eq 1 ] && step android-screens android_screens
 
 # --- 5. iOS (optional) -------------------------------------------------------
 if [ $IOS -eq 1 ]; then
@@ -140,6 +190,16 @@ if [ $IOS -eq 1 ]; then
     IOS_RESULT_BUNDLE="$OUT/ios-audit.xcresult" tools/ios_test.sh audit
   }
   step ios-audit ios_audit
+  # On the simulator that's booted now (the audit's, unless there's none), with the build ios-tests left.
+  ios_screens() {
+    local device=${AUDIT_SIMULATOR:-$SIMULATOR}
+    [ -n "$device" ] || { echo "no simulator"; return 1; }
+    screens_start "$OUT/ios-screens" || return 1
+    boot "$device"
+    QUALITY_SCREENSHOT_DIR="$ROOT/$OUT/ios-screens" tools/ios_test.sh screens "$device"
+    screens_finish "$OUT/ios-screens" $?
+  }
+  step ios-screens ios_screens
   # One result bundle for the scorecard and coverage: both runs' tests.
   rm -rf "$OUT/ios.xcresult"
   if [ -d "$OUT/ios-tests.xcresult" ] && [ -d "$OUT/ios-audit.xcresult" ]; then

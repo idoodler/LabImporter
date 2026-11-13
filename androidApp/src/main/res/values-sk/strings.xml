@@ -185,6 +185,7 @@
     <string name="correct_or_deselect">Takto zapísanú hodnotu nemožno uložiť. Opravte ju alebo zrušte jej výber.</string>
     <string name="no_date_found">V správe sa nenašiel dátum. Skontrolujte, či je tento dátum správny.</string>
     <string name="date_to_check">Tento dátum mohol byť prečítaný nesprávne. Skontrolujte, či zodpovedá správe.</string>
+    <string name="several_result_dates">Táto správa uvádza výsledky z viacerých dátumov. Skontrolujte, či dátum aj každá hodnota pochádzajú z rovnakého stĺpca.</string>
     <string name="patient_and_lab">Pacient a laboratórium</string>
     <string name="not_filled_in">Nevyplnené</string>
     <plurals name="exportable_count">

@@ -1,0 +1,12 @@
+Laboratorium Klinische Chemie - Ziekenhuis Rivierenland
+Patiënt: De Vries, P.            Geb.datum: 17-05-1958
+Afdrukdatum: 04-11-2026
+
+CUMULATIEF OVERZICHT
+Bepaling            Eenheid      02-11-2026   19-10-2026   28-09-2026   Referentie
+Natrium             mmol/l       138          135 L        140          135-145
+Kalium              mmol/l       4,8          5,4 H        4,2          3,5-5,0
+Kreatinine          µmol/l       96           118 H        89           60-110
+Hemoglobine         mmol/l       8,6          7,9 L        8,9          8,5-11,0
+CRP                 mg/l         6            41 H         <5           <10
+Glucose             mmol/l       5,9          7,2          5,6          4,0-7,8

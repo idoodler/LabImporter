@@ -724,7 +724,7 @@ class ReportSourceTextTest {
 
     private fun sampleReports(): List<Pair<String, List<Triple<String, String, List<String>>>>> {
         val reports = File("../evaluation/reports").listFiles { file -> file.name.endsWith(".txt") }!!.sortedBy { it.name }
-        assertEquals(23, reports.size)
+        assertEquals(24, reports.size)
         return reports.map { report ->
             val expected = Json.parseToJsonElement(File(report.parentFile, report.nameWithoutExtension + ".expected.json").readText())
             report.readText() to expected.jsonObject.getValue("values").jsonArray.map { value ->
@@ -828,5 +828,27 @@ class ReportSourceTextTest {
             }
         }
         assertTrue(dropped >= 20, "$dropped")
+    }
+
+    @Test
+    fun aPreviousResultWithItsDateIsNotTheCurrentOne() {
+        val text = """
+            Glucose            65      Low               92      04/02/2026         mg/dL      70-99
+            Creatinine         1.32    High              1.10    04/02/2026         mg/dL      0.57-1.00
+            Sodium             138                       138     04/02/2026         mmol/L     134-144
+            Glukose            92      03.11.2026        mg/dl   70-99
+        """.trimIndent()
+        val source = ReportSourceText(text)
+        assertTrue(source.isAnotherDatesResult("92", listOf("Glucose")))
+        assertTrue(source.isAnotherDatesResult("1.10", listOf("Creatinine")))
+        assertFalse(source.isAnotherDatesResult("65", listOf("Glucose")))
+        assertFalse(source.isAnotherDatesResult("1.32", listOf("Creatinine")))
+        // The same in both columns: the current one prints it too.
+        assertFalse(source.isAnotherDatesResult("138", listOf("Sodium")))
+        // A row's only result, with its date behind it, is the current one; a range's limit is no result.
+        assertFalse(source.isAnotherDatesResult("92", listOf("Glukose")))
+        assertFalse(source.isAnotherDatesResult("<5", listOf("Glucose")))
+        assertFalse(source.backs("92", "mg/dL", listOf("Glucose")))
+        assertTrue(source.backs("65", "mg/dL", listOf("Glucose")))
     }
 }

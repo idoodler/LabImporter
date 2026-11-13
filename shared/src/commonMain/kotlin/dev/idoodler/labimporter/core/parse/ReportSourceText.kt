@@ -1,6 +1,7 @@
 package dev.idoodler.labimporter.core.parse
 
 import dev.idoodler.labimporter.core.platform.NumberFormatting
+import kotlinx.datetime.LocalDate
 import kotlin.math.abs
 
 /**
@@ -16,13 +17,79 @@ import kotlin.math.abs
  * recognised line per line, yet a PDF's text can put a table's names and values
  * apart, so a line that names the test and prints no result at all says nothing,
  * nor does a row that prints no unit beside its result. A false alarm on every
- * other value would teach people to ignore the badge.
+ * other value would teach people to ignore the badge. Two more catch a result
+ * the row prints, but not as this report's: one that lost its "<" or ">"
+ * ([dropsQualifier]), and an earlier date's beside the current one
+ * ([isAnotherDatesResult]); and in a cumulative report, a result from another
+ * date's column ([isFromAnotherColumn]).
+ *
+ * @param today the day it is read on: a two-digit year after it is 19xx.
  */
-internal class ReportSourceText(text: String) {
+internal class ReportSourceText(text: String, private val today: LocalDate? = null) {
     private val decimalSeparator: Char? = decimalSeparatorIn(undated(text))
     private val whole = Printed(text, decimalSeparator)
     private val unitText: String = unitForm(text)
-    private val lines: List<Printed> by lazy { text.lines().map { Printed(it, decimalSeparator) } }
+    private val rawLines: List<String> = text.lines()
+    private val lines: List<Printed> by lazy { rawLines.map { Printed(it, decimalSeparator) } }
+
+    /**
+     * The result columns of a cumulative report: a header of two or more result dates
+     * ([ResultColumns.find]) over rows that print a result per date — at least half of the
+     * rows right below it that print a result print two or more. A header of dates over
+     * rows of one result each is no such table ("Collected  Received  Reported" over a
+     * single-date report's values). Null where the report has none.
+     */
+    val resultColumns: ResultColumns? by lazy {
+        val columns = ResultColumns.find(rawLines, today) ?: return@lazy null
+        val rows = (columns.headerEnd + 1..rawLines.lastIndex).dropWhile { rawLines[it].isBlank() }.takeWhile { rawLines[it].isNotBlank() }
+        val counts = rows.mapNotNull { index -> lines[index].labelEnd()?.let { lines[index].resultsFrom(it).size } }.filter { it > 0 }
+        val several = counts.count { it >= 2 }
+        columns.takeIf { several >= 1 && several * 2 >= counts.size }
+    }
+
+    /**
+     * Whether [result], a number or threshold, may be another date's in a cumulative report
+     * ([resultColumns]): on its test's rows that print more than one result (a reference range
+     * and flags aside), the model could have taken the wrong one, so it is flagged unless it is
+     * the result in the column of [reportDate] — or, where that date heads no column, of the
+     * latest date, else the first. A row's result is the one printed under the column's date
+     * where the row lines up with the header, else the one in the column's place. A row of one
+     * result has nothing to mix up, and a report without result columns raises nothing.
+     */
+    fun isFromAnotherColumn(result: String, names: List<String>, reportDate: LocalDate?): Boolean {
+        val columns = resultColumns ?: return false
+        val trimmed = result.trim()
+        val bare = trimmed.trimStart(*THRESHOLDS, '=').trim()
+        if (bare.firstOrNull()?.isDigit() != true) return false
+        val value = numberIn(bare, decimalSeparator)?.let { abs(it) } ?: return false
+        val qualified = trimmed.first() in THRESHOLDS
+        val column = columns.reportColumn(reportDate)
+        val verdicts = rowsOf(names).filter { (index, _) -> index > columns.headerEnd }.mapNotNull { (index, named) ->
+            val line = lines[index]
+            val from = line.nameEnd(named).takeIf { it > 0 } ?: line.labelEnd() ?: return@mapNotNull null
+            val cells = cellsOf(line.resultsFrom(from), columns) ?: return@mapNotNull null
+            val cell = cells.getOrNull(column)
+            cell == null || value !in cell.values || cell.qualified != qualified
+        }
+        return verdicts.isNotEmpty() && verdicts.all { it }
+    }
+
+    /**
+     * A row's [results] by column: each under the date it is printed under, where the row lines up
+     * with the header (two or more of them under a date each, left to right); else in order, the
+     * first under the first date. Null where the row prints fewer than two results.
+     */
+    private fun cellsOf(results: List<PrintedResult>, columns: ResultColumns): List<PrintedResult?>? {
+        val spans = columns.spans
+        if (spans != null) {
+            val placed = results.map { r -> spans.indices.filter { spans[it].first <= r.range.last && spans[it].last >= r.range.first } }
+            val under = placed.filter { it.isNotEmpty() }.map { it.first() }
+            if (placed.all { it.size <= 1 } && under.size >= 2 && under.zipWithNext().all { (a, b) -> a < b }) {
+                return spans.indices.map { column -> results.indices.firstOrNull { placed[it].singleOrNull() == column }?.let(results::get) }
+            }
+        }
+        return if (results.size >= 2) results.take(columns.dates.size) else null
+    }
 
     /**
      * Whether the report backs a value the model read: its [result] printed, on
@@ -34,7 +101,22 @@ internal class ReportSourceText(text: String) {
         val trimmed = result.trim()
         if (trimmed.isEmpty() || trimmed == "-") return true
         return prints(trimmed) && printsBesideTest(trimmed, names) && printsUnitBesideTest(trimmed, unit, names) &&
-            !dropsQualifier(trimmed, names)
+            !dropsQualifier(trimmed, names) && !isAnotherDatesResult(trimmed, names)
+    }
+
+    /**
+     * Whether [result], a number, is printed on its test's rows only as an earlier date's result
+     * beside the current one: "Glucose  65 Low  92  04/02/2026" prints 92 as the result of
+     * 04/02/2026 (a date right behind it, flags aside) and 65, with no date, as this report's.
+     * A row whose only result is dated ("Glukose 92 03.11.2026") has no other to be the current
+     * one, so nothing is claimed there; nor where no row of the test prints the number.
+     */
+    fun isAnotherDatesResult(result: String, names: List<String>): Boolean {
+        val trimmed = result.trim()
+        if (trimmed.firstOrNull()?.isDigit() != true) return false
+        val value = numberIn(trimmed, decimalSeparator)?.let { abs(it) } ?: return false
+        val verdicts = rowsOf(names).mapNotNull { (index, named) -> lines[index].isDatedResult(value, named) }
+        return verdicts.isNotEmpty() && verdicts.all { it }
     }
 
     /**
@@ -230,6 +312,35 @@ internal class ReportSourceText(text: String) {
             return signAt(blanked, token.range.first) == null
         }
 
+        /** Where this line prints a date. */
+        private val dateRanges: List<IntRange> by lazy {
+            (LabParsePipeline.ISO_DATE.findAll(text) + LabParsePipeline.NUMERIC_DATE.findAll(text)).map { it.range }.toList()
+        }
+
+        /** Where this line prints a reference range ("70-99"), whose limits are no results. */
+        private val rangeSpans: List<IntRange> by lazy { RANGE.findAll(blanked).map { it.range }.toList() }
+
+        /**
+         * Whether [value], behind the test's name (the first of [names] printed here), is printed only
+         * as a dated result ([isDated]) while the row also prints an undated result before it — the
+         * current column; null where no number behind the name reads [value], or the line has no date.
+         */
+        fun isDatedResult(value: Double, names: List<String>): Boolean? {
+            if (dateRanges.isEmpty()) return null
+            val from = nameEnd(names)
+            val results = tokens.filter { token -> token.range.first >= from && rangeSpans.none { token.range.first in it } }
+            val reading = results.filter { value in it.values }.ifEmpty { return null }
+            val firstDated = reading.firstOrNull { isDated(it) } ?: return false
+            return reading.all { isDated(it) } && results.any { it.range.last < firstDated.range.first && !isDated(it) }
+        }
+
+        /** Whether a date follows the number at [token], with only spacing and a high/low flag between ("92  04/02/2026", "7,6 L 18.08.2026"). */
+        private fun isDated(token: NumberToken): Boolean {
+            val from = token.range.last + 1
+            val gap = DATED_GAP.find(text.substring(from))?.value?.length ?: 0
+            return dateRanges.any { it.first == from + gap }
+        }
+
         /** Whether the value this line starts with ([LEADING_VALUE]) is [value] behind a "<" or ">"; null where it doesn't start with [value]. */
         fun isQualifiedAtStart(value: Double): Boolean? {
             val leading = LEADING_VALUE.find(blanked)?.value?.trim() ?: return null
@@ -237,11 +348,26 @@ internal class ReportSourceText(text: String) {
             return if (number == value) leading.first() in THRESHOLDS else null
         }
 
+        /** Where the row's label ends: the first word, where it holds a letter; null where the line starts otherwise. */
+        fun labelEnd(): Int? = SPACED_WORD.find(blanked)?.takeIf { word -> word.value.any { it.isLetter() } }?.let { it.range.last + 1 }
+
+        /**
+         * The results this line prints in the test's own part behind [from], where its name ends
+         * ([partFrom]): numbers and thresholds, not a reference range's limits nor a unit's
+         * numbers ("10^9/l", "x10E3/uL", "mL/min/1.73m2"). None on a line that starts with a value.
+         */
+        fun resultsFrom(from: Int): List<PrintedResult> {
+            if (LEADING_VALUE.containsMatchIn(undated)) return emptyList()
+            val part = partFrom(from)
+            return part.tokens.filter { token -> part.rangeSpans.none { token.range.first in it } && !isOfAUnit(part.blanked, token.range) }
+                .map { PrintedResult(it.range.first + from..it.range.last + from, it.values, qualified = signAt(part.blanked, it.range.first) == null) }
+        }
+
         /**
          * Where the first of [names] printed here ends, as a position of the printed text;
          * 0 where normalizing changed the line's length, so positions can't be compared.
          */
-        private fun nameEnd(names: List<String>): Int {
+        fun nameEnd(names: List<String>): Int {
             if (normalized.length != text.length) return 0
             val start = normalized.indices.firstOrNull { start -> names.any { namesAt(it, start) } } ?: return 0
             return names.filter { namesAt(it, start) }.mapNotNull { matchEnd(normalized, it, start) }.maxOrNull() ?: 0
@@ -379,6 +505,9 @@ internal class ReportSourceText(text: String) {
     /** A number printed at [range] of a line, and what it reads as. */
     private class NumberToken(val range: IntRange, val values: Set<Double>)
 
+    /** A result a row prints: where on its line, what it reads as without its sign, and whether behind a "<" or ">". */
+    private class PrintedResult(val range: IntRange, val values: Set<Double>, val qualified: Boolean)
+
     private companion object {
         /** A word: a run of letters. */
         val WORD = Regex("\\p{L}+")
@@ -410,6 +539,16 @@ internal class ReportSourceText(text: String) {
         fun isUnit(word: String): Boolean {
             val marked = word.any { it in "/%^" || it in SUPERSCRIPT_DIGITS } && (word.any { it.isLetter() } || '%' in word)
             return marked || word.lowercase() in BARE_UNITS
+        }
+
+        /**
+         * Whether the number at [range] of [text] is part of a unit: behind a letter or a unit's
+         * mark ("x10", "10E3", "/1.73", "^9") or a power's base ("10^9", "10*3").
+         */
+        fun isOfAUnit(text: String, range: IntRange): Boolean {
+            val before = text.getOrNull(range.first - 1)
+            val after = text.getOrNull(range.last + 1)
+            return before != null && (before.isLetter() || before in "/^*×·") || after != null && (after in "^*" || after in SUPERSCRIPT_DIGITS)
         }
 
         /** [text] with its dates blanked out, character for character. */
@@ -447,6 +586,9 @@ internal class ReportSourceText(text: String) {
 
         /** A threshold result: "<0,5", ">= 90". */
         val THRESHOLD_NUMBER = Regex("[<>≤≥]=?\\s*[.,]?\\d")
+
+        /** What may stand between a result and the date of its column: spacing and a high/low flag. */
+        val DATED_GAP = Regex("^[\\s\\u00A0]*(?:(?:hh|ll|h|l|high|low|[*↑↓!])[\\s\\u00A0]+)*", RegexOption.IGNORE_CASE)
 
         /** A reference range: "3,5 - 5,1", "136–145". */
         val RANGE = Regex("(?<![\\d.,])\\d+(?:[.,]\\d+)?\\s*[-–—−]\\s*\\d+(?:[.,]\\d+)?(?![\\d.,])")

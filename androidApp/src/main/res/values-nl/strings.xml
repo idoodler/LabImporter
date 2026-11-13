@@ -175,6 +175,7 @@
     <string name="correct_or_deselect">Kan niet zo worden bewaard. Corrigeer deze waarde of deselecteer hem.</string>
     <string name="no_date_found">Geen datum gevonden in het rapport. Controleer of deze datum klopt.</string>
     <string name="date_to_check">Deze datum is mogelijk verkeerd gelezen. Controleer of hij overeenkomt met het rapport.</string>
+    <string name="several_result_dates">Dit verslag bevat uitslagen van meerdere datums. Controleer of de datum en elke waarde uit dezelfde kolom komen.</string>
     <string name="patient_and_lab">Patiënt en lab</string>
     <string name="not_filled_in">Niet ingevuld</string>
     <plurals name="exportable_count">

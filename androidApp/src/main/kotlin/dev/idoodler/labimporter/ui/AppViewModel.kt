@@ -77,6 +77,12 @@ data class ReviewDraft(
      * birth date ([dev.idoodler.labimporter.core.parse.ParseResult.reportDateNeedsCheck]).
      */
     val dateToCheck: Boolean = false,
+    /**
+     * The report prints its results in columns of several dates, a cumulative report
+     * ([dev.idoodler.labimporter.core.parse.ParseResult.hasSeveralResultDates]): where a value or the
+     * date is flagged, the date row and its badge say why.
+     */
+    val severalResultDates: Boolean = false,
 ) {
     /** The user set the date; [dateNotFound] and [dateToCheck] stand until it really changes, as on iOS. */
     fun withDate(newDate: LocalDate): ReviewDraft =
@@ -372,6 +378,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 detectedAuthorName = result.authorName?.trim()?.takeIf { it.isNotEmpty() },
                 dateNotFound = result.reportDate == null,
                 dateToCheck = result.reportDateNeedsCheck,
+                severalResultDates = result.hasSeveralResultDates,
             ),
         )
     }

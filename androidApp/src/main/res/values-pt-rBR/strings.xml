@@ -180,6 +180,7 @@
     <string name="correct_or_deselect">Não é possível salvar como está escrito. Corrija ou desmarque.</string>
     <string name="no_date_found">Nenhuma data encontrada no laudo. Verifique se esta data está correta.</string>
     <string name="date_to_check">Esta data pode ter sido lida incorretamente. Verifique se ela confere com o laudo.</string>
+    <string name="several_result_dates">Este laudo traz resultados de várias datas. Verifique se a data e cada valor vêm da mesma coluna.</string>
     <string name="patient_and_lab">Paciente e laboratório</string>
     <string name="not_filled_in">Não preenchido</string>
     <plurals name="exportable_count">

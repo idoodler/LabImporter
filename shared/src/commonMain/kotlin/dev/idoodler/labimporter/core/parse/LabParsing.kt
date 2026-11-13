@@ -50,9 +50,19 @@ data class ParseResult(
      * True when [reportDate] is printed but may be misread: its day and month can be
      * read either way (03/10/2026, with nothing in the report saying which comes first),
      * or the report prints a date more than a year after it (a birth date taken for the
-     * report's). Review asks the user to check it; it doesn't block saving.
+     * report's), or the report prints results of several dates ([hasSeveralResultDates])
+     * and it isn't the latest of them. Review asks the user to check it; it doesn't block saving.
      */
     val reportDateNeedsCheck: Boolean = false,
+    /**
+     * True when the report prints its results in columns of several dates (a cumulative
+     * report: "03.11.2026   18.08.2026   14.02.2026" over rows of a result each), where a
+     * model may take an older column's value, or the print date, for the current one. A
+     * value is flagged ([LabValue.needsSourceCheck]) only where its row prints several
+     * results and it isn't the one in the report date's column, and the date only where
+     * it isn't the latest column's ([ReportSourceText.isFromAnotherColumn]); Review says why.
+     */
+    val hasSeveralResultDates: Boolean = false,
 )
 
 /** The model's report date checked against the text ([LabParsePipeline.checkedDate]). */
@@ -184,7 +194,7 @@ object LabParsePipeline {
 
     /** [postProcess] on the day [today] (no report is dated after it): the evaluation replays on a fixed one. */
     fun postProcess(report: AiLabReport, sourceText: String, today: LocalDate): ParseResult {
-        val source = ReportSourceText(sourceText)
+        val source = ReportSourceText(sourceText, today)
         val entries = report.entries.filter { it.code.isNotBlank() || it.name.isNotBlank() }
         // "mg/dL (calc)": what the report prints beside a unit is no part of it, shown or saved.
         val units = entries.map { Ucum.withoutAnnotation(unitWithoutFlag(it.unit)) }
@@ -196,6 +206,10 @@ object LabParsePipeline {
         // a printed code keeps it and so does the first suggestion; a later suggestion stays unmapped
         // for the user to place, instead of one value silently replacing the other.
         val claimed = resolved.filterNot { it.second }.mapTo(mutableSetOf()) { it.first }
+        val date = checkedDate(parseDate(report.reportDate), sourceText, report.reportLanguage, today)
+        // A cumulative report prints a test's result once a date: a value its row prints beside others is
+        // checked against the report date's column, and the date against the latest column's.
+        val columns = source.resultColumns
         val values = entries.mapIndexed { index, entry ->
             val (resolvedCode, resolvedSuggested) = resolved[index]
             val collides = resolvedSuggested && !claimed.add(resolvedCode)
@@ -212,17 +226,18 @@ object LabParsePipeline {
                 numericValue = numeric,
                 unit = units[index],
                 isSuggestedCode = suggested,
-                needsSourceCheck = !source.backs(results[index], units[index], listOf(entry.name, entry.code)),
+                needsSourceCheck = !source.backs(results[index], units[index], listOf(entry.name, entry.code)) ||
+                    source.isFromAnotherColumn(results[index], listOf(entry.name, entry.code), date.date),
             )
         }
-        val date = checkedDate(parseDate(report.reportDate), sourceText, report.reportLanguage, today)
         // A report can list a test twice: keep one entry per LOINC, the app's canonical identity.
         return ParseResult(
             values = values.deduplicatedByLoinc(),
             reportDate = date.date,
             patientName = report.patientName.trim().ifEmpty { null },
             authorName = report.authorName.trim().ifEmpty { null },
-            reportDateNeedsCheck = date.needsCheck,
+            reportDateNeedsCheck = date.needsCheck || (columns != null && date.date != null && !columns.isNewest(date.date)),
+            hasSeveralResultDates = columns != null,
         )
     }
 

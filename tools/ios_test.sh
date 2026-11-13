@@ -3,6 +3,10 @@
 # results never depend on how the machine's simulator is configured.
 #   tools/ios_test.sh [unit|ui|all] [simulator-udid-or-name]
 #   tools/ios_test.sh audit
+#   QUALITY_SCREENSHOT_DIR=<absolute folder> tools/ios_test.sh screens [simulator-udid-or-name]
+#
+# `screens` takes the screenshot matrix (ScreenshotMatrixUITests) into that folder; without
+# QUALITY_SCREENSHOT_DIR it refuses, since the test itself would skip and pass.
 #
 # `ui` and `all` leave out the accessibility audit (AccessibilityAuditUITests): its exemptions
 # and page counts hold on one device and OS only, so `audit` runs it there and nowhere else —
@@ -34,7 +38,13 @@ case "$WHICH" in
   ui) ARGS+=(-only-testing:LabImporterUITests "-skip-testing:$AUDIT") ;;
   all) ARGS+=("-skip-testing:$AUDIT") ;;
   audit) ARGS+=("-only-testing:$AUDIT") ;;
-  *) echo "ios_test.sh: unknown suite $WHICH (unit, ui, all or audit)" >&2; exit 2 ;;
+  screens)
+    case "${QUALITY_SCREENSHOT_DIR:-}" in
+      /*) export TEST_RUNNER_QUALITY_SCREENSHOT_DIR="$QUALITY_SCREENSHOT_DIR" ;;
+      *) echo "ios_test.sh screens: set QUALITY_SCREENSHOT_DIR to an absolute folder" >&2; exit 2 ;;
+    esac
+    ARGS+=(-only-testing:LabImporterUITests/ScreenshotMatrixUITests) ;;
+  *) echo "ios_test.sh: unknown suite $WHICH (unit, ui, all, audit or screens)" >&2; exit 2 ;;
 esac
 if [ -n "$IOS_RESULT_BUNDLE" ]; then
   rm -rf "$IOS_RESULT_BUNDLE"

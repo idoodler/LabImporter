@@ -175,6 +175,7 @@
     <string name="correct_or_deselect">Δεν μπορεί να αποθηκευτεί όπως είναι γραμμένη. Διορθώστε την ή αποεπιλέξτε την.</string>
     <string name="no_date_found">Δεν βρέθηκε ημερομηνία στην αναφορά. Ελέγξτε ότι αυτή η ημερομηνία είναι σωστή.</string>
     <string name="date_to_check">Αυτή η ημερομηνία μπορεί να διαβάστηκε λάθος. Ελέγξτε ότι συμφωνεί με την αναφορά.</string>
+    <string name="several_result_dates">Αυτή η αναφορά περιέχει αποτελέσματα από διάφορες ημερομηνίες. Ελέγξτε ότι η ημερομηνία και κάθε τιμή προέρχονται από την ίδια στήλη.</string>
     <string name="patient_and_lab">Ασθενής και εργαστήριο</string>
     <string name="not_filled_in">Δεν έχει συμπληρωθεί</string>
     <plurals name="exportable_count">

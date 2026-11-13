@@ -59,6 +59,9 @@ struct ParseResult {
     /// The report prints `reportDate`, but it may be misread (03/10/2026 with nothing
     /// saying whether the day or the month comes first, or a birth date): Review asks to check it.
     var isReportDateToCheck = false
+    /// The report prints its results in columns of several dates (a cumulative report): a value that may be
+    /// another column's, and a date that isn't the latest column's, come out to check, and Review says why.
+    var hasSeveralResultDates = false
 }
 
 /// Live progress of a streaming parse, surfaced by the processing HUD: how
@@ -253,7 +256,8 @@ actor LabParserService {
             reportDate: result.reportDate.map(Date.init(shared:)),
             patientName: result.patientName,
             authorName: result.authorName,
-            isReportDateToCheck: result.reportDateNeedsCheck
+            isReportDateToCheck: result.reportDateNeedsCheck,
+            hasSeveralResultDates: result.hasSeveralResultDates
         )
     }
 

@@ -180,6 +180,7 @@
     <string name="correct_or_deselect">Non può essere salvato così come è scritto. Correggilo o deselezionalo.</string>
     <string name="no_date_found">Nessuna data trovata nel referto. Controlla che questa data sia corretta.</string>
     <string name="date_to_check">Questa data potrebbe essere stata letta male. Controlla che corrisponda al referto.</string>
+    <string name="several_result_dates">Questo referto riporta risultati di più date. Controlla che la data e ogni valore provengano dalla stessa colonna.</string>
     <string name="patient_and_lab">Paziente e laboratorio</string>
     <string name="not_filled_in">Non compilato</string>
     <plurals name="exportable_count">

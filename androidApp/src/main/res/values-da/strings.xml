@@ -175,6 +175,7 @@
     <string name="correct_or_deselect">Kan ikke gemmes, som det står. Ret det, eller fravælg det.</string>
     <string name="no_date_found">Der blev ikke fundet nogen dato i rapporten. Tjek, at denne dato er rigtig.</string>
     <string name="date_to_check">Denne dato kan være læst forkert. Tjek, at den stemmer med rapporten.</string>
+    <string name="several_result_dates">Denne rapport viser resultater fra flere datoer. Kontrollér, at datoen og hver værdi kommer fra samme kolonne.</string>
     <string name="patient_and_lab">Patient og laboratorium</string>
     <string name="not_filled_in">Ikke udfyldt</string>
     <plurals name="exportable_count">

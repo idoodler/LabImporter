@@ -175,6 +175,7 @@
     <string name="correct_or_deselect">Kan inte sparas som det är skrivet. Korrigera värdet eller avmarkera det.</string>
     <string name="no_date_found">Inget datum hittades i rapporten. Kontrollera att det här datumet stämmer.</string>
     <string name="date_to_check">Det här datumet kan ha lästs fel. Kontrollera att det stämmer med rapporten.</string>
+    <string name="several_result_dates">Den här rapporten innehåller resultat från flera datum. Kontrollera att datumet och varje värde kommer från samma kolumn.</string>
     <string name="patient_and_lab">Patient och labb</string>
     <string name="not_filled_in">Inte ifyllt</string>
     <plurals name="exportable_count">
