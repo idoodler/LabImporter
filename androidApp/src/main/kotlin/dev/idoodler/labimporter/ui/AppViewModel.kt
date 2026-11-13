@@ -582,27 +582,33 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 ?: return@launch run { _message.value = context.getString(R.string.transfer_unsupported) }
             // Skipping what's already here needs the whole list. Everything imported gets fresh ids,
             // so nothing would merge the duplicates once the saved reports can be read again.
-            val (plan, failed) = transferImport.withLock {
+            // The summary is posted under the lock too: posted after it, an import that finished
+            // first could still overwrite the next one's summary.
+            transferImport.withLock {
                 repository.reload()
                 if (repository.loadFailed.value) {
                     _message.value = context.getString(R.string.transfer_reports_unreadable)
                     return@launch
                 }
                 val plan = ReportTransfer.plan(reports.value, read.reports)
-                plan to repository.saveAll(plan.toImport.map(::withFreshIds))
+                val failed = repository.saveAll(plan.toImport.map(::withFreshIds))
+                _message.value = transferSummary(plan, failed, read)
             }
-            val imported = plan.toImport.size - failed
-            val summary = if (failed > 0) {
-                context.getString(R.string.transfer_summary_failed, imported, plan.alreadyPresent, failed)
-            } else {
-                context.getString(R.string.transfer_summary, imported, plan.alreadyPresent)
-            }
-            _message.value = listOfNotNull(
-                summary,
-                context.getString(R.string.transfer_newer_version_some, read.newerVersionReports).takeIf { read.newerVersionReports > 0 },
-                context.getString(R.string.transfer_damaged_some, read.unreadableReports).takeIf { read.unreadableReports > 0 },
-            ).joinToString(" ")
         }
+    }
+
+    private fun transferSummary(plan: ReportTransfer.ImportPlan, failed: Int, read: ReportTransfer.ReadResult.Reports): String {
+        val imported = plan.toImport.size - failed
+        val summary = if (failed > 0) {
+            context.getString(R.string.transfer_summary_failed, imported, plan.alreadyPresent, failed)
+        } else {
+            context.getString(R.string.transfer_summary, imported, plan.alreadyPresent)
+        }
+        return listOfNotNull(
+            summary,
+            context.getString(R.string.transfer_newer_version_some, read.newerVersionReports).takeIf { read.newerVersionReports > 0 },
+            context.getString(R.string.transfer_damaged_some, read.unreadableReports).takeIf { read.unreadableReports > 0 },
+        ).joinToString(" ")
     }
 
     /**
