@@ -1,6 +1,6 @@
 [versions]
 agp = "9.4.1"
-kotlin = "2.4.20"
+kotlin = "2.4.21"
 skie = "0.10.15"
 kover = "0.9.11"
 pitest = "1.30.2"
