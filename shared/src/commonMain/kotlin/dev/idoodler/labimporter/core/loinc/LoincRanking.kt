@@ -54,6 +54,10 @@ data class LoincCandidate(
     val synonyms: List<String> = emptyList(),
     /** LOINC's method ("Creatinine-based formula (MDRD)/1.73 sq M among black population"). */
     val method: String = "",
+    /** LOINC's component, in English ("(Arachis hypogaea+Cow milk+Egg white+…) Ab.IgE" for an allergen mix). */
+    val component: String = "",
+    /** LOINC's class ("ALLERGY", "CELLMARK", "CHEM"). */
+    val loincClass: String = "",
 )
 
 /**
@@ -138,13 +142,14 @@ object LoincRanking {
      * hold the printed [result] (its [ResultShape]) or, for a quantity, a value
      * in [unit] is never a fit, and neither is a panel or a document, which
      * hold no single result: an unmapped value the user places by hand beats
-     * a wrong suggestion.
+     * a wrong suggestion. Nor is a mix the name mentions only one member of
+     * (see [namesOneMemberOfMix]).
      */
     fun best(query: String, allCandidates: List<LoincCandidate>, unit: String = "", result: String = ""): LoincMatch? {
         val shape = ResultShape.of(result)
-        val candidates = allCandidates.filter { it.scale !in NO_SINGLE_RESULT }
-        if (candidates.isEmpty()) return null
         val words = foldedTokens(query).toSet()
+        val candidates = allCandidates.filter { it.scale !in NO_SINGLE_RESULT && !namesOneMemberOfMix(words, it) }
+        if (candidates.isEmpty()) return null
         // Fit by the term's names, or by a related name when that one has fewer words missing.
         val fits = candidates.map { candidate ->
             val byName = candidate.labels.takeIf { it.isNotEmpty() }?.let { labelFit(words, it) }
@@ -180,6 +185,54 @@ object LoincRanking {
     }
 
     private class Fit(val candidate: LoincCandidate, val missing: Int, val extra: Int, val bySynonym: Boolean)
+
+    /**
+     * The term measures a mix — what LOINC marks as one: an allergen
+     * ([LoincCandidate.loincClass] ALLERGY) whose [LoincCandidate.component]
+     * opens with a parenthesised "+"-joined list ("(Arachis hypogaea+Cow
+     * milk+Egg white+…) Ab.IgE") — and the printed [query] names just one of
+     * its members: "Eiweiß" (a urine strip's protein) only mentions the egg
+     * white of "(Arachis hypogaea+Kuhmilch+Eiweiß+…) IgE-Antikörper", it
+     * doesn't name that test. Every other "+" is no mix: a cell phenotype
+     * ("Cells.CD3+CD4+"), a sum ("Calcidiol+ercalcidiol") or a method. Read on
+     * the term's own labels, so it holds in every language: split at "+", a
+     * word of the name in two members ("Kuhmilch Eiweiß") or in the mix's own
+     * name before them ("Food Allergen Mix 5 (Peanut+…)") names the mix, and
+     * so does a name that is in no member at all (a printed code like "fx5").
+     * The words after the last member ("IgE Ab [Presence] in Serum") are
+     * shared by all of them and decide nothing.
+     */
+    fun namesOneMemberOfMix(query: Set<String>, candidate: LoincCandidate): Boolean {
+        if (candidate.loincClass != ALLERGY || !MIX.containsMatchIn(candidate.component)) return false
+        var namesOne = false
+        for (label in candidate.labels + candidate.synonyms) {
+            val pieces = label.split('+')
+            if (pieces.size < 2) continue
+            val first = pieces.first()
+            val opening = first.lastIndexOf('(')
+            // Before the members: the mix's own name. After them: what all of them share.
+            val ownName = if (opening < 0) "" else first.substring(0, opening)
+            val members = pieces.mapIndexed { index, piece ->
+                var member = if (index == 0 && opening >= 0) piece.substring(opening + 1) else piece
+                if (index == pieces.lastIndex) member = member.split(')', '(', '[').first().substringBefore(" in ")
+                foldedTokens(member)
+            }
+            fun has(tokens: List<String>) = query.any { word -> tokens.any { it.startsWith(word) } }
+            if (has(foldedTokens(ownName))) return false
+            when (members.count(::has)) {
+                0 -> Unit
+                1 -> namesOne = true
+                else -> return false
+            }
+        }
+        return namesOne
+    }
+
+    /** The LOINC class of allergen tests, where a parenthesised "+" list in a component is a mix. */
+    private const val ALLERGY = "ALLERGY"
+
+    /** An allergen mix's component: it opens with its members in parentheses, joined by "+". */
+    private val MIX = Regex("^\\([^()]*\\+[^()]*\\)")
 
     /**
      * (missing words, extra words) of the term's best-fitting label. "Total"

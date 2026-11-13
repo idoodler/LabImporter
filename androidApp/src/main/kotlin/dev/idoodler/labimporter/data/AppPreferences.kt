@@ -44,6 +44,7 @@ class AppPreferences(context: Context) {
 
     private val _patientDetails = MutableStateFlow(
         PatientDetails(
+            // A date that doesn't parse can't be shown; the field is simply empty to fill in again.
             dateOfBirth = prefs.getString(KEY_DATE_OF_BIRTH, null)?.let { runCatching { LocalDate.parse(it) }.getOrNull() },
             sex = prefs.getString(KEY_SEX, null)?.let { raw -> PatientSex.entries.firstOrNull { it.name == raw } },
         ),
@@ -55,6 +56,7 @@ class AppPreferences(context: Context) {
     val showLatestValueInSearch: StateFlow<Boolean> = _showLatestValueInSearch.asStateFlow()
 
     private val _storageMode = MutableStateFlow(
+        // Unset on a fresh install. A value from a later version means LOCAL too: nothing moves on its own.
         runCatching { StorageMode.valueOf(prefs.getString(KEY_STORAGE, null).orEmpty()) }.getOrDefault(StorageMode.LOCAL),
     )
     val storageMode: StateFlow<StorageMode> = _storageMode.asStateFlow()

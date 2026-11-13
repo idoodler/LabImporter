@@ -4,7 +4,8 @@ import Foundation
 /// A stand-in for the on-device model, for the simulator and tests (which
 /// have none): a Function Health–style report and a "model" that reads its
 /// rows the way the real one does — copying the status label ("In Range· "),
-/// a flag ("4.5 *") and a section heading along with the values. Everything
+/// a flag ("4.5 *") and a section heading along with the values, and misreading
+/// a digit (glucose 92 as 922). Everything
 /// after the model (the shared post-processing, LOINC resolution, review,
 /// export) runs for real. Never part of a release build.
 enum StandInReport {
@@ -15,7 +16,13 @@ enum StandInReport {
         let entry: AILabEntry
     }
 
-    static let rows: [Row] = [
+    /// The rows printed, with `unknownTest` under `--ss-unknown-test`.
+    static var rows: [Row] { printedRows + (ScreenshotMode.readsUnknownTest ? [unknownTest] : []) }
+
+    /// A test no LOINC term names: Review can't save it until the user picks a code or leaves it out.
+    private static let unknownTest = row("Zorblax Index", "4.0", "U/L")
+
+    private static let printedRows: [Row] = [
         row("Uric Acid", "In Range· 5.1", "mg/dL"),
         row("Carbon Dioxide", "24", "mmol/L"),
         row("Platelet Count", "263", "Thousand/uL"),
@@ -25,11 +32,13 @@ enum StandInReport {
         // A section heading the model reads as a test: it must never be saved.
         row("HEPATITIS PANEL", "NON-REACTIVE", "", printedValue: ""),
         row("Hepatitis B Surface Antigen", "NON-REACTIVE", ""),
+        // A digit the model got wrong: the report text doesn't print 922, so review flags it.
+        row("Glucose", "922", "mg/dL", printedValue: "92"),
     ]
 
     /// The report, long enough to be read in more than one part.
     static var text: String {
-        let header = "Function Health · Quest Diagnostics\nPatient: Jane Roe     DOB: 02/11/1984\nCollected: 08/12/2026"
+        let header = "Function Health · Quest Diagnostics\nPatient: Jane Roe     DOB: 02/11/1984\nCollected: 08/10/2026"
         let prose = (1...24).map { index in
             "Note \(index): This marker reflects how your body is doing over time; discuss changes with your clinician."
         }
@@ -42,7 +51,7 @@ enum StandInReport {
         let entries = rows.filter { part.contains($0.key) }.map(\.entry)
         onProgress(ParseProgress(entryCount: entries.count, latestName: entries.last?.name))
         return AILabReport(
-            entries: entries, reportDate: "2026-08-12", patientName: "Jane Roe",
+            entries: entries, reportDate: ScreenshotMode.readsNoDate ? "" : "2026-08-10", patientName: "Jane Roe",
             authorName: "Function Health", reportLanguage: "en"
         )
     }

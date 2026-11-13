@@ -15,7 +15,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.SheetValue
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,7 +37,7 @@ import kotlinx.coroutines.withContext
 /** Search the bundled LOINC catalog (localized, FTS5) to map a value. */
 @Composable
 fun CodePickerSheet(initialQuery: String, onDismiss: () -> Unit, onPick: (LoincTerm) -> Unit) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden, enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded))
     var query by remember { mutableStateOf(initialQuery) }
     var results by remember { mutableStateOf(emptyList<LoincTerm>()) }
 
@@ -61,14 +62,13 @@ fun CodePickerSheet(initialQuery: String, onDismiss: () -> Unit, onPick: (LoincT
                 items(results, key = { it.code }) { term ->
                     ListItem(
                         modifier = Modifier.clickable { onPick(term) },
-                        headlineContent = { Text(term.name, maxLines = 2, overflow = TextOverflow.Ellipsis) },
                         supportingContent = {
                             Text(
                                 listOfNotNull(term.code, term.ucum.takeIf { it.isNotBlank() }).joinToString(" · "),
                                 style = MaterialTheme.typography.bodySmall,
                             )
                         },
-                    )
+                    ) { Text(term.name, maxLines = 2, overflow = TextOverflow.Ellipsis) }
                 }
             }
         }

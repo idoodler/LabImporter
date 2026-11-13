@@ -70,7 +70,7 @@ struct UnsupportedDeviceView: View {
                     )
                     .frame(width: 180, height: 180)
                 Image(systemName: "exclamationmark.triangle.fill")
-                    .font(.system(size: 88, weight: .semibold))
+                    .decorativeIcon(size: 88, weight: .semibold)
                     .symbolRenderingMode(.palette)
                     .foregroundStyle(.white, Color.orange.gradient)
                     .shadow(color: .orange.opacity(0.35), radius: 18, x: 0, y: 8)
@@ -79,12 +79,10 @@ struct UnsupportedDeviceView: View {
                 Text("Device Not Supported")
                     .font(.largeTitle.bold())
                     .multilineTextAlignment(.center)
-                    .lineLimit(nil)
-                    .minimumScaleFactor(0.8)
                     .fixedSize(horizontal: false, vertical: true)
                 Text("LabImporter needs Apple Intelligence to read your lab reports privately on-device.")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -126,7 +124,7 @@ private struct RequirementRow: View {
     let requirement: Requirement
 
     var body: some View {
-        HStack(alignment: .center, spacing: 18) {
+        AdaptiveRow(spacing: 18) {
             ZStack {
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
                     .fill(
@@ -141,13 +139,14 @@ private struct RequirementRow: View {
                 Image(systemName: requirement.icon)
                     .font(.title2)
                     .foregroundStyle(.white)
+                    .accessibilityHidden(true)
             }
             VStack(alignment: .leading, spacing: 3) {
                 Text(requirement.title)
                     .font(.body.bold())
                 Text(requirement.description)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }

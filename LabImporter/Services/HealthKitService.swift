@@ -2,18 +2,31 @@ import HealthKit
 import LabImporterCore
 import Foundation
 
+/// What reading Apple Health found: the reports it can list, and how many it can't.
+/// Those stay in Apple Health.
+struct StoredReports: Sendable {
+    var reports: [LabReport] = []
+    /// Saved by a newer version of the app, so updating it brings them back.
+    var newerVersion = 0
+    /// This app's documents, damaged in a way no version can read.
+    var unreadable = 0
+}
+
 actor HealthKitService {
 
     static let shared = HealthKitService()
 
     private let store = HKHealthStore()
 
-    static var isHealthDataAvailable: Bool {
-        HKHealthStore.isHealthDataAvailable()
+    /// Apple Health's CDA document type; nil where the device has none, and in tests.
+    private let cdaType: HKDocumentType?
+
+    init(cdaType: HKDocumentType? = HKObjectType.documentType(forIdentifier: .CDA)) {
+        self.cdaType = cdaType
     }
 
-    private var cdaType: HKDocumentType? {
-        HKObjectType.documentType(forIdentifier: .CDA)
+    static var isHealthDataAvailable: Bool {
+        HKHealthStore.isHealthDataAvailable()
     }
 
     // MARK: - Authorization
@@ -51,9 +64,10 @@ actor HealthKitService {
 
     // MARK: - Write
 
+    /// Throws unless the document is saved: with no document type there's nowhere to save it.
     func importCDADocument(_ xmlString: String, date: Date) async throws {
-        guard let data = xmlString.data(using: .utf8),
-              let documentType = cdaType else { return }
+        guard let documentType = cdaType else { throw HealthKitServiceError.documentsUnavailable }
+        let data = Data(xmlString.utf8)
         try await store.requestAuthorization(toShare: [documentType], read: [documentType])
         let sample = try HKCDADocumentSample(data: data, start: date, end: date, metadata: nil)
         try await store.save(sample)
@@ -71,13 +85,18 @@ actor HealthKitService {
     /// granted and no sheet would actually appear. A query against
     /// already-granted permissions needs no such call.
     func loadCDADocuments() async throws -> [LabReport] {
-        guard let documentType = cdaType else { return [] }
+        try await loadStoredReports().reports
+    }
+
+    /// `loadCDADocuments`, for whoever shows the reports and has to say what's missing.
+    func loadStoredReports() async throws -> StoredReports {
+        guard let documentType = cdaType else { return StoredReports() }
 
         let sources = try await appSources(for: documentType)
         let predicate = HKQuery.predicateForObjects(from: sources)
 
         return try await withCheckedThrowingContinuation { continuation in
-            let state = QueryState<[LabReport]>([])
+            let state = QueryState(StoredReports())
             let query = HKDocumentQuery(
                 documentType: documentType,
                 predicate: predicate,
@@ -91,12 +110,13 @@ actor HealthKitService {
                     return
                 }
                 if let cdaSamples = samples as? [HKCDADocumentSample] {
-                    let parsed = cdaSamples.compactMap { sample -> LabReport? in
-                        guard let xmlData = sample.document?.documentData,
-                              let xml = String(data: xmlData, encoding: .utf8) else { return nil }
-                        return Self.report(fromCDA: xml, id: sample.uuid)
+                    let documents = cdaSamples.map { (data: $0.document?.documentData, id: $0.uuid) }
+                    let parsed = Self.storedReports(fromDocuments: documents)
+                    state.update { found in
+                        found.reports += parsed.reports
+                        found.newerVersion += parsed.newerVersion
+                        found.unreadable += parsed.unreadable
                     }
-                    state.update { $0.append(contentsOf: parsed) }
                 }
                 if done, let results = state.finish() {
                     continuation.resume(returning: results)
@@ -112,6 +132,29 @@ actor HealthKitService {
     nonisolated static func report(fromCDA xml: String, id: UUID) -> LabReport? {
         SharedCore.start()
         return CdaParser.shared.parse(xml: xml, id: id.uuidString).map(LabReport.init(shared:))
+    }
+
+    /// The reports in stored documents, counting those that can't be listed. The source filter
+    /// means they're all this app's; unversioned ones are legacy exports, ignored by design.
+    nonisolated static func storedReports(fromDocuments documents: [(data: Data?, id: UUID)]) -> StoredReports {
+        SharedCore.start()
+        var stored = StoredReports()
+        for document in documents {
+            guard let data = document.data, let xml = String(data: data, encoding: .utf8) else {
+                stored.unreadable += 1
+                continue
+            }
+            if let report = report(fromCDA: xml, id: document.id) {
+                stored.reports.append(report)
+            } else if let problem = CdaParser.shared.problem(xml: xml) {
+                if problem == .newerVersion {
+                    stored.newerVersion += 1
+                } else {
+                    stored.unreadable += 1
+                }
+            }
+        }
+        return stored
     }
 
     // MARK: - Characteristics
@@ -133,8 +176,10 @@ actor HealthKitService {
             return PatientCharacteristics(dateOfBirth: nil, biologicalSexRaw: nil)
         }
         try await store.requestAuthorization(toShare: [], read: typesToRead)
+        // Never set, or not shared: the cover page just leaves it out.
         let dobComps = try? store.dateOfBirthComponents()
         let dob = dobComps.flatMap { Calendar.current.date(from: $0) }
+        // Never set, or not shared: the cover page just leaves it out.
         let sexWrapper = try? store.biologicalSex()
         let sexRaw = sexWrapper.map { $0.biologicalSex.rawValue }.flatMap { $0 == 0 ? nil : $0 }
         return PatientCharacteristics(dateOfBirth: dob, biologicalSexRaw: sexRaw)
@@ -158,8 +203,9 @@ actor HealthKitService {
 
     // MARK: - Delete
 
+    /// Throws unless the document is gone (a document that's already gone counts as deleted).
     func deleteCDADocument(id: UUID) async throws {
-        guard let documentType = cdaType else { return }
+        guard let documentType = cdaType else { throw HealthKitServiceError.documentsUnavailable }
         let predicate = HKQuery.predicateForObject(with: id)
 
         let sample: HKDocumentSample? = try await withCheckedThrowingContinuation { continuation in
@@ -200,6 +246,17 @@ actor HealthKitService {
     private static func notifyReportsChanged() async {
         await MainActor.run {
             NotificationCenter.default.post(name: .labReportsDidChange, object: nil)
+        }
+    }
+}
+
+enum HealthKitServiceError: LocalizedError, Equatable {
+    /// Apple Health has no lab report (CDA document) type here, so nothing can be saved or removed.
+    case documentsUnavailable
+
+    var errorDescription: String? {
+        switch self {
+        case .documentsUnavailable: String(localized: "Apple Health can't store lab reports on this device.")
         }
     }
 }

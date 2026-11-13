@@ -2,21 +2,28 @@ import LabImporterCore
 import SwiftUI
 
 extension TrendsView {
-    /// Selectable time window; a finite case fixes the visible x-span, `.all` fits everything.
+    /// Selectable time window: which readings the chart shows (shared rule, as on Android).
     enum TrendWindow: String, CaseIterable, Identifiable {
         case month3, month6, year1, all
         var id: Self { self }
 
-        /// Visible span in days, or `nil` for "fit everything" (shared with Android).
-        var days: Int? {
-            let shared: LabImporterCore.TrendWindow
+        /// What a trend opens on until the user picks a window (shared rule, as on Android).
+        static var opening: Self {
+            allCases.first { $0.shared == LabImporterCore.Dashboard.shared.openingTrendWindow } ?? .all
+        }
+
+        var shared: LabImporterCore.TrendWindow {
             switch self {
-            case .month3: shared = .months3
-            case .month6: shared = .months6
-            case .year1: shared = .year1
-            case .all: shared = .all
+            case .month3: return .months3
+            case .month6: return .months6
+            case .year1: return .year1
+            case .all: return .all
             }
-            return shared.days.map { Int(truncating: $0) }
+        }
+
+        /// The span in days, or `nil` for every reading.
+        var days: Int? {
+            shared.days.map { Int(truncating: $0) }
         }
 
         var label: LocalizedStringKey {

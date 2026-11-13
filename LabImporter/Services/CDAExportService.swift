@@ -8,6 +8,33 @@ import LabImporterCore
 /// byte-identical documents; see "Migrating the exported CDA" in CLAUDE.md
 /// before changing what an export means.
 struct CDAExportService {
+    /// The human-readable part of a document: the language it declares and its headings.
+    /// Apple Health shows them. The read-back ignores them, so any language reads back.
+    struct Narrative {
+        let languageCode: String
+        let documentTitle: String
+        let sectionTitle: String
+        let testHeader: String
+        let resultHeader: String
+
+        /// In the language the app is showing, which is the language of the catalog names in the table.
+        static var current: Narrative {
+            Narrative(
+                languageCode: Bundle.main.preferredLocalizations.first ?? "en",
+                documentTitle: String(localized: "Lab Results"),
+                sectionTitle: String(localized: "Lab Values"),
+                testHeader: String(localized: "Test"),
+                resultHeader: String(localized: "Result")
+            )
+        }
+
+        fileprivate var shared: CdaNarrative {
+            CdaNarrative(
+                languageCode: languageCode, documentTitle: documentTitle, sectionTitle: sectionTitle,
+                testHeader: testHeader, resultHeader: resultHeader
+            )
+        }
+    }
 
     /// Human-readable provenance ("LabImporter 1.0 (33)") for the authoring
     /// device's `manufacturerModelName`.
@@ -20,18 +47,21 @@ struct CDAExportService {
 
     // Returns a C-CDA R2.1 Lab Report XML string. Values without a LOINC
     // mapping or numeric result, and deselected ones, are omitted.
-    func generateCDA(labValues: [LabValue], date: Date, patientName: String = "", authorName: String = "") -> String {
+    func generateCDA(
+        labValues: [LabValue], date: Date, patientName: String = "", authorName: String = "", narrative: Narrative = .current
+    ) -> String {
         SharedCore.start()
         return CdaExport.shared.generate(
             values: labValues.map(\.shared),
             date: date.sharedDate,
             softwareIdentity: Self.softwareIdentity,
+            narrative: narrative.shared,
             patientName: patientName,
             authorName: authorName
         )
     }
 
-    // Writes the CDA to a temp file and returns the URL for sharing.
+    // Writes the CDA for a share sheet and returns the URL. The sheet's dismissal removes it (`ExportFiles`).
     func exportToTempFile(labValues: [LabValue], date: Date, patientName: String = "", authorName: String = "") throws -> URL {
         SharedCore.start()
         guard CdaExport.shared.hasExportableValues(values: labValues.map(\.shared)) else {
@@ -39,7 +69,7 @@ struct CDAExportService {
         }
         let xml = generateCDA(labValues: labValues, date: date, patientName: patientName, authorName: authorName)
         let name = "LabResults-\(date.sharedDate.description()).xml"
-        let url = FileManager.default.temporaryDirectory.appendingPathComponent(name)
+        let url = try ExportFiles.url(named: name)
         try xml.write(to: url, atomically: true, encoding: .utf8)
         return url
     }

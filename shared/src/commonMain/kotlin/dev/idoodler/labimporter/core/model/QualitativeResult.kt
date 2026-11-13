@@ -16,10 +16,13 @@ object QualitativeResult {
      */
     fun of(text: String): String? {
         val trimmed = text.trim()
-        if (trimmed in NO_RESULT) return null
+        if (isNoResult(trimmed)) return null
         val words = trimmed.none { it.isDigit() } && trimmed.any { it.isLetter() }
         return trimmed.takeIf { words || WITH_DIGITS.matches(it) }
     }
+
+    /** Whether [text] says there is no result (empty, `-`), rather than being one or a misread. */
+    fun isNoResult(text: String): Boolean = text.trim() in NO_RESULT
 
     /** The text to store for [result] in [unit]: "<0.5 mg/dL", or the result alone. */
     fun stored(result: String, unit: String): String =

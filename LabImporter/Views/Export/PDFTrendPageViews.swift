@@ -194,3 +194,31 @@ struct PDFTrendCard: View {
         return prefix + PDFFormat.value(change)
     }
 }
+
+// MARK: - Previews
+
+#if DEBUG
+#Preview("Trends") {
+    let data = PDFReportData.sample(.sample)
+    ScrollView([.vertical, .horizontal]) {
+        PDFTrendsPage(metrics: Array(data.metrics.prefix(3)), showTitle: true, range: data.timeRange, patientName: data.patientName,
+                      theme: PDFTheme(mode: .color), pageSize: PDFPageFormat.isoA4.size, pageNumber: 3, totalPages: 3)
+    }
+}
+
+#Preview("Trends · Black & White, Continued") {
+    let data = PDFReportData.sample(.sample)
+    ScrollView([.vertical, .horizontal]) {
+        PDFTrendsPage(metrics: Array(data.metrics.prefix(2)), showTitle: false, range: data.timeRange, patientName: data.patientName,
+                      theme: PDFTheme(mode: .monochrome), pageSize: PDFPageFormat.isoA4.size, pageNumber: 3, totalPages: 3)
+    }
+}
+
+#Preview("Trend Card") {
+    if let metric = PDFReportData.sample(.sample).metrics.first {
+        PDFTrendCard(metric: metric, theme: PDFTheme(mode: .color))
+            .frame(width: 500)
+            .padding()
+    }
+}
+#endif

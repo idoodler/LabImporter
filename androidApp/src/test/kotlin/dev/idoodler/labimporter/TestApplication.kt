@@ -24,7 +24,10 @@ class TestApplication : Application(), AppContainerOwner {
 
     override fun onCreate() {
         super.onCreate()
-        LabCore.start(checkNotNull(System.getProperty("loinc.db")), "en-US") { preferences.displayPreferences.value }
+        // In the language the strings are in, as the app does: a German screen names its tests in German.
+        LabCore.start(checkNotNull(System.getProperty("loinc.db")), appLanguage(resources.configuration.locales)) {
+            preferences.displayPreferences.value
+        }
         LabImporterApplication.catalogReady.value = true
     }
 

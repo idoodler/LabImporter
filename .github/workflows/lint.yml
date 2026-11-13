@@ -11,10 +11,12 @@ jobs:
     name: SwiftLint
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/realm/swiftlint:latest
+      # Pinned like the actions (tag for people, digest for the machine): the version the
+      # SessionStart hook installs and CLAUDE.md names.
+      image: ghcr.io/realm/swiftlint:0.63.2@sha256:8db376ff8a26e56fa506b56b8c70ea9c5583dc52d5746ce23b6c2c4d4ee00e31
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
 
       - name: Run SwiftLint
         run: swiftlint lint --strict --reporter github-actions-logging

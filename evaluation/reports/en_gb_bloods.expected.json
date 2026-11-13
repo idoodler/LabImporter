@@ -1,0 +1,18 @@
+{
+  "reportDate": "2026-03-06",
+  "patientName": "Margaret",
+  "values": [
+    {"names": ["Sodium"], "value": 139, "unit": "mmol/L", "loinc": "2951-2"},
+    {"names": ["Potassium"], "value": 4.6, "unit": "mmol/L", "loinc": "2823-3"},
+    {"names": ["Urea"], "value": 5.2, "unit": "mmol/L"},
+    {"names": ["Creatinine"], "value": 68, "unit": "umol/L", "loinc": "14682-9"},
+    {"names": ["Haemoglobin", "Hemoglobin"], "value": 131, "unit": "g/L"},
+    {"names": ["White", "WBC", "Leukocytes"], "value": 6.1, "unit": "10*9/L", "loinc": "6690-2", "alternatives": [{"value": 6.1, "unit": "10^9/L"}]},
+    {"names": ["Platelets"], "value": 248, "unit": "10*9/L", "loinc": "777-3", "alternatives": [{"value": 248, "unit": "10^9/L"}]},
+    {"names": ["HbA1c", "Hemoglobin A1c"], "value": 38, "unit": "mmol/mol"}
+  ],
+  "notNumeric": [
+    {"names": ["GFR"], "result": ">90"},
+    {"names": ["C-reactive", "C reactive", "CRP"], "result": "<4"}
+  ]
+}

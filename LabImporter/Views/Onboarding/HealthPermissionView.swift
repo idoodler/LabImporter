@@ -1,4 +1,3 @@
-import HealthKit
 import SwiftUI
 import UIKit
 
@@ -18,7 +17,7 @@ struct HealthPermissionView: View {
                 icon: "square.and.arrow.down.on.square.fill",
                 color: LabCategory.cardiac.color,
                 title: "Save Reports to Health",
-                description: "Imported lab values are written as clinical CDA records into Apple Health."
+                description: "Imported lab values are written as clinical documents into Apple Health."
             ),
             Benefit(
                 icon: "doc.text.magnifyingglass",
@@ -72,7 +71,7 @@ struct HealthPermissionView: View {
                     )
                     .frame(width: 180, height: 180)
                 Image(systemName: "heart.text.square.fill")
-                    .font(.system(size: 96, weight: .semibold))
+                    .decorativeIcon(size: 96, weight: .semibold)
                     .symbolRenderingMode(.palette)
                     .foregroundStyle(.white, Color.pink.gradient)
                     .shadow(color: .pink.opacity(0.35), radius: 18, x: 0, y: 8)
@@ -81,12 +80,10 @@ struct HealthPermissionView: View {
                 Text("Connect to Apple Health")
                     .font(.largeTitle.bold())
                     .multilineTextAlignment(.center)
-                    .lineLimit(nil)
-                    .minimumScaleFactor(0.8)
                     .fixedSize(horizontal: false, vertical: true)
                 Text("LabImporter stores everything in Apple Health — so it needs your permission first.")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -123,7 +120,7 @@ struct HealthPermissionView: View {
                 .foregroundStyle(.tint)
             Text("Everything runs on-device. LabImporter never transmits your lab data.")
                 .font(.footnote)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.textSecondary)
                 .multilineTextAlignment(.leading)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -154,6 +151,7 @@ struct HealthPermissionView: View {
             .frame(maxWidth: .infinity)
         }
         .buttonStyle(.borderedProminent)
+        .tint(.prominentFill)
         .controlSize(.large)
         .disabled(isRequesting)
         .opacity(appeared ? 1 : 0)
@@ -195,7 +193,7 @@ private struct BenefitRow: View {
     let benefit: Benefit
 
     var body: some View {
-        HStack(alignment: .center, spacing: 18) {
+        AdaptiveRow(spacing: 18) {
             ZStack {
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
                     .fill(
@@ -217,7 +215,7 @@ private struct BenefitRow: View {
                     .font(.body.bold())
                 Text(benefit.description)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }

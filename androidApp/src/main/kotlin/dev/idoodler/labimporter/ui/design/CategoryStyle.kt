@@ -81,8 +81,11 @@ val isDarkScheme: Boolean
     @Composable @ReadOnlyComposable
     get() = MaterialTheme.colorScheme.surface.luminance() < 0.5f
 
-/** Text/icon colour that stays legible on top of [color]. */
-fun contentColorOn(color: Color): Color = if (color.luminance() > 0.45f) Color(0xFF2B2100) else Color.White
+/** Text/icon colour on top of [color]: whichever of black and white contrasts more, one of which always reaches 4.5:1. */
+fun contentColorOn(color: Color): Color {
+    val luminance = color.luminance()
+    return if ((luminance + 0.05f) / 0.05f > 1.05f / (luminance + 0.05f)) Color.Black else Color.White
+}
 
 /** A category colour tuned for lines and accents on the current surface. */
 @Composable
@@ -94,5 +97,6 @@ fun accentFor(color: Color): Color = if (isDarkScheme) lerp(color, Color.White, 
 @ReadOnlyComposable
 fun tintedSurface(color: Color, strength: Float = 0.10f): Color {
     val base = MaterialTheme.colorScheme.surfaceContainerLow
-    return lerp(base, color, if (isDarkScheme) strength * 1.5f else strength)
+    // Dark surfaces take more tint before it shows, and less before light text stops reading on it.
+    return lerp(base, color, if (isDarkScheme) minOf(strength * 1.5f, 0.28f) else strength)
 }

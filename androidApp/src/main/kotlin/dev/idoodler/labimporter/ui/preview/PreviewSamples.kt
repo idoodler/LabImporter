@@ -51,6 +51,9 @@ object PreviewSamples {
         LabValue("q4", "20454-5", "Eiweiß (Urin)", "2+", null, ""),
     )
 
+    /** The latest report with two values this build couldn't read: shown, but read-only. */
+    val readOnlyReport: LabReport = reports.first().copy(unreadValues = 2)
+
     /** The latest report with qualitative results added. */
     val reportWithQualitative: LabReport = reports.first().let { report ->
         report.copy(entries = report.entries + qualitativeValues.map { LabReport.Entry(it.id, it.code, it.name, it.displayValue, null, it.unit) })

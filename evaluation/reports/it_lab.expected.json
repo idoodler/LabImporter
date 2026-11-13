@@ -1,0 +1,16 @@
+{
+  "reportDate": "2026-11-04",
+  "patientName": "Marco",
+  "values": [
+    {"names": ["Emoglobina", "Hemoglobin"], "value": 14.8, "unit": "g/dL", "loinc": "718-7"},
+    {"names": ["Leucociti", "Leukocytes"], "value": 6.40, "unit": "10^3/µL"},
+    {"names": ["Glucosio", "Glucose"], "value": 92, "unit": "mg/dL"},
+    {"names": ["Creatinina", "Creatinine"], "value": 1.02, "unit": "mg/dL", "loinc": "2160-0"},
+    {"names": ["PSA", "Prostat"], "value": 0.82, "unit": "ng/mL"}
+  ],
+  "notNumeric": [
+    {"names": ["GFR", "Filtrato", "filtrazione"], "result": "> 90"},
+    {"names": ["C reattiva", "C-reattiva", "PCR", "CRP", "C reactive"], "result": "< 0,30"},
+    {"names": ["Bilirubin"], "result": "< 0,10"}
+  ]
+}

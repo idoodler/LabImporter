@@ -7,6 +7,10 @@ import dev.idoodler.labimporter.TestApplication
 import dev.idoodler.labimporter.core.LabReportStore
 import dev.idoodler.labimporter.core.model.LabReport
 import dev.idoodler.labimporter.ui.HealthConnectState
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import org.junit.Assert.assertEquals
@@ -34,11 +38,27 @@ open class MemoryStore : LabReportStore {
         if (report.id in failingDeletes) error("delete failed")
         reports.remove(report.id)
     }
+
+    override suspend fun removeDropped(old: LabReport, updated: LabReport) = Unit // A save replaced the whole report.
 }
 
 class FakeHealthConnect : MemoryStore(), HealthConnectStore {
     var available = HealthConnectAvailability.AVAILABLE
     var granted = true
+    var loadError: Exception? = null
+
+    /** Runs before each save is stored: a test can hold one there. */
+    var beforeSave: suspend (LabReport) -> Unit = {}
+
+    override suspend fun save(report: LabReport) {
+        beforeSave(report)
+        super.save(report)
+    }
+
+    override suspend fun loadReports(): List<LabReport> {
+        loadError?.let { throw it }
+        return super.loadReports()
+    }
 
     override fun availability() = available
 
@@ -93,6 +113,73 @@ class ReportRepositoryTest {
         assertEquals(3, repository.reports.value.size)
     }
 
+    /**
+     * A reload on resume moves a waiting report into Health Connect while the user saves an edit of it.
+     * Side by side, the move wrote the old version over the edit and deleted the edited local copy.
+     */
+    @Test
+    fun anEditSavedWhileAReloadMovesTheReportSurvives() = runTest {
+        local.reports.clear()
+        val old = report("a", 1)
+        local.reports[old.id] = old // Waiting to move into Health Connect.
+        preferences.setStorageMode(StorageMode.HEALTH_CONNECT)
+        val repository = repository()
+        val moving = CompletableDeferred<Unit>()
+        val release = CompletableDeferred<Unit>()
+        healthConnect.beforeSave = { saved ->
+            if (saved == old && !moving.isCompleted) {
+                moving.complete(Unit)
+                release.await() // The move holds here, with the old version in hand.
+            }
+        }
+
+        val reload = launch { repository.reload() }
+        moving.await()
+        val edited = old.copy(entries = listOf(old.entries.single().copy(displayValue = "1.4", numericValue = 1.4)))
+        val replace = async { repository.replace(old, edited) }
+        yield() // The edit goes as far as it can while the move waits.
+        release.complete(Unit)
+        reload.join()
+        replace.await()
+
+        assertEquals(edited, healthConnect.reports["a"])
+        assertTrue(local.reports.isEmpty())
+        assertEquals(listOf(edited), repository.reports.value)
+    }
+
+    /**
+     * The launch reload reads an empty store, then its thread stalls (a busy phone, a busy CI runner)
+     * while a report arrives and a second reload lists it. Side by side, the stalled reload finished
+     * last and wrote its empty list over the newer one: the report vanished from the dashboard.
+     */
+    @Test
+    fun aReloadThatReadEarlierNeverHidesANewerReport() = runTest {
+        val read = CompletableDeferred<Unit>()
+        val release = CompletableDeferred<Unit>()
+        val store = object : MemoryStore() {
+            override suspend fun loadReports(): List<LabReport> {
+                val reports = super.loadReports()
+                if (!read.isCompleted) {
+                    read.complete(Unit)
+                    release.await() // The first reload holds here, with the empty list in hand.
+                }
+                return reports
+            }
+        }
+        val repository = ReportRepository(store, healthConnect, preferences)
+
+        val launchReload = launch { repository.reload() }
+        read.await()
+        store.reports["a"] = report("a", 1) // Saved meanwhile (another reload, an import, a share).
+        val laterReload = launch { repository.reload() }
+        yield() // The later reload goes as far as it can while the first one waits.
+        release.complete(Unit)
+        launchReload.join()
+        laterReload.join()
+
+        assertEquals(listOf("a"), repository.reports.value.map { it.id })
+    }
+
     @Test
     fun aReportInBothStoresIsListedOnceAndCleanedUpLater() = runTest {
         val repository = repository()
@@ -119,6 +206,91 @@ class ReportRepositoryTest {
         repository.reload()
         assertTrue(local.reports.isEmpty())
         assertEquals(4, repository.reports.value.size)
+    }
+
+    @Test
+    fun healthConnectOutOfReachIsAFailedLoadNotAnEmptyList() = runTest {
+        val repository = repository()
+        repository.enableHealthConnect()
+        assertFalse(repository.loadFailed.value)
+
+        // Whichever way it went away, its reports are missing from what's listed now.
+        healthConnect.granted = false
+        repository.reload()
+        assertTrue(repository.reports.value.isEmpty())
+        assertTrue(repository.loadFailed.value)
+
+        healthConnect.granted = true
+        healthConnect.available = HealthConnectAvailability.UPDATE_REQUIRED
+        repository.reload()
+        assertTrue(repository.loadFailed.value)
+
+        healthConnect.available = HealthConnectAvailability.AVAILABLE
+        repository.reload()
+        assertFalse(repository.loadFailed.value)
+        assertEquals(3, repository.reports.value.size)
+    }
+
+    @Test
+    fun aFailedLoadSaysWhyAndChoosingAppStorageEndsIt() = runTest {
+        val repository = repository()
+        repository.enableHealthConnect()
+        assertEquals(null, repository.loadProblem.value)
+
+        healthConnect.granted = false
+        repository.reload()
+        assertEquals(ReportsLoadProblem.HEALTH_CONNECT_ACCESS_OFF, repository.loadProblem.value)
+
+        healthConnect.granted = true
+        healthConnect.available = HealthConnectAvailability.UPDATE_REQUIRED
+        repository.reload()
+        assertEquals(ReportsLoadProblem.HEALTH_CONNECT_UPDATE_REQUIRED, repository.loadProblem.value)
+
+        for (gone in listOf(HealthConnectAvailability.NOT_INSTALLED, HealthConnectAvailability.MEDICAL_RECORDS_UNSUPPORTED)) {
+            healthConnect.available = gone
+            repository.reload()
+            assertEquals(ReportsLoadProblem.HEALTH_CONNECT_UNAVAILABLE, repository.loadProblem.value)
+        }
+
+        // The way out when it never comes back: new saves go to the app, and nothing is deleted.
+        val inHealthConnect = healthConnect.reports.keys.toSet()
+        assertTrue(repository.wantsHealthConnect)
+        repository.useLocalStorage()
+        assertFalse(repository.wantsHealthConnect)
+        assertEquals(null, repository.loadProblem.value)
+        assertEquals(inHealthConnect, healthConnect.reports.keys.toSet())
+    }
+
+    @Test
+    fun aReadThatFailsIsNotBlamedOnAccess() = runTest {
+        val repository = repository()
+        repository.enableHealthConnect()
+
+        healthConnect.loadError = java.io.IOException("read failed")
+        repository.reload()
+        assertEquals(ReportsLoadProblem.READ_FAILED, repository.loadProblem.value)
+
+        // Access can go between the check and the read.
+        healthConnect.loadError = SecurityException("no permission")
+        repository.reload()
+        assertEquals(ReportsLoadProblem.HEALTH_CONNECT_ACCESS_OFF, repository.loadProblem.value)
+    }
+
+    @Test
+    fun anOfferToMoveReportsIsNotMadeToSomeoneWhoAlreadyChoseHealthConnect() {
+        val cutOff = HealthConnectState(HealthConnectAvailability.AVAILABLE, granted = false, inUse = false, chosen = true)
+        assertFalse(cutOff.offersMove(hasReports = true, dismissed = false))
+    }
+
+    @Test
+    fun choosingAppStorageIsNotAFailedLoad() = runTest {
+        val repository = repository()
+        repository.enableHealthConnect()
+        healthConnect.granted = false
+
+        repository.useLocalStorage()
+
+        assertFalse(repository.loadFailed.value)
     }
 
     @Test

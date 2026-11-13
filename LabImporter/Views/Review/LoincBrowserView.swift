@@ -48,12 +48,11 @@ struct LoincCatalogView: View {
                             if let description = term.description, !description.isEmpty {
                                 Text(description)
                                     .font(.caption2)
-                                    .foregroundStyle(.secondary)
-                                    .lineLimit(2)
+                                    .foregroundStyle(.textSecondary)
                             }
                             Text(term.code)
                                 .font(.caption2)
-                                .foregroundStyle(.tertiary)
+                                .foregroundStyle(.textTertiary)
                         }
                     }
                     .padding(.vertical, 2)
@@ -65,6 +64,7 @@ struct LoincCatalogView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .readableListText()
         .scrollContentBackground(.hidden)
         .background { CategoryBackground(colors: backgroundColors) }
         .searchable(text: $query, prompt: Text("Search lab tests"))
@@ -188,6 +188,7 @@ struct LoincTermDetailView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .readableListText()
         .scrollContentBackground(.hidden)
         .background { CategoryBackground(colors: [category.color]) }
         .navigationTitle(Text(verbatim: term.code))
@@ -231,7 +232,7 @@ struct LoincTermDetailView: View {
                             )
                         )
                     Image(systemName: "testtube.2")
-                        .font(.system(size: 22, weight: .semibold))
+                        .decorativeIcon(size: 22, weight: .semibold)
                         .foregroundStyle(.white)
                 }
                 .frame(width: 54, height: 54)
@@ -259,7 +260,7 @@ struct LoincTermDetailView: View {
                 Divider()
                 Text(description)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
             }
         }
         .padding(18)
@@ -316,7 +317,7 @@ struct LoincTermDetailView: View {
             VStack(alignment: .leading, spacing: 1) {
                 Text("Reference Range")
                     .font(.caption2.weight(.semibold))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
                     .textCase(.uppercase)
                 Text(range.formatted(unit: detail?.ucum ?? ""))
                     .font(.subheadline.weight(.medium))
@@ -338,7 +339,7 @@ struct LoincTermDetailView: View {
             VStack(alignment: .leading, spacing: 1) {
                 Text("Nickname")
                     .font(.caption2.weight(.semibold))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
                     .textCase(.uppercase)
                 Text(name)
                     .font(.subheadline.weight(.medium))

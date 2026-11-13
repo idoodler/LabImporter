@@ -111,7 +111,6 @@ fun ModelStatusCard(
                         Text(stringResource(availability.problem.messageRes), style = MaterialTheme.typography.bodyMedium)
                         Button(onClick = onTryAgain) { Text(stringResource(R.string.try_again)) }
                     }
-                    else -> Unit
                 }
             }
         }
@@ -147,6 +146,22 @@ private fun ModelStatusVerifyingPreview() {
 private fun ModelStatusFailedPreview() {
     LabImporterTheme(dynamicColor = false) {
         ModelStatusCard(AiAvailability.PreparationFailed(AiProblem.DOWNLOAD_FAILED), AiEngine.GEMMA, {}, {})
+    }
+}
+
+@Preview(name = "Couldn't load – dark", widthDp = 400, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun ModelStatusLoadFailedDarkPreview() {
+    LabImporterTheme(darkTheme = true, dynamicColor = false) {
+        ModelStatusCard(AiAvailability.PreparationFailed(AiProblem.LOAD_FAILED), AiEngine.GEMMA, {}, {})
+    }
+}
+
+@Preview(name = "Couldn't load – largest text", widthDp = 400, fontScale = 2f)
+@Composable
+private fun ModelStatusLoadFailedLargestTextPreview() {
+    LabImporterTheme(dynamicColor = false) {
+        ModelStatusCard(AiAvailability.PreparationFailed(AiProblem.LOAD_FAILED), AiEngine.GEMMA, {}, {})
     }
 }
 

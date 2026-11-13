@@ -1,0 +1,17 @@
+{
+  "reportDate": "2026-11-02",
+  "patientName": "Rajesh",
+  "values": [
+    {"names": ["Haemoglobin", "Hemoglobin"], "value": 13.1, "unit": "g/dL", "loinc": "718-7"},
+    {"names": ["Leucocyte", "Leukocytes", "WBC"], "value": 8450, "unit": "cells/cumm", "loinc": "6690-2"},
+    {"names": ["Platelet"], "value": 1.85, "unit": "lakhs/cumm"},
+    {"names": ["Neutrophils"], "value": 62, "unit": "%", "loinc": "770-8"},
+    {"names": ["Lymphocytes"], "value": 29, "unit": "%", "loinc": "736-9"},
+    {"names": ["HbA1c", "Hemoglobin A1c"], "value": 7.4, "unit": "%", "loinc": "4548-4"},
+    {"names": ["Estimated Average Glucose", "eAG"], "value": 166, "unit": "mg/dL"},
+    {"names": ["Cholesterol"], "value": 186, "unit": "mg/dL", "loinc": "2093-3"},
+    {"names": ["Triglycerides", "Triglyceride"], "value": 203, "unit": "mg/dL", "loinc": "2571-8"},
+    {"names": ["HDL"], "value": 39, "unit": "mg/dL", "loinc": "2085-9"},
+    {"names": ["VLDL"], "value": 40.6, "unit": "mg/dL"}
+  ]
+}

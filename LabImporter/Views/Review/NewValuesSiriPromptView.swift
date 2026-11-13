@@ -18,17 +18,13 @@ struct NewValuesSiriPromptView: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
+        let sharingAName = codes.codesSharingAName
         NavigationStack {
             List {
                 Section {
                     ForEach(codes.sorted { $0.name < $1.name }) { item in
                         Toggle(isOn: allowedBinding(for: item.code)) {
-                            HStack(spacing: 12) {
-                                Circle()
-                                    .fill(LabCategory.forCode(item.code).color.gradient)
-                                    .frame(width: 9, height: 9)
-                                Text(LabMapping.displayName(for: item.code))
-                            }
+                            SiriValueLabel(code: item.code, sharesItsName: sharingAName.contains(item.code))
                         }
                     }
                 } header: {
@@ -37,6 +33,7 @@ struct NewValuesSiriPromptView: View {
                     Text("Off by default. Turn on a value to let Siri read back its latest reading when you ask.")
                 }
             }
+            .readableListText()
             .navigationTitle("Let Siri Answer New Values?")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -87,6 +84,11 @@ extension View {
 #Preview("Populated") {
     @Previewable @State var prefs = SiriExposurePreferences()
     NewValuesSiriPromptView(codes: CodeName.sampleCodes, prefs: $prefs)
+}
+
+#Preview("Two Values Sharing a Name") {
+    @Previewable @State var prefs = SiriExposurePreferences()
+    NewValuesSiriPromptView(codes: CodeName.sampleCodesSharingAName, prefs: $prefs)
 }
 
 #Preview("Single Value") {

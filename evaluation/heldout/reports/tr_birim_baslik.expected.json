@@ -1,0 +1,18 @@
+{
+  "reportDate": "2026-10-28",
+  "patientName": "Ayşe",
+  "values": [
+    {"names": ["Kolesterol", "Cholesterol"], "value": 212, "unit": "mg/dL", "loinc": "2093-3"},
+    {"names": ["HDL"], "value": 48, "unit": "mg/dL", "loinc": "2085-9"},
+    {"names": ["LDL"], "value": 138, "unit": "mg/dL", "loinc": "13457-7"},
+    {"names": ["Trigliserid", "Triglyceride"], "value": 131, "unit": "mg/dL", "loinc": "2571-8"},
+    {"names": ["ALT", "Alanine"], "value": 19, "unit": "U/L", "loinc": "1742-6"},
+    {"names": ["AST", "Aspartate"], "value": 22, "unit": "U/L", "loinc": "1920-8"},
+    {"names": ["GGT", "Glutamyl"], "value": 15, "unit": "U/L", "loinc": "2324-2"},
+    {"names": ["Alkalen Fosfataz", "Alkaline", "ALP"], "value": 74, "unit": "U/L", "loinc": "6768-6"},
+    {"names": ["TSH", "Thyrotropin"], "value": 3.12, "unit": "µIU/mL", "loinc": "3016-3"},
+    {"names": ["T4", "Tiroksin", "Thyroxine"], "value": 1.08, "unit": "ng/dL", "loinc": "3024-7"},
+    {"names": ["Vitamin D", "Hydroxyvitamin"], "value": 14.6, "unit": "ng/mL"},
+    {"names": ["Vitamin B12", "Cobalamin"], "value": 289, "unit": "pg/mL", "loinc": "2132-9"}
+  ]
+}

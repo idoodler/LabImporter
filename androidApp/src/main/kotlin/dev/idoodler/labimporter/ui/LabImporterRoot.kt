@@ -7,6 +7,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Arrangement
 import dev.idoodler.labimporter.ui.dashboard.HealthConnectOfferCard
+import dev.idoodler.labimporter.ui.dashboard.LoadProblemActions
+import dev.idoodler.labimporter.ui.dashboard.StoredReportNotices
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
@@ -143,7 +145,10 @@ fun LabImporterRoot(viewModel: AppViewModel) {
     }
     val connectHealthConnect = { permissionLauncher.launch(viewModel.healthConnectPermissions) }
 
-    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refresh() }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        viewModel.removeExpiredExports()
+        viewModel.refresh()
+    }
 
     // The download carries on in the background; a notification says when it's done — so ask
     // for that permission as the user starts it (the download starts either way).
@@ -200,11 +205,12 @@ fun LabImporterRoot(viewModel: AppViewModel) {
     }
 
     val importState by viewModel.importState.collectAsStateWithLifecycle()
+    val isSaving by viewModel.isSaving.collectAsStateWithLifecycle()
     var pasting by rememberSaveable { mutableStateOf(false) }
 
     when (val state = importState) {
         is ImportState.Reviewing -> {
-            BackHandler { viewModel.cancelImport() }
+            BackHandler { if (!isSaving) viewModel.cancelImport() } // Like Close: not while the save runs.
             ReviewScreen(
                 draft = state.draft,
                 onUpdateDraft = viewModel::updateDraft,
@@ -213,6 +219,7 @@ fun LabImporterRoot(viewModel: AppViewModel) {
                 onRemoveValue = viewModel::removeValue,
                 onCancel = viewModel::cancelImport,
                 onSave = viewModel::saveDraft,
+                isSaving = isSaving,
             )
             return
         }
@@ -402,6 +409,8 @@ private fun Screen(
             onOpenMetric = { push(Destination.Trend(it)) },
             importActions = importActions,
             isLoading = isLoading,
+            loadProblem = viewModel.loadProblem.collectAsStateWithLifecycle().value,
+            loadProblemActions = LoadProblemActions(viewModel::refresh, connectHealthConnect) { viewModel.setUseHealthConnect(false) },
             onOpenReports = { push(Destination.Reports) }.takeUnless { railRoot },
             onOpenSettings = { push(Destination.Settings) }.takeUnless { railRoot },
             patientName = viewModel.patientName.collectAsStateWithLifecycle().value,
@@ -411,6 +420,9 @@ private fun Screen(
             onExportPdf = { push(Destination.PdfExport) },
             onDeleteReports = viewModel::deleteReports,
             onSelectionModeChange = onSelectionModeChange,
+            loadProblem = viewModel.loadProblem.collectAsStateWithLifecycle().value,
+            loadProblemActions = LoadProblemActions(viewModel::refresh, connectHealthConnect) { viewModel.setUseHealthConnect(false) },
+            notices = storedReportNotices(viewModel),
         )
         Destination.PdfExport -> PdfExportScreen(reports, preferences, onGenerate = viewModel::exportPdf, onBack = pop)
         Destination.Settings -> {
@@ -462,19 +474,31 @@ private fun Screen(
     }
 }
 
+/** Saved reports the Reports list can't show. Null when there are none. */
+@Composable
+private fun storedReportNotices(viewModel: AppViewModel): (@Composable () -> Unit)? {
+    val unreadableReports by viewModel.unreadableReports.collectAsStateWithLifecycle()
+    val newerVersionReports by viewModel.newerVersionReports.collectAsStateWithLifecycle()
+    if (unreadableReports == 0 && newerVersionReports == 0) return null
+    return { StoredReportNotices(newerVersionReports, unreadableReports) }
+}
+
 /**
- * The dashboard's notices: the model download while it isn't ready, and the
- * offer to move reports into Health Connect once it's available. Null when
- * there's nothing to say.
+ * The dashboard's notices: saved reports that can't be read or need an update, the model download
+ * while it isn't ready, and the offer to move reports into Health Connect once
+ * it's available. Null when there's nothing to say.
  */
 @Composable
 private fun dashboardNotices(viewModel: AppViewModel, connectHealthConnect: () -> Unit): (@Composable () -> Unit)? {
     val availability by viewModel.aiAvailability.collectAsStateWithLifecycle()
     val offerHealthConnect by viewModel.offerHealthConnect.collectAsStateWithLifecycle()
     val modelNotice = availability is AiAvailability.Preparing || availability is AiAvailability.PreparationFailed
-    if (!modelNotice && !offerHealthConnect) return null
+    val unreadableReports by viewModel.unreadableReports.collectAsStateWithLifecycle()
+    val newerVersionReports by viewModel.newerVersionReports.collectAsStateWithLifecycle()
+    if (unreadableReports == 0 && newerVersionReports == 0 && !modelNotice && !offerHealthConnect) return null
     return {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            if (unreadableReports > 0 || newerVersionReports > 0) StoredReportNotices(newerVersionReports, unreadableReports)
             if (modelNotice) {
                 ModelStatusCard(
                     availability, viewModel.aiEngine, onTryAgain = viewModel::checkAiAgain,

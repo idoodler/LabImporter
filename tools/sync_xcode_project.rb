@@ -175,6 +175,16 @@ inbox_ref = app.source_build_phase.files_references.compact.find { |r| r.path ==
 share.source_build_phase.add_file_reference(inbox_ref, true)
 catalog_ref = app.resources_build_phase.files_references.compact.find { |r| r.path.to_s.end_with?('Localizable.xcstrings') } or abort 'no string catalog'
 share.resources_build_phase.add_file_reference(catalog_ref, true)
+# Each bundle carries its own privacy manifest (App Store Connect requires one
+# for required-reason APIs); it's a resource, copied to the bundle's root.
+[[app, app_group, app_dir], [share, share_group, File.join(ROOT, SHARE_TARGET)]].each do |target, group, dir|
+  path = File.join(dir, 'PrivacyInfo.xcprivacy')
+  abort "no #{path.sub("#{ROOT}/", '')}" unless File.exist?(path)
+  ref = group.files.find { |f| f.real_path.to_s == path } || group.new_reference('PrivacyInfo.xcprivacy')
+  next if target.resources_build_phase.files_references.include?(ref)
+  target.resources_build_phase.add_file_reference(ref, true)
+  puts "#{target.name}: added PrivacyInfo.xcprivacy"
+end
 # The app embeds (and therefore builds) the extension.
 app.add_dependency(share) unless app.dependencies.any? { |d| d.target == share }
 embed = app.copy_files_build_phases.find { |p| p.name == 'Embed Foundation Extensions' } ||

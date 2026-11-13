@@ -65,9 +65,13 @@ struct ShareInbox: Sendable {
     /// Removes and returns the item with [id], if it's still there and fresh.
     func take(_ id: UUID, now: Date = .now) -> Item? {
         let url = file(for: id)
+        // Unreadable right now (it's protected while the device is locked), so it stays:
+        // removing it would lose what the user shared.
+        guard let data = try? Data(contentsOf: url) else { return nil }
+        // It's taken now. If this fails, the worst case is the text being offered again.
         defer { try? FileManager.default.removeItem(at: url) }
-        guard let data = try? Data(contentsOf: url),
-              let stored = try? JSONDecoder().decode(Stored.self, from: data),
+        // Not an item any more: nothing could ever read it.
+        guard let stored = try? JSONDecoder().decode(Stored.self, from: data),
               now.timeIntervalSince(stored.date) < Self.lifetime
         else { return nil }
         return Item(id: id, text: stored.text, date: stored.date)
@@ -75,12 +79,15 @@ struct ShareInbox: Sendable {
 
     /// Removes and returns the oldest fresh item; expired ones are discarded.
     func takeNext(now: Date = .now) -> Item? {
+        // No folder means nothing was ever shared.
         let files = (try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)) ?? []
         let items = files.compactMap { url -> (UUID, Date)? in
-            guard url.pathExtension == "json", let id = UUID(uuidString: url.deletingPathExtension().lastPathComponent),
-                  let data = try? Data(contentsOf: url),
-                  let stored = try? JSONDecoder().decode(Stored.self, from: data)
-            else {
+            // Unreadable right now (see `take`), so it stays for the next look.
+            guard let data = try? Data(contentsOf: url) else { return nil }
+            // Readable, but not an item: nothing could ever read it.
+            let stored = try? JSONDecoder().decode(Stored.self, from: data)
+            guard url.pathExtension == "json", let id = UUID(uuidString: url.deletingPathExtension().lastPathComponent), let stored else {
+                // If this fails, the next look tries again.
                 try? FileManager.default.removeItem(at: url)
                 return nil
             }

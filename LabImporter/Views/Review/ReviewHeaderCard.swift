@@ -34,12 +34,17 @@ struct ReviewActionBar: View {
     /// We show a warning and keep save/share dimmed until the user resolves them,
     /// so the disabled state isn't a mystery.
     var hasDuplicates: Bool = false
+    /// Selected values that can't be saved as written; save/share stay dimmed until they're dealt with.
+    var valuesToCorrect: Int = 0
     let onSave: () -> Void
     let onShare: () -> Void
+    /// Pinned over the list, or a row in it (`ReviewView.pinsActionBar`).
+    var isPinned = true
 
     /// Short screens (iPhone and folded iPhone Duo in landscape) put the two
     /// buttons side by side so the pinned bar doesn't eat a third of the height.
     @Environment(\.verticalSizeClass) private var verticalSizeClass
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     /// Height of the top strip over which the material fades in. The buttons sit
     /// below it, so content scrolling underneath never shows through behind them.
@@ -59,39 +64,61 @@ struct ReviewActionBar: View {
                     systemImage: "exclamationmark.triangle.fill"
                 )
                 .font(.footnote)
-                .foregroundStyle(.orange)
+                .foregroundStyle(.statusWarning)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
 
+            if valuesToCorrect > 0 {
+                Label("\(valuesToCorrect) values to correct", systemImage: "exclamationmark.triangle.fill")
+                    .font(.footnote)
+                    .foregroundStyle(.statusCritical)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
             buttonLayout {
-                Button("Save to Health Records", action: onSave)
+                // White whatever the list around it sets (`readableListText`), when the bar is one of its rows;
+                // disabled, the system's dimmed grey (white would vanish on its grey fill).
+                Button(action: onSave) { buttonTitle("Save to Health Records").foregroundStyle(isEnabled ? Color.white : Color.textSecondary) }
                     .buttonStyle(.borderedProminent)
+                    .tint(.prominentFill)
                     .controlSize(.large)
                     .frame(maxWidth: .infinity)
 
-                Button("Share CDA File", action: onShare)
+                Button(action: onShare) { buttonTitle("Share Report File") }
                     .buttonStyle(.bordered)
                     .controlSize(.large)
                     .frame(maxWidth: .infinity)
             }
-            .opacity(isEnabled ? 1 : 0.4)
-            .allowsHitTesting(isEnabled)
+            // A capsule around three lines of text is a circle that cuts them off.
+            .buttonBorderShape(dynamicTypeSize.isAccessibilitySize ? .roundedRectangle(radius: 20) : .automatic)
+            // Disabled, not just dimmed and untappable: VoiceOver says so and can't activate them. The
+            // system dims them; dimming them again on top made them all but invisible.
+            .disabled(!isEnabled)
         }
-        .padding(.horizontal)
-        .padding(.bottom)
-        .padding(.top, fadeHeight)
+        .padding(.horizontal, isPinned ? nil : 0)
+        .padding(.bottom, isPinned ? nil : 0)
+        .padding(.top, isPinned ? fadeHeight : 0)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("review-action-bar")
         .background {
-            Rectangle()
-                .fill(.regularMaterial)
-                .mask {
-                    VStack(spacing: 0) {
-                        LinearGradient(colors: [.clear, .black], startPoint: .top, endPoint: .bottom)
-                            .frame(height: fadeHeight)
-                        Rectangle()
+            if isPinned {
+                Rectangle()
+                    .fill(.regularMaterial)
+                    .mask {
+                        VStack(spacing: 0) {
+                            LinearGradient(colors: [.clear, .black], startPoint: .top, endPoint: .bottom)
+                                .frame(height: fadeHeight)
+                            Rectangle()
+                        }
                     }
-                }
-                .ignoresSafeArea(edges: .bottom)
+                    .ignoresSafeArea(edges: .bottom)
+            }
         }
+    }
+
+    private func buttonTitle(_ title: LocalizedStringKey) -> some View {
+        Text(title)
+            .frame(maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : nil)
     }
 }
 
@@ -142,8 +169,8 @@ struct SuggestionRow: View {
         HStack {
             Text(label)
                 .font(.footnote)
-                .foregroundStyle(.secondary)
-                .lineLimit(2)
+                .foregroundStyle(.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
             Spacer()
             Button("Use", action: onUse)
                 .buttonStyle(.plain)
@@ -165,60 +192,52 @@ struct CategoryCount: Identifiable {
 
 /// Summary card shown at the top of the review screen, mirroring the look of the
 /// header cards in `HistoryView` / `ReportDetailView`: a gradient icon, the value
-/// count, a "ready to save" badge, and a row of category chips.
+/// count, what's left to do, and a row of category chips. Kept short so the
+/// values themselves start on the first screen.
 struct ReviewHeaderCard: View {
     let supportedCount: Int
     let exportableCount: Int
     var duplicateCount: Int = 0
+    /// Selected values that can't be saved as written.
+    var valuesToCorrect: Int = 0
+    /// Values about to be saved that the report text doesn't print.
+    var valuesToCheck: Int = 0
     let groups: [CategoryCount]
     let dominantColor: Color
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 14) {
-                ZStack {
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [dominantColor, dominantColor.opacity(0.65)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                    Image(systemName: "checklist")
-                        .font(.system(size: 22, weight: .semibold))
-                        .foregroundStyle(.white)
-                }
-                .frame(width: 54, height: 54)
-                .shadow(color: dominantColor.opacity(0.35), radius: 5, x: 0, y: 2)
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
-                VStack(alignment: .leading, spacing: 3) {
-                    Text("Lab Report")
-                        .font(.headline)
+    private var chips: some View {
+        ForEach(groups) { group in
+            CategoryChip(category: group.category, count: group.count)
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 12) {
+                // Decorative: at accessibility sizes its width goes to the count and status, which then wrap less.
+                if !dynamicTypeSize.isAccessibilitySize {
+                    icon
+                }
+
+                // The status has its own line and may wrap: some languages' words don't fit beside the count.
+                VStack(alignment: .leading, spacing: 4) {
                     Text("\(supportedCount) values")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(.headline)
+                    statusBadge
                 }
 
                 Spacer(minLength: 0)
-
-                if exportableCount > 0 {
-                    // Narrow cards (an unfolded iPhone Duo's Review pane, the folded
-                    // Duo) keep just the checkmark rather than wrapping the label.
-                    ViewThatFits(in: .horizontal) {
-                        readyBadge(showsLabel: true)
-                        readyBadge(showsLabel: false)
-                    }
-                }
             }
 
-            if groups.count > 1 {
+            // One scrolling line, however many categories: the values must start on the first screen. Not at
+            // accessibility sizes: wrapped, the chips filled the first screen, one scrolling line held a chip and
+            // a half ("Ho…"), and even a count of them kept the values off the first screen of a folded iPhone
+            // Duo. Each value section's header names its category and count.
+            if groups.count > 1, !dynamicTypeSize.isAccessibilitySize {
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(groups) { group in
-                            CategoryChip(category: group.category, count: group.count)
-                        }
-                    }
+                    HStack(spacing: 8) { chips }
                 }
                 .edgeFadeScroll()
             }
@@ -229,31 +248,63 @@ struct ReviewHeaderCard: View {
                     systemImage: "exclamationmark.triangle.fill"
                 )
                 .font(.footnote.weight(.medium))
-                .foregroundStyle(.orange)
+                .foregroundStyle(.statusWarning)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
-        .padding(18)
+        .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .cardSurface(cornerRadius: 22)
     }
 
-    private func readyBadge(showsLabel: Bool) -> some View {
-        HStack(spacing: 5) {
-            Image(systemName: "checkmark.circle.fill")
-            if showsLabel {
-                Text("Ready to save")
-                    .lineLimit(1)
-                    .fixedSize()
-            }
+    private var icon: some View {
+        ZStack {
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: [dominantColor, dominantColor.opacity(0.65)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+            Image(systemName: "checklist")
+                .decorativeIcon(size: 18, weight: .semibold)
+                .foregroundStyle(.white)
         }
-        .font(.caption.weight(.semibold))
-        .foregroundStyle(.green)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .background(.green.opacity(0.12), in: Capsule())
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Ready to save")
+        .frame(width: 44, height: 44)
+        .shadow(color: dominantColor.opacity(0.35), radius: 5, x: 0, y: 2)
+    }
+
+    @ViewBuilder
+    private var statusBadge: some View {
+        if valuesToCorrect > 0 {
+            badge("\(valuesToCorrect) values to correct", systemImage: "exclamationmark.triangle.fill", color: .statusCritical)
+                .accessibilityIdentifier("review-values-to-correct")
+        } else if valuesToCheck > 0 {
+            badge("\(valuesToCheck) values to check", systemImage: "exclamationmark.magnifyingglass", color: .statusWarning)
+                .accessibilityIdentifier("review-values-to-check")
+        } else if exportableCount > 0 {
+            badge("Ready to save", systemImage: "checkmark.circle.fill", color: .statusPositive)
+        }
+    }
+
+    private func badge(_ title: LocalizedStringKey, systemImage: String, color: Color) -> some View {
+        HStack(spacing: 4) {
+            // The words and color say it; at accessibility sizes the glyph took a third of the line and
+            // wrapped "Ready to save" onto a second one.
+            if !dynamicTypeSize.isAccessibilitySize {
+                Image(systemName: systemImage)
+                    .accessibilityHidden(true)
+            }
+            Text(title)
+        }
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(color)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 3)
+            .background(color.opacity(0.12), in: Capsule())
+            .fixedSize(horizontal: false, vertical: true)
+            .accessibilityElement(children: .combine)
     }
 }
 
@@ -271,7 +322,7 @@ struct CategoryChip: View {
                 .font(.caption.weight(.medium))
             Text("\(count)")
                 .font(.caption2.monospacedDigit())
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.textSecondary)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
@@ -279,73 +330,6 @@ struct CategoryChip: View {
         .overlay(
             Capsule().stroke(category.color.opacity(0.25), lineWidth: 0.5)
         )
-        .accessibilityElement(children: .combine)
-    }
-}
-
-/// Section listing values that carry no LOINC code and therefore can't be saved
-/// to Apple Health. Shown at the bottom of the review screen so the user can
-/// still see (and remove) what was parsed but won't be exported.
-struct UnsupportedValuesSection: View {
-    let values: [LabValue]
-    let onDelete: (LabValue) -> Void
-
-    var body: some View {
-        Section {
-            ForEach(values) { value in
-                row(value)
-                    .padding(.vertical, 2)
-                    .listRowBackground(Rectangle().fill(.ultraThinMaterial))
-                    .swipeActions(edge: .trailing) {
-                        Button(role: .destructive) {
-                            onDelete(value)
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                    }
-            }
-        } header: {
-            HStack(spacing: 8) {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .font(.caption)
-                    .foregroundStyle(.orange)
-                Text("Not supported for export")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.primary)
-            }
-            .textCase(nil)
-        } footer: {
-            Text("These values don't have a LOINC code and won't be saved to Apple Health.")
-        }
-    }
-
-    private func row(_ value: LabValue) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: "doc.badge.minus")
-                .font(.body)
-                .foregroundStyle(.tertiary)
-                .frame(width: 22)
-                .accessibilityHidden(true)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(value.resolvedName).font(.body)
-                Text(value.code)
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
-                    .textCase(.uppercase)
-            }
-            Spacer()
-            HStack(spacing: 6) {
-                Text(value.displayValue)
-                    .font(.body.monospacedDigit())
-                    .foregroundStyle(.secondary)
-                if !value.unit.isEmpty {
-                    Text(value.unit)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-        }
         .accessibilityElement(children: .combine)
     }
 }
@@ -367,10 +351,11 @@ struct CategorySectionHeader: View {
             Spacer()
             Text("\(count)")
                 .font(.caption.monospacedDigit())
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.textSecondary)
         }
         .textCase(nil)
         .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("category-section-header")
     }
 }
 
@@ -388,7 +373,45 @@ struct CategorySectionHeader: View {
     .background(Color(.systemGroupedBackground))
 }
 
-// The left pane of the Review screen on an unfolded iPhone Duo: the badge drops its label.
+#Preview("Header Card – To Check") {
+    ReviewHeaderCard(
+        supportedCount: 10,
+        exportableCount: 8,
+        valuesToCheck: 2,
+        groups: CategoryCount.sampleGroups,
+        dominantColor: LabCategory.lipids.color
+    )
+    .padding()
+    .background(Color(.systemGroupedBackground))
+}
+
+#Preview("Header Card – To Check, Dark") {
+    ReviewHeaderCard(
+        supportedCount: 10,
+        exportableCount: 8,
+        valuesToCheck: 1,
+        groups: CategoryCount.sampleGroups,
+        dominantColor: LabCategory.lipids.color
+    )
+    .padding()
+    .background(Color(.systemGroupedBackground))
+    .preferredColorScheme(.dark)
+}
+
+// A long translation of the status on the narrow left pane of an unfolded iPhone Duo: it wraps.
+#Preview("Header Card – Narrow, Long Status", traits: .fixedLayout(width: 290, height: 220)) {
+    ReviewHeaderCard(
+        supportedCount: 13,
+        exportableCount: 13,
+        groups: CategoryCount.sampleGroups,
+        dominantColor: LabCategory.glycemic.color
+    )
+    .padding()
+    .background(Color(.systemGroupedBackground))
+    .environment(\.locale, Locale(identifier: "el"))
+}
+
+// The left pane of the Review screen on an unfolded iPhone Duo.
 #Preview("Header Card – Narrow (Duo pane)", traits: .fixedLayout(width: 290, height: 220)) {
     ReviewHeaderCard(
         supportedCount: 13,
@@ -399,50 +422,23 @@ struct CategorySectionHeader: View {
     .padding()
     .background(Color(.systemGroupedBackground))
 }
-#endif
 
-#Preview("Action Bar") {
-    VStack {
-        Spacer()
-        ReviewActionBar(isEnabled: true, onSave: {}, onShare: {})
-    }
-}
-
-#Preview("Action Bar – Landscape", traits: .landscapeLeft) {
-    VStack {
-        Spacer()
-        ReviewActionBar(isEnabled: true, onSave: {}, onShare: {})
-    }
-}
-
-#Preview("Action Bar – Dark") {
-    VStack {
-        Spacer()
-        ReviewActionBar(isEnabled: true, onSave: {}, onShare: {})
-    }
-    .preferredColorScheme(.dark)
-}
-
-#Preview("Action Bar – Duplicates") {
-    VStack {
-        Spacer()
-        ReviewActionBar(isEnabled: false, hasDuplicates: true, onSave: {}, onShare: {})
-    }
-}
-
-#Preview("Unsupported Values") {
-    List {
-        UnsupportedValuesSection(
-            values: [
-                LabValue(code: "CRP-X", name: "C-Reactive Protein",
-                         displayValue: "3.1", numericValue: 3.1, unit: "mg/L"),
-                LabValue(code: "FOO", name: "Unknown Marker",
-                         displayValue: "1.2", numericValue: 1.2, unit: ""),
-            ],
-            onDelete: { _ in }
+// The largest text: the count and the status, without icons or categories, so the values start on the first screen.
+#Preview("Header Card – Largest Text") {
+    ScrollView {
+        ReviewHeaderCard(
+            supportedCount: 8,
+            exportableCount: 8,
+            valuesToCheck: 1,
+            groups: CategoryCount.sampleGroups,
+            dominantColor: LabCategory.glycemic.color
         )
+        .padding()
     }
+    .background(Color(.systemGroupedBackground))
+    .dynamicTypeSize(.accessibility5)
 }
+#endif
 
 #if DEBUG
 #Preview("Category Chips") {

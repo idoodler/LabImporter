@@ -1,5 +1,6 @@
 package dev.idoodler.labimporter.ui.loinc
 
+import dev.idoodler.labimporter.ui.design.isLargeText
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,9 +20,9 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.Label
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Label
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Straighten
 import androidx.compose.material3.Card
@@ -193,7 +194,7 @@ private fun Header(code: String, category: LabCategory, detail: LoincDetail?, pr
             }
             preferences.nickname(code)?.let { nickname ->
                 HorizontalDivider()
-                LabeledRow(Icons.Rounded.Label, category, stringResource(R.string.nickname), nickname)
+                LabeledRow(Icons.AutoMirrored.Rounded.Label,category, stringResource(R.string.nickname), nickname)
             }
             preferences.referenceRange(code)?.let { range ->
                 HorizontalDivider()
@@ -238,12 +239,15 @@ private fun LabeledRow(icon: ImageVector, category: LabCategory, label: String, 
 
 @Composable
 private fun Attribute(index: Int, count: Int, label: Int, value: String) {
+    // Beside a column of fixed width, large text breaks the label inside its words.
+    val text = @Composable { width: Modifier ->
+        Text(value, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = width)
+    }
     GroupedListItem(
         index, count,
         headline = { Text(stringResource(label)) },
-        trailing = {
-            Text(value, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.width(180.dp))
-        },
+        supporting = if (isLargeText) ({ text(Modifier) }) else null,
+        trailing = if (isLargeText) null else ({ text(Modifier.width(180.dp)) }),
     )
 }
 

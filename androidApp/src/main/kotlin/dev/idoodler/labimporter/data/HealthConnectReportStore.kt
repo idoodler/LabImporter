@@ -1,6 +1,7 @@
 package dev.idoodler.labimporter.data
 
 import android.content.Context
+import android.util.Log
 import androidx.core.net.toUri
 import androidx.health.connect.client.HealthConnectClient
 import kotlinx.coroutines.withContext
@@ -19,6 +20,7 @@ import androidx.health.connect.client.request.ReadMedicalResourcesInitialRequest
 import androidx.health.connect.client.request.ReadMedicalResourcesPageRequest
 import androidx.health.connect.client.request.UpsertMedicalResourceRequest
 import dev.idoodler.labimporter.core.LabReportStore
+import dev.idoodler.labimporter.core.droppedEntryIds
 import dev.idoodler.labimporter.core.export.FhirLabCodec
 import dev.idoodler.labimporter.core.model.LabReport
 
@@ -35,6 +37,9 @@ enum class HealthConnectAvailability {
     AVAILABLE,
 }
 
+/** Health Connect went away after the choice to use it was made; the UI says so in its own words. */
+class HealthConnectUnavailableException : Exception("Health Connect is not available on this device")
+
 /** Health Connect as [ReportRepository] uses it — a seam, so moving reports into it is testable. */
 interface HealthConnectStore : LabReportStore {
     fun availability(): HealthConnectAvailability
@@ -50,11 +55,14 @@ interface HealthConnectStore : LabReportStore {
  *
  * The Medical Records API is still experimental in Jetpack; everything here is
  * gated on [availability] so the app degrades to [LocalReportStore].
+ *
+ * @param newClient the client, or null where there's none; tests pass a scripted one.
  */
 @OptIn(ExperimentalPersonalHealthRecordApi::class)
 class HealthConnectReportStore(
     private val context: Context,
     private val softwareIdentity: String,
+    private val newClient: (Context) -> HealthConnectClient? = ::systemClient,
 ) : HealthConnectStore {
 
     val permissions: Set<String> = setOf(
@@ -62,13 +70,15 @@ class HealthConnectReportStore(
         HealthPermission.PERMISSION_READ_MEDICAL_DATA_LABORATORY_RESULTS,
     )
 
-    private val client: HealthConnectClient? by lazy {
-        if (HealthConnectClient.getSdkStatus(context) == HealthConnectClient.SDK_AVAILABLE) {
-            HealthConnectClient.getOrCreate(context)
-        } else {
-            null
-        }
-    }
+    private val client: HealthConnectClient? by lazy { newClient(context) }
+
+    @Volatile
+    override var unreadableReports = 0
+        private set
+
+    @Volatile
+    override var newerVersionReports = 0
+        private set
 
     override fun availability(): HealthConnectAvailability {
         val sdk = HealthConnectClient.getSdkStatus(context)
@@ -76,7 +86,8 @@ class HealthConnectReportStore(
         if (sdk != HealthConnectClient.SDK_AVAILABLE) return HealthConnectAvailability.NOT_INSTALLED
         val medical = runCatching {
             client?.features?.getFeatureStatus(HealthConnectFeatures.FEATURE_PERSONAL_HEALTH_RECORD)
-        }.getOrNull()
+            // A failed check counts as unavailable: the repository says so and offers Try Again, and nothing is deleted.
+        }.onFailure { Log.w(TAG, "Couldn't check for Medical Records", it) }.getOrNull()
         return if (medical == HealthConnectFeatures.FEATURE_STATUS_AVAILABLE) {
             HealthConnectAvailability.AVAILABLE
         } else {
@@ -86,12 +97,19 @@ class HealthConnectReportStore(
 
     override suspend fun hasPermissions(): Boolean {
         val c = client ?: return false
-        return runCatching { c.permissionController.getGrantedPermissions().containsAll(permissions) }.getOrDefault(false)
+        return runCatching { c.permissionController.getGrantedPermissions().containsAll(permissions) }
+            .onFailure { Log.w(TAG, "Couldn't check the Health Connect permissions", it) }
+            // A failed check counts as no access: asking again is harmless, and the reports stay where they are.
+            .getOrDefault(false)
     }
 
     override suspend fun loadReports(): List<LabReport> {
         val c = requireClient()
-        val source = existingSource(c) ?: return emptyList()
+        val source = existingSource(c) ?: run {
+            unreadableReports = 0
+            newerVersionReports = 0
+            return emptyList()
+        }
         val resources = mutableListOf<String>()
         var pageToken: String? = null
         do {
@@ -106,29 +124,33 @@ class HealthConnectReportStore(
             pageToken = response.nextPageToken
         } while (pageToken != null)
         // Health Connect resumes on the caller's thread (often main); parsing every report isn't for it.
-        return withContext(Dispatchers.Default) { FhirLabCodec.decode(resources) }
+        val stored = withContext(Dispatchers.Default) { FhirLabCodec.decodeStored(resources) }
+        unreadableReports = stored.unreadableReports
+        newerVersionReports = stored.newerVersionReports
+        return stored.reports
     }
 
     override suspend fun save(report: LabReport) {
         val c = requireClient()
+        val resources = withContext(Dispatchers.Default) { FhirLabCodec.encodeForSaving(report, softwareIdentity) }
         val source = existingSource(c) ?: createSource(c)
-        val requests = withContext(Dispatchers.Default) {
-            FhirLabCodec.encode(report, softwareIdentity).map { UpsertMedicalResourceRequest(source.id, source.fhirVersion, it.json) }
-        }
-        if (requests.isNotEmpty()) c.upsertMedicalResources(requests)
+        c.upsertMedicalResources(resources.map { UpsertMedicalResourceRequest(source.id, source.fhirVersion, it.json) })
     }
 
-    override suspend fun delete(report: LabReport) {
+    /** Records this build couldn't read go too: they belong to the report, and nothing else would remove them. */
+    override suspend fun delete(report: LabReport) = deleteEntries(report.entries.map { it.id } + report.unreadRecordIds)
+
+    /** Entries keep their ids through an edit, so the save already replaced those that stayed. */
+    override suspend fun removeDropped(old: LabReport, updated: LabReport) = deleteEntries(droppedEntryIds(old, updated))
+
+    private suspend fun deleteEntries(entryIds: List<String>) {
+        if (entryIds.isEmpty()) return
         val c = requireClient()
         val source = existingSource(c) ?: return
-        val ids = report.entries.map {
-            MedicalResourceId(source.id, FhirResource.FHIR_RESOURCE_TYPE_OBSERVATION, it.id)
-        }
-        if (ids.isNotEmpty()) c.deleteMedicalResources(ids)
+        c.deleteMedicalResources(entryIds.map { MedicalResourceId(source.id, FhirResource.FHIR_RESOURCE_TYPE_OBSERVATION, it) })
     }
 
-    private fun requireClient(): HealthConnectClient =
-        client ?: throw IllegalStateException("Health Connect is not available on this device")
+    private fun requireClient(): HealthConnectClient = client ?: throw HealthConnectUnavailableException()
 
     private suspend fun existingSource(c: HealthConnectClient): MedicalDataSource? =
         c.getMedicalDataSources(GetMedicalDataSourcesRequest(listOf(context.packageName))).firstOrNull()
@@ -143,6 +165,14 @@ class HealthConnectReportStore(
         )
 
     private companion object {
+        const val TAG = "HealthConnectStore"
         const val PAGE_SIZE = 500
     }
 }
+
+private fun systemClient(context: Context): HealthConnectClient? =
+    if (HealthConnectClient.getSdkStatus(context) == HealthConnectClient.SDK_AVAILABLE) {
+        HealthConnectClient.getOrCreate(context)
+    } else {
+        null
+    }

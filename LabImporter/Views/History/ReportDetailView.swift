@@ -5,6 +5,7 @@ struct ReportDetailView: View {
     let onDeleted: (UUID) -> Void
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var showEdit = false
     @State private var showDeleteAlert = false
     @State private var shareURL: IdentifiedURL?
@@ -19,6 +20,12 @@ struct ReportDetailView: View {
                     .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
+                if report.isReadOnly {
+                    readOnlyNotice
+                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                }
             }
 
             ForEach(categoryGroups, id: \.category) { group in
@@ -33,6 +40,7 @@ struct ReportDetailView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .readableListText()
         .scrollContentBackground(.hidden)
         .background { CategoryBackground(colors: backgroundColors) }
         .navigationTitle(report.date.formatted(date: .abbreviated, time: .omitted))
@@ -40,11 +48,14 @@ struct ReportDetailView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
-                    Button { showEdit = true } label: {
-                        Label("Edit", systemImage: "pencil")
+                    // A read-only report has values this build can't show; saving it would drop them.
+                    if !report.isReadOnly {
+                        Button { showEdit = true } label: {
+                            Label("Edit", systemImage: "pencil")
+                        }
                     }
                     Button { shareCDA() } label: {
-                        Label("Share CDA File", systemImage: "square.and.arrow.up")
+                        Label("Share Report File", systemImage: "square.and.arrow.up")
                     }
                     Divider()
                     Button(role: .destructive) { showDeleteAlert = true } label: {
@@ -62,7 +73,7 @@ struct ReportDetailView: View {
             }
             Button("Cancel", role: .cancel) { }
         } message: {
-            Text("This report will be permanently removed from Apple Health.")
+            Text(deleteConfirmation)
         }
         .alert("Export Error", isPresented: .constant(shareError != nil)) {
             Button("OK") { shareError = nil }
@@ -80,9 +91,9 @@ struct ReportDetailView: View {
             }
             .interactiveDismissDisabled()
         }
-        .sheet(item: $shareURL) { item in
+        .sheet(item: $shareURL, onDismiss: { ExportFiles.removeAll() }, content: { item in
             ShareSheet(url: item.url)
-        }
+        })
     }
 
     // MARK: - Header
@@ -100,19 +111,15 @@ struct ReportDetailView: View {
                             )
                         )
                     Image(systemName: "doc.text.fill")
-                        .font(.system(size: 22, weight: .semibold))
+                        .decorativeIcon(size: 22, weight: .semibold)
                         .foregroundStyle(.white)
                 }
                 .frame(width: 54, height: 54)
                 .shadow(color: dominantColor.opacity(0.35), radius: 5, x: 0, y: 2)
 
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(report.date.formatted(date: .long, time: .omitted))
-                        .font(.headline)
-                    Text("\(report.entries.count) values")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
+                // The date is the screen's title, right above: said once.
+                Text("\(report.entries.count) values")
+                    .font(.headline)
                 Spacer(minLength: 0)
             }
 
@@ -120,36 +127,63 @@ struct ReportDetailView: View {
                 Divider()
                 VStack(alignment: .leading, spacing: 8) {
                     ForEach(metaItems, id: \.label) { item in
-                        HStack(spacing: 8) {
+                        // One text that wraps, like Android's: a lab's name can be long and the text large.
+                        HStack(alignment: .firstTextBaseline, spacing: 8) {
                             Image(systemName: item.icon)
                                 .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .frame(width: 18)
-                            Text(item.label)
+                                .foregroundStyle(.textSecondary)
+                                .frame(minWidth: 18)
+                                .accessibilityHidden(true)
+                            Text(verbatim: "\(item.label): \(item.value)")
                                 .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                            Spacer()
-                            Text(item.value)
-                                .font(.subheadline)
+                            Spacer(minLength: 0)
                         }
                     }
                 }
             }
 
             if categoryGroups.count > 1 {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(categoryGroups, id: \.category) { group in
-                            categoryChip(group)
-                        }
+                // Wrapped, not scrolled sideways: this is the report's summary, and nothing here is waiting below it.
+                FlowLayout(spacing: 8) {
+                    ForEach(categoryGroups, id: \.category) { group in
+                        categoryChip(group)
                     }
                 }
-                .edgeFadeScroll()
             }
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
         .cardSurface(cornerRadius: 22)
+    }
+
+    // MARK: - Read only
+
+    /// Why there's no Edit: the report has values this build can't show, and saving would drop them.
+    private var readOnlyNotice: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 12) {
+            Image(systemName: "lock.fill")
+                .foregroundStyle(.textSecondary)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Can't Be Edited")
+                    .font(.subheadline.weight(.semibold))
+                Text(LabReport.readOnlyExplanation(unreadValues: report.unreadValues))
+                    .font(.subheadline)
+                    .foregroundStyle(.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .cardSurface(cornerRadius: 18)
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("report-read-only")
+    }
+
+    private var deleteConfirmation: String {
+        let removed = String(localized: "This report will be permanently removed from Apple Health.")
+        return report.isReadOnly ? removed + "\n\n" + LabReport.deletesUnreadValues(report.unreadValues) : removed
     }
 
     private func categoryChip(_ group: CategoryGroup) -> some View {
@@ -161,7 +195,7 @@ struct ReportDetailView: View {
                 .font(.caption.weight(.medium))
             Text("\(group.entries.count)")
                 .font(.caption2.monospacedDigit())
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.textSecondary)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
@@ -184,7 +218,7 @@ struct ReportDetailView: View {
             Spacer()
             Text("\(group.entries.count)")
                 .font(.caption.monospacedDigit())
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.textSecondary)
         }
         .textCase(nil)
     }
@@ -208,37 +242,39 @@ struct ReportDetailView: View {
                 .fill(color)
                 .frame(width: 8, height: 8)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(entry.resolvedName)
-                    .font(.body)
-                Text(entry.code)
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
-                    .textCase(.uppercase)
+            AdaptiveRow(spacing: 12) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(entry.resolvedName)
+                        .font(.body)
+                    Text(entry.code)
+                        .font(.caption2)
+                        .foregroundStyle(.textTertiary)
+                        .textCase(.uppercase)
+                }
+
+                if !dynamicTypeSize.isAccessibilitySize { Spacer() }
+
+                let status = LabMapping.rangeStatus(for: entry.numericValue, code: entry.code)
+                if let status {
+                    RangeStatusBadge(status: status,
+                                     range: LabMapping.referenceRange(for: entry.code),
+                                     unit: entry.unit)
+                }
+
+                let valueText = entry.displayValue == "-"
+                    ? "–"
+                    : "\(entry.displayValue) \(entry.unit)".trimmingCharacters(in: .whitespaces)
+
+                Text(valueText)
+                    .font(.body.monospacedDigit().weight(.medium))
+                    .foregroundStyle(valueColor(for: entry, status: status))
             }
-
-            Spacer()
-
-            let status = LabMapping.rangeStatus(for: entry.numericValue, code: entry.code)
-            if let status {
-                RangeStatusBadge(status: status,
-                                 range: LabMapping.referenceRange(for: entry.code),
-                                 unit: entry.unit)
-            }
-
-            let valueText = entry.displayValue == "-"
-                ? "–"
-                : "\(entry.displayValue) \(entry.unit)".trimmingCharacters(in: .whitespaces)
-
-            Text(valueText)
-                .font(.body.monospacedDigit().weight(.medium))
-                .foregroundStyle(valueColor(for: entry, status: status))
         }
         .padding(.vertical, 2)
     }
 
     private func valueColor(for entry: LabReport.Entry, status: RangeStatus?) -> Color {
-        if entry.displayValue == "-" { return .secondary }
+        if entry.displayValue == "-" { return .textSecondary }
         if let status, status.isOutOfRange { return status.color }
         return .primary
     }
@@ -284,7 +320,7 @@ struct ReportDetailView: View {
             items.append(MetaItem(icon: "person.fill", label: String(localized: "Patient"), value: report.patientName))
         }
         if !report.authorName.isEmpty {
-            items.append(MetaItem(icon: "cross.case.fill", label: String(localized: "Author"), value: report.authorName))
+            items.append(MetaItem(icon: "cross.case.fill", label: String(localized: "Lab / Doctor"), value: report.authorName))
         }
         return items
     }
@@ -340,6 +376,13 @@ private struct ShareSheet: UIViewControllerRepresentable {
     }
 }
 
+#Preview("Largest Text") {
+    NavigationStack {
+        ReportDetailView(report: .sample, onDeleted: { _ in })
+    }
+    .dynamicTypeSize(.accessibility5)
+}
+
 #Preview("With Qualitative Results") {
     NavigationStack {
         ReportDetailView(report: .sampleWithQualitative, onDeleted: { _ in })
@@ -351,5 +394,25 @@ private struct ShareSheet: UIViewControllerRepresentable {
         ReportDetailView(report: .sampleWithQualitative, onDeleted: { _ in })
     }
     .preferredColorScheme(.dark)
+}
+
+#Preview("Read Only") {
+    NavigationStack {
+        ReportDetailView(report: .sampleReadOnly, onDeleted: { _ in })
+    }
+}
+
+#Preview("Read Only – Dark") {
+    NavigationStack {
+        ReportDetailView(report: .sampleReadOnly, onDeleted: { _ in })
+    }
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Read Only – Largest Text") {
+    NavigationStack {
+        ReportDetailView(report: .sampleReadOnly, onDeleted: { _ in })
+    }
+    .dynamicTypeSize(.accessibility5)
 }
 #endif

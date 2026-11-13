@@ -1,0 +1,92 @@
+{"entries":
+[
+{"code":
+"Emoglobina",
+"name":
+"Emoglobina",
+"rawValue":
+"13,6",
+"unit":
+"g/dL"
+},
+{"code":
+"Globuli bianchi",
+"name":
+"Globuli bianchi",
+"rawValue":
+"5,9",
+"unit":
+"10^3/µL"
+},
+{"code":
+"Piastrine",
+"name":
+"Piastrine",
+"rawValue":
+"301",
+"unit":
+"10^3/µL"
+},
+{"code":
+"Glicemia",
+"name":
+"Glicemia",
+"rawValue":
+"88",
+"unit":
+"mg/dL"
+},
+{"code":
+"Colesterolo totale",
+"name":
+"Colesterolo totale",
+"rawValue":
+"231",
+"unit":
+"mg/dL"
+},
+{"code":
+"Colesterolo HDL",
+"name":
+"Colesterolo HDL",
+"rawValue":
+"68",
+"unit":
+"mg/dL"
+},
+{"code":
+"Trigliceridi",
+"name":
+"Trigliceridi",
+"rawValue":
+"112",
+"unit":
+"mg/dL"
+},
+{"code":
+"Creatinina",
+"name":
+"Creatinina",
+"rawValue":
+"0,78",
+"unit":
+"mg/dL"
+},
+{"code":
+"Vitamina D (25-OH)",
+"name":
+"Vitamina D (25-OH)",
+"rawValue":
+"19,4",
+"unit":
+"ng/mL"
+}
+],
+"reportDate":
+"2026-08-18",
+"patientName":
+"Rossi Giulia",
+"authorName":
+"",
+"reportLanguage":
+"it"}

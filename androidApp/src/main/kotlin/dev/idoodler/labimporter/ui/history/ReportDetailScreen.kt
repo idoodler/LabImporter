@@ -20,6 +20,7 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -45,8 +46,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -109,7 +112,10 @@ fun ReportDetailScreen(
                         IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.back)) }
                     },
                     actions = {
-                        IconButton(onClick = onEdit) { Icon(Icons.Rounded.Edit, stringResource(R.string.edit)) }
+                        // A read-only report has values this build can't show; saving it would drop them.
+                        if (!report.isReadOnly) {
+                            IconButton(onClick = onEdit) { Icon(Icons.Rounded.Edit, stringResource(R.string.edit)) }
+                        }
                         IconButton(onClick = {
                             val send = Intent(Intent.ACTION_SEND).apply {
                                 type = "text/xml"
@@ -170,6 +176,7 @@ fun ReportDetailScreen(
                         }
                     }
                 }
+                if (report.isReadOnly) item(key = "read-only") { ReadOnlyNotice(report.unreadValues) }
                 grouped.forEach { (category, entries) ->
                     item(key = "h-${category.name}") {
                         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 12.dp)) {
@@ -207,7 +214,10 @@ fun ReportDetailScreen(
             onDismissRequest = { confirmDelete = false },
             icon = { Icon(Icons.Rounded.Delete, null) },
             title = { Text(stringResource(R.string.delete_report_title)) },
-            text = { Text(stringResource(R.string.delete_report_message)) },
+            text = {
+                val removed = stringResource(R.string.delete_report_message)
+                Text(if (report.isReadOnly) removed + "\n\n" + stringResource(R.string.delete_unread_values, report.unreadValues) else removed)
+            },
             confirmButton = {
                 TextButton(onClick = { confirmDelete = false; onDelete() }) {
                     Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)
@@ -216,6 +226,48 @@ fun ReportDetailScreen(
             dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text(stringResource(R.string.cancel)) } },
         )
     }
+}
+
+/** Why there's no Edit: the report has values this build can't show, and saving would drop them. */
+@Composable
+private fun ReadOnlyNotice(unreadValues: Int) {
+    Card(
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+        modifier = Modifier.fillMaxWidth().padding(top = 12.dp).semantics(mergeDescendants = true) {}.testTag("report-read-only"),
+    ) {
+        Row(Modifier.padding(16.dp)) {
+            Icon(Icons.Rounded.Lock, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(Modifier.width(12.dp))
+            Column {
+                Text(stringResource(R.string.report_read_only_title), style = MaterialTheme.typography.titleSmall)
+                Text(
+                    stringResource(R.string.report_read_only_message, unreadValues),
+                    style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
+}
+
+@Preview(name = "Detail – read only", widthDp = 400, heightDp = 900)
+@Composable
+private fun ReportDetailReadOnlyPreview() {
+    LabImporterTheme(dynamicColor = false) { ReportDetailScreen(PreviewSamples.readOnlyReport, {}, {}, {}, { Uri.EMPTY }) }
+}
+
+@Preview(name = "Detail – read only, dark", widthDp = 400, heightDp = 900, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun ReportDetailReadOnlyDarkPreview() {
+    LabImporterTheme(darkTheme = true, dynamicColor = false) {
+        ReportDetailScreen(PreviewSamples.readOnlyReport, {}, {}, {}, { Uri.EMPTY })
+    }
+}
+
+@Preview(name = "Detail – read only, largest text", widthDp = 400, heightDp = 1400, fontScale = 2f)
+@Composable
+private fun ReportDetailReadOnlyLargeTextPreview() {
+    LabImporterTheme(dynamicColor = false) { ReportDetailScreen(PreviewSamples.readOnlyReport, {}, {}, {}, { Uri.EMPTY }) }
 }
 
 @Preview(name = "Detail", widthDp = 400, heightDp = 900)

@@ -1,0 +1,17 @@
+{
+  "reportDate": "2026-10-15",
+  "patientName": "Novák",
+  "values": [
+    {"names": ["Glukóza", "Glucose"], "value": 6.4, "unit": "mmol/l", "loinc": "14749-6"},
+    {"names": ["Kreatinin", "Creatinine"], "value": 98, "unit": "µmol/l", "loinc": "14682-9"},
+    {"names": ["Kyselina močová", "Urate", "Uric"], "value": 412, "unit": "µmol/l"},
+    {"names": ["ALT", "Alanine"], "value": 0.62, "unit": "µkat/l", "loinc": "1742-6"},
+    {"names": ["AST", "Aspartate"], "value": 0.48, "unit": "µkat/l", "loinc": "1920-8"},
+    {"names": ["Cholesterol"], "value": 5.9, "unit": "mmol/l", "loinc": "14647-2"},
+    {"names": ["Triacylglyceroly", "Triglyceride"], "value": 1.84, "unit": "mmol/l", "loinc": "14927-8"},
+    {"names": ["Glykovaný hemoglobin", "HbA1c", "Hemoglobin A1c"], "value": 48, "unit": "mmol/mol", "loinc": "59261-8"}
+  ],
+  "notNumeric": [
+    {"names": ["CRP", "C reactive", "C-reactive"], "result": "<5"}
+  ]
+}

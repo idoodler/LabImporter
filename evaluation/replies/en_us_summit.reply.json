@@ -1,0 +1,82 @@
+{"entries":
+[{"code":
+"Hemoglobin",
+"name":
+"Hemoglobin",
+"rawValue":
+"12.6",
+"unit":
+"g/dL"
+},
+{"code":
+"Bilirubin, Direct",
+"name":
+"Bilirubin, Direct",
+"rawValue":
+"<0.2",
+"unit":
+"mg/dL"
+},
+{"code":
+"Creatinine",
+"name":
+"Creatinine",
+"rawValue":
+"0.68",
+"unit":
+"mg/dL"
+},
+{"code":
+"eGFR",
+"name":
+"glomerular Filtration rate (eGFR)",
+"rawValue":
+">90",
+"unit":
+"mL/min/1.73m2"
+},
+{"code":
+"Albumin, Urine",
+"name":
+"Albumin, Urine",
+"rawValue":
+"<0.2",
+"unit":
+"mg/dL"
+},
+{"code":
+"Ferritin",
+"name":
+"Ferritin",
+"rawValue":
+"18",
+"unit":
+"ng/mL"
+},
+{"code":
+"hs-CRP",
+"name":
+"hs-CRP",
+"rawValue":
+"0.4",
+"unit":
+"mg/L"
+},
+{"code":
+"Lead, Blood",
+"name":
+"Lead, Blood",
+"rawValue":
+"<1",
+"unit":
+"mcg/dL"
+}
+],
+"reportDate":
+"2026-02-52",
+"patientName":
+"Maria Gonzalez",
+"authorName":
+"",
+"reportLanguage":
+"en"}

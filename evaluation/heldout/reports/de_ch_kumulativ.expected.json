@@ -1,0 +1,14 @@
+{
+  "reportDate": "2026-10-31",
+  "patientName": "Brunner",
+  "values": [
+    {"names": ["Hämoglobin", "Hemoglobin"], "value": 131, "unit": "g/L", "loinc": "718-7"},
+    {"names": ["Leukozyten", "Leukocytes"], "value": 11.2, "unit": "G/L", "loinc": "6690-2"},
+    {"names": ["Thrombozyten", "Platelets"], "value": 412, "unit": "G/L", "loinc": "777-3"},
+    {"names": ["Kreatinin", "Creatinine"], "value": 88, "unit": "µmol/L", "loinc": "14682-9"},
+    {"names": ["CRP", "C reactive", "C-reaktives"], "value": 18, "unit": "mg/L", "loinc": "1988-5"},
+    {"names": ["Procalcitonin"], "value": 0.12, "unit": "µg/L"},
+    {"names": ["Ferritin"], "value": 1240, "unit": "µg/L", "loinc": "2276-4"},
+    {"names": ["Albumin"], "value": 31, "unit": "g/L", "loinc": "1751-7"}
+  ]
+}

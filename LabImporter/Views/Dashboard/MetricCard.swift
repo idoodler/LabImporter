@@ -28,6 +28,10 @@ struct MetricData: Identifiable {
     /// For a metric whose readings are all results that aren't numbers: every
     /// one of them, oldest first (shared `Metric.results`). Empty otherwise.
     var results: [ResultPoint] = []
+    /// The latest reading's date (shared `Metric.date`); the last point's when built by hand.
+    var latestDate: Date?
+
+    var date: Date? { latestDate ?? history.last?.date ?? results.last?.date }
 
     /// Readings are results that aren't numbers: no sparkline, trend or range.
     var isQualitative: Bool { entry.numericValue == nil }
@@ -38,7 +42,8 @@ extension MetricData {
         self.init(
             entry: LabReport.Entry(shared: metric.entry),
             history: metric.history.map { SparkPoint(date: Date(shared: $0.date), value: $0.value) },
-            results: metric.results.map { ResultPoint(date: Date(shared: $0.date), text: $0.text, unit: $0.unit) }
+            results: metric.results.map { ResultPoint(date: Date(shared: $0.date), text: $0.text, unit: $0.unit) },
+            latestDate: Date(shared: metric.date)
         )
     }
 }
@@ -83,6 +88,9 @@ struct MetricCard: View {
     let metric: MetricData
     let isPinned: Bool
 
+    /// The trend arrow speaks, so it grows with the text beside it.
+    @ScaledMetric(relativeTo: .footnote) private var dockSize: CGFloat = 18
+
     private var categoryColor: Color {
         LabCategory.forCode(metric.entry.code).color
     }
@@ -115,15 +123,15 @@ struct MetricCard: View {
     private var dock: some View {
         if let trend {
             Image(systemName: trend.symbol)
-                .font(.system(size: 9, weight: .heavy))
+                .font(.system(size: dockSize / 2, weight: .heavy))
                 .foregroundStyle(.white)
-                .frame(width: 18, height: 18)
+                .frame(width: dockSize, height: dockSize)
                 .background(categoryColor.gradient, in: Circle())
                 .accessibilityLabel(trend.accessibilityLabel)
         } else {
             Circle()
                 .fill(categoryColor.gradient)
-                .frame(width: 18, height: 18)
+                .frame(width: dockSize, height: dockSize)
                 .accessibilityHidden(true)
         }
     }
@@ -133,38 +141,41 @@ struct MetricCard: View {
             HStack(alignment: .top, spacing: 7) {
                 dock
                 Text(metric.entry.resolvedName)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
+                    .font(.footnote.weight(.medium))
+                    .foregroundStyle(.primary)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.top, 1)
                 Spacer(minLength: 0)
                 if isPinned {
                     Image(systemName: "pin.fill")
                         .font(.caption2)
-                        .foregroundStyle(Color.yellow)
+                        .foregroundStyle(.pinnedMark)
                         .accessibilityLabel("Pinned")
                 }
             }
 
-            HStack(alignment: .firstTextBaseline, spacing: 3) {
+            // A result can be long ("Non-reactive") and the text large: it moves down a line, whole.
+            FittingRow(spacing: 3) {
                 Text(metric.entry.displayValue)
                     .font(.title2.bold())
                     .foregroundStyle(valueForeground)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
                 if !metric.entry.unit.isEmpty {
                     Text(metric.entry.unit)
                         .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
+                        .foregroundStyle(.textSecondary)
                 }
-                Spacer(minLength: 0)
                 if let rangeStatus {
                     RangeStatusBadge(status: rangeStatus,
                                      range: referenceRange,
                                      unit: metric.entry.unit)
                 }
+            }
+
+            // When it was measured, as on Android: a value from two years ago reads differently.
+            if let date = metric.date {
+                Text(date.formatted(date: .abbreviated, time: .omitted))
+                    .font(.caption)
+                    .foregroundStyle(.textSecondary)
             }
 
             if metric.isQualitative {
@@ -197,13 +208,11 @@ struct RecentResultsList: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
             ForEach(results.suffix(limit).reversed()) { result in
-                HStack(spacing: 6) {
+                FittingRow(alignment: .center, spacing: 6) {
                     Text(result.date.formatted(date: .abbreviated, time: .omitted))
-                        .foregroundStyle(.secondary)
-                    Spacer(minLength: 4)
+                        .foregroundStyle(.textSecondary)
                     Text(result.formatted)
                         .fontWeight(.medium)
-                        .lineLimit(1)
                 }
                 .font(.caption2)
                 .accessibilityElement(children: .combine)
@@ -214,14 +223,27 @@ struct RecentResultsList: View {
 
 // MARK: - MetricSparklineChart
 
-/// The line+area+point sparkline shared by the grid's `MetricCard` and the
-/// dashboard's single-metric hero card. Callers control size via `.frame`.
+/// The line+point sparkline shared by the grid's `MetricCard` and the dashboard's
+/// single-metric hero card, on the shared sparkline scale. Callers control size via `.frame`.
 struct MetricSparklineChart: View {
     let history: [SparkPoint]
     let categoryColor: Color
     let referenceRange: ReferenceRange?
 
     var body: some View {
+        if let domain = ChartDomain(sparkline: history.map(\.date), values: history.map(\.value)) {
+            chart(domain)
+                .chartXScale(domain: domain.xDomain)
+                .chartYScale(domain: domain.yDomain)
+        }
+    }
+
+    /// A reference bound, when it lies within the sparkline: the scale isn't stretched to reach it.
+    private func bound(_ value: Double?, in domain: ChartDomain) -> Double? {
+        value.flatMap { domain.yDomain.contains($0) ? $0 : nil }
+    }
+
+    private func chart(_ domain: ChartDomain) -> some View {
         Chart {
             ForEach(history) { point in
                 LineMark(
@@ -229,18 +251,7 @@ struct MetricSparklineChart: View {
                     y: .value("Value", point.value)
                 )
                 .foregroundStyle(categoryColor.opacity(0.85))
-
-                AreaMark(
-                    x: .value("Date", point.date),
-                    y: .value("Value", point.value)
-                )
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [categoryColor.opacity(0.3), categoryColor.opacity(0.05)],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
+                // No area under it: with no zero baseline, a filled area would claim an amount.
 
                 PointMark(
                     x: .value("Date", point.date),
@@ -250,16 +261,14 @@ struct MetricSparklineChart: View {
                 .symbolSize(20)
             }
 
-            // Faint dashed guides at the reference bounds. No explicit Y scale is
-            // set, so Charts auto-includes these in the domain — the marks stay
-            // inside the plot (never spilling past the card) and the data simply
-            // shares the height with them.
-            if let low = referenceRange?.low {
+            // Faint dashed guides at the reference bounds that fall within the readings' span;
+            // the range badge says the rest, so the marks never spill past the card.
+            if let low = bound(referenceRange?.low, in: domain) {
                 RuleMark(y: .value("Low", low))
                     .foregroundStyle(RangeStatus.low.color.opacity(0.4))
                     .lineStyle(StrokeStyle(lineWidth: 0.75, dash: [3, 2]))
             }
-            if let high = referenceRange?.high {
+            if let high = bound(referenceRange?.high, in: domain) {
                 RuleMark(y: .value("High", high))
                     .foregroundStyle(RangeStatus.high.color.opacity(0.4))
                     .lineStyle(StrokeStyle(lineWidth: 0.75, dash: [3, 2]))
@@ -279,6 +288,36 @@ struct MetricSparklineChart: View {
 // MARK: - Previews
 
 #if DEBUG
+private enum Fixture {
+    static func day(_ year: Int, _ month: Int, _ day: Int) -> Date {
+        Calendar.current.date(from: DateComponents(year: year, month: month, day: day)) ?? .now
+    }
+}
+
+private func sampleCards() -> [MetricData] {
+    let history = [SparkPoint(date: Fixture.day(2024, 1, 10), value: 32), SparkPoint(date: Fixture.day(2026, 5, 28), value: 35)]
+    return LabReport.sample.entries.prefix(4).map { MetricData(entry: $0, history: history) }
+}
+
+#Preview("Cards") {
+    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 14) {
+        ForEach(sampleCards()) { metric in
+            MetricCard(metric: metric, isPinned: false)
+        }
+    }
+    .padding()
+}
+
+#Preview("Cards · Dark, Pinned") {
+    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 14) {
+        ForEach(sampleCards()) { metric in
+            MetricCard(metric: metric, isPinned: true)
+        }
+    }
+    .padding()
+    .preferredColorScheme(.dark)
+}
+
 #Preview("Results That Aren't Numbers") {
     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 14) {
         ForEach(MetricData.sampleQualitative) { metric in
@@ -323,6 +362,31 @@ struct MetricSparklineChart: View {
         referenceRange: nil
     )
     .frame(height: 120)
+    .padding()
+}
+
+#Preview("Sparkline · Irregular Gaps") {
+    MetricSparklineChart(
+        history: [
+            SparkPoint(date: Fixture.day(2024, 1, 10), value: 32),
+            SparkPoint(date: Fixture.day(2024, 1, 24), value: 35),
+            SparkPoint(date: Fixture.day(2026, 1, 24), value: 33),
+            SparkPoint(date: Fixture.day(2026, 5, 28), value: 34)
+        ],
+        categoryColor: LabCategory.nutrition.color,
+        referenceRange: nil
+    )
+    .frame(height: 120)
+    .padding()
+}
+
+#Preview("Cards · Flat and Small Change") {
+    let flat = [SparkPoint(date: Fixture.day(2025, 6, 1), value: 92), SparkPoint(date: Fixture.day(2026, 5, 28), value: 92)]
+    let small = [SparkPoint(date: Fixture.day(2025, 6, 1), value: 32), SparkPoint(date: Fixture.day(2026, 5, 28), value: 35)]
+    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 14) {
+        MetricCard(metric: MetricData(entry: LabReport.sample.entries[0], history: flat), isPinned: false)
+        MetricCard(metric: MetricData(entry: LabReport.sample.entries[1], history: small), isPinned: false)
+    }
     .padding()
 }
 

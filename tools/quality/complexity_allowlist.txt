@@ -1,0 +1,14 @@
+# Functions allowed over cyclomatic complexity 15 or 100 lines (docs/quality/RUBRIC.md,
+# "Static gates"). One per line: `path function — reason`. static_metrics.py --gate
+# fails on any function over a limit that isn't listed here, and on a listed one
+# that no longer exists or is back under the limits (so the list can't go stale).
+# Keep it short: splitting a function is the usual answer, a reason the exception.
+
+shared/src/commonMain/kotlin/dev/idoodler/labimporter/core/export/Ucum.kt fromPrinted — a lookup table written as `when`: every branch is one printed unit, nothing to split.
+shared/src/commonMain/kotlin/dev/idoodler/labimporter/core/export/CdaParser.kt end — one branch per closing CDA element of a streaming parser; splitting scatters the parser's state across functions.
+shared/src/commonMain/kotlin/dev/idoodler/labimporter/core/parse/ReportSourceText.kt numbersIn — the number scanner behind Review's "compare with report" check; each branch is one way a printed number is written, each pinned by ReportSourceTextTest.
+shared/src/commonMain/kotlin/dev/idoodler/labimporter/core/parse/ReportSourceText.kt signAt — reads the characters before a number (threshold, minus, range dash) in one pass; pinned by ReportSourceTextTest.
+shared/src/commonMain/kotlin/dev/idoodler/labimporter/core/loinc/LoincPlainName.kt fromBracketed — takes a LOINC label apart into name, property and specimen; each condition is one catalog spelling, pinned by PlainNameTest.
+androidApp/src/main/kotlin/dev/idoodler/labimporter/ui/settings/SettingsScreen.kt HealthConnectItem — one Settings row whose text and action follow each Health Connect state; the states are the complexity.
+androidApp/src/main/kotlin/dev/idoodler/labimporter/ui/settings/SettingsScreen.kt AiItem — one Settings row per AI engine and model state (Gemini Nano, Gemma downloading/installed, stand-in); the states are the complexity.
+androidApp/src/main/kotlin/dev/idoodler/labimporter/ui/history/HistoryScreen.kt HistoryScreen — a screen's composable layout (top bar, selection mode, summary card, year groups); length, not branching (complexity 14).

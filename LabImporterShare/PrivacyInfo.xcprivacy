@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  The share extension's privacy manifest. It writes shared text into the App
+  Group container for the app (ShareInbox) and sends nothing anywhere: no
+  tracking, no collected data. It calls no required-reason API (`nm -u` on the
+  built extension: no UserDefaults, file timestamps, disk space, boot time or
+  keyboards), so the list is empty on purpose. Re-check when adding one.
+-->
+<plist version="1.0">
+<dict>
+	<key>NSPrivacyTracking</key>
+	<false/>
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array/>
+</dict>
+</plist>

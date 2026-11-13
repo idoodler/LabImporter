@@ -11,14 +11,20 @@ data class LoincExportCode(val loinc: String, val display: String)
  */
 object LabMapping {
 
-    /** The user's nickname, else the localized catalog name, else the raw code. */
+    /** The user's nickname, else the plain clinical name ("Glucose"), else the raw code. */
     fun displayName(code: String): String {
         val trimmed = code.trim()
         LabCore.preferences.nickname(trimmed)?.let { return it }
-        return LabCore.loinc?.term(trimmed)?.name ?: code
+        return LabCore.loinc?.plainName(trimmed) ?: code
     }
 
-    /** The catalog name ignoring any nickname (used where the default must show). */
+    /** The plain clinical name ignoring any nickname (where the default must show). */
+    fun plainName(code: String): String {
+        val trimmed = code.trim()
+        return LabCore.loinc?.plainName(trimmed) ?: trimmed
+    }
+
+    /** The full LOINC label ("Glucose [Mass/Vol]"), for search keywords and wherever terms are told apart. */
     fun catalogName(code: String): String {
         val trimmed = code.trim()
         return LabCore.loinc?.term(trimmed)?.name ?: trimmed

@@ -15,6 +15,8 @@ struct LoincTests {
         #expect(LabMapping.loincURL(for: "KREA") == nil)
         #expect(LabMapping.catalogName(for: "2160-0") == "Creatinine [Mass/Vol]")
         #expect(LabMapping.displayName(for: "KREA") == "KREA")
+        #expect(LabMapping.displayName(for: "2160-0") == "Creatinine")
+        #expect(LabMapping.plainName(for: "2888-6") == "Protein (urine)")
     }
 
     @Test func searchAndLanguages() {

@@ -1,0 +1,83 @@
+{"entries":
+[
+{"code":
+"Hämoglobin",
+"name":
+"Hämoglobin",
+"rawValue":
+"15,1",
+"unit":
+"g/dl"
+},
+{"code":
+"Leukozyten",
+"name":
+"Leukozyten",
+"rawValue":
+"7,3",
+"unit":
+"/nl"
+},
+{"code":
+"Kreatinin",
+"name":
+"Kreatinin",
+"rawValue":
+"0,96",
+"unit":
+"mg/dl"
+},
+{"code":
+"eGFR (CKD-EPI)",
+"name":
+"glomeruläre Filtrationsrate (eGFR (CKD-EPI))",
+"rawValue":
+"> 90",
+"unit":
+"ml/min/1,73m²"
+},
+{"code":
+"CRP",
+"name":
+"C-reaktives Protein",
+"rawValue":
+"< 0,5",
+"unit":
+"mg/dl"
+},
+{"code":
+"Troponin T hs",
+"name":
+"Troponin T hochsensitiv",
+"rawValue":
+"< 3",
+"unit":
+"ng/l"
+},
+{"code":
+"PSA gesamt",
+"name":
+"Prostat-spezifisches Antigen (PSA) Gesamt",
+"rawValue":
+"1,24",
+"unit":
+"ng/ml"
+},
+{"code":
+"TSH basal",
+"name":
+"Thyreotropin basal",
+"rawValue":
+"1,87",
+"unit":
+"mU/l"
+}
+],
+"reportDate":
+"2026-03-09",
+"patientName":
+"Klaus Hoffmann",
+"authorName":
+"Gemeinschaftspraxis Dr. Weber & Kollegen",
+"reportLanguage":
+"de"}

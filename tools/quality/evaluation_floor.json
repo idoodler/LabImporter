@@ -1,0 +1,33 @@
+{
+  "_comment": "CI's floor for the evaluation replay (quality.yml): the committed replies replay deterministically, so these are today's numbers and any change to the shared post-processing that reads them worse fails. Raise them when a change reads better; lower one only with the reason in the pull request. Units match exactly after clinical normalisation since 2026-11-09 (a cut-off unit no longer counts), which read LDL's 'mg/dL (calc)' as wrong until the shared post-processing dropped printed notes from units (2026-11-09): 76 values, 62 LOINC, 1 extra number, no wrong value unflagged. Two reports joined on 2026-11-09 for the row layouts the unit check must not mistake (en_cumulative_flags: a previous-result column behind a written-out flag, two tests a line with the unit in each label; de_einheit_vorn: the unit column first): 96 values, 81 LOINC, 9 dates; extra numbers went from 1 to 2 because the model read en_cumulative_flags' WBC 11.8 as 111.8, which the source check flags. The planted* numbers are the errors planted in the right readings (evaluation/.../PlantedErrors.kt): the set mustn't shrink, and no more may slip through, in total and of each kind (plantedByKind: planted at least, notFlagged = planted - flagged at most), so one kind reading worse can't hide behind another reading better. Twelve reports joined on 2026-11-09 (en_gb_bloods, en_us_wellness, en_us_summit, en_us_metabolic, en_au_pathology, de_praxis, fr_labo, es_hospital, it_lab, nl_uitslag, pt_analises, sv_provsvar) so that a dropped '<'/'>' and a day-and-month swap are planted at least 10 times each, with the Review check flagging a dropped qualifier by the row's own result and a date whose day and month read either way: 159 values, 115 LOINC, 49 text results, 18 dates; extra numbers went from 2 to 3 because the model read en_us_wellness' HDL 44 as 444, which the source check flags (a reply misread, not post-processing reading worse). Text results now count only where they are the printed one (en_us_wellness' Vitamin D '>150' read as '>1500' is wrong, and flagged); a read date that is wrong but flagged for the user to check is no silent wrong date (en_us_wellness' 2026-04-11 for 11/04/2026, nl_uitslag's birth date). So that flagging every date can't pass for catching it, the dates flagged are bounded too (datesFlagged: those two; rightDatesFlagged: none), each report's right date is a control (plantedDateControls, plantedDateFalseFlags: en_us_wellness's 11/04/2026 reads either way and nothing in the report says which, so its right date is flagged, which is the one allowed), and a planted date counts as caught by its flag only where the right date isn't flagged. The replay reads on a fixed day (EVALUATION_DAY, 2026-11-09), since a reading after it is no report date. On 2026-11-10 the Review check began judging a result by its test's own part of a line (from its name up to the next test's), so a neighbour's value on the same line (de_patmed's six) and the 12 of \"Vitamin B12\" read for 512 are caught: 1006 of 1007 flagged; the one left is en_serology's Ferritin with the ANA flag \"A\" as its unit, which post-processing drops as a flag, leaving a value without a unit, which the check deliberately claims nothing about. On 2026-11-13 (council round 4) cumulative reports joined the check: a value is flagged as possibly another date's only where the report heads its results with two or more result dates (numeric, ISO, month names, no year, times with 'Uhr', one date a line; a birth date beside the report date is none) over rows that print several results, its own row prints more than one result (reference range and flags aside), and it isn't the result in the report date's column (else the latest column's); the date only where it isn't the latest column's (ReportSourceText.resultColumns, isFromAnotherColumn). A row's previous result with its date behind it is caught on its own (isAnotherDatesResult). A planted kind reads a value from another date column (DATE_COLUMN, from each expected value's otherDates: en_cumulative_flags' previous results and the new tuning report nl_cumulatief, whose reply is the model's; every other reply re-read identically), and nl_cumulatief's header is also rewritten with month names, without a year, with times and one date a line (PlantedErrors.headerVariants, tuning set only): 61 of 61 caught, no right value or right date flagged by it (falseFlags 0, plantedFalseFlags 0, plantedDateFalseFlags 1 as before). The model read nl_cumulatief's Glucose of the two older columns as two more values, both flagged: extraNumbers 3 -> 5 (the model's reading of the new report, not post-processing reading worse). Every minimum rose with the report and the header variants (165 values, 119 LOINC, 1103 planted, 517 controls, 23 date controls).",
+  "valuesCorrect": {"min": 165},
+  "extraNumbers": {"max": 5},
+  "loincRight": {"min": 119},
+  "textKept": {"min": 49},
+  "datesRight": {"min": 18},
+  "datesWrong": {"max": 0},
+  "datesFlagged": {"max": 2},
+  "rightDatesFlagged": {"max": 0},
+  "invalidReplies": {"max": 0},
+  "wrongValuesNotFlagged": {"max": 0},
+  "falseFlags": {"max": 0},
+  "plantedErrors": {"min": 1103},
+  "plantedNotFlagged": {"max": 1},
+  "plantedControls": {"min": 517},
+  "plantedFalseFlags": {"max": 0},
+  "plantedDateControls": {"min": 23},
+  "plantedDateFalseFlags": {"max": 1},
+  "plantedByKind": {
+    "TENFOLD": {"planted": {"min": 165}, "notFlagged": {"max": 0}},
+    "TENTH": {"planted": {"min": 165}, "notFlagged": {"max": 0}},
+    "DIGIT_DROPPED": {"planted": {"min": 159}, "notFlagged": {"max": 0}},
+    "DIGIT_DOUBLED": {"planted": {"min": 165}, "notFlagged": {"max": 0}},
+    "NEIGHBOUR": {"planted": {"min": 138}, "notFlagged": {"max": 0}},
+    "QUALIFIER_DROPPED": {"planted": {"min": 38}, "notFlagged": {"max": 0}},
+    "WRONG_UNIT": {"planted": {"min": 163}, "notFlagged": {"max": 1}},
+    "DATE_COLUMN": {"planted": {"min": 61}, "notFlagged": {"max": 0}},
+    "DATE_DAY": {"planted": {"min": 18}, "notFlagged": {"max": 0}},
+    "DATE_YEAR": {"planted": {"min": 18}, "notFlagged": {"max": 0}},
+    "DATE_SWAPPED": {"planted": {"min": 13}, "notFlagged": {"max": 0}}
+  }
+}

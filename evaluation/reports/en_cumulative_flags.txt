@@ -1,0 +1,17 @@
+Summit Diagnostics Laboratory
+Patient: Jane Roe          DOB: 02/11/1975       Sex: F
+Date Collected: 10/14/2026      Date Reported: 10/14/2026
+
+Test               Current Result and Flag   Previous Result and Date   Units      Reference Interval
+Glucose            65      Low               92      04/02/2026         mg/dL      70-99
+Creatinine         1.32    High              1.10    04/02/2026         mg/dL      0.57-1.00
+Sodium             138                       140     04/02/2026         mmol/L     134-144
+Potassium          5.6     High              4.7     04/02/2026         mmol/L     3.5-5.2
+WBC                11.8    High              7.2     04/02/2026         x10E3/uL   3.4-10.8
+Hemoglobin         11.0    Low               12.9    04/02/2026         g/dL       11.1-15.9
+Platelets          212                       240     04/02/2026         x10E3/uL   150-450
+
+THYROID, LIPIDS, LIVER
+TSH (uIU/mL)          2.10          Free T4 (ng/dL)       1.21
+Cholesterol (mg/dL)   198           ALT (U/L)             24
+Ferritin (ng/mL)      38            Albumin (g/dL)        4.4

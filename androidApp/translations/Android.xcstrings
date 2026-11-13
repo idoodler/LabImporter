@@ -149,154 +149,6 @@
         }
       }
     },
-    "Confirm" : {
-      "localizations" : {
-        "bg" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Потвърди"
-          }
-        },
-        "ca" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confirma"
-          }
-        },
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Potvrdit"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bekræft"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bestätigen"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Επιβεβαίωση"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confirmar"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vahvista"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confirmer"
-          }
-        },
-        "hr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Potvrdi"
-          }
-        },
-        "hu" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Megerősítés"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Conferma"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "確認"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bevestigen"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Potwierdź"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confirmar"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confirmar"
-          }
-        },
-        "ro" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confirmă"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Подтвердить"
-          }
-        },
-        "sk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Potvrdiť"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bekräfta"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Onayla"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Підтвердити"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "确认"
-          }
-        }
-      }
-    },
     "Scan or import your lab report and save it directly to Health Connect." : {
       "localizations" : {
         "bg" : {
@@ -741,150 +593,150 @@
         }
       }
     },
-    "Save your reports to Health Connect so they live with the rest of your health data. Lab results are stored as standard FHIR records on this device." : {
+    "Save your reports to Health Connect so they live with the rest of your health data. Lab results are stored as standard medical records on this device." : {
       "localizations" : {
         "bg" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Запазвайте отчетите си в Health Connect, за да са заедно с останалите ви здравни данни. Лабораторните резултати се съхраняват като стандартни FHIR записи на това устройство."
+            "value" : "Запазвайте отчетите си в Health Connect, за да са заедно с останалите ви здравни данни. Лабораторните резултати се съхраняват като стандартни медицински записи на това устройство."
           }
         },
         "ca" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desa els teus informes a Health Connect perquè estiguin amb la resta de les teves dades de salut. Els resultats de laboratori es guarden com a registres FHIR estàndard en aquest dispositiu."
+            "value" : "Desa els teus informes a Health Connect perquè estiguin amb la resta de les teves dades de salut. Els resultats de laboratori es guarden com a registres mèdics estàndard en aquest dispositiu."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ukládejte protokoly do Health Connect, aby byly spolu s ostatními zdravotními údaji. Laboratorní výsledky se ukládají jako standardní záznamy FHIR v tomto zařízení."
+            "value" : "Ukládejte protokoly do Health Connect, aby byly spolu s ostatními zdravotními údaji. Laboratorní výsledky se ukládají jako standardní zdravotní záznamy v tomto zařízení."
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gem dine rapporter i Health Connect, så de er samlet med resten af dine helbredsdata. Laboratorieresultater gemmes som standard-FHIR-poster på denne enhed."
+            "value" : "Gem dine rapporter i Health Connect, så de er samlet med resten af dine helbredsdata. Laboratorieresultater gemmes som standardiserede medicinske poster på denne enhed."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Speichere deine Berichte in Health Connect, damit sie bei deinen übrigen Gesundheitsdaten liegen. Laborergebnisse werden als standardisierte FHIR-Einträge auf diesem Gerät gespeichert."
+            "value" : "Speichere deine Berichte in Health Connect, damit sie bei deinen übrigen Gesundheitsdaten liegen. Laborergebnisse werden als standardisierte medizinische Einträge auf diesem Gerät gespeichert."
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Αποθηκεύστε τις αναφορές σας στο Health Connect για να βρίσκονται μαζί με τα υπόλοιπα δεδομένα υγείας σας. Τα εργαστηριακά αποτελέσματα αποθηκεύονται ως τυπικές εγγραφές FHIR σε αυτήν τη συσκευή."
+            "value" : "Αποθηκεύστε τις αναφορές σας στο Health Connect για να βρίσκονται μαζί με τα υπόλοιπα δεδομένα υγείας σας. Τα εργαστηριακά αποτελέσματα αποθηκεύονται ως τυπικές ιατρικές εγγραφές σε αυτήν τη συσκευή."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Guarda tus informes en Health Connect para tenerlos junto al resto de tus datos de salud. Los resultados de laboratorio se almacenan como registros FHIR estándar en este dispositivo."
+            "value" : "Guarda tus informes en Health Connect para tenerlos junto al resto de tus datos de salud. Los resultados de laboratorio se almacenan como registros médicos estándar en este dispositivo."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tallenna raporttisi Health Connectiin, jotta ne ovat muiden terveystietojesi kanssa. Laboratoriotulokset tallennetaan tähän laitteeseen standardinmukaisina FHIR-tietueina."
+            "value" : "Tallenna raporttisi Health Connectiin, jotta ne ovat muiden terveystietojesi kanssa. Laboratoriotulokset tallennetaan tähän laitteeseen standardinmukaisina terveystietueina."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enregistrez vos rapports dans Health Connect pour les garder avec le reste de vos données de santé. Les résultats de laboratoire sont stockés sous forme d’enregistrements FHIR standard sur cet appareil."
+            "value" : "Enregistrez vos rapports dans Health Connect pour les garder avec le reste de vos données de santé. Les résultats de laboratoire sont stockés sous forme de dossiers médicaux standard sur cet appareil."
           }
         },
         "hr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spremite izvješća u Health Connect kako bi bila uz ostale vaše zdravstvene podatke. Laboratorijski rezultati pohranjuju se kao standardni FHIR zapisi na ovom uređaju."
+            "value" : "Spremite izvješća u Health Connect kako bi bila uz ostale vaše zdravstvene podatke. Laboratorijski rezultati pohranjuju se kao standardni medicinski zapisi na ovom uređaju."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mentsd a jelentéseidet a Health Connectbe, hogy a többi egészségügyi adatod mellett legyenek. A laboreredmények szabványos FHIR-rekordokként tárolódnak ezen az eszközön."
+            "value" : "Mentsd a jelentéseidet a Health Connectbe, hogy a többi egészségügyi adatod mellett legyenek. A laboreredmények szabványos orvosi rekordokként tárolódnak ezen az eszközön."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Salva i tuoi referti in Health Connect per tenerli insieme al resto dei tuoi dati sanitari. I risultati di laboratorio vengono archiviati come record FHIR standard su questo dispositivo."
+            "value" : "Salva i tuoi referti in Health Connect per tenerli insieme al resto dei tuoi dati sanitari. I risultati di laboratorio vengono archiviati come record medici standard su questo dispositivo."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "レポートをヘルスコネクトに保存すると、ほかの健康データと一緒に管理できます。検査結果は標準のFHIRレコードとしてこのデバイスに保存されます。"
+            "value" : "レポートをヘルスコネクトに保存すると、ほかの健康データと一緒に管理できます。検査結果は標準の医療記録としてこのデバイスに保存されます。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bewaar je rapporten in Health Connect, zodat ze bij de rest van je gezondheidsgegevens staan. Labuitslagen worden als standaard FHIR-records op dit apparaat opgeslagen."
+            "value" : "Bewaar je rapporten in Health Connect, zodat ze bij de rest van je gezondheidsgegevens staan. Labuitslagen worden als standaard medische dossiers op dit apparaat opgeslagen."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zapisuj raporty w Health Connect, aby były razem z pozostałymi danymi o zdrowiu. Wyniki badań są przechowywane na tym urządzeniu jako standardowe rekordy FHIR."
+            "value" : "Zapisuj raporty w Health Connect, aby były razem z pozostałymi danymi o zdrowiu. Wyniki badań są przechowywane na tym urządzeniu jako standardowe rekordy medyczne."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Salve seus relatórios no Health Connect para que fiquem junto com o restante dos seus dados de saúde. Os resultados laboratoriais são armazenados como registros FHIR padrão neste dispositivo."
+            "value" : "Salve seus relatórios no Health Connect para que fiquem junto com o restante dos seus dados de saúde. Os resultados laboratoriais são armazenados como registros médicos padrão neste dispositivo."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Guarde os seus relatórios no Health Connect para que fiquem junto do resto dos seus dados de saúde. Os resultados laboratoriais são armazenados como registos FHIR padrão neste dispositivo."
+            "value" : "Guarde os seus relatórios no Health Connect para que fiquem junto do resto dos seus dados de saúde. Os resultados laboratoriais são armazenados como registos médicos padrão neste dispositivo."
           }
         },
         "ro" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Salvează rapoartele în Health Connect ca să stea alături de restul datelor tale de sănătate. Rezultatele de laborator sunt stocate ca înregistrări FHIR standard pe acest dispozitiv."
+            "value" : "Salvează rapoartele în Health Connect ca să stea alături de restul datelor tale de sănătate. Rezultatele de laborator sunt stocate ca înregistrări medicale standard pe acest dispozitiv."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Сохраняйте отчёты в Health Connect, чтобы они хранились вместе с остальными данными о здоровье. Результаты анализов сохраняются на этом устройстве как стандартные записи FHIR."
+            "value" : "Сохраняйте отчёты в Health Connect, чтобы они хранились вместе с остальными данными о здоровье. Результаты анализов сохраняются на этом устройстве как стандартные медицинские записи."
           }
         },
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ukladajte správy do Health Connect, aby boli spolu s ostatnými zdravotnými údajmi. Laboratórne výsledky sa ukladajú ako štandardné záznamy FHIR v tomto zariadení."
+            "value" : "Ukladajte správy do Health Connect, aby boli spolu s ostatnými zdravotnými údajmi. Laboratórne výsledky sa ukladajú ako štandardné zdravotné záznamy v tomto zariadení."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spara dina rapporter i Health Connect så att de finns tillsammans med resten av dina hälsodata. Labbresultat lagras som standardiserade FHIR-poster på den här enheten."
+            "value" : "Spara dina rapporter i Health Connect så att de finns tillsammans med resten av dina hälsodata. Labbresultat lagras som standardiserade medicinska poster på den här enheten."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Raporlarınızı Health Connect'e kaydedin; böylece diğer sağlık verilerinizle birlikte dururlar. Laboratuvar sonuçları bu cihazda standart FHIR kayıtları olarak saklanır."
+            "value" : "Raporlarınızı Health Connect'e kaydedin; böylece diğer sağlık verilerinizle birlikte dururlar. Laboratuvar sonuçları bu cihazda standart tıbbi kayıtlar olarak saklanır."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Зберігайте звіти в Health Connect, щоб вони були разом з іншими даними про здоров'я. Результати аналізів зберігаються на цьому пристрої як стандартні записи FHIR."
+            "value" : "Зберігайте звіти в Health Connect, щоб вони були разом з іншими даними про здоров'я. Результати аналізів зберігаються на цьому пристрої як стандартні медичні записи."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "将报告保存到 Health Connect，与你的其他健康数据放在一起。化验结果会以标准 FHIR 记录的形式存储在此设备上。"
+            "value" : "将报告保存到 Health Connect，与你的其他健康数据放在一起。化验结果会以标准医疗记录的形式存储在此设备上。"
           }
         }
       }
@@ -4733,154 +4585,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "设备端 AI 当前不可用。请确保你的设备已更新到最新版本，然后重试。"
-          }
-        }
-      }
-    },
-    "Saving failed: %1$@" : {
-      "localizations" : {
-        "bg" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Запазването не бе успешно: %1$@"
-          }
-        },
-        "ca" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No s'ha pogut desar: %1$@"
-          }
-        },
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Uložení se nezdařilo: %1$@"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kunne ikke gemme: %1$@"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Speichern fehlgeschlagen: %1$@"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Η αποθήκευση απέτυχε: %1$@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Error al guardar: %1$@"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tallennus epäonnistui: %1$@"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Échec de l’enregistrement : %1$@"
-          }
-        },
-        "hr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Spremanje nije uspjelo: %1$@"
-          }
-        },
-        "hu" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sikertelen mentés: %1$@"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Salvataggio non riuscito: %1$@"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "保存に失敗しました：%1$@"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bewaren mislukt: %1$@"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nie udało się zapisać: %1$@"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Falha ao salvar: %1$@"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Falha ao guardar: %1$@"
-          }
-        },
-        "ro" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Salvarea a eșuat: %1$@"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Не удалось сохранить: %1$@"
-          }
-        },
-        "sk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Uloženie zlyhalo: %1$@"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Det gick inte att spara: %1$@"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kaydetme başarısız: %1$@"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Не вдалося зберегти: %1$@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "保存失败：%1$@"
           }
         }
       }
@@ -19905,6 +19609,2670 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你的报告目前只保存在 LabImporter 中。连接后可将它们移至 Health Connect，与你的其他健康数据存放在一起。"
+          }
+        }
+      }
+    },
+    "Reports that can't be read: %1$lld. They stay on this device and weren't deleted." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отчети, които не могат да се прочетат: %1$lld. Те остават на това устройство и не са изтрити."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informes que no es poden llegir: %1$lld. Es queden en aquest dispositiu i no s'han eliminat."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protokoly, které nelze přečíst: %1$lld. Zůstávají v tomto zařízení a nebyly smazány."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapporter, der ikke kan læses: %1$lld. De bliver på denne enhed og er ikke slettet."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Berichte, die nicht gelesen werden können: %1$lld. Sie bleiben auf diesem Gerät und wurden nicht gelöscht."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αναφορές που δεν είναι δυνατό να διαβαστούν: %1$lld. Παραμένουν σε αυτή τη συσκευή και δεν διαγράφηκαν."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informes que no se pueden leer: %1$lld. Siguen en este dispositivo y no se han eliminado."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raportit, joita ei voi lukea: %1$lld. Ne säilyvät tällä laitteella, eikä niitä poistettu."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapports illisibles : %1$lld. Ils restent sur cet appareil et n'ont pas été supprimés."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Izvješća koja se ne mogu pročitati: %1$lld. Ostaju na ovom uređaju i nisu izbrisana."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nem olvasható jelentések: %1$lld. Ezen az eszközön maradnak, és nem törlődtek."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Referti che non possono essere letti: %1$lld. Restano su questo dispositivo e non sono stati eliminati."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "読み取れないレポート：%1$lld件。このデバイスに残っており、削除されていません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapporten die niet kunnen worden gelezen: %1$lld. Ze blijven op dit apparaat en zijn niet verwijderd."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raporty, których nie można odczytać: %1$lld. Pozostają na tym urządzeniu i nie zostały usunięte."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relatórios que não podem ser lidos: %1$lld. Eles continuam neste dispositivo e não foram apagados."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relatórios que não podem ser lidos: %1$lld. Permanecem neste dispositivo e não foram apagados."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapoarte care nu pot fi citite: %1$lld. Rămân pe acest dispozitiv și nu au fost șterse."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отчёты, которые не удаётся прочитать: %1$lld. Они остаются на этом устройстве и не удалены."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Správy, ktoré nemožno prečítať: %1$lld. Zostávajú v tomto zariadení a neboli vymazané."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapporter som inte kan läsas: %1$lld. De finns kvar på den här enheten och har inte raderats."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Okunamayan raporlar: %1$lld. Bu cihazda kalır ve silinmedi."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Звіти, які не вдається прочитати: %1$lld. Вони залишаються на цьому пристрої й не видалені."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法读取的报告：%1$lld 份。它们仍保留在此设备上，并未删除。"
+          }
+        }
+      }
+    },
+    "Health Connect couldn't save the report, so nothing was changed. Try again in a moment." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect не успя да запази отчета, затова нищо не е променено. Опитайте отново след малко."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect no ha pogut desar l'informe, de manera que no s'ha canviat res. Torna-ho a provar d'aquí a una estona."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect nemohl protokol uložit, takže se nic nezměnilo. Zkuste to za chvíli znovu."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect kunne ikke gemme rapporten, så intet er ændret. Prøv igen om lidt."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect konnte den Bericht nicht speichern, daher wurde nichts geändert. Versuche es gleich noch einmal."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Το Health Connect δεν μπόρεσε να αποθηκεύσει την αναφορά, οπότε δεν άλλαξε τίποτα. Δοκιμάστε ξανά σε λίγο."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect no ha podido guardar el informe, así que no ha cambiado nada. Inténtalo de nuevo en un momento."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect ei voinut tallentaa raporttia, joten mitään ei muutettu. Yritä hetken kuluttua uudelleen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect n'a pas pu enregistrer le rapport : rien n'a été modifié. Réessayez dans un instant."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect nije mogao spremiti izvješće pa ništa nije promijenjeno. Pokušajte ponovno za trenutak."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A Health Connect nem tudta menteni a jelentést, ezért semmi sem változott. Próbáld újra egy kis idő múlva."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect non ha potuto salvare il referto, quindi non è stato modificato nulla. Riprova tra poco."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ヘルスコネクトがレポートを保存できなかったため、何も変更されていません。しばらくしてからもう一度お試しください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect kon het rapport niet bewaren, dus er is niets gewijzigd. Probeer het zo meteen opnieuw."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect nie mógł zapisać raportu, więc nic nie zostało zmienione. Spróbuj ponownie za chwilę."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Health Connect não conseguiu salvar o relatório, então nada foi alterado. Tente novamente em instantes."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Health Connect não conseguiu guardar o relatório, por isso nada foi alterado. Tente novamente daqui a pouco."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect nu a putut salva raportul, așa că nu s-a schimbat nimic. Încearcă din nou peste puțin timp."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect не смог сохранить отчёт, поэтому ничего не изменилось. Повторите попытку чуть позже."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect nemohol správu uložiť, takže sa nič nezmenilo. Skúste to o chvíľu znova."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect kunde inte spara rapporten, så inget har ändrats. Försök igen om en stund."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect raporu kaydedemedi, bu yüzden hiçbir şey değişmedi. Birazdan tekrar deneyin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect не зміг зберегти звіт, тому нічого не змінилося. Спробуйте ще раз трохи згодом."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect 无法保存报告，因此未作任何更改。请稍后重试。"
+          }
+        }
+      }
+    },
+    "The report couldn't be saved on this device, so nothing was changed. Check the free storage and try again." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отчетът не можа да се запази на това устройство, затова нищо не е променено. Проверете свободното място и опитайте отново."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'informe no s'ha pogut desar en aquest dispositiu, de manera que no s'ha canviat res. Comprova l'espai lliure i torna-ho a provar."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protokol se nepodařilo uložit do tohoto zařízení, takže se nic nezměnilo. Zkontrolujte volné místo a zkuste to znovu."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapporten kunne ikke gemmes på denne enhed, så intet er ændret. Tjek den ledige plads, og prøv igen."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Bericht konnte auf diesem Gerät nicht gespeichert werden, daher wurde nichts geändert. Prüfe den freien Speicher und versuche es noch einmal."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Δεν ήταν δυνατή η αποθήκευση της αναφοράς σε αυτή τη συσκευή, οπότε δεν άλλαξε τίποτα. Ελέγξτε τον ελεύθερο χώρο και δοκιμάστε ξανά."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El informe no se ha podido guardar en este dispositivo, así que no ha cambiado nada. Comprueba el espacio libre e inténtalo de nuevo."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raporttia ei voitu tallentaa tälle laitteelle, joten mitään ei muutettu. Tarkista vapaa tila ja yritä uudelleen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le rapport n'a pas pu être enregistré sur cet appareil : rien n'a été modifié. Vérifiez l'espace libre et réessayez."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Izvješće nije moguće spremiti na ovaj uređaj pa ništa nije promijenjeno. Provjerite slobodan prostor i pokušajte ponovno."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A jelentést nem sikerült menteni erre az eszközre, ezért semmi sem változott. Ellenőrizd a szabad tárhelyet, és próbáld újra."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il referto non può essere salvato su questo dispositivo, quindi non è stato modificato nulla. Controlla lo spazio libero e riprova."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このデバイスにレポートを保存できなかったため、何も変更されていません。空き容量を確認して、もう一度お試しください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het rapport kon niet op dit apparaat worden bewaard, dus er is niets gewijzigd. Controleer de vrije opslag en probeer het opnieuw."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie udało się zapisać raportu na tym urządzeniu, więc nic nie zostało zmienione. Sprawdź wolne miejsce i spróbuj ponownie."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível salvar o relatório neste dispositivo, então nada foi alterado. Verifique o espaço livre e tente novamente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível guardar o relatório neste dispositivo, por isso nada foi alterado. Verifique o espaço livre e tente novamente."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raportul nu a putut fi salvat pe acest dispozitiv, așa că nu s-a schimbat nimic. Verifică spațiul liber și încearcă din nou."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось сохранить отчёт на этом устройстве, поэтому ничего не изменилось. Проверьте свободное место и повторите попытку."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Správu sa nepodarilo uložiť do tohto zariadenia, takže sa nič nezmenilo. Skontrolujte voľné miesto a skúste to znova."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapporten kunde inte sparas på den här enheten, så inget har ändrats. Kontrollera det lediga utrymmet och försök igen."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapor bu cihaza kaydedilemedi, bu yüzden hiçbir şey değişmedi. Boş alanı kontrol edip tekrar deneyin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не вдалося зберегти звіт на цьому пристрої, тому нічого не змінилося. Перевірте вільне місце та спробуйте ще раз."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法在此设备上保存报告，因此未作任何更改。请检查可用存储空间后重试。"
+          }
+        }
+      }
+    },
+    "Some values couldn't be prepared for saving, so nothing was changed. Try again in a moment." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Някои стойности не можаха да се подготвят за запазване, затова нищо не е променено. Опитайте отново след малко."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alguns valors no s'han pogut preparar per desar-los, de manera que no s'ha canviat res. Torna-ho a provar d'aquí a una estona."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Některé hodnoty se nepodařilo připravit k uložení, takže se nic nezměnilo. Zkuste to za chvíli znovu."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nogle værdier kunne ikke klargøres til at blive gemt, så intet er ændret. Prøv igen om lidt."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einige Werte konnten nicht zum Speichern vorbereitet werden, daher wurde nichts geändert. Versuche es gleich noch einmal."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ορισμένες τιμές δεν ήταν δυνατό να προετοιμαστούν για αποθήκευση, οπότε δεν άλλαξε τίποτα. Δοκιμάστε ξανά σε λίγο."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Algunos valores no se han podido preparar para guardarlos, así que no ha cambiado nada. Inténtalo de nuevo en un momento."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Joitakin arvoja ei voitu valmistella tallennettaviksi, joten mitään ei muutettu. Yritä hetken kuluttua uudelleen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Certaines valeurs n'ont pas pu être préparées pour l'enregistrement : rien n'a été modifié. Réessayez dans un instant."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neke vrijednosti nije moguće pripremiti za spremanje pa ništa nije promijenjeno. Pokušajte ponovno za trenutak."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Néhány értéket nem sikerült előkészíteni a mentésre, ezért semmi sem változott. Próbáld újra egy kis idő múlva."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alcuni valori non possono essere preparati per il salvataggio, quindi non è stato modificato nulla. Riprova tra poco."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一部の値を保存用に準備できなかったため、何も変更されていません。しばらくしてからもう一度お試しください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sommige waarden konden niet worden voorbereid om te bewaren, dus er is niets gewijzigd. Probeer het zo meteen opnieuw."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie udało się przygotować niektórych wartości do zapisania, więc nic nie zostało zmienione. Spróbuj ponownie za chwilę."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível preparar alguns valores para salvar, então nada foi alterado. Tente novamente em instantes."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível preparar alguns valores para guardar, por isso nada foi alterado. Tente novamente daqui a pouco."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unele valori nu au putut fi pregătite pentru salvare, așa că nu s-a schimbat nimic. Încearcă din nou peste puțin timp."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось подготовить некоторые значения к сохранению, поэтому ничего не изменилось. Повторите попытку чуть позже."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niektoré hodnoty sa nepodarilo pripraviť na uloženie, takže sa nič nezmenilo. Skúste to o chvíľu znova."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vissa värden kunde inte förberedas för att sparas, så inget har ändrats. Försök igen om en stund."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bazı değerler kaydetmeye hazırlanamadı, bu yüzden hiçbir şey değişmedi. Birazdan tekrar deneyin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не вдалося підготувати деякі значення до збереження, тому нічого не змінилося. Спробуйте ще раз трохи згодом."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分数值无法准备保存，因此未作任何更改。请稍后重试。"
+          }
+        }
+      }
+    },
+    "The updated report was saved, but values you removed couldn't be deleted yet. Edit the report to remove them again." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Актуализираният отчет е запазен, но премахнатите от вас стойности още не могат да се изтрият. Редактирайте отчета, за да ги премахнете отново."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'informe actualitzat s'ha desat, però els valors que has tret encara no s'han pogut eliminar. Edita l'informe per tornar-los a treure."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktualizovaný protokol byl uložen, ale odebrané hodnoty se zatím nepodařilo smazat. Upravte protokol a odeberte je znovu."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den opdaterede rapport er gemt, men de værdier, du fjernede, kunne ikke slettes endnu. Rediger rapporten for at fjerne dem igen."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der aktualisierte Bericht wurde gespeichert, aber die entfernten Werte konnten noch nicht gelöscht werden. Bearbeite den Bericht, um sie erneut zu entfernen."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Η ενημερωμένη αναφορά αποθηκεύτηκε, αλλά οι τιμές που αφαιρέσατε δεν ήταν δυνατό να διαγραφούν ακόμη. Επεξεργαστείτε την αναφορά για να τις αφαιρέσετε ξανά."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El informe actualizado se ha guardado, pero los valores que quitaste aún no se han podido eliminar. Edita el informe para volver a quitarlos."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Päivitetty raportti tallennettiin, mutta poistamiasi arvoja ei vielä voitu poistaa. Muokkaa raporttia ja poista ne uudelleen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le rapport mis à jour a été enregistré, mais les valeurs retirées n'ont pas encore pu être supprimées. Modifiez le rapport pour les retirer à nouveau."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ažurirano izvješće je spremljeno, ali uklonjene vrijednosti još nije moguće izbrisati. Uredite izvješće kako biste ih ponovno uklonili."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A frissített jelentés mentve, de az eltávolított értékeket még nem sikerült törölni. Szerkeszd a jelentést, és távolítsd el őket újra."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il referto aggiornato è stato salvato, ma i valori rimossi non possono ancora essere eliminati. Modifica il referto per rimuoverli di nuovo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新したレポートは保存されましたが、削除した値はまだ削除できていません。レポートを編集して、もう一度削除してください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het bijgewerkte rapport is bewaard, maar de waarden die je hebt verwijderd konden nog niet worden gewist. Bewerk het rapport om ze opnieuw te verwijderen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zaktualizowany raport został zapisany, ale usuniętych wartości nie udało się jeszcze skasować. Edytuj raport, aby usunąć je ponownie."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O relatório atualizado foi salvo, mas os valores removidos ainda não puderam ser apagados. Edite o relatório para removê-los novamente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O relatório atualizado foi guardado, mas os valores removidos ainda não puderam ser apagados. Edite o relatório para os remover novamente."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raportul actualizat a fost salvat, dar valorile eliminate nu au putut fi șterse încă. Editează raportul ca să le elimini din nou."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Обновлённый отчёт сохранён, но удалённые вами значения пока не удалось стереть. Отредактируйте отчёт, чтобы удалить их снова."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktualizovaná správa bola uložená, ale odstránené hodnoty sa zatiaľ nepodarilo vymazať. Upravte správu a odstráňte ich znova."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den uppdaterade rapporten har sparats, men värdena du tog bort kunde inte raderas ännu. Redigera rapporten för att ta bort dem igen."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Güncellenen rapor kaydedildi ancak kaldırdığınız değerler henüz silinemedi. Onları tekrar kaldırmak için raporu düzenleyin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Оновлений звіт збережено, але вилучені вами значення поки не вдалося стерти. Відредагуйте звіт, щоб вилучити їх знову."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新后的报告已保存，但你移除的数值暂时无法删除。请编辑报告再次移除。"
+          }
+        }
+      }
+    },
+    "Couldn't connect to Health Connect. Your reports stay in LabImporter. Try again in Settings." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Неуспешно свързване с Health Connect. Отчетите остават в LabImporter. Опитайте отново в Настройки."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No s'ha pogut connectar amb Health Connect. Els informes es queden a LabImporter. Torna-ho a provar a Ajustaments."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "K Health Connect se nepodařilo připojit. Protokoly zůstávají v LabImporteru. Zkuste to znovu v Nastavení."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der kunne ikke oprettes forbindelse til Health Connect. Dine rapporter bliver i LabImporter. Prøv igen under Indstillinger."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbindung zu Health Connect fehlgeschlagen. Deine Berichte bleiben in LabImporter. Versuche es in den Einstellungen noch einmal."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Δεν ήταν δυνατή η σύνδεση με το Health Connect. Οι αναφορές σας παραμένουν στο LabImporter. Δοκιμάστε ξανά στις Ρυθμίσεις."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido conectar con Health Connect. Tus informes siguen en LabImporter. Inténtalo de nuevo en Ajustes."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yhteyttä Health Connectiin ei voitu muodostaa. Raporttisi säilyvät LabImporterissa. Yritä uudelleen asetuksissa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de se connecter à Health Connect. Vos rapports restent dans LabImporter. Réessayez dans les Réglages."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Povezivanje s Health Connectom nije uspjelo. Izvješća ostaju u LabImporteru. Pokušajte ponovno u Postavkama."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nem sikerült csatlakozni a Health Connecthez. A jelentéseid a LabImporterben maradnak. Próbáld újra a Beállításokban."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossibile connettersi a Health Connect. I referti restano in LabImporter. Riprova in Impostazioni."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ヘルスコネクトに接続できませんでした。レポートはLabImporterに残ります。設定からもう一度お試しください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kan geen verbinding maken met Health Connect. Je rapporten blijven in LabImporter. Probeer het opnieuw via Instellingen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie udało się połączyć z Health Connect. Raporty pozostają w LabImporterze. Spróbuj ponownie w Ustawieniach."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível conectar ao Health Connect. Seus relatórios continuam no LabImporter. Tente novamente em Ajustes."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível ligar ao Health Connect. Os relatórios permanecem no LabImporter. Tente novamente nos Ajustes."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectarea la Health Connect nu a reușit. Rapoartele tale rămân în LabImporter. Încearcă din nou în Configurări."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось подключиться к Health Connect. Отчёты остаются в LabImporter. Повторите попытку в настройках."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "K Health Connect sa nepodarilo pripojiť. Správy zostávajú v LabImporteri. Skúste to znova v Nastaveniach."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Det gick inte att ansluta till Health Connect. Dina rapporter finns kvar i LabImporter. Försök igen i Inställningar."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect'e bağlanılamadı. Raporlarınız LabImporter'da kalır. Ayarlar'dan tekrar deneyin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не вдалося підключитися до Health Connect. Звіти залишаються в LabImporter. Спробуйте ще раз у налаштуваннях."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法连接到 Health Connect。报告仍保留在 LabImporter 中。请在设置中重试。"
+          }
+        }
+      }
+    },
+    "New reports: %1$lld · Already present: %2$lld · Not saved: %3$lld" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нови отчети: %1$lld · Вече налични: %2$lld · Незапазени: %3$lld"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informes nous: %1$lld · Ja presents: %2$lld · No desats: %3$lld"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nové protokoly: %1$lld · Již přítomné: %2$lld · Neuložené: %3$lld"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nye rapporter: %1$lld · Findes allerede: %2$lld · Ikke gemt: %3$lld"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neue Berichte: %1$lld · Bereits vorhanden: %2$lld · Nicht gespeichert: %3$lld"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Νέες αναφορές: %1$lld · Υπάρχουν ήδη: %2$lld · Δεν αποθηκεύτηκαν: %3$lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informes nuevos: %1$lld · Ya presentes: %2$lld · No guardados: %3$lld"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uudet raportit: %1$lld · Jo olemassa: %2$lld · Ei tallennettu: %3$lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nouveaux rapports : %1$lld · Déjà présents : %2$lld · Non enregistrés : %3$lld"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nova izvješća: %1$lld · Već postoje: %2$lld · Nije spremljeno: %3$lld"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Új jelentések: %1$lld · Már megvan: %2$lld · Nincs mentve: %3$lld"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nuovi referti: %1$lld · Già presenti: %2$lld · Non salvati: %3$lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新しいレポート：%1$lld件 · 既存：%2$lld件 · 未保存：%3$lld件"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nieuwe rapporten: %1$lld · Al aanwezig: %2$lld · Niet bewaard: %3$lld"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nowe raporty: %1$lld · Już istnieją: %2$lld · Niezapisane: %3$lld"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relatórios novos: %1$lld · Já presentes: %2$lld · Não salvos: %3$lld"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relatórios novos: %1$lld · Já presentes: %2$lld · Não guardados: %3$lld"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapoarte noi: %1$lld · Deja prezente: %2$lld · Nesalvate: %3$lld"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новые отчёты: %1$lld · Уже есть: %2$lld · Не сохранено: %3$lld"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nové správy: %1$lld · Už existujú: %2$lld · Neuložené: %3$lld"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nya rapporter: %1$lld · Finns redan: %2$lld · Inte sparade: %3$lld"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeni raporlar: %1$lld · Zaten mevcut: %2$lld · Kaydedilmedi: %3$lld"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нові звіти: %1$lld · Уже є: %2$lld · Не збережено: %3$lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新报告：%1$lld · 已存在：%2$lld · 未保存：%3$lld"
+          }
+        }
+      }
+    },
+    "%1$@: %2$@" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ : %2$@"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@：%2$@"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@：%2$@"
+          }
+        }
+      }
+    },
+    "Health Connect Access Is Off" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Достъпът до Health Connect е изключен"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'accés a Health Connect està desactivat"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Přístup k Health Connect je vypnutý"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adgang til Health Connect er slået fra"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zugriff auf Health Connect ist deaktiviert"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Η πρόσβαση στο Health Connect είναι απενεργοποιημένη"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El acceso a Health Connect está desactivado"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect -käyttöoikeus on pois päältä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'accès à Health Connect est désactivé"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pristup Health Connectu je isključen"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A Health Connect-hozzáférés ki van kapcsolva"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'accesso a Health Connect è disattivato"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ヘルスコネクトへのアクセスがオフです"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toegang tot Health Connect staat uit"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dostęp do Health Connect jest wyłączony"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O acesso ao Health Connect está desativado"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O acesso ao Health Connect está desativado"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accesul la Health Connect este dezactivat"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Доступ к Health Connect отключён"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prístup k Health Connect je vypnutý"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Åtkomst till Health Connect är av"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect erişimi kapalı"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Доступ до Health Connect вимкнено"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect 访问权限已关闭"
+          }
+        }
+      }
+    },
+    "LabImporter can't read the reports you saved in Health Connect without access. They're still there. Allow access to see them, or keep your reports in the app from now on." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter не може да чете отчетите, запазени в Health Connect, без достъп. Те все още са там. Разрешете достъп, за да ги видите, или отсега нататък пазете отчетите си в приложението."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sense accés, LabImporter no pot llegir els informes que has desat a Health Connect. Encara hi són. Permet l'accés per veure'ls o, d'ara endavant, guarda els informes a l'app."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bez přístupu nemůže LabImporter číst protokoly uložené v Health Connect. Stále tam jsou. Povolte přístup, abyste je viděli, nebo si protokoly od teď uchovávejte v aplikaci."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uden adgang kan LabImporter ikke læse de rapporter, du har gemt i Health Connect. De er der stadig. Giv adgang for at se dem, eller gem dine rapporter i appen fremover."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ohne Zugriff kann LabImporter die in Health Connect gespeicherten Berichte nicht lesen. Sie sind noch da. Erlaube den Zugriff, um sie zu sehen, oder bewahre deine Berichte ab jetzt in der App auf."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Χωρίς πρόσβαση, το LabImporter δεν μπορεί να διαβάσει τις αναφορές που αποθηκεύσατε στο Health Connect. Είναι ακόμα εκεί. Επιτρέψτε την πρόσβαση για να τις δείτε ή διατηρείτε από εδώ και πέρα τις αναφορές στην εφαρμογή."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin acceso, LabImporter no puede leer los informes que guardaste en Health Connect. Siguen ahí. Permite el acceso para verlos o, a partir de ahora, guarda tus informes en la app."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ilman käyttöoikeutta LabImporter ei voi lukea Health Connectiin tallentamiasi raportteja. Ne ovat yhä siellä. Salli käyttö nähdäksesi ne tai säilytä raportit tästä lähtien sovelluksessa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sans accès, LabImporter ne peut pas lire les rapports enregistrés dans Health Connect. Ils y sont toujours. Autorisez l'accès pour les voir, ou conservez désormais vos rapports dans l'app."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bez pristupa LabImporter ne može čitati izvješća spremljena u Health Connect. I dalje su ondje. Dopustite pristup da biste ih vidjeli ili od sada čuvajte izvješća u aplikaciji."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hozzáférés nélkül a LabImporter nem tudja olvasni a Health Connectbe mentett jelentéseket. Továbbra is ott vannak. Engedélyezd a hozzáférést a megtekintésükhöz, vagy mostantól tárold a jelentéseket az appban."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Senza accesso, LabImporter non può leggere i referti salvati in Health Connect. Sono ancora lì. Consenti l'accesso per vederli, oppure d'ora in poi conserva i referti nell'app."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アクセスがないと、LabImporterはヘルスコネクトに保存したレポートを読み取れません。レポートはそのまま残っています。アクセスを許可して表示するか、今後はアプリ内にレポートを保存してください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zonder toegang kan LabImporter de rapporten in Health Connect niet lezen. Ze staan er nog. Geef toegang om ze te zien, of bewaar je rapporten voortaan in de app."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bez dostępu LabImporter nie może odczytać raportów zapisanych w Health Connect. Nadal tam są. Zezwól na dostęp, aby je zobaczyć, lub od teraz przechowuj raporty w aplikacji."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem acesso, o LabImporter não consegue ler os relatórios salvos no Health Connect. Eles ainda estão lá. Permita o acesso para vê-los ou, a partir de agora, mantenha seus relatórios no app."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem acesso, o LabImporter não consegue ler os relatórios guardados no Health Connect. Continuam lá. Permita o acesso para os ver ou, a partir de agora, mantenha os relatórios na app."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fără acces, LabImporter nu poate citi rapoartele salvate în Health Connect. Sunt încă acolo. Permite accesul ca să le vezi sau păstrează de acum rapoartele în aplicație."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Без доступа LabImporter не может читать отчёты, сохранённые в Health Connect. Они всё ещё там. Разрешите доступ, чтобы их увидеть, или отныне храните отчёты в приложении."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bez prístupu nemôže LabImporter čítať správy uložené v Health Connect. Stále tam sú. Povoľte prístup, aby ste ich videli, alebo si správy odteraz uchovávajte v aplikácii."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utan åtkomst kan LabImporter inte läsa rapporterna du sparat i Health Connect. De finns kvar där. Tillåt åtkomst för att se dem, eller behåll dina rapporter i appen från och med nu."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter, erişim olmadan Health Connect'e kaydettiğiniz raporları okuyamaz. Raporlar hâlâ orada. Görmek için erişime izin verin veya bundan sonra raporlarınızı uygulamada saklayın."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Без доступу LabImporter не може читати звіти, збережені в Health Connect. Вони все ще там. Надайте доступ, щоб їх побачити, або відтепер зберігайте звіти в застосунку."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有访问权限，LabImporter 无法读取你保存在 Health Connect 中的报告。它们仍在那里。请允许访问以查看报告，或从现在起将报告保存在应用中。"
+          }
+        }
+      }
+    },
+    "Allow Access" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разреши достъп"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permet l'accés"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Povolit přístup"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Giv adgang"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zugriff erlauben"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Επιτρέψτε την πρόσβαση"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permitir acceso"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salli käyttö"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autoriser l'accès"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dopusti pristup"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hozzáférés engedélyezése"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consenti l'accesso"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アクセスを許可"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toegang geven"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zezwól na dostęp"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permitir acesso"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permitir acesso"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permite accesul"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разрешить доступ"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Povoliť prístup"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tillåt åtkomst"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erişime İzin Ver"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Надати доступ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "允许访问"
+          }
+        }
+      }
+    },
+    "Health Connect Needs an Update" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect се нуждае от актуализация"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cal actualitzar Health Connect"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect potřebuje aktualizaci"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect skal opdateres"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect muss aktualisiert werden"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Το Health Connect χρειάζεται ενημέρωση"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect necesita una actualización"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect on päivitettävä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect doit être mis à jour"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect treba ažuriranje"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A Health Connect frissítésre szorul"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect deve essere aggiornato"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ヘルスコネクトのアップデートが必要です"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect moet worden bijgewerkt"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect wymaga aktualizacji"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Health Connect precisa de uma atualização"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Health Connect precisa de uma atualização"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect trebuie actualizat"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect нужно обновить"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect potrebuje aktualizáciu"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect behöver uppdateras"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect'in güncellenmesi gerekiyor"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect потрібно оновити"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect 需要更新"
+          }
+        }
+      }
+    },
+    "Your reports are still in Health Connect, but it has to be updated before LabImporter can read them." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отчетите ви все още са в Health Connect, но той трябва да се актуализира, преди LabImporter да може да ги прочете."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Els informes encara són a Health Connect, però cal actualitzar-lo perquè LabImporter els pugui llegir."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vaše protokoly jsou stále v Health Connect, ale než je LabImporter bude moci číst, je třeba ho aktualizovat."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dine rapporter er stadig i Health Connect, men det skal opdateres, før LabImporter kan læse dem."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Berichte sind noch in Health Connect, aber es muss aktualisiert werden, bevor LabImporter sie lesen kann."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Οι αναφορές σας βρίσκονται ακόμα στο Health Connect, αλλά πρέπει να ενημερωθεί για να μπορεί το LabImporter να τις διαβάσει."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tus informes siguen en Health Connect, pero hay que actualizarlo para que LabImporter pueda leerlos."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raporttisi ovat yhä Health Connectissa, mutta se on päivitettävä, ennen kuin LabImporter voi lukea ne."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vos rapports sont toujours dans Health Connect, mais il doit être mis à jour pour que LabImporter puisse les lire."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vaša su izvješća još uvijek u Health Connectu, ali ga treba ažurirati da bi ih LabImporter mogao čitati."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A jelentéseid továbbra is a Health Connectben vannak, de frissíteni kell, mielőtt a LabImporter olvasni tudná őket."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I tuoi referti sono ancora in Health Connect, ma deve essere aggiornato perché LabImporter possa leggerli."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レポートはヘルスコネクトに残っていますが、LabImporterで読み取るにはアップデートが必要です。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je rapporten staan nog in Health Connect, maar het moet worden bijgewerkt voordat LabImporter ze kan lezen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raporty nadal są w Health Connect, ale trzeba go zaktualizować, aby LabImporter mógł je odczytać."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seus relatórios ainda estão no Health Connect, mas ele precisa ser atualizado para que o LabImporter possa lê-los."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os seus relatórios continuam no Health Connect, mas este tem de ser atualizado para que o LabImporter os possa ler."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapoartele tale sunt încă în Health Connect, dar acesta trebuie actualizat ca LabImporter să le poată citi."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваши отчёты всё ещё в Health Connect, но его нужно обновить, чтобы LabImporter мог их прочитать."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vaše správy sú stále v Health Connect, no treba ho aktualizovať, aby ich LabImporter mohol čítať."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dina rapporter finns kvar i Health Connect, men det måste uppdateras innan LabImporter kan läsa dem."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raporlarınız hâlâ Health Connect'te, ancak LabImporter'ın okuyabilmesi için güncellenmesi gerekiyor."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваші звіти все ще в Health Connect, але його потрібно оновити, щоб LabImporter міг їх прочитати."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的报告仍在 Health Connect 中，但需要先更新它，LabImporter 才能读取。"
+          }
+        }
+      }
+    },
+    "Update Health Connect" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Актуализирай Health Connect"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualitza Health Connect"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktualizovat Health Connect"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opdater Health Connect"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect aktualisieren"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ενημέρωση Health Connect"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizar Health Connect"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Päivitä Health Connect"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mettre à jour Health Connect"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ažuriraj Health Connect"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect frissítése"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aggiorna Health Connect"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ヘルスコネクトをアップデート"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect bijwerken"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zaktualizuj Health Connect"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atualizar o Health Connect"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atualizar o Health Connect"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizează Health Connect"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Обновить Health Connect"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktualizovať Health Connect"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uppdatera Health Connect"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect'i Güncelle"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Оновити Health Connect"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新 Health Connect"
+          }
+        }
+      }
+    },
+    "Health Connect Isn't Available" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect не е наличен"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect no està disponible"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect není k dispozici"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect er ikke tilgængelig"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect ist nicht verfügbar"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Το Health Connect δεν είναι διαθέσιμο"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect no está disponible"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect ei ole käytettävissä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect n'est pas disponible"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect nije dostupan"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A Health Connect nem érhető el"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect non è disponibile"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ヘルスコネクトを利用できません"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect is niet beschikbaar"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect jest niedostępny"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Health Connect não está disponível"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Health Connect não está disponível"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect nu este disponibil"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect недоступен"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect nie je k dispozícii"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect är inte tillgängligt"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect kullanılamıyor"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect недоступний"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Connect 不可用"
+          }
+        }
+      }
+    },
+    "LabImporter can't reach Health Connect on this device, so the reports saved there aren't shown. LabImporter didn't delete them." : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter няма достъп до Health Connect на това устройство, затова запазените там отчети не се показват. LabImporter не ги е изтрил."
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter no pot accedir a Health Connect en aquest dispositiu, de manera que els informes desats allà no es mostren. LabImporter no els ha eliminat."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter se na tomto zařízení nedostane k Health Connect, takže se tam uložené protokoly nezobrazují. LabImporter je nesmazal."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter kan ikke nå Health Connect på denne enhed, så de rapporter, der er gemt der, vises ikke. LabImporter har ikke slettet dem."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter erreicht Health Connect auf diesem Gerät nicht, daher werden die dort gespeicherten Berichte nicht angezeigt. LabImporter hat sie nicht gelöscht."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Το LabImporter δεν μπορεί να συνδεθεί με το Health Connect σε αυτήν τη συσκευή, οπότε οι αναφορές που είναι αποθηκευμένες εκεί δεν εμφανίζονται. Το LabImporter δεν τις διέγραψε."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter no puede acceder a Health Connect en este dispositivo, así que los informes guardados allí no se muestran. LabImporter no los ha eliminado."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter ei tavoita Health Connectia tällä laitteella, joten sinne tallennettuja raportteja ei näytetä. LabImporter ei poistanut niitä."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter ne peut pas accéder à Health Connect sur cet appareil : les rapports qui y sont enregistrés ne s'affichent donc pas. LabImporter ne les a pas supprimés."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter ne može pristupiti Health Connectu na ovom uređaju pa se ondje spremljena izvješća ne prikazuju. LabImporter ih nije izbrisao."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A LabImporter nem éri el a Health Connectet ezen az eszközön, ezért az oda mentett jelentések nem jelennek meg. A LabImporter nem törölte őket."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter non riesce ad accedere a Health Connect su questo dispositivo, quindi i referti salvati lì non vengono mostrati. LabImporter non li ha eliminati."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このデバイスではLabImporterがヘルスコネクトにアクセスできないため、そこに保存されたレポートは表示されません。LabImporterはレポートを削除していません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter kan Health Connect op dit apparaat niet bereiken, dus de rapporten die daar staan worden niet getoond. LabImporter heeft ze niet verwijderd."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter nie może połączyć się z Health Connect na tym urządzeniu, więc zapisane tam raporty nie są wyświetlane. LabImporter ich nie usunął."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O LabImporter não consegue acessar o Health Connect neste dispositivo, então os relatórios salvos lá não são exibidos. O LabImporter não os apagou."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O LabImporter não consegue aceder ao Health Connect neste dispositivo, por isso os relatórios guardados lá não são apresentados. O LabImporter não os apagou."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter nu poate accesa Health Connect pe acest dispozitiv, așa că rapoartele salvate acolo nu sunt afișate. LabImporter nu le-a șters."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter не может подключиться к Health Connect на этом устройстве, поэтому сохранённые там отчёты не показаны. LabImporter их не удалял."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter sa na tomto zariadení nedostane k Health Connect, takže sa tam uložené správy nezobrazujú. LabImporter ich nevymazal."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter når inte Health Connect på den här enheten, så rapporterna som sparats där visas inte. LabImporter har inte raderat dem."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter bu cihazda Health Connect'e ulaşamıyor, bu yüzden orada kayıtlı raporlar gösterilmiyor. LabImporter bunları silmedi."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter не може підключитися до Health Connect на цьому пристрої, тому збережені там звіти не показуються. LabImporter їх не видаляв."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LabImporter 无法在此设备上访问 Health Connect，因此不会显示保存在其中的报告。LabImporter 并未删除它们。"
+          }
+        }
+      }
+    },
+    "Use App Storage" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Използвай хранилището на приложението"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utilitza l'emmagatzematge de l'app"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Použít úložiště aplikace"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brug appens lager"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App-Speicher verwenden"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Χρήση αποθήκευσης εφαρμογής"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar el almacenamiento de la app"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Käytä sovelluksen tallennustilaa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utiliser le stockage de l'app"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Koristi pohranu aplikacije"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Az app tárhelyének használata"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usa lo spazio dell'app"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アプリ内ストレージを使用"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App-opslag gebruiken"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Użyj pamięci aplikacji"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar o armazenamento do app"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar o armazenamento da app"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Folosește stocarea aplicației"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Использовать хранилище приложения"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Použiť úložisko aplikácie"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Använd appens lagring"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uygulama Depolamasını Kullan"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Використовувати сховище застосунку"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用应用存储"
+          }
+        }
+      }
+    },
+    "en" : {
+      "localizations" : {
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bg"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ca"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "cs"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "da"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "de"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "el"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "es"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "fi"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "fr"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "hr"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "hu"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "it"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ja"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "nl"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pl"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pt-BR"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pt-PT"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ro"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ru"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sk"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sv"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "tr"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "uk"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "zh-Hans"
           }
         }
       }

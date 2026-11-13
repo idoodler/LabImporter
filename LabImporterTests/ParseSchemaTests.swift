@@ -1,5 +1,4 @@
 import Foundation
-import FoundationModels
 import LabImporterCore
 import Testing
 @testable import LabImporter

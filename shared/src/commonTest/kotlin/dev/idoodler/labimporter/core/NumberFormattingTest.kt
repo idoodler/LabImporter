@@ -23,6 +23,19 @@ class NumberFormattingTest {
     }
 
     @Test
+    fun exactValueIsTheOldNotationUntilThatWouldChangeTheNumber() {
+        for (value in listOf(80.0, 0.8, 6.53, 0.125, -12.75, 1e20, 1e-05)) {
+            assertEquals(NumberFormatting.cdaValue(value), NumberFormatting.exactValue(value), "for $value")
+        }
+        assertEquals("12345.6", NumberFormatting.exactValue(12345.6))
+        assertEquals("123.45", NumberFormatting.exactValue(123.45))
+        assertEquals("1.23456e-05", NumberFormatting.exactValue(1.23456e-05))
+        for (value in listOf(12345.6, 1234.5, 0.1 + 0.2, 3.14159265358979, 1.0 / 3.0, 123456789.5, 9.99996)) {
+            assertEquals(value, NumberFormatting.parse(NumberFormatting.exactValue(value)), "for $value")
+        }
+    }
+
+    @Test
     fun parseAcceptsPlainNumbersOnly() {
         assertEquals(0.8, NumberFormatting.parse("0,80"))
         assertEquals(6.5, NumberFormatting.parse(" 6.5 "))
@@ -40,5 +53,25 @@ class NumberFormattingTest {
         assertEquals("6.5", NumberFormatting.display(6.5))
         assertEquals("0.8333", NumberFormatting.display(0.83333))
         assertEquals("120", NumberFormatting.display(120.0))
+    }
+
+    /** From mutation testing (tools/quality/mutation.sh): the edges the tests above never reached. */
+    @Test
+    fun fixedKeepsTheSignRoundsWholeAndHandlesTheExtremes() {
+        assertEquals("-6.5", NumberFormatting.fixed(-6.5, 2))
+        assertEquals("-2.1", NumberFormatting.display(-2.1))
+        assertEquals("0", NumberFormatting.fixed(-0.001, 2), "no minus on a reading that rounds to zero")
+        assertEquals("7", NumberFormatting.fixed(6.5, 0))
+        assertEquals("-2", NumberFormatting.fixed(-2.4, 0))
+        assertEquals("0.123456789012", NumberFormatting.fixed(0.1234567890123, 20), "at most 12 places")
+        assertEquals("10000000000000000", NumberFormatting.fixed(1e16, 2))
+        assertEquals("NaN", NumberFormatting.fixed(Double.NaN, 2))
+        assertEquals("Infinity", NumberFormatting.fixed(Double.POSITIVE_INFINITY, 2))
+    }
+
+    @Test
+    fun parseKeepsTheLargestFiniteNumberAndRefusesInfinity() {
+        assertEquals(Double.MAX_VALUE, NumberFormatting.parse("1.7976931348623157e308"))
+        assertNull(NumberFormatting.parse("1e999"))
     }
 }

@@ -1,0 +1,14 @@
+Praxislabor Am Markt
+Patient: Erika Musterfrau      geb. 12.08.1971
+Probeneingang: 21.10.2026
+Material: Serum, EDTA-Blut
+
+Parameter           Einheit      Ergebnis     Referenzbereich
+CRP                 mg/dl        0,3          bis 0,5
+Ferritin            ng/ml        85           15 - 150
+TSH                 mU/l         1,82         0,27 - 4,20
+Kreatinin           mg/dl        0,78         0,50 - 0,90
+Harnsäure           mg/dl        4,1          2,4 - 5,7
+Triglyceride        mg/dl        96           bis 150
+Hämoglobin          g/dl         14,2         12,0 - 16,0
+MCV                 fl           88           80 - 96

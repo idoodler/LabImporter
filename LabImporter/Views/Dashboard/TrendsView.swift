@@ -1,4 +1,3 @@
-import Accessibility
 import LabImporterCore
 import SwiftUI
 import Charts
@@ -15,13 +14,11 @@ struct TrendsView: View {
     }
 
     @AppStorage("trendsSelectedCode") private var selectedCode: String = ""
-    @AppStorage("trendsWindow") private var window: TrendWindow = .year1
+    @AppStorage("trendsWindow") private var window: TrendWindow = .opening
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var selectedDate: Date?
-    /// Leading edge (oldest visible date) of the scrollable chart. Re-anchored to
-    /// the latest reading whenever the metric or window changes.
-    @State private var scrollPositionX = Date.now
     @State private var selectedTerm: LoincTerm?
     @State private var valueColor: Color = .accentColor
     @State private var showHideConfirmation = false
@@ -49,20 +46,26 @@ struct TrendsView: View {
             .map { (code: $0.code, name: $0.name) }
     }
 
-    var dataPoints: [DataPoint] {
+    /// Every reading of the metric on screen, oldest first.
+    private var allReadings: [LabImporterCore.MetricPoint] {
         reports
             .flatMap { report in
                 report.entries
                     .filter { $0.code == selectedCode }
-                    .compactMap { entry -> DataPoint? in
+                    .compactMap { entry -> LabImporterCore.MetricPoint? in
                         guard let value = entry.numericValue else { return nil }
-                        return DataPoint(date: report.date, value: value, unit: entry.unit)
+                        return LabImporterCore.MetricPoint(date: report.date.sharedDate, value: value, unit: entry.unit, reportId: report.id.uuidString)
                     }
             }
-            .sorted { $0.date < $1.date }
+            .sorted { $0.date.compareTo(other: $1.date) < 0 }
     }
 
-    var currentUnit: String { dataPoints.first?.unit ?? "" }
+    /// The readings in the selected window, what the chart plots (shared rule, as on Android).
+    var dataPoints: [DataPoint] {
+        window.shared.visible(points: allReadings).map { DataPoint(date: Date(shared: $0.date), value: $0.value, unit: $0.unit) }
+    }
+
+    var currentUnit: String { allReadings.first?.unit ?? "" }
 
     private var selectedDataPoint: DataPoint? {
         guard let selectedDate else { return nil }
@@ -134,15 +137,10 @@ struct TrendsView: View {
             }
             selectedTerm = LoincDirectory.shared.term(for: selectedCode)
             valueColor = LabCategory.forCode(selectedCode).color
-            anchorScroll()
         }
         .onChange(of: selectedCode) { _, code in
             selectedTerm = LoincDirectory.shared.term(for: code)
             valueColor = LabCategory.forCode(code).color
-            anchorScroll()
-        }
-        .onChange(of: window) { _, _ in
-            anchorScroll()
         }
     }
 
@@ -182,22 +180,22 @@ struct TrendsView: View {
     // MARK: - Subviews
 
     private var noDataView: some View {
-        ContentUnavailableView(
-            "No Numeric Data",
+        EmptyStateView(
+            title: "No Numeric Data",
             systemImage: "chart.line.uptrend.xyaxis",
-            description: Text("Import reports with numeric lab values to see trends.")
-        )
+            message: "Import reports with numeric lab values to see trends."
+        ) { EmptyView() }
     }
 
     @ViewBuilder
     private var trendContent: some View {
-        if dataPoints.count < 2 {
+        if allReadings.count < 2 {
             VStack(spacing: 16) {
-                ContentUnavailableView(
-                    "Not Enough Data",
+                EmptyStateView(
+                    title: "Not Enough Data",
                     systemImage: "chart.xyaxis.line",
-                    description: Text("Import at least two reports containing this value to see a trend.")
-                )
+                    message: "Import at least two reports containing this value to see a trend."
+                ) { EmptyView() }
                 descriptionCard
             }
         } else {
@@ -245,7 +243,7 @@ extension TrendsView {
             VStack(alignment: .leading, spacing: 2) {
                 Text(point.date.formatted(date: .abbreviated, time: .omitted))
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
                     Text(formatValue(point.value))
                         .font(.title2.weight(.semibold))
@@ -253,7 +251,7 @@ extension TrendsView {
                     if !point.unit.isEmpty {
                         Text(point.unit)
                             .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(.textSecondary)
                     }
                 }
             }
@@ -261,93 +259,115 @@ extension TrendsView {
         }
     }
 
+    @ViewBuilder
     private var chartBody: some View {
+        let points = dataPoints
+        if let domain = ChartDomain(dates: points.map(\.date), values: points.map(\.value), range: referenceRange) {
+            chart(points: points, domain: domain)
+        }
+    }
+
+    private func chart(points: [DataPoint], domain: ChartDomain) -> some View {
         Chart {
-            if let range = referenceRange {
-                if let low = range.low {
-                    RuleMark(y: .value(String(localized: "Low"), low))
-                        .foregroundStyle(RangeStatus.low.color.opacity(0.45))
-                        .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 3]))
-                        .accessibilityHidden(true)
-                }
-                if let high = range.high {
-                    RuleMark(y: .value(String(localized: "High"), high))
-                        .foregroundStyle(RangeStatus.high.color.opacity(0.45))
-                        .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 3]))
-                        .accessibilityHidden(true)
-                }
-            }
-
-            // Only `PointMark` carries VoiceOver content — `LineMark`/`AreaMark` plot
-            // the exact same date/value pairs and would otherwise triple-announce
-            // every reading.
-            ForEach(dataPoints) { point in
-                LineMark(
-                    x: .value(String(localized: "Date"), point.date),
-                    y: .value(currentUnit, point.value)
-                )
-                .foregroundStyle(valueColor.opacity(0.9))
-                .accessibilityHidden(true)
-
-                PointMark(
-                    x: .value(String(localized: "Date"), point.date),
-                    y: .value(currentUnit, point.value)
-                )
-                .foregroundStyle(pointColor(point.value))
-                .accessibilityLabel(point.date.formatted(date: .abbreviated, time: .omitted))
-                .accessibilityValue(accessibilityValue(for: point))
-
-                AreaMark(
-                    x: .value(String(localized: "Date"), point.date),
-                    y: .value(currentUnit, point.value)
-                )
-                .foregroundStyle(valueColor.opacity(0.15))
-                .accessibilityHidden(true)
-            }
-
-            if let selected = selectedDataPoint {
-                RuleMark(x: .value(String(localized: "Date"), selected.date))
-                    .foregroundStyle(.secondary.opacity(0.5))
-                    .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
-                    .accessibilityHidden(true)
-
-                PointMark(
-                    x: .value(String(localized: "Date"), selected.date),
-                    y: .value(currentUnit, selected.value)
-                )
-                .symbolSize(0)
-                // Let the bubble overflow the plot at the first/last point instead
-                // of letting Charts pad the scale to fit it — that padding resized
-                // the plot and made the whole graph jump when scrubbing to an edge.
-                .annotation(position: .overlay, spacing: 0,
-                            overflowResolution: .init(x: .disabled, y: .disabled)) {
-                    selectedPointBubble
-                }
-                .accessibilityHidden(true)
-            }
+            chartMarks(points: points)
         }
         .accessibilityChartDescriptor(self)
-        .chartScrollableAxes(.horizontal)
-        .chartXVisibleDomain(length: visibleDomainSeconds)
-        .chartScrollPosition(x: $scrollPositionX)
+        .chartXScale(domain: domain.xDomain)
+        .chartYScale(domain: domain.yDomain)
         .chartXSelection(value: $selectedDate)
         .onChange(of: selectedDataPoint?.date) { _, newDate in
             if newDate != nil { selectionFeedback.selectionChanged() }
         }
         .chartXAxis {
-            AxisMarks(values: .automatic) { _ in
+            // Anchored inwards: a label centered on the plot's last date has no room and truncates ("M…").
+            AxisMarks(values: domain.xLabels) { value in
                 AxisGridLine().foregroundStyle(valueColor.opacity(0.12))
-                AxisValueLabel(format: .dateTime.day().month(.abbreviated))
-                    .foregroundStyle(valueColor.opacity(0.8))
+                // Two whole dates in the largest text overlap: month and year fit side by side.
+                AxisValueLabel(
+                    format: dynamicTypeSize.isAccessibilitySize ? .dateTime.month(.abbreviated).year(.twoDigits) : .dateTime.day().month(.abbreviated).year(),
+                    anchor: xLabelAnchor(index: value.index, count: value.count)
+                )
+                .foregroundStyle(.textSecondary)
             }
         }
         .chartYAxis {
-            AxisMarks { _ in
+            AxisMarks(values: domain.yTicks) { _ in
                 AxisGridLine().foregroundStyle(valueColor.opacity(0.12))
-                AxisValueLabel().foregroundStyle(valueColor.opacity(0.8))
+                AxisValueLabel().foregroundStyle(.textSecondary)
             }
         }
         .frame(minHeight: 260)
+    }
+
+    @ChartContentBuilder
+    private func chartMarks(points: [DataPoint]) -> some ChartContent {
+        if let range = referenceRange {
+            if let low = range.low {
+                RuleMark(y: .value(String(localized: "Low"), low))
+                    .foregroundStyle(RangeStatus.low.color.opacity(0.45))
+                    .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 3]))
+                    .accessibilityHidden(true)
+            }
+            if let high = range.high {
+                RuleMark(y: .value(String(localized: "High"), high))
+                    .foregroundStyle(RangeStatus.high.color.opacity(0.45))
+                    .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 3]))
+                    .accessibilityHidden(true)
+            }
+        }
+
+        // Only `PointMark` carries VoiceOver content — `LineMark`/`AreaMark` plot
+        // the exact same date/value pairs and would otherwise triple-announce
+        // every reading.
+        ForEach(points) { point in
+            LineMark(
+                x: .value(String(localized: "Date"), point.date),
+                y: .value(currentUnit, point.value)
+            )
+            .foregroundStyle(valueColor.opacity(0.9))
+            .accessibilityHidden(true)
+
+            PointMark(
+                x: .value(String(localized: "Date"), point.date),
+                y: .value(currentUnit, point.value)
+            )
+            .foregroundStyle(pointColor(point.value))
+            .accessibilityLabel(point.date.formatted(date: .abbreviated, time: .omitted))
+            .accessibilityValue(accessibilityValue(for: point))
+
+            AreaMark(
+                x: .value(String(localized: "Date"), point.date),
+                y: .value(currentUnit, point.value)
+            )
+            .foregroundStyle(valueColor.opacity(0.15))
+            .accessibilityHidden(true)
+        }
+
+        if let selected = selectedDataPoint {
+            RuleMark(x: .value(String(localized: "Date"), selected.date))
+                .foregroundStyle(Color.textSecondary.opacity(0.5))
+                .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
+                .accessibilityHidden(true)
+
+            PointMark(
+                x: .value(String(localized: "Date"), selected.date),
+                y: .value(currentUnit, selected.value)
+            )
+            .symbolSize(0)
+            // Let the bubble overflow the plot at the first/last point instead
+            // of letting Charts pad the scale to fit it — that padding resized
+            // the plot and made the whole graph jump when scrubbing to an edge.
+            .annotation(position: .overlay, spacing: 0,
+                        overflowResolution: .init(x: .disabled, y: .disabled)) {
+                selectedPointBubble
+            }
+            .accessibilityHidden(true)
+        }
+    }
+
+    private func xLabelAnchor(index: Int, count: Int) -> UnitPoint {
+        guard count > 1 else { return .top }
+        return index == 0 ? .topLeading : .topTrailing
     }
 
     /// VoiceOver content for one plotted point: value, unit, and (when
@@ -385,25 +405,6 @@ extension TrendsView {
             }
         }
         .pickerStyle(.segmented)
-    }
-
-    /// Visible x-axis window width in seconds; for `.all`, the full span padded 10%.
-    var visibleDomainSeconds: TimeInterval {
-        if let days = window.days {
-            return Double(days) * 86_400
-        }
-        guard let first = dataPoints.first?.date, let last = dataPoints.last?.date else { return 86_400 }
-        return max(last.timeIntervalSince(first) * 1.1, 86_400)
-    }
-
-    /// Anchors the scroll so the latest reading is in view (whole range for `.all`).
-    func anchorScroll() {
-        guard let first = dataPoints.first?.date, let last = dataPoints.last?.date else { return }
-        if window.days == nil {
-            scrollPositionX = first.addingTimeInterval(-visibleDomainSeconds * 0.05)
-        } else {
-            scrollPositionX = last.addingTimeInterval(-visibleDomainSeconds * 0.95)
-        }
     }
 
     func formatValue(_ value: Double) -> String {
@@ -456,7 +457,7 @@ extension View {
     /// unfolded iPhone Duo's short, wide inner display leaves the chart cut off
     /// below its first gridline. Elsewhere it starts at medium, as before.
     func trendSheetPresentation(regular: Bool) -> some View {
-        presentationDetents(regular ? [.large] : [.medium, .large])
+        presentationDetents(regular || ScreenshotMode.opensSheetsInFull ? [.large] : [.medium, .large])
             .presentationDragIndicator(regular ? .hidden : .visible)
     }
 }
@@ -467,6 +468,19 @@ extension View {
 #Preview("Trends") {
     NavigationStack {
         TrendsView(reports: LabReport.sampleHistory, initialCode: "4548-4")
+    }
+}
+
+#Preview("Trends · Dark") {
+    NavigationStack {
+        TrendsView(reports: LabReport.sampleHistory, initialCode: "4548-4")
+    }
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Trends · One Reading") {
+    NavigationStack {
+        TrendsView(reports: [LabReport.sample], initialCode: "4548-4")
     }
 }
 #endif

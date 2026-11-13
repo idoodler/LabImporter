@@ -4,24 +4,40 @@ import VisionKit
 struct ReviewView: View {
     @State var labValues: [LabValue]
     @State private var reportDate: Date
-    @AppStorage("patientName") private var patientName: String = ""
-    @AppStorage("authorName") private var authorName: String = ""
-    @AppStorage("patientBirthdateInterval") private var birthdateInterval: Double = 0
-    @AppStorage("patientSexRaw") private var patientSexRaw: Int = 0
-    @State private var extractedPatientName: String?
-    @State private var extractedAuthorName: String?
-    @State private var hkBirthdate: Date?
-    @State private var hkSex: Int?
+    /// The import found no date the report prints, so `reportDate` is only a
+    /// starting point; the date row says so until the user changes it.
+    @State private var isDateMissing: Bool
+    /// The report prints the date, but it may be misread (day and month either way, a
+    /// birth date); the date row says so until the user changes it.
+    @State private var isDateToCheck: Bool
+    /// The report prints its results in columns of several dates (a cumulative report): where a value
+    /// or the date is flagged, the date row and its badge say why.
+    private let hasSeveralResultDates: Bool
+    /// This report's names. Only saving a new report remembers them for the next one.
+    @State var names: ReviewNames
+    @AppStorage("patientBirthdateInterval") var birthdateInterval: Double = 0
+    @AppStorage("patientSexRaw") var patientSexRaw: Int = 0
+    @State var extractedPatientName: String?
+    @State var extractedAuthorName: String?
+    @State var hkBirthdate: Date?
+    @State var hkSex: Int?
+    /// Patient and lab come after the values, folded away: comparing values with the report is the job here.
+    @State var showsDetails = false
 
     @State private var cdaShareURL: URL?
     @State private var cdaError: String?
     @State private var replaceWarning: String?
     @State private var showDiscardAlert = false
     @State private var replacingReport: LabReport?
+    /// Asked before saving when a value is flagged or would be left out: flag, don't block.
+    @State private var saveConfirmation: SaveConfirmation?
+    /// The row Go Back scrolls to (see ReviewView+FoldLayout).
+    @State var scrollTarget: UUID?
 
     @State private var showAddValue = false
+    /// Save writes once: Save and Share are off while it runs, and a repeated tap is ignored.
+    @State private var saving = SaveInFlight()
     @State private var importEngine = LabImportEngine()
-    @State private var didSeedMetadata = false
     @AppStorage(SiriExposurePreferences.storageKey) private var siriPrefs = SiriExposurePreferences()
     @State private var siriPromptCodes: [CodeName] = []
     @State var paneGeometry = ReviewPaneGeometry()
@@ -30,12 +46,14 @@ struct ReviewView: View {
     // @State (not let): captured once and preserved across re-inits, unlike a re-derived `asLabValues`.
     @State private var initialLabValues: [LabValue]
     @State private var initialReportDate: Date
+    @State private var initialNames: ReviewNames
 
     /// Called after a successful save (before dismiss) so a presenter can react.
     private let onSaved: (() -> Void)?
 
-    @FocusState private var anyFieldFocused: Bool
+    @FocusState var anyFieldFocused: Bool
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     private let cdaService = CDAExportService()
 
@@ -43,8 +61,9 @@ struct ReviewView: View {
         labValues.filter(\.isExportable).count
     }
 
-    private var unsupportedValues: [LabValue] {
-        labValues.filter { LabMapping.loincCode(for: $0.code) == nil }
+    // `labValues` indices without a LOINC mapping, so their rows stay live bindings like the categorized ones.
+    private var unsupportedIndices: [Int] {
+        labValues.indices.filter { LabMapping.loincCode(for: labValues[$0].code) == nil }
     }
 
     // Values carrying a LOINC mapping — eligible for the categorized list & export.
@@ -83,6 +102,9 @@ struct ReviewView: View {
     init(
         labValues: [LabValue],
         reportDate: Date = Date(),
+        isDateMissing: Bool = false,
+        isDateToCheck: Bool = false,
+        hasSeveralResultDates: Bool = false,
         extractedPatientName: String? = nil,
         extractedAuthorName: String? = nil,
         replacingReport: LabReport? = nil,
@@ -90,6 +112,12 @@ struct ReviewView: View {
     ) {
         _labValues = State(initialValue: labValues)
         _reportDate = State(initialValue: reportDate)
+        _isDateMissing = State(initialValue: isDateMissing)
+        _isDateToCheck = State(initialValue: isDateToCheck)
+        self.hasSeveralResultDates = hasSeveralResultDates
+        let names = ReviewNames(replacing: replacingReport)
+        _names = State(initialValue: names)
+        _initialNames = State(initialValue: names)
         _extractedPatientName = State(initialValue: extractedPatientName)
         _extractedAuthorName = State(initialValue: extractedAuthorName)
         _replacingReport = State(initialValue: replacingReport)
@@ -102,16 +130,19 @@ struct ReviewView: View {
         reviewLists // One list, or two panes either side of an iPhone Duo's fold — see ReviewView+FoldLayout.
         .listStyle(.insetGrouped)
         .scrollDismissesKeyboard(.interactively)
+        .listSectionSpacing(.compact)
         .scrollContentBackground(.hidden)
         .background { CategoryBackground(colors: backgroundColors) }
-        .interactiveDismissDisabled(hasEdits) // Avoids a swipe bypassing the discard confirmation below.
+        .interactiveDismissDisabled(hasEdits || saving.isSaving) // Avoids a swipe bypassing the discard confirmation, or a running save.
         .navigationTitle("Lab Report")
-        .navigationBarTitleDisplayMode(.large)
+        .navigationBarTitleDisplayMode(.inline) // A large title would push the first value off a small iPhone.
         .toolbar {
             keyboardDoneButton
             ToolbarItem(placement: .topBarLeading) {
                 Button(role: .close) { attemptClose() }
-                    .disabled(importEngine.isProcessing) // HUD overlay can't cover this bar.
+                    .disabled(importEngine.isProcessing || saving.isSaving) // HUD overlay can't cover this bar.
+                    // The folded iPhone Duo puts it in a toolbar beside the screen, not in the navigation bar.
+                    .accessibilityIdentifier("review-close")
             }
         }
         .alert("Discard Report?", isPresented: $showDiscardAlert) {
@@ -122,21 +153,18 @@ struct ReviewView: View {
         }
         .labImport(engine: importEngine)
         .task { await loadHKCharacteristics() }
-        .onAppear {
-            configureImportEngine()
-            seedMetadataFromReport()
-        }
+        .onAppear { configureImportEngine() }
         .reportsToSiriOnScreenContext(labValues)
         .registersAsSearchEditor(onClose: attemptClose)
         .sheet(isPresented: Binding(
             get: { cdaShareURL != nil },
             set: { if !$0 { cdaShareURL = nil } }
-        )) {
+        ), onDismiss: { ExportFiles.removeAll() }, content: {
             if let url = cdaShareURL {
                 CDAShareSheet(url: url)
                     .ignoresSafeArea()
             }
-        }
+        })
         .sheet(isPresented: $showAddValue) {
             AddValueSheet { labValues.append($0) }
         }
@@ -144,13 +172,41 @@ struct ReviewView: View {
         .alert("Export Error", isPresented: .constant(cdaError != nil)) {
             Button("OK") { cdaError = nil }
         } message: { Text(cdaError ?? "") }
+        .alert(
+            saveConfirmation?.title ?? "",
+            isPresented: Binding(get: { saveConfirmation != nil }, set: { if !$0 { saveConfirmation = nil } }),
+            presenting: saveConfirmation
+        ) { confirmation in
+            Button(confirmation.proceedTitle) { perform(confirmation.action) }
+            Button("Go Back", role: .cancel) { scrollTarget = confirmation.firstID }
+        } message: { confirmation in
+            Text(confirmation.message)
+        }
         .alert("Report Saved", isPresented: .constant(replaceWarning != nil)) {
             Button("OK") { finishSave() }
         } message: { Text(replaceWarning ?? "") }
     }
 
+    /// Pinned, the Save/Share bar would fill the screen at accessibility text sizes and
+    /// hide the values it's there to save; it follows them as the list's last row instead.
+    var pinsActionBar: Bool { !dynamicTypeSize.isAccessibilitySize }
+
     /// The Save/Share bar, for the layout in ReviewView+FoldLayout.
-    var actionBar: some View { bottomButtons.hiddenWhileKeyboardVisible() }
+    @ViewBuilder
+    var actionBar: some View {
+        if pinsActionBar { bottomButtons().hiddenWhileKeyboardVisible() }
+    }
+
+    @ViewBuilder
+    var actionBarRow: some View {
+        if !pinsActionBar {
+            Section {
+                bottomButtons(isPinned: false)
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
+            }
+        }
+    }
 
     // MARK: - Sections
 
@@ -164,6 +220,8 @@ struct ReviewView: View {
                 supportedCount: supportedCount,
                 exportableCount: exportableCount,
                 duplicateCount: duplicateLoincCodes.count,
+                valuesToCorrect: labValues.valuesToCorrectCount(),
+                valuesToCheck: labValues.valuesToCheckCount(),
                 groups: categoryCounts,
                 dominantColor: dominantColor
             )
@@ -173,85 +231,48 @@ struct ReviewView: View {
         }
     }
 
-    var patientSection: some View {
-        Section("Patient") {
-            TextField("Full Name (optional)", text: $patientName)
-                .autocorrectionDisabled()
-                .textContentType(.name)
-                .focused($anyFieldFocused)
-
-            if let extracted = extractedPatientName,
-               !extracted.isEmpty,
-               extracted != patientName {
-                SuggestionRow(label: "Detected in report: \"\(extracted)\"") {
-                    patientName = extracted
-                }
-            }
-
-            if birthdateInterval != 0 {
-                HStack {
-                    DatePicker(
-                        "Birthday",
-                        selection: birthdateBinding,
-                        in: ...Date.now,
-                        displayedComponents: .date
-                    )
-                    Button { birthdateInterval = 0 } label: {
-                        Image(systemName: "xmark.circle.fill")
-                    }
-                    .foregroundStyle(Color.secondary)
-                    .buttonStyle(.plain).accessibilityLabel("Clear Birthday")
-                }
-            }
-
-            if let hkDob = hkBirthdate, hkBirthdateDiffers {
-                SuggestionRow(label: "Detected in Health: \"\(hkDob.formatted(date: .abbreviated, time: .omitted))\"") {
-                    birthdateInterval = hkDob.timeIntervalSinceReferenceDate
-                }
-            }
-
-            Picker("Gender", selection: $patientSexRaw) {
-                Text("–").tag(0)
-                Text("Female").tag(1)
-                Text("Male").tag(2)
-                Text("Other").tag(3)
-            }
-
-            if let hkSexRaw = hkSex, hkSexRaw != 0, hkSexRaw != patientSexRaw {
-                SuggestionRow(label: "Detected in Health: \"\(hkSexName(hkSexRaw))\"") {
-                    patientSexRaw = hkSexRaw
-                }
-            }
-        }
-        .listRowBackground(Rectangle().fill(.ultraThinMaterial))
-    }
-
-    var authorSection: some View {
-        Section("Lab / Doctor") {
-            TextField("Lab / Doctor (optional)", text: $authorName)
-                .autocorrectionDisabled()
-                .textContentType(.organizationName)
-                .focused($anyFieldFocused)
-
-            if let extracted = extractedAuthorName,
-               !extracted.isEmpty,
-               extracted != authorName {
-                SuggestionRow(label: "Detected in report: \"\(extracted)\"") {
-                    authorName = extracted
-                }
-            }
-        }
-        .listRowBackground(Rectangle().fill(.ultraThinMaterial))
-    }
-
     var dateSection: some View {
         Section {
-            DatePicker(
-                "Report Date",
-                selection: $reportDate,
-                in: ...Date.now,
-                displayedComponents: .date
-            )
+            VStack(alignment: .leading, spacing: 6) {
+                DatePicker(
+                    "Report Date",
+                    selection: Binding(
+                        get: { reportDate },
+                        set: {
+                            reportDate = $0
+                            isDateMissing = false
+                            isDateToCheck = false
+                        }
+                    ),
+                    in: ...Date.now,
+                    displayedComponents: .date
+                )
+                if isDateMissing {
+                    HStack(alignment: .firstTextBaseline, spacing: 6) {
+                        Image(systemName: "exclamationmark.magnifyingglass")
+                            .accessibilityHidden(true)
+                        Text("No date found in the report. Check that this date is right.")
+                    }
+                    .font(.footnote)
+                    .foregroundStyle(.statusWarning)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityIdentifier("review-date-missing")
+                } else if isDateToCheck {
+                    HStack(alignment: .firstTextBaseline, spacing: 6) {
+                        Image(systemName: "exclamationmark.magnifyingglass")
+                            .accessibilityHidden(true)
+                        if hasSeveralResultDates {
+                            Text(LabValueRowView.severalDatesExplanation)
+                        } else {
+                            Text("This date may be misread. Check that it matches the report.")
+                        }
+                    }
+                    .font(.footnote)
+                    .foregroundStyle(.statusWarning)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityIdentifier("review-date-to-check")
+                }
+            }
         }
         .listRowBackground(Rectangle().fill(.ultraThinMaterial))
     }
@@ -261,7 +282,12 @@ struct ReviewView: View {
         ForEach(valueGroups, id: \.category) { group in
             Section {
                 ForEach(group.indices, id: \.self) { idx in
-                    LabValueRowView(value: $labValues[idx], isDuplicate: labValues[idx].isDuplicate(in: duplicateLoincCodes))
+                    LabValueRowView(
+                        value: $labValues[idx],
+                        isDuplicate: labValues[idx].isDuplicate(in: duplicateLoincCodes),
+                        isFromSeveralDates: hasSeveralResultDates
+                    )
+                        .id(labValues[idx].id)
                         .listRowBackground(Rectangle().fill(.ultraThinMaterial))
                         .swipeActions(edge: .trailing) {
                             Button(role: .destructive) {
@@ -285,7 +311,7 @@ struct ReviewView: View {
             if group.category == valueGroups.first?.category {
                 Text("Lab Values — tap values to correct them")
                     .font(.footnote)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
                     .textCase(nil)
             }
             CategorySectionHeader(category: group.category, count: group.indices.count)
@@ -301,10 +327,9 @@ struct ReviewView: View {
 
     @ViewBuilder
     var unsupportedSection: some View {
-        if !unsupportedValues.isEmpty {
-            UnsupportedValuesSection(values: unsupportedValues) { value in
-                labValues.removeAll { $0.id == value.id }
-            }
+        let indices = unsupportedIndices
+        if !indices.isEmpty {
+            UnsupportedValuesSection(labValues: $labValues, indices: indices)
         }
     }
 }
@@ -350,12 +375,14 @@ private extension ReviewView {
         .foregroundStyle(Color.accentColor)
     }
 
-    var bottomButtons: some View {
+    func bottomButtons(isPinned: Bool = true) -> some View {
         ReviewActionBar(
-            isEnabled: exportableCount > 0 && duplicateLoincCodes.isEmpty,
+            isEnabled: exportableCount > 0 && duplicateLoincCodes.isEmpty && labValues.valuesToCorrectCount() == 0 && !saving.isSaving,
             hasDuplicates: !duplicateLoincCodes.isEmpty,
-            onSave: { Task { await performCDAImport() } },
-            onShare: { shareCDA() }
+            valuesToCorrect: labValues.valuesToCorrectCount(),
+            onSave: { request(.save) },
+            onShare: { request(.share) },
+            isPinned: isPinned
         )
     }
 
@@ -383,12 +410,17 @@ private extension ReviewView {
         return pasteboard.hasImages || pasteboard.hasStrings
     }
 
-    func attemptClose() { if hasEdits { showDiscardAlert = true } else { dismiss() } }
+    /// Not while a save runs: it would finish anyway, after Discard said nothing was saved.
+    func attemptClose() {
+        guard !saving.isSaving else { return }
+        if hasEdits { showDiscardAlert = true } else { dismiss() }
+    }
 
-    /// Whether the report date or any lab value differs from what the sheet opened with — drives the discard
-    /// confirmation. Patient/author/biometrics live in `@AppStorage` and persist, so they aren't discardable edits.
+    /// Whether the report date, its names or any lab value differs from what the sheet opened with — drives the
+    /// discard confirmation. Birthday and gender live in `@AppStorage` and persist, so they aren't discardable edits.
     var hasEdits: Bool {
         guard reportDate == initialReportDate,
+              names == initialNames,
               labValues.count == initialLabValues.count else { return true }
         return zip(labValues, initialLabValues).contains { !$0.matchesSavedData(of: $1) }
     }
@@ -400,42 +432,10 @@ private extension ReviewView {
         }
     }
 
-    /// When editing a saved report, populate the patient/author fields from that report (they otherwise default to
-    /// the global `@AppStorage` values, hiding/overwriting the report's own). Runs once; new reports keep the defaults.
-    func seedMetadataFromReport() {
-        guard !didSeedMetadata else { return }
-        didSeedMetadata = true
-        guard let report = replacingReport else { return }
-        if !report.patientName.isEmpty { patientName = report.patientName }
-        if !report.authorName.isEmpty { authorName = report.authorName }
-    }
-
-    var birthdateBinding: Binding<Date> {
-        Binding(
-            get: { Date(timeIntervalSinceReferenceDate: birthdateInterval) },
-            set: { birthdateInterval = $0.timeIntervalSinceReferenceDate }
-        )
-    }
-
-    var hkBirthdateDiffers: Bool {
-        guard let hkDob = hkBirthdate else { return false }
-        guard birthdateInterval != 0 else { return true }
-        let stored = Date(timeIntervalSinceReferenceDate: birthdateInterval)
-        return !Calendar.current.isDate(stored, inSameDayAs: hkDob)
-    }
-
-    func hkSexName(_ raw: Int) -> String {
-        switch raw {
-        case 1: return String(localized: "Female")
-        case 2: return String(localized: "Male")
-        case 3: return String(localized: "Other")
-        default: return "–"
-        }
-    }
-
     func loadHKCharacteristics() async {
-        guard !ScreenshotMode.isActive,
-              let chars = try? await HealthKitService.shared.readPatientCharacteristics() else { return }
+        guard !ScreenshotMode.isActive else { return }
+        // Only a suggestion beside the fields: when Health doesn't answer, Review offers none and the user types them.
+        guard let chars = try? await HealthKitService.shared.readPatientCharacteristics() else { return }
         hkBirthdate = chars.dateOfBirth
         hkSex = chars.biologicalSexRaw
     }
@@ -445,41 +445,47 @@ private extension ReviewView {
             cdaShareURL = try cdaService.exportToTempFile(
                 labValues: labValues,
                 date: reportDate,
-                patientName: patientName,
-                authorName: authorName
+                patientName: names.patient,
+                authorName: names.author
             )
         } catch {
             cdaError = error.localizedDescription
         }
     }
 
-    func performCDAImport() async {
-        guard exportableCount > 0 else {
-            cdaError = CDAExportError.noExportableValues.errorDescription
-            return
+    /// Saves or shares the report file, or first asks when a value is flagged "Compare with report" or would be left out.
+    func request(_ action: SaveConfirmation.Action) {
+        guard !saving.isSaving else { return }
+        if let confirmation = labValues.saveConfirmation(for: action) {
+            saveConfirmation = confirmation
+        } else {
+            perform(action)
         }
-        let xml = cdaService.generateCDA(
-            labValues: labValues,
-            date: reportDate,
-            patientName: patientName,
-            authorName: authorName
-        )
-        // Save first so a failure here never loses data (the old version stays intact).
+    }
+
+    func perform(_ action: SaveConfirmation.Action) {
+        switch action {
+        case .save: saving.start { await performCDAImport() }
+        case .share: shareCDA()
+        }
+    }
+
+    /// `ReportWriter` saves first and removes a replaced version only then, so a failure never loses a report.
+    func performCDAImport() async {
+        let outcome: ReportWriter.SaveOutcome
         do {
-            try await HealthKitService.shared.importCDADocument(xml, date: reportDate)
+            outcome = try await ReportWriter(store: ScreenshotMode.reportStore ?? HealthKitService.shared).save(
+                labValues, date: reportDate, patientName: names.patient, authorName: names.author, replacing: replacingReport
+            )
         } catch {
             cdaError = error.localizedDescription
             return
         }
-        // Then remove the replaced document; a failed delete would leave a duplicate.
-        if let old = replacingReport {
-            do {
-                try await HealthKitService.shared.deleteCDADocument(id: old.id)
-            } catch {
-                replaceWarning = String(localized:
-                    "The updated report was saved, but the previous version couldn't be removed from Apple Health. You can delete it from the Reports list.")
-                return
-            }
+        names.rememberForNextReport(replacing: replacingReport)
+        if outcome == .savedOldVersionLeft {
+            replaceWarning = String(localized:
+                "The updated report was saved, but the previous version couldn't be removed from Apple Health. You can delete it from the Reports list.")
+            return
         }
         finishSave()
     }

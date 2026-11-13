@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.concurrent.thread
-import java.util.Locale
 
 /** Owns the process-wide [AppContainer] (the app; a test application in UI tests). */
 interface AppContainerOwner {
@@ -79,7 +78,7 @@ class LabImporterApplication : Application(), AppContainerOwner {
         thread(name = "loinc-install") {
             LabCore.start(
                 databasePath = installLoincDatabase(this).absolutePath,
-                appLanguage = Locale.getDefault().toLanguageTag(),
+                appLanguage = appLanguage(resources.configuration.locales),
                 preferences = { preferences.displayPreferences.value },
             )
             catalogReady.value = true

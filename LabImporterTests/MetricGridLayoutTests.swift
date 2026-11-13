@@ -3,6 +3,13 @@ import Testing
 @testable import LabImporter
 
 struct MetricGridLayoutTests {
+    @Test("The largest text gets one column, on a phone and in an iPad's window; only a wide window keeps two")
+    func accessibilityTextTakesTheWholeWidth() {
+        #expect(MetricGridLayout(width: 370).columns(isRegularWidth: false, metricCount: 6, isAccessibilityText: true).count == 1)
+        #expect(MetricGridLayout(width: 660).columns(isRegularWidth: true, metricCount: 6, isAccessibilityText: true).count == 1)
+        #expect(MetricGridLayout(width: 1100).columns(isRegularWidth: true, metricCount: 6, isAccessibilityText: true).count > 1)
+    }
+
     private func widths(_ columns: [GridItem]) -> [CGFloat] {
         columns.compactMap { if case .fixed(let width) = $0.size { width } else { nil } }
     }
@@ -54,6 +61,10 @@ struct ReviewPaneGeometryTests {
         // The Review sheet on an unfolded Duo: 650 pt wide, the fold in its middle.
         let split = try #require(ReviewPaneGeometry(width: 650, fold: 305...345).split)
         #expect(split == ReviewPaneGeometry.Split(leading: 305, gap: 40, trailing: 305))
+        #expect(!split.valuesLead, "An even fold keeps the values after the summary")
+        // The values take the wider pane, wherever the fold falls.
+        #expect(try #require(ReviewPaneGeometry(width: 800, fold: 420...460).split).valuesLead)
+        #expect(try !#require(ReviewPaneGeometry(width: 800, fold: 340...380).split).valuesLead)
         // No fold, a fold outside the view, or too little room on one side: one list.
         #expect(ReviewPaneGeometry(width: 650).split == nil)
         #expect(ReviewPaneGeometry(width: 339, fold: -56...(-16)).split == nil)

@@ -10,6 +10,7 @@ import dev.idoodler.labimporter.core.model.duplicateLoincCodes
 import dev.idoodler.labimporter.core.parse.AiLabEntry
 import dev.idoodler.labimporter.core.parse.AiLabReport
 import dev.idoodler.labimporter.core.parse.LabParsePipeline
+import kotlinx.datetime.LocalDate
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -121,6 +122,35 @@ class CatalogTest {
         val (tsh, suggested) = LabParsePipeline.resolveLoinc("TSH", "", "de")
         assertTrue(suggested)
         assertEquals("3016-3", tsh)
+    }
+
+    @Test
+    fun aNameOfOneMemberNeverLandsOnAMix() {
+        val loinc = LabCore.loinc!!
+        // A urine strip's "Eiweiß" once became the food allergen mix "(Arachis hypogaea+Kuhmilch+Eiweiß+…) IgE".
+        val (strip, _) = LabParsePipeline.resolveLoinc("", "Eiweiß", "de", "", "positiv (+)")
+        assertFalse('+' in loinc.detail(strip)?.component.orEmpty(), "Eiweiß → $strip")
+        // Nothing else fits a strip's protein in words: it stays for the user to place.
+        assertEquals("" to false, LabParsePipeline.resolveLoinc("", "Eiweiß", "de", "", "positiv (+)"))
+        // The mix itself is still found by its own code…
+        assertEquals("30187-9" to true, LabParsePipeline.resolveLoinc("fx5", "fx5", "de", "kU/l", "0,52"))
+        assertEquals("23801-4" to true, LabParsePipeline.resolveLoinc("fx5", "fx5", "de", "", "positiv"))
+        // …a single allergen as before.
+        assertEquals("6106-9" to true, LabParsePipeline.resolveLoinc("", "Eiweiß IgE-Antikörper [Einheiten/Volumen] in Serum", "de", "kU/l", "0,52"))
+        assertEquals("6106-9" to true, LabParsePipeline.resolveLoinc("f1", "Eiweiß IgE", "de", "kU/l", "0,52"))
+    }
+
+    @Test
+    fun aPlusOutsideAnAllergenMixIsNoMix() {
+        // Cell phenotypes ("Cells.CD3+CD4+") name one marker each, not a mix.
+        assertEquals("24467-3" to true, LabParsePipeline.resolveLoinc("", "CD4", "de", "/µl", "450"))
+        assertEquals("8123-2" to true, LabParsePipeline.resolveLoinc("", "CD4", "de", "%", "42"))
+        assertEquals("14135-8" to true, LabParsePipeline.resolveLoinc("", "CD8", "de", "/µl", "380"))
+        // QuantiFERON's "…release by CD4+ T-cells".
+        assertEquals(
+            "46217-6" to true,
+            LabParsePipeline.resolveLoinc("", "M. tuberculosis stim IFN-g by CD4+ T-cells", "en", "IU/ml", "0.12"),
+        )
     }
 
     @Test
@@ -277,6 +307,33 @@ class CatalogTest {
         assertEquals("Negative", LabParsePipeline.valueWithoutFlag("In Range· Negative"))
         val report = AiLabReport(listOf(AiLabEntry("DHEA-S", "DHEA Sulfate", "In Range· 211", "mcg/dL")), reportLanguage = "en")
         assertEquals(211.0, LabParsePipeline.postProcess(report, "").values.single().numericValue)
+        // From mutation testing: a middle dot between digits is a decimal point (5·1 is 5.1), never a label.
+        assertEquals("5·1", LabParsePipeline.valueWithoutFlag("5·1"))
+    }
+
+    /** From mutation testing (tools/quality/mutation.sh): rules whose opposite the other tests let through. */
+    @Test
+    fun aRowWithoutANameOrCodeIsDroppedAndBlankNamesAreNoNames() {
+        val report = AiLabReport(
+            listOf(
+                AiLabEntry("", "", "5,1", "mmol/l"),
+                AiLabEntry("", "Kalium", "4,1", "mmol/l"),
+                AiLabEntry("2160-0", "", "0,8", "mg/dl"),
+            ),
+            reportLanguage = "de", patientName = "  ", authorName = "  ",
+        )
+        val result = LabParsePipeline.postProcess(report, "Kalium 4,1 mmol/l\nKreatinin 0,8 mg/dl")
+        assertEquals(listOf(4.1, 0.8), result.values.map { it.numericValue })
+        assertNull(result.patientName)
+        assertNull(result.authorName)
+        val named = LabParsePipeline.postProcess(report.copy(patientName = " Max ", authorName = " Labor "), "")
+        assertEquals("Max" to "Labor", named.patientName to named.authorName)
+    }
+
+    @Test
+    fun anImpossibleDateInTheTextIsNoDate() {
+        assertEquals(emptySet(), LabParsePipeline.printedDates("Datum 2026-13-45, Befund 31.02.2026"))
+        assertEquals(setOf(LocalDate(2026, 5, 6)), LabParsePipeline.printedDates("Datum 2026-05-06"))
     }
 
     @Test

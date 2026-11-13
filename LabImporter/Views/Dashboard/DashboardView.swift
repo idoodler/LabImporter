@@ -1,6 +1,5 @@
 import LabImporterCore
 import SwiftUI
-import Charts
 
 // MARK: - Dashboard
 
@@ -22,11 +21,15 @@ struct DashboardView: View {
     /// survives a layout swap). `nil` falls back to a local sheet, e.g. in
     /// previews.
     var onShowSettings: (() -> Void)?
+    /// What the last read of Apple Health couldn't show.
+    var status = ReportLoadStatus()
+    var onTryLoadingAgain: () -> Void = {}
 
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
     @AppStorage("patientName") private var patientName: String = ""
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var showSettings = false
     @State private var showHistorySheet = false
     @State private var trendSheet: TrendSheet?
@@ -45,6 +48,7 @@ struct DashboardView: View {
         let content = Content(reports: reports, prefs: prefs)
         ScrollView {
             VStack(spacing: 20) {
+                ReportStatusCards(status: status, onTryAgain: onTryLoadingAgain)
                 greeting
                 if let onlyMetric = content.soleMetric {
                     heroCard(for: onlyMetric)
@@ -81,6 +85,7 @@ struct DashboardView: View {
                     } label: {
                         Image(systemName: "gearshape")
                     }
+                    .accessibilityLabel("Settings")
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     importMenu
@@ -189,12 +194,16 @@ struct DashboardView: View {
                 .font(.subheadline.weight(.semibold))
             Spacer()
         }
-        .foregroundStyle(.secondary)
+        .foregroundStyle(.textSecondary)
         .padding(.horizontal, 2)
     }
 
     private func gridColumns(count: Int) -> [GridItem] {
-        gridLayout.columns(isRegularWidth: horizontalSizeClass == .regular, metricCount: count)
+        gridLayout.columns(
+            isRegularWidth: horizontalSizeClass == .regular,
+            metricCount: count,
+            isAccessibilityText: dynamicTypeSize.isAccessibilitySize
+        )
     }
 
     @ViewBuilder
@@ -233,14 +242,14 @@ struct DashboardView: View {
     private var fewValuesHint: some View {
         VStack(spacing: 14) {
             Image(systemName: "chart.line.uptrend.xyaxis")
-                .font(.system(size: 32))
+                .decorativeIcon(size: 32)
                 .foregroundStyle(LabCategory.endocrine.color.gradient)
             VStack(spacing: 6) {
                 Text("Track Your Trends")
                     .font(.headline)
                 Text("Import reports with numeric lab values to see trends.")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -251,6 +260,7 @@ struct DashboardView: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
+            .tint(.prominentFill)
             .controlSize(.large)
         }
         .padding(24)
@@ -266,7 +276,7 @@ struct DashboardView: View {
         if let date = reports.max(by: { $0.date < $1.date })?.date {
             Text("Last updated \(date.formatted(date: .abbreviated, time: .omitted))")
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.textSecondary)
         }
     }
 

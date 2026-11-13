@@ -1,5 +1,7 @@
 package dev.idoodler.labimporter.ui.history
 
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.foundation.layout.FlowRow
 import androidx.activity.compose.BackHandler
 import androidx.compose.material.icons.rounded.Checklist
 import androidx.compose.material.icons.rounded.Close
@@ -28,9 +30,12 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
@@ -60,10 +65,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.idoodler.labimporter.data.ReportsLoadProblem
 import dev.idoodler.labimporter.R
 import dev.idoodler.labimporter.core.model.LabCategory
 import dev.idoodler.labimporter.core.model.LabReport
 import dev.idoodler.labimporter.ui.components.formatDate
+import dev.idoodler.labimporter.ui.dashboard.LoadProblemActions
+import dev.idoodler.labimporter.ui.dashboard.ReportsLoadFailedCard
+import dev.idoodler.labimporter.ui.dashboard.StoredReportNotices
 import dev.idoodler.labimporter.ui.design.CategoryWash
 import dev.idoodler.labimporter.ui.design.GroupedListItem
 import dev.idoodler.labimporter.ui.design.MorphingShape
@@ -90,6 +99,11 @@ fun HistoryScreen(
     onExportPdf: () -> Unit = {},
     onDeleteReports: (Set<String>) -> Unit = {},
     onSelectionModeChange: (Boolean) -> Unit = {},
+    /** The last load failed, so an empty list doesn't mean there are no reports. */
+    loadProblem: ReportsLoadProblem? = null,
+    loadProblemActions: LoadProblemActions = LoadProblemActions(),
+    /** Saved reports the list can't show. Without them it could look like all there is. */
+    notices: (@Composable () -> Unit)? = null,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     // Selecting several reports to delete (iOS edit mode); Delete All is one tap away.
@@ -165,19 +179,26 @@ fun HistoryScreen(
                 }
             },
         ) { padding ->
+            if (reports.isEmpty() && loadProblem != null) {
+                Box(Modifier.fillMaxSize().padding(padding).padding(20.dp), contentAlignment = Alignment.Center) {
+                    ReportsLoadFailedCard(loadProblem, loadProblemActions, Modifier.widthIn(max = 520.dp))
+                }
+                return@Scaffold
+            }
             if (reports.isEmpty()) {
                 Column(
-                    Modifier.fillMaxSize().padding(padding).padding(32.dp),
+                    Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(32.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
                 ) {
+                    notices?.let { content -> Box(Modifier.widthIn(max = 520.dp)) { content() } }
                     MorphingShape(welcomePalette, 140.dp) {
                         Icon(Icons.Rounded.History, null, Modifier.size(56.dp), tint = Color.White)
                     }
                     Text(stringResource(R.string.history_empty_title), style = MaterialTheme.typography.headlineSmallEmphasized, fontWeight = FontWeight.Bold)
                     Text(
                         stringResource(R.string.history_empty_message), style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center,
                     )
                 }
                 return@Scaffold
@@ -186,6 +207,12 @@ fun HistoryScreen(
                 contentPadding = readableListPadding(top = padding.calculateTopPadding(), bottom = 112.dp),
                 modifier = Modifier.fillMaxSize(),
             ) {
+                if (loadProblem != null) {
+                    item(key = "loadFailed") { ReportsLoadFailedCard(loadProblem, loadProblemActions, Modifier.padding(bottom = 12.dp)) }
+                }
+                notices?.let { content ->
+                    item(key = "notices") { Box(Modifier.padding(bottom = 12.dp)) { content() } }
+                }
                 item(key = "summary") { SummaryCard(reports, allCategories.distinct().size) }
                 byYear.forEach { (year, items) ->
                     item(key = "y$year") { SectionTitle(year.toString()) }
@@ -213,7 +240,12 @@ fun HistoryScreen(
             onDismissRequest = { pendingDelete = emptyList() },
             icon = { Icon(Icons.Rounded.Delete, null) },
             title = { Text(stringResource(if (count == 1) R.string.delete_report_title else R.string.delete_reports_title)) },
-            text = { Text(pluralStringResource(R.plurals.delete_reports_message, count, count)) },
+            text = {
+                val removed = pluralStringResource(R.plurals.delete_reports_message, count, count)
+                // Values the list can't show go too, and the confirmation says so.
+                val unread = reports.filter { it.id in pendingDelete }.sumOf { it.unreadValues }
+                Text(if (unread > 0) removed + "\n\n" + stringResource(R.string.delete_unread_values, unread) else removed)
+            },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -243,7 +275,7 @@ private fun SummaryCard(reports: List<LabReport>, categories: Int) {
             ).padding(vertical = 20.dp, horizontal = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+            FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterHorizontally)) {
                 StatTile(reports.size.toString(), stringResource(R.string.stat_reports))
                 StatTile(reports.sumOf { it.entries.size }.toString(), stringResource(R.string.stat_values))
                 StatTile(categories.toString(), stringResource(R.string.stat_categories))
@@ -279,7 +311,7 @@ private fun ReportRow(report: LabReport, index: Int, count: Int, onClick: () -> 
         supporting = {
             Column {
                 val who = listOf(report.patientName, report.authorName).filter { it.isNotBlank() }.joinToString(" · ")
-                if (who.isNotEmpty()) Text(who, maxLines = 1)
+                if (who.isNotEmpty()) Text(who)
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 4.dp)) {
                     DotStack(dominantColors(categories, 5))
                     Spacer(Modifier.width(8.dp))
@@ -330,6 +362,42 @@ private fun HistorySinglePreview() {
 @Composable
 private fun HistoryEmptyPreview() {
     LabImporterTheme(dynamicColor = false) { HistoryScreen(emptyList(), {}, onBack = {}) }
+}
+
+@Preview(name = "Reports the list can't show", widthDp = 400, heightDp = 800)
+@Composable
+private fun HistoryNoticesPreview() {
+    LabImporterTheme(dynamicColor = false) { HistoryScreen(PreviewSamples.reports, {}, onBack = {}, notices = { StoredReportNotices(2, 1) }) }
+}
+
+@Preview(name = "None readable, update needed", widthDp = 400, heightDp = 800)
+@Composable
+private fun HistoryOnlyNewerPreview() {
+    LabImporterTheme(dynamicColor = false) { HistoryScreen(emptyList(), {}, onBack = {}, notices = { StoredReportNotices(2, 0) }) }
+}
+
+@Preview(name = "None readable, update needed – dark", widthDp = 400, heightDp = 800, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun HistoryOnlyNewerDarkPreview() {
+    LabImporterTheme(darkTheme = true, dynamicColor = false) { HistoryScreen(emptyList(), {}, onBack = {}, notices = { StoredReportNotices(1, 1) }) }
+}
+
+@Preview(name = "Load failed", widthDp = 400, heightDp = 800)
+@Composable
+private fun HistoryLoadFailedPreview() {
+    LabImporterTheme(dynamicColor = false) { HistoryScreen(emptyList(), {}, onBack = {}, loadProblem = ReportsLoadProblem.READ_FAILED) }
+}
+
+@Preview(name = "Load failed – dark", widthDp = 400, heightDp = 800, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun HistoryLoadFailedDarkPreview() {
+    LabImporterTheme(darkTheme = true, dynamicColor = false) { HistoryScreen(emptyList(), {}, onBack = {}, loadProblem = ReportsLoadProblem.READ_FAILED) }
+}
+
+@Preview(name = "Populated – load failed", widthDp = 400, heightDp = 800)
+@Composable
+private fun HistoryStaleReportsPreview() {
+    LabImporterTheme(dynamicColor = false) { HistoryScreen(PreviewSamples.reports, {}, onBack = {}, loadProblem = ReportsLoadProblem.READ_FAILED) }
 }
 
 @Preview(name = "Rail section root (tablet)", widthDp = 840, heightDp = 800)

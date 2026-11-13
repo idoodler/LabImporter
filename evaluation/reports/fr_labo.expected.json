@@ -1,0 +1,16 @@
+{
+  "reportDate": "2026-02-07",
+  "patientName": "Julien Moreau",
+  "values": [
+    {"names": ["Créatinine", "Creatinine"], "value": 82, "unit": "µmol/L", "loinc": "14682-9"},
+    {"names": ["Glyc", "Glucose"], "value": 5.1, "unit": "mmol/L"},
+    {"names": ["ASAT", "AST", "Aspartate"], "value": 24, "unit": "UI/L"},
+    {"names": ["Hémoglobine", "Hemoglobine", "Hemoglobin"], "value": 14.9, "unit": "g/dL", "loinc": "718-7"},
+    {"names": ["Plaquettes", "Plaquette", "Platelets"], "value": 212, "unit": "G/L", "loinc": "777-3"}
+  ],
+  "notNumeric": [
+    {"names": ["CRP", "C réactive", "C-réactive", "C reactive"], "result": "< 1,0"},
+    {"names": ["DFG", "GFR", "filtration"], "result": "> 90"},
+    {"names": ["ALAT", "ALT", "Alanine"], "result": "< 10"}
+  ]
+}

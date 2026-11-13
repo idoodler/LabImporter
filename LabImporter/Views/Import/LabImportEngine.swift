@@ -58,7 +58,10 @@ final class LabImportEngine {
 
     private let ocrService = OCRService()
     private let parserService = LabParserService()
-    private var importTask: Task<Void, Never>?
+    private(set) var importTask: Task<Void, Never>?
+    /// Which import owns the HUD. A cancelled one finishes in its own time, maybe
+    /// after the next has started, and must leave that one's HUD alone.
+    private var currentImport = UUID()
 
     // MARK: - Method entry points
 
@@ -117,7 +120,7 @@ final class LabImportEngine {
 
     /// Runs `operation` as the single current import task, owning the HUD
     /// lifecycle and error reporting. A cancelled import dismisses quietly.
-    private func startImport(
+    func startImport(
         phase: ImportPhase,
         operation: @escaping @MainActor (LabImportEngine) async throws -> Void
     ) {
@@ -127,9 +130,11 @@ final class LabImportEngine {
         ocrProgress = nil
         parseProgress = nil
         isProcessing = true
+        let thisImport = UUID()
+        currentImport = thisImport
         importTask = Task { [weak self] in
             guard let self else { return }
-            defer { isProcessing = false }
+            defer { if currentImport == thisImport { isProcessing = false } }
             do {
                 try await operation(self)
             } catch {
@@ -151,11 +156,13 @@ final class LabImportEngine {
         }
 
         let isPDF = url.pathExtension.lowercased() == "pdf"
+            // No type on record: it's then tried as an image, which reports its own failure below.
             || (try? url.resourceValues(forKeys: [.contentTypeKey]).contentType?.conforms(to: .pdf)) == true
 
         if isPDF {
             let text = try await ocrService.extractText(fromPDFAt: url, onPageProgress: pageProgressHandler)
             try await handleExtractedText(text)
+            // A file that can't be read ends in the "Could not load" message below.
         } else if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
             let text = try await ocrService.extractText(from: [image], onPageProgress: pageProgressHandler)
             try await handleExtractedText(text)
@@ -169,18 +176,26 @@ final class LabImportEngine {
     /// (security-scoped references to the user's own files) are never deleted.
     private func removeInboxCopy(at url: URL) {
         guard url.isFileURL,
+              // No Documents folder means no Inbox copy to remove.
               let inbox = try? FileManager.default.url(
                 for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false
               ).appendingPathComponent("Inbox") else { return }
         guard url.standardizedFileURL.path.hasPrefix(inbox.standardizedFileURL.path) else { return }
+        // The import itself is done. A copy that stays is the system's Inbox folder, inside the app's sandbox.
         try? FileManager.default.removeItem(at: url)
     }
 
-    private func handleExtractedText(_ text: String) async throws {
+    func handleExtractedText(_ text: String) async throws {
+        // Reading ended after a cancel: the HUD may be the next import's by now.
+        try Task.checkCancellation()
         // Text is in hand; the remaining (and longest) work is the AI parse.
         phase = .analyzing
+        let owner = currentImport
         let result = try await parserService.parseLabValues(from: text) { [weak self] progress in
-            Task { @MainActor in self?.parseProgress = progress }
+            Task { @MainActor in
+                guard let self, self.currentImport == owner else { return }
+                self.parseProgress = progress
+            }
         }
         // A late result after the user cancelled must not pop the review sheet.
         try Task.checkCancellation()
@@ -192,10 +207,14 @@ final class LabImportEngine {
         onParsed?(result)
     }
 
-    /// Forwards OCR page progress onto the main actor for the HUD.
-    private var pageProgressHandler: @Sendable (Int, Int) -> Void {
-        { [weak self] page, total in
-            Task { @MainActor in self?.ocrProgress = OCRPageProgress(page: page, total: total) }
+    /// Forwards OCR page progress onto the main actor for the HUD, while this import owns it.
+    var pageProgressHandler: @Sendable (Int, Int) -> Void {
+        let owner = currentImport
+        return { [weak self] page, total in
+            Task { @MainActor in
+                guard let self, self.currentImport == owner else { return }
+                self.ocrProgress = OCRPageProgress(page: page, total: total)
+            }
         }
     }
 
@@ -328,6 +347,7 @@ private struct ProcessingHUDPresenter: UIViewRepresentable {
                 // same transition they animate in with.
                 dismissTask?.cancel()
                 dismissTask = Task { [weak self] in
+                    // Sleep only throws on cancellation, and the check below covers that.
                     try? await Task.sleep(for: .milliseconds(350))
                     guard !Task.isCancelled else { return }
                     self?.tearDownNow()

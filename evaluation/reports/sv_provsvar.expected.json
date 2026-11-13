@@ -1,0 +1,15 @@
+{
+  "reportDate": "2026-04-07",
+  "patientName": "Eva Lindqvist",
+  "values": [
+    {"names": ["Hemoglobin", "Hb"], "value": 138, "unit": "g/L"},
+    {"names": ["LPK", "Leukocyt", "Leukocytes", "White"], "value": 6.9, "unit": "x10^9/L"},
+    {"names": ["Kreatinin", "Creatinine"], "value": 72, "unit": "µmol/L", "loinc": "14682-9"},
+    {"names": ["TSH", "Thyrotropin"], "value": 2.1, "unit": "mIE/L"}
+  ],
+  "notNumeric": [
+    {"names": ["GFR"], "result": ">90"},
+    {"names": ["CRP", "C reactive"], "result": "<5"},
+    {"names": ["Troponin"], "result": "<5"}
+  ]
+}

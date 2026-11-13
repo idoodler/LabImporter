@@ -1,6 +1,7 @@
 // Quality check for on-device models: runs the app's real prompt and the shared
 // post-processing over sample reports with known values, on this computer.
-// Not part of the app or CI (it needs a multi-GB model) — see README.md.
+// Not part of the app. A model run needs a multi-GB model and is done by hand; CI
+// replays the committed replies without one (`--args=replay`) — see README.md.
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
@@ -14,6 +15,7 @@ dependencies {
     implementation(libs.litertlm.jvm)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.core)
+    testImplementation(kotlin("test"))
 }
 
 application {
@@ -26,5 +28,16 @@ tasks.named<JavaExec>("run") {
     workingDir = rootProject.projectDir
     // The LOINC catalog the app ships, built by the Android module.
     systemProperty("eval.verbose", providers.gradleProperty("verbose").getOrElse("false"))
+    // `-Psummary=build/quality/evaluation.json`: the totals as JSON (relative to the repo root).
+    systemProperty("eval.summary", providers.gradleProperty("summary").getOrElse(""))
+    // `-Pheldout=true`: the held-out set (evaluation/heldout), never used to tune the Review check or the LOINC ranking.
+    systemProperty("eval.heldout", providers.gradleProperty("heldout").getOrElse("false"))
+    systemProperty("loinc.db", project(":androidApp").layout.buildDirectory.file("generated/loincAssets/loinc.db").get().asFile.absolutePath)
+}
+
+// The scoring and the planted errors (`./gradlew :evaluation:test`), on the same catalog.
+tasks.test {
+    dependsOn(":androidApp:buildLoincDb")
+    workingDir = rootProject.projectDir
     systemProperty("loinc.db", project(":androidApp").layout.buildDirectory.file("generated/loincAssets/loinc.db").get().asFile.absolutePath)
 }

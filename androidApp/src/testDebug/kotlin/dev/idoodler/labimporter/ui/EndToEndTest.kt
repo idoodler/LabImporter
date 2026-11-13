@@ -3,7 +3,7 @@ package dev.idoodler.labimporter.ui
 import android.content.Context
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.performScrollToNode
@@ -121,7 +121,7 @@ class EndToEndTest {
         assertTrue(compose.onAllNodesWithText("NON-REACTIVE").fetchSemanticsNodes().isNotEmpty())
 
         // The transfer file carries every value and is recognized again.
-        val file = ReportTransfer.export(viewModel.reports.value, "LabImporter test")
+        val file = ReportTransfer.export(viewModel.reports.value, "LabImporter test").contents
         val read = ReportTransfer.read(file) as ReportTransfer.ReadResult.Reports
         assertEquals(saved.entries.map { it.code }.toSet(), read.reports.single().entries.map { it.code }.toSet())
         assertEquals(1, ReportTransfer.plan(viewModel.reports.value, read.reports).alreadyPresent)

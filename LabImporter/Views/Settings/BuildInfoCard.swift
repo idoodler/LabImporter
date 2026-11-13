@@ -67,6 +67,7 @@ extension AppInfo {
     /// stamped when the binary was linked. Used to derive the TestFlight 90-day window.
     private static var buildDate: Date? {
         guard let url = Bundle.main.executableURL,
+              // Build details, not reports: without the date the card leaves the expiry out.
               let values = try? url.resourceValues(forKeys: [.contentModificationDateKey]) else {
             return nil
         }
@@ -79,6 +80,7 @@ extension AppInfo {
     /// App Store / TestFlight builds carry no embedded profile, so this returns `nil`.
     private static func provisioningProfileExpiration() -> Date? {
         guard let url = Bundle.main.url(forResource: "embedded", withExtension: "mobileprovision"),
+              // Build details, not reports: an unreadable profile only leaves its expiry out.
               let data = try? Data(contentsOf: url),
               let raw = String(data: data, encoding: .isoLatin1),
               let start = raw.range(of: "<?xml"),
@@ -87,6 +89,7 @@ extension AppInfo {
         }
         let plistSlice = String(raw[start.lowerBound..<end.upperBound])
         guard let plistData = plistSlice.data(using: .isoLatin1),
+              // Build details, not reports: a profile that doesn't parse only leaves its expiry out.
               let plist = try? PropertyListSerialization.propertyList(from: plistData, format: nil) as? [String: Any] else {
             return nil
         }
@@ -101,6 +104,8 @@ extension AppInfo {
 /// of the review and history headers, and computes everything on device (no
 /// network), matching the app's no-server design.
 struct BuildInfoCard: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     private var displayName: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
             ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String
@@ -115,7 +120,7 @@ struct BuildInfoCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 14) {
+            AdaptiveRow(spacing: 14) {
                 icon
 
                 VStack(alignment: .leading, spacing: 4) {
@@ -123,7 +128,7 @@ struct BuildInfoCard: View {
                         .font(.headline)
                     Text("Version \(AppInfo.version) (\(AppInfo.build))")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.textSecondary)
                     if let expiry = AppInfo.expirationDate {
                         Label {
                             Text("Expires \(expiry.formatted(date: .abbreviated, time: .omitted))")
@@ -131,11 +136,11 @@ struct BuildInfoCard: View {
                             Image(systemName: "calendar.badge.clock")
                         }
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.textSecondary)
                     }
                 }
 
-                Spacer(minLength: 8)
+                if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 8) }
 
                 buildTypeBadge
             }
@@ -157,20 +162,18 @@ struct BuildInfoCard: View {
     /// A compact key/value line for the source strip — a glyph + label on the
     /// left, the monospaced value trailing.
     private func detailRow(_ title: LocalizedStringKey, systemImage: String, value: String) -> some View {
-        HStack(spacing: 8) {
+        AdaptiveRow(spacing: 8) {
             Label {
                 Text(title)
             } icon: {
                 Image(systemName: systemImage)
             }
             .font(.caption)
-            .foregroundStyle(.secondary)
-            Spacer(minLength: 8)
+            .foregroundStyle(.textSecondary)
+            if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 8) }
             Text(value)
                 .font(.caption.monospaced())
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
-                .truncationMode(.middle)
+                .foregroundStyle(.textSecondary)
         }
     }
 
@@ -196,7 +199,7 @@ struct BuildInfoCard: View {
                 .frame(width: 56, height: 56)
                 .overlay(
                     Image(systemName: "cross.case.fill")
-                        .font(.system(size: 24, weight: .semibold))
+                        .decorativeIcon(size: 24, weight: .semibold)
                         .foregroundStyle(.white)
                 )
         }
@@ -204,10 +207,10 @@ struct BuildInfoCard: View {
 
     @ViewBuilder private var buildTypeBadge: some View {
         switch AppInfo.installKind {
-        case .appStore: badge("App Store", color: .blue)
-        case .testFlight: badge("TestFlight", color: .indigo)
-        case .development: badge("Development", color: .orange)
-        case .simulator: badge("Simulator", color: .gray)
+        case .appStore: badge("App Store", color: .statusLow)
+        case .testFlight: badge("TestFlight", color: .statusLow)
+        case .development: badge("Development", color: .statusWarning)
+        case .simulator: badge("Simulator", color: .textSecondary)
         }
     }
 

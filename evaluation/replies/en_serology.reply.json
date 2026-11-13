@@ -1,0 +1,133 @@
+{"entries":
+[
+{"code":
+"HEPATITIS PANEL",
+"name":
+"Hepatitis B Surface Antigen",
+"rawValue":
+"NON-REACTIVE",
+"unit":
+"",
+"reportLanguage":
+"en"
+},
+{"code":
+"Hepatitis C Antibody",
+"name":
+"Hepatitis C Antibody",
+"rawValue":
+"NON-REACTIVE",
+"unit":
+"",
+"reportLanguage":
+"en"
+},
+{"code":
+"ANA Screen, IFA",
+"name":
+"ANA Screen, IFA",
+"rawValue":
+"POSITIVE",
+"unit":
+"A",
+"reportLanguage":
+"en"
+},
+{"code":
+"ANA Titer",
+"name":
+"ANA Titer",
+"rawValue":
+"1:160",
+"unit":
+"",
+"reportLanguage":
+"en"
+},
+{"code":
+"Specific Gravity",
+"name":
+"Specific Gravity",
+"rawValue":
+"1.018",
+"unit":
+"",
+"reportLanguage":
+"en"
+},
+{"code":
+"pH",
+"name":
+"pH",
+"rawValue":
+"6.0",
+"unit":
+"",
+"reportLanguage":
+"en"
+},
+{"code":
+"Protein",
+"name":
+"Protein",
+"rawValue":
+"NEGATIVE",
+"unit":
+"",
+"reportLanguage":
+"en"
+},
+{"code":
+"Glucose",
+"name":
+"Glucose",
+"rawValue":
+"NEGATIVE",
+"unit":
+"",
+"reportLanguage":
+"en"
+},
+{"code":
+"Lead, Blood (Venous)",
+"name":
+"Lead, Blood (Venous)",
+"rawValue":
+"<1.0",
+"unit":
+"mcg/dL",
+"reportLanguage":
+"en"
+},
+{"code":
+"Vitamin B12",
+"name":
+"Vitamin B12",
+"rawValue":
+"512",
+"unit":
+"pg/mL",
+"reportLanguage":
+"en"
+},
+{"code":
+"Ferritin",
+"name":
+"Ferritin",
+"rawValue":
+"86",
+"unit":
+"ng/mL",
+"reportLanguage":
+"en"
+}
+],
+"reportDate":
+"",
+"patientName":
+"Jane Roe",
+"authorName":
+"",
+"reportLanguage":
+"en"
+}

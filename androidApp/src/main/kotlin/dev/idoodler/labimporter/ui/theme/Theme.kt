@@ -19,7 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 // Fallback palette (pre-Android 12, or dynamic colour off) seeded from the app
 // icon's blue card (#2F6BFF) and pink heart (#FF375F).
 private val LightFallback = lightColorScheme(
-    primary = Color(0xFF2559D6),
+    primary = Color(0xFF1F4FC4),
     onPrimary = Color.White,
     primaryContainer = Color(0xFFDBE1FF),
     onPrimaryContainer = Color(0xFF00174B),
@@ -59,7 +59,7 @@ fun LabImporterTheme(
     val context = LocalContext.current
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            (if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)).readableOnTints()
         darkTheme -> DarkFallback
         else -> LightFallback
     }
@@ -73,6 +73,17 @@ fun LabImporterTheme(
         CompositionLocalProvider(LocalContentColor provides colorScheme.onSurface, content = content)
     }
 }
+
+/**
+ * Recent Android draws dynamic secondary text and primary paler than the fallback palette
+ * (light) or dimmer (dark), and on a category-tinted card or wash they fall under 4.5:1.
+ * Moving them toward the main text keeps the wallpaper's hue and only adds contrast, also
+ * against `onPrimary` on a filled button.
+ */
+private fun ColorScheme.readableOnTints(): ColorScheme = copy(
+    onSurfaceVariant = lerp(onSurfaceVariant, onSurface, 0.5f),
+    primary = lerp(primary, onSurface, 0.15f),
+)
 
 /**
  * Category colours are fixed (they encode meaning across both platforms), but

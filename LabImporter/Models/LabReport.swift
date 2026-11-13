@@ -7,6 +7,8 @@ struct LabReport: Codable, Identifiable {
     let patientName: String
     let authorName: String
     let entries: [Entry]
+    /// Values stored with the report that this build couldn't read (LabImporterCore `LabReport.unreadValues`).
+    var unreadValues = 0
 
     struct Entry: Codable, Identifiable {
         let id: UUID
@@ -34,6 +36,25 @@ extension LabReport {
     /// detail screen agree. Shared rule.
     var dominantCategory: LabCategory? {
         shared.dominantCategory.map { LabCategory(sharedName: $0.name) }
+    }
+
+    /// Shown and deleted, never edited or replaced: a new version would lose the values
+    /// this build can't read (LabImporterCore `LabReport.isReadOnly`, the same rule).
+    var isReadOnly: Bool {
+        unreadValues > 0
+    }
+
+    /// Why a read-only report can't be edited, for its detail screen.
+    static func readOnlyExplanation(unreadValues: Int) -> String {
+        String(localized: """
+        This report has values this version of LabImporter can't show: \(unreadValues). \
+        So that they aren't lost, it can't be edited. Updating LabImporter may show them.
+        """)
+    }
+
+    /// Added to a delete confirmation: what goes with the reports that the screen doesn't show.
+    static func deletesUnreadValues(_ unreadValues: Int) -> String {
+        String(localized: "Values this version of LabImporter can't show are deleted too: \(unreadValues).")
     }
 }
 

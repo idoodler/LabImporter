@@ -56,7 +56,7 @@ extension LabValue {
         LabImporterCore.LabValue(
             id: id.uuidString, code: code, name: name, displayValue: displayValue,
             numericValue: numericValue.map { KotlinDouble(double: $0) }, unit: unit,
-            isSelected: isSelected, isSuggestedCode: isSuggestedCode
+            isSelected: isSelected, isSuggestedCode: isSuggestedCode, needsSourceCheck: needsSourceCheck
         )
     }
 
@@ -64,7 +64,7 @@ extension LabValue {
         self.init(
             id: UUID(uuidString: value.id) ?? UUID(), code: value.code, name: value.name,
             displayValue: value.displayValue, numericValue: value.numericValue?.doubleValue, unit: value.unit,
-            isSelected: value.isSelected, isSuggestedCode: value.isSuggestedCode
+            isSelected: value.isSelected, isSuggestedCode: value.isSuggestedCode, needsSourceCheck: value.needsSourceCheck
         )
     }
 }
@@ -89,7 +89,8 @@ extension LabReport {
     var shared: LabImporterCore.LabReport {
         LabImporterCore.LabReport(
             id: id.uuidString, date: date.sharedDate, patientName: patientName,
-            authorName: authorName, entries: entries.map(\.shared)
+            authorName: authorName, entries: entries.map(\.shared),
+            unreadValues: Int32(unreadValues), unreadRecordIds: []
         )
     }
 
@@ -97,7 +98,8 @@ extension LabReport {
         self.init(
             id: UUID(uuidString: report.id) ?? UUID(), date: Date(shared: report.date),
             patientName: report.patientName, authorName: report.authorName,
-            entries: report.entries.map(LabReport.Entry.init(shared:))
+            entries: report.entries.map(LabReport.Entry.init(shared:)),
+            unreadValues: Int(report.unreadValues)
         )
     }
 }

@@ -1,0 +1,16 @@
+{
+  "reportDate": "2026-01-05",
+  "patientName": "de Vries",
+  "values": [
+    {"names": ["Hemoglobine", "Hemoglobin"], "value": 8.4, "unit": "mmol/l"},
+    {"names": ["Leukocyten", "Leukocytes"], "value": 5.8, "unit": "10^9/l", "loinc": "6690-2"},
+    {"names": ["Kreatinine", "Creatinine"], "value": 64, "unit": "µmol/l", "loinc": "14682-9"},
+    {"names": ["Glucose"], "value": 5.3, "unit": "mmol/l"},
+    {"names": ["TSH", "Thyrotropin"], "value": 1.9, "unit": "mU/l", "loinc": "3016-3"}
+  ],
+  "notNumeric": [
+    {"names": ["GFR"], "result": ">90"},
+    {"names": ["CRP", "C reactive"], "result": "<5"},
+    {"names": ["B12", "Cobalamin"], "result": ">1476"}
+  ]
+}

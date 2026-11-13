@@ -5,6 +5,7 @@ import SwiftUI
 /// - Compact widths (iPhone, folded iPhone Duo): two flexible columns, or one
 ///   full-width column when there are only one or two metrics, so a lone card
 ///   isn't stranded in a half-empty row.
+/// - Accessibility text sizes: one column unless the window is very wide.
 /// - Regular widths (iPad, unfolded Duo): as many columns as fit cards of at
 ///   least `minimumCardWidth`, rounded down to an even count and never fewer
 ///   than two, so a column gap — not a card — sits in the middle of the grid.
@@ -24,7 +25,9 @@ struct MetricGridLayout: Equatable {
     /// that fits one smaller card beats an empty strip or a straddled hinge.
     static let minimumCardWidthBesideFold: CGFloat = 150
 
-    func columns(isRegularWidth: Bool, metricCount: Int) -> [GridItem] {
+    func columns(isRegularWidth: Bool, metricCount: Int, isAccessibilityText: Bool = false) -> [GridItem] {
+        // Two columns of the largest text fit a few letters per line, and cut off the values.
+        if isAccessibilityText && width < Self.minimumCardWidth * 2 + Self.spacing + 300 { return [GridItem(.flexible())] }
         guard isRegularWidth else {
             return metricCount <= 2 ? [GridItem(.flexible())] : [GridItem(.flexible()), GridItem(.flexible())]
         }

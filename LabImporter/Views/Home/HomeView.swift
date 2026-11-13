@@ -6,13 +6,15 @@ struct HomeView: View {
     // Report state
     @State private var reports: [LabReport] = []
     @State private var isLoaded = false
+    /// What the last read of Apple Health couldn't show.
+    @State private var loadStatus = ReportLoadStatus()
+    @State private var latestLoad = LatestReportLoad() // Reads overlap (becoming active during a save's reload).
 
     // Import flow state
     @State private var importEngine = LabImportEngine()
-    @State private var labValues: [LabValue] = []
-    @State private var parsedReportDate: Date?
-    @State private var parsedPatientName: String?
-    @State private var parsedAuthorName: String?
+    /// What the last import read, for Review: its values, its date (and whether it may be misread or is
+    /// missing, unlike a manual report's, which has none to find), names, a cumulative report. Nil: a manual report.
+    @State private var parsed: ParseResult?
     @State private var showReview = false
     @State private var clipboardHasContent = false
     /// An "Open With" file that arrived before onboarding was dismissed; held
@@ -96,10 +98,13 @@ struct HomeView: View {
         .sheet(isPresented: $showReview) {
             NavigationStack {
                 ReviewView(
-                    labValues: labValues,
-                    reportDate: parsedReportDate ?? Date(),
-                    extractedPatientName: parsedPatientName,
-                    extractedAuthorName: parsedAuthorName
+                    labValues: parsed?.values ?? [],
+                    reportDate: parsed?.reportDate ?? Date(),
+                    isDateMissing: parsed.map { $0.reportDate == nil } ?? false,
+                    isDateToCheck: parsed?.isReportDateToCheck ?? false,
+                    hasSeveralResultDates: parsed?.hasSeveralResultDates ?? false,
+                    extractedPatientName: parsed?.patientName,
+                    extractedAuthorName: parsed?.authorName
                 )
             }
             .interactiveDismissDisabled()
@@ -205,7 +210,7 @@ struct HomeView: View {
         NavigationStack(path: Binding(get: { selectedSection == .reports ? [SidebarSection.reports] : [] },
                                       set: { selectedSection = $0.last ?? .dashboard })) {
             mainContent(showsLibraryToolbarItems: true)
-                .navigationDestination(for: SidebarSection.self) { _ in HistoryView(initialReports: reports) }
+                .navigationDestination(for: SidebarSection.self) { _ in HistoryView(initialReports: reports, initialStatus: loadStatus) }
         }
         .id(searchPresentation.navResetToken) // re-identified to pop to root on a deep link
         .sheet(isPresented: Binding(get: { selectedSection == .settings },
@@ -247,7 +252,7 @@ struct HomeView: View {
             .id(searchPresentation.navResetToken)
         case .reports:
             NavigationStack {
-                HistoryView(initialReports: reports)
+                HistoryView(initialReports: reports, initialStatus: loadStatus)
             }
             .id(searchPresentation.navResetToken)
         case .settings:
@@ -263,6 +268,13 @@ struct HomeView: View {
         if !isLoaded {
             ProgressView()
                 .scaleEffect(1.4)
+        } else if reports.isEmpty && loadStatus.failed {
+            // Not the landing screen: its invitation to import a first report would say the reports are gone.
+            HomeLoadFailedView(
+                showsSettingsButton: showsLibraryToolbarItems,
+                onTryAgain: { Task { await tryLoadingAgain() } },
+                onShowSettings: { selectedSection = .settings }
+            )
         } else if reports.isEmpty {
             ImportLandingView(
                 onScan: { importEngine.scan() },
@@ -273,7 +285,8 @@ struct HomeView: View {
                 clipboardAvailable: clipboardHasContent,
                 isProcessing: importEngine.isProcessing,
                 showsLibraryToolbarItems: showsLibraryToolbarItems,
-                onShowSettings: { selectedSection = .settings }
+                onShowSettings: { selectedSection = .settings },
+                status: loadStatus
             )
         } else {
             DashboardView(
@@ -286,7 +299,9 @@ struct HomeView: View {
                 clipboardAvailable: clipboardHasContent,
                 isProcessing: importEngine.isProcessing,
                 showsLibraryToolbarItems: showsLibraryToolbarItems,
-                onShowSettings: { selectedSection = .settings }
+                onShowSettings: { selectedSection = .settings },
+                status: loadStatus,
+                onTryLoadingAgain: { Task { await tryLoadingAgain() } }
             )
         }
     }
@@ -352,10 +367,7 @@ struct HomeView: View {
 
     private func configureImportEngine() {
         importEngine.onParsed = { result in
-            labValues = result.values
-            parsedReportDate = result.reportDate
-            parsedPatientName = result.patientName
-            parsedAuthorName = result.authorName
+            parsed = result
             showReview = true
         }
     }
@@ -370,10 +382,7 @@ struct HomeView: View {
     // MARK: - Manual creation
 
     private func createManually() {
-        labValues = []
-        parsedReportDate = nil
-        parsedPatientName = nil
-        parsedAuthorName = nil
+        parsed = nil
         showReview = true
     }
 }
@@ -392,16 +401,33 @@ private extension HomeView {
 
     func loadReports() async {
         guard !ScreenshotMode.isActive else { return }
-        do {
-            reports = try await HealthKitService.shared.loadCDADocuments()
-            // Publish the tracked metrics to Spotlight so they're searchable
-            // system-wide (names only — never a reading).
+        guard let result = await latestLoad.load(from: HealthKitService.shared) else { return } // A newer read's list wins.
+        switch result {
+        case .success(let stored):
+            reports = stored.reports
+            loadStatus = ReportLoadStatus(newerVersion: stored.newerVersion, unreadable: stored.unreadable)
+            // Publish the tracked metrics to Spotlight so they're searchable system-wide (names only — never a reading).
             SpotlightIndexService.shared.reindex(reports: reports)
-        } catch {
-            // Silently ignore authorization errors on first launch before user grants access
+        case .failure:
+            // Keeps what's on screen, and the callers' guard means this isn't the time before access
+            // was asked for: it's a failure to read reports that exist, which must not look like none.
+            loadStatus.failed = true
         }
         isLoaded = true
         flushPendingDeepLink()
+    }
+
+    func tryLoadingAgain() async {
+        #if DEBUG
+        if ScreenshotMode.isActive {
+            ScreenshotMode.retryLoading()
+            (reports, loadStatus) = ScreenshotMode.home
+            return
+        }
+        #endif
+        // Back to the spinner when nothing else is on screen, so a retry that fails again is seen to have run.
+        if reports.isEmpty { isLoaded = false }
+        await loadReportsIfAuthorized()
     }
 
     /// Opens the trend detail for a Spotlight-searched metric. If the app isn't
@@ -429,13 +455,15 @@ private extension HomeView {
 #if DEBUG
 private extension HomeView {
     func setupScreenshotMode() {
-        hasSeenWelcome = true
-        hasAcknowledgedDisclaimer = true
-        hasGrantedHealthAccess = true
-        hasChosenICloudSync = true
-        hasChosenSpotlightSearch = true
-        hasChosenSiriIntelligence = true
-        reports = ScreenshotMode.showsQualitativeSamples ? LabReport.sampleHistoryWithQualitative : LabReport.sampleHistory
+        let steps = ["welcome", "disclaimer", "health", "extras"]
+        let reached = ScreenshotMode.onboardingStep.flatMap(steps.firstIndex(of:)) ?? steps.count
+        hasSeenWelcome = reached > 0
+        hasAcknowledgedDisclaimer = reached > 1
+        hasGrantedHealthAccess = reached > 2
+        hasChosenICloudSync = reached > 3
+        hasChosenSpotlightSearch = reached > 3
+        hasChosenSiriIntelligence = reached > 3
+        (reports, loadStatus) = ScreenshotMode.home
         isLoaded = true
         if ScreenshotMode.importsStandInReport {
             configureImportEngine()
@@ -443,10 +471,10 @@ private extension HomeView {
             return
         }
         if ScreenshotMode.initialScreen == "review" {
-            labValues = LabReport.sampleHistory[0].asLabValues
-            parsedPatientName = LabReport.sampleHistory[0].patientName
-            parsedAuthorName = LabReport.sampleHistory[0].authorName
-            parsedReportDate = LabReport.sampleHistory[0].date
+            let sample = LabReport.sampleHistory[0]
+            parsed = ParseResult(
+                values: sample.asLabValues, reportDate: sample.date, patientName: sample.patientName, authorName: sample.authorName
+            )
             showReview = true
         }
     }

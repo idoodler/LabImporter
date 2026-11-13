@@ -14,6 +14,7 @@ struct StartLabScanIntent: AppIntent {
     /// The app must come to the foreground: scanning needs the camera UI, and
     /// review afterward needs a live screen.
     static let openAppWhenRun: Bool = true
+    // No authentication policy of its own: it speaks no value, and opening the app already needs an unlocked phone.
 
     func perform() async throws -> some IntentResult & ProvidesDialog {
         guard SiriExposurePreferences.current().canStartScan else {

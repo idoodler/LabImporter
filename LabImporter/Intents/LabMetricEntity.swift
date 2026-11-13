@@ -27,8 +27,9 @@ struct LabMetricEntity: AppEntity {
     let id: String
     let name: String
 
+    // The subtitle tells terms apart that share a plain name (mass and moles of one analyte) when Siri asks which one.
     var displayRepresentation: DisplayRepresentation {
-        DisplayRepresentation(title: "\(name)")
+        DisplayRepresentation(title: "\(name)", subtitle: "\(LabMapping.catalogName(for: id))")
     }
 }
 
@@ -53,9 +54,16 @@ struct LabMetricEntityQuery: EntityStringQuery {
     /// `AskLabValueIntent` answering in place). Same case/diacritic-insensitive
     /// substring match as `MetricSearchResultsView`, scoped to exposed codes.
     func entities(matching string: String) async throws -> [LabMetricEntity] {
-        let prefs = SiriExposurePreferences.current()
+        try await Self.entities(matching: string, prefs: SiriExposurePreferences.current(), store: HealthKitService.shared)
+    }
+
+    /// `entities(matching:)` for given preferences and store. Throws `SiriHealthRead.Failure` when
+    /// Apple Health can't be read: an empty list would say no value matches.
+    static func entities(
+        matching string: String, prefs: SiriExposurePreferences, store: any ReportDocumentStore
+    ) async throws -> [LabMetricEntity] {
         guard prefs.isEnabled else { return [] }
-        let reports = (try? await HealthKitService.shared.loadCDADocuments()) ?? []
+        let reports = try await SiriHealthRead.reports(from: store)
         let needle = string.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
         return reports.distinctNumericCodes
             .filter(prefs.isValueExposed)
@@ -71,16 +79,29 @@ struct LabMetricEntityQuery: EntityStringQuery {
     /// every knowledge-indexed metric the user actually has data for —
     /// every tracked code while `allowAllValues` is on, else just `allowedCodes`.
     func suggestedEntities() async throws -> [LabMetricEntity] {
-        let prefs = SiriExposurePreferences.current()
+        try await Self.suggestedEntities(
+            prefs: SiriExposurePreferences.current(), store: HealthKitService.shared, onScreen: SiriOnScreenContext.shared.visibleCodes
+        )
+    }
+
+    /// `suggestedEntities()` for given preferences, store and on-screen values. Throws
+    /// `SiriHealthRead.Failure` when Apple Health can't be read and nothing is on screen: no suggestions would say there are no values.
+    static func suggestedEntities(
+        prefs: SiriExposurePreferences, store: any ReportDocumentStore, onScreen: [String]
+    ) async throws -> [LabMetricEntity] {
         guard prefs.isEnabled else { return [] }
 
         var codes: [String] = []
         if prefs.allowOnScreenAwareness {
-            codes += SiriOnScreenContext.shared.visibleCodes.filter(prefs.isValueExposed)
+            codes += onScreen.filter(prefs.isValueExposed)
         }
         if prefs.allowKnowledgeIndexing {
-            let reports = (try? await HealthKitService.shared.loadCDADocuments()) ?? []
-            codes += reports.distinctNumericCodes.filter(prefs.isKnowledgeIndexed)
+            do {
+                let reports = try await SiriHealthRead.reports(from: store)
+                codes += reports.distinctNumericCodes.filter(prefs.isKnowledgeIndexed)
+            } catch where !codes.isEmpty {
+                // The values on screen need no read: they're still suggested, the saved ones aren't.
+            }
         }
 
         var seen = Set<String>()

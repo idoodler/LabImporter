@@ -148,6 +148,7 @@ actor OCRService {
     /// codes the current Vision revision can actually recognize so we never pass
     /// an unsupported code; falls back to English if Vision reports nothing.
     private static func recognitionLanguages(for request: VNRecognizeTextRequest) -> [String] {
+        // Vision can't say what it reads: English below is what every revision does.
         let supported = (try? request.supportedRecognitionLanguages()) ?? []
         guard !supported.isEmpty else { return ["en-US"] }
 

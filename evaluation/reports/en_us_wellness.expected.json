@@ -1,0 +1,17 @@
+{
+  "reportDate": "2026-11-04",
+  "patientName": "Robert Miles",
+  "values": [
+    {"names": ["Glucose"], "value": 104, "unit": "mg/dL"},
+    {"names": ["Cholesterol, Total", "Cholesterol"], "value": 182, "unit": "mg/dL", "loinc": "2093-3"},
+    {"names": ["LDL"], "value": 100, "unit": "mg/dL"},
+    {"names": ["HDL"], "value": 44, "unit": "mg/dL", "loinc": "2085-9"},
+    {"names": ["Triglycerides", "Triglyceride"], "value": 190, "unit": "mg/dL", "loinc": "2571-8"},
+    {"names": ["TSH", "Thyrotropin"], "value": 2.84, "unit": "mIU/L", "loinc": "3016-3"}
+  ],
+  "notNumeric": [
+    {"names": ["PSA", "Prostate"], "result": "<0.1"},
+    {"names": ["Troponin"], "result": "<3"},
+    {"names": ["Vitamin D", "25-Hydroxy", "25(OH)", "Calcidiol"], "result": ">150"}
+  ]
+}

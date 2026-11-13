@@ -13,7 +13,19 @@ data class LabReport(
     val patientName: String,
     val authorName: String,
     val entries: List<Entry>,
+    /**
+     * Values stored with this report that this build couldn't read, so [entries] isn't all of it
+     * (a later version wrote something this one doesn't know, or a value is damaged). Saving the
+     * report again would drop them for good, so it's [isReadOnly].
+     */
+    val unreadValues: Int = 0,
+    /** The stored records of [unreadValues] that have an id (Health Connect), so deleting the report removes them too. */
+    val unreadRecordIds: List<String> = emptyList(),
 ) {
+    /** Shown and deleted, never edited or replaced: a new version would lose the [unreadValues]. */
+    val isReadOnly: Boolean
+        get() = unreadValues > 0
+
     @Serializable
     data class Entry(
         val id: String,
@@ -25,6 +37,10 @@ data class LabReport(
     ) {
         val resolvedName: String
             get() = LabMapping.displayName(code).let { if (it == code) name else it }
+
+        /** Whether there is a result to store: a number or a qualitative result. */
+        val hasResult: Boolean
+            get() = numericValue != null || QualitativeResult.of(displayValue) != null
     }
 
     /** Bridges to editable values for the review flow. */
@@ -57,7 +73,7 @@ data class LabReport(
                 val loinc = LabMapping.loincCode(it.code)!!.loinc
                 Entry(
                     id = it.id, code = loinc, name = it.name,
-                    displayValue = it.numericValue?.let(NumberFormatting::cdaValue) ?: it.qualitativeResult!!,
+                    displayValue = it.numericValue?.let(NumberFormatting::exactValue) ?: it.qualitativeResult!!,
                     numericValue = it.numericValue, unit = it.unit.trim(),
                 )
             },

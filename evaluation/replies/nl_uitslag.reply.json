@@ -1,0 +1,84 @@
+{"entries":
+[
+{"code":
+"Hemoglobine",
+"name":
+"Hemoglobine",
+"rawValue":
+"8,4",
+"unit":
+"mmol/l"
+},
+{"code":
+"Leukocyten",
+"name":
+"Leukocyten",
+"rawValue":
+"5,8",
+"unit":
+"10^9/l"
+},
+{"code":
+"Kreatinine",
+"name":
+"Kreatinine",
+"rawValue":
+"64",
+"unit":
+"µmol/l"
+},
+{"code":
+"eGFR CKD-EPI",
+"name":
+"glomeruläre Filtrationsrate (eGFR CKD-EPI)",
+"rawValue":
+">90",
+"unit":
+"ml/min/1.73m2"
+},
+{"code":
+"CRP",
+"name":
+"CRP",
+"rawValue":
+"<5",
+"unit":
+"mg/l"
+},
+{"code":
+"Glucose (nuchter)",
+"name":
+"Glucose (nuchter)",
+"rawValue":
+"5,3",
+"unit":
+"mmol/l"
+},
+{"code":
+"TSH",
+"name":
+"Thyreotropin",
+"rawValue":
+"1,9",
+"unit":
+"mU/l"
+},
+{"code":
+"Vitamine B12",
+"name":
+"Vitamine B12",
+"rawValue":
+">1476",
+"unit":
+"pmol/l"
+}
+],
+"reportDate":
+"1990-08-11",
+"patientName":
+"mw. S. de Vries",
+"authorName":
+"Huisartsenlaboratorium Noord - Uitslagen",
+"reportLanguage":
+"nl"
+}

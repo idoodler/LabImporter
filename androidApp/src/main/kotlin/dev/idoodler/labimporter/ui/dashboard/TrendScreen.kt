@@ -55,11 +55,13 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import dev.idoodler.labimporter.R
 import dev.idoodler.labimporter.core.LabCore
+import dev.idoodler.labimporter.core.model.ChartAxis
 import dev.idoodler.labimporter.core.model.LabDisplayPreferences
 import dev.idoodler.labimporter.core.model.LabMapping
 import dev.idoodler.labimporter.core.model.LabReport
 import dev.idoodler.labimporter.core.model.Metric
 import dev.idoodler.labimporter.core.model.MetricPoint
+import dev.idoodler.labimporter.core.model.RangeStatus
 import dev.idoodler.labimporter.core.model.ReferenceRange
 import dev.idoodler.labimporter.core.model.Dashboard
 import dev.idoodler.labimporter.core.model.TrendWindow
@@ -120,7 +122,7 @@ fun TrendScreen(
     var menu by remember { mutableStateOf(false) }
     var renaming by remember { mutableStateOf(false) }
     var editingRange by remember { mutableStateOf(false) }
-    var window by rememberSaveable { mutableStateOf(TrendWindow.ALL) }
+    var window by rememberSaveable { mutableStateOf(Dashboard.openingTrendWindow) }
     var selected by remember { mutableStateOf<Int?>(null) }
     val pinned = code in preferences.pinnedSet
     val range = preferences.referenceRange(code)
@@ -233,13 +235,16 @@ fun TrendScreen(
                                 WindowPicker(window) { window = it; selected = null }
                             }
                             AreaChart(
-                                values, color, Modifier.fillMaxWidth().height(240.dp).padding(top = 16.dp),
+                                points, color, Modifier.fillMaxWidth().height(240.dp).padding(top = 16.dp),
                                 range = range, yLabels = true,
-                                xLabels = if (points.size > 1) formatDate(points.first().date, FormatStyle.MEDIUM) to formatDate(points.last().date, FormatStyle.MEDIUM) else null,
+                                xLabels = ChartAxis.scale(points)?.xLabels?.takeIf { it.size == 2 }?.let { (start, end) ->
+                                    formatDate(start, FormatStyle.MEDIUM) to formatDate(end, FormatStyle.MEDIUM)
+                                },
                                 selectedIndex = selected,
                                 onSelect = { selected = it },
                                 formatValue = ::formatNumber,
                                 description = chartDescription(metric.name, points),
+                                readingLabels = points.map { readingLabel(it, range) },
                             )
                             if (values.size > 1) {
                                 Row(Modifier.fillMaxWidth().padding(top = 16.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -253,8 +258,9 @@ fun TrendScreen(
                 }
                 term?.let { term ->
                     item(key = "about") {
-                        // The value's LOINC description, opening the full details (iOS ValueDescriptionCard).
-                        val description = term.description?.takeIf { it.isNotBlank() } ?: term.englishName.takeIf { it != term.name }
+                        // The full catalog label in the app's language, opening the full details (iOS ValueDescriptionCard).
+                        // LOINC's description is terse syntax ("Calcidiol in Ser/Plas (MCnc)").
+                        val label = term.name
                         Spacer(Modifier.height(12.dp))
                         GroupedListItem(
                             0, 1,
@@ -262,7 +268,7 @@ fun TrendScreen(
                             headline = { Text(stringResource(R.string.about_this_value), fontWeight = FontWeight.SemiBold) },
                             supporting = {
                                 Column {
-                                    description?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
+                                    Text(label, style = MaterialTheme.typography.bodyMedium)
                                     Text(
                                         "LOINC $code", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline,
                                         modifier = Modifier.padding(top = 4.dp),
@@ -354,6 +360,15 @@ private fun chartDescription(name: String, points: List<MetricPoint>): String? {
         withUnit(points.maxOf { it.value }),
         withUnit(points.last().value),
     )
+}
+
+/** TalkBack's text for one reading: "May 28, 2026: 32 ng/mL", and whether it's out of range (iOS's chart descriptor says the same). */
+@Composable
+private fun readingLabel(point: MetricPoint, range: ReferenceRange?): String {
+    val value = listOf(formatNumber(point.value), point.unit).filter { it.isNotBlank() }.joinToString(" ")
+    val status = range?.status(point.value)?.takeIf { it.isOutOfRange }
+        ?.let { stringResource(if (it == RangeStatus.HIGH) R.string.range_high else R.string.range_low) }
+    return stringResource(R.string.chart_reading, formatDate(point.date, FormatStyle.LONG), listOfNotNull(value, status).joinToString(", "))
 }
 
 /** The time window as a connected button group. */

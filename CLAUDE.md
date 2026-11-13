@@ -32,6 +32,8 @@ data. The Foundation Models language model runs entirely on device.
 LabImporter/
 ├── LabImporterApp.swift        # @main entry; starts SharedCore; routes to HomeView or UnsupportedDeviceView
 ├── Info.plist                  # usage strings, document types (PDF/image), HealthKit, App Group key
+├── PrivacyInfo.xcprivacy       # privacy manifest: no tracking or collected data; UserDefaults + file-timestamp
+│                               #   reasons (LabImporterShare/ has its own, empty one) — see "Privacy note"
 ├── LabImporter.entitlements    # HealthKit, iCloud KVS, App Group (shared with the share extension)
 ├── Localizable.xcstrings        # all user-facing strings (String(localized:))
 ├── AppIcon.icon/               # app icon (Icon Composer); SVG layers from tools/generate_app_icon_layers.py,
@@ -48,9 +50,11 @@ LabImporter/
 │   ├── OCRService.swift        # actor; Vision text recognition + PDFKit rendering
 │   ├── LabParserService.swift  # actor; Foundation Models @Generable structured parse
 │   ├── HealthKitService.swift  # actor (.shared); read/write/delete HKCDADocumentSample; read-back via shared CdaParser
+│   ├── ReportWriter.swift      # save/replace/delete/import order over the ReportDocumentStore seam (fault-tested)
 │   ├── CDAExportService.swift  # struct; thin wrapper over the shared CdaExport (C-CDA R2.1 + UCUM)
 │   ├── LoincDirectory.swift    # Swift face of the shared LOINC catalog (LabImporterCore)
 │   ├── SharedCore.swift        # starts LabImporterCore; Swift ⇄ Kotlin conversions at the boundary
+│   ├── ExportFiles.swift       # where exports wait for a share sheet; removed when it closes and at launch
 │   ├── ShareInbox.swift        # App Group inbox: share extension → app (also compiled into the extension)
 │   └── ReportTransferService.swift  # iPhone ⇄ Android transfer file (shared ReportTransfer) + Transferable
 ├── Intents/                    # App Intents — Siri's only integration path (SiriKit is retired)
@@ -74,16 +78,17 @@ LabImporter/
     ├── History/                # HistoryView (saved reports list), ReportDetailView
     ├── Settings/               # SettingsView (patient metadata + display prefs), LabSortEditor, RenameLabAlert,
     │                           #   SiriAccessEditor (per-metric + per-capability Siri opt-in)
-    └── Shared/                 # MorphingCategoryBackground, PreviewSampleData,
+    └── Shared/                 # MorphingCategoryBackground, PreviewSampleData, ReportProblemViews (failed read, newer reports),
                                 #   UnsupportedDeviceView (also defines enum DeviceSupport.isSupported)
 
 LabImporterShare/   # share extension (text only): hands shared text to the app via ShareInbox
 LabImporterTests/   # unit tests (Swift Testing), hosted in the app; golden CDA shared with the Kotlin tests
 LabImporterUITests/ # UI tests (XCUITest)
-tools/              # sync_xcode_project.rb (targets/files/scheme), ios_test.sh, LOINC/icon/string generators
+tools/              # sync_xcode_project.rb (targets/files/scheme), ios_test.sh, LOINC/icon/string generators,
+                    #   quality/ (collect.sh, scorecard.py, static gates, mutation.sh) — see "Measuring quality"
 shared/, androidApp/  # Kotlin Multiplatform core + Android app — see "Android & shared Kotlin module"
 fastlane/        # Fastfile (build/release/certs lanes) + Matchfile (git storage)
-.github/workflows/  # numbered setup workflows + lint + build
+.github/workflows/  # numbered setup workflows + lint + build + quality; dependabot.yml next to it
 .claude/         # SessionStart hook (installs SwiftLint) + pre-push lint hook
 Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENTIFIER = dev.idoodler.$(DEVELOPMENT_TEAM).labimporter
 ```
@@ -94,7 +99,7 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
 - Long-running work lives in **`actor`** types: `OCRService`, `LabParserService`,
   `HealthKitService`. Views call them with `await` from `Task { … }`.
 - `HealthKitService` is a singleton (`HealthKitService.shared`); its `HKHealthStore`
-  is `nonisolated(unsafe)` because `HKHealthStore` is thread-safe by design.
+  is a plain `private let` the actor owns.
 - Legacy completion-handler APIs (Vision, `HKDocumentQuery`, `HKSourceQuery`) are
   bridged with `withCheckedThrowingContinuation`, guarding against double-resume
   via a `finished` flag.
@@ -135,10 +140,26 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
 - **`LabMapping`** is a thin, data-driven adapter over `LoincDirectory` (no curated
   tables of its own):
   - `displayName(for:)` — the user's nickname for a code if they set one (in
-    Sort & Visibility), else the localized catalog name, else the raw code. The
+    Sort & Visibility), else the plain clinical name, else the raw code. The
     nickname is a cosmetic display preference (`LabDisplayPreferences.nicknames`,
     persisted under the legacy JSON key `customNames`, synced via iCloud) — it
     never reaches the exported CDA.
+  - The plain name ("Protein in Urin", not "Protein [Masse/Volumen] in Urin")
+    comes from the shared `LoincPlainName`: a rule over each language's label
+    template and the term's LOINC system, with no table of tests. Blood, serum
+    and plasma go; every other specimen and every method stays; a property goes
+    only if the unit or the result says it anyway (mg/dL, "negativ"), so colour,
+    morphology and pCO2 keep theirs. So do English scale words: "Qn" and "Ql"
+    go ("TSH Qn" is TSH), "Nom", "Nar" and "SemiQn" stay ("RBC Nom (automated)" is the
+    morphology, not the count). English methods common in panels are spelled out,
+    never dropped: "Calc", "Auto", "IA" → "Cholesterol in LDL (calculated)",
+    "Platelets (automated)", "HCV Ab (immunoassay)". Chips and messages say this
+    plain name, never a bare code ("Duplicate: Creatinine", the code below it where
+    codes are chosen). Only places that tell terms apart (code
+    picker, browser, term screen, "About this value", a name Siri's lists would
+    show twice) show the full label, `catalogName(for:)`. Exports keep LOINC's
+    English display in the coding; a FHIR record's human `code.text` is what the
+    user saw, which storage round-trips exactly (`RoundTripPropertyTest`).
   - `loincCode(for:)` — validates the code + returns an English display for CDA
     export; **returns nil → value is not exportable** (unknown/unmapped code).
   - `loincURL(for:)` — the loinc.org details page for a code.
@@ -159,7 +180,14 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   the name's usual specimen (µmol/l creatinine → serum, not blood). The printed
   result's shape (`ResultShape`) rules out terms that can't hold it — a result
   in words ("negativ") or a strip grade is never a count or a concentration, a
-  titer only a titer — and panels/documents (scale `-`/`Doc`) never match. A
+  titer only a titer — and panels/documents (scale `-`/`Doc`) never match. Nor
+  does an allergen mix the name mentions only one member of
+  (`namesOneMemberOfMix`: class ALLERGY, a component opening with a
+  parenthesised "+" list, "(A+B+…) Ab.IgE"; the members are read on the term's
+  own labels, so a urine strip's "Eiweiß" is not the food allergen mix with
+  egg white); a mix is still found by its own name or code ("fx5") or picked
+  by hand. Every other "+" is no mix: phenotypes ("CD3+CD4+", so "CD4" is the
+  CD4 count), sums ("Calcidiol+ercalcidiol"), methods. A
   term the name *names* beats one matched only by a related name
   (`bySynonym`: "HGB" is hemoglobin, not "DO-Hgb"), "total" is no extra word
   ("Carbon dioxide, total" is plain CO₂), and a specimen or population the name
@@ -175,23 +203,74 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   table — resolution is entirely catalog/FTS driven. The model's report date
   is kept only if the report text prints it (`verifiedDate`; a mis-copied year
   falls back to the one printed date with that day and month, else no date).
-- **Model quality check:** `evaluation/` (JVM, not part of the app or CI) runs
+  A cumulative report — a header of two or more result dates (numeric, ISO, month
+  names, no year, with times, or one per line; not a birth date) over rows that print
+  several results (`ReportSourceText.resultColumns`, `ParseResult.hasSeveralResultDates`;
+  Review says why) — flags a value only where its own row prints more than one result
+  and it isn't the one in the report date's column (`isFromAnotherColumn`), and the date
+  only where it isn't the latest column's; an ordinary report raises nothing. A row's
+  previous result with its date behind it ("65 Low 92 04/02/2026") read for the current
+  one is flagged on its own (`ReportSourceText.isAnotherDatesResult`).
+  Day and month of a date with slashes or dashes are ordered by another date of
+  the report that reads one way only, else by a day-first language (not
+  English); a swap is then corrected. Where nothing orders them (03/10/2026 in an
+  English report), or a later date is printed more than a year after it (a birth
+  date), the date is kept and `reportDateNeedsCheck` asks the user to check it
+  (`checkedDate`).
+  Results are checked against the whole report text the same way
+  (`ReportSourceText`): a value it doesn't print gets `needsSourceCheck`, a
+  "compare with report" badge in review that editing clears and that never
+  blocks saving: Save asks once instead (`saveConfirmation`: "Save Anyway", or
+  "Go Back" to the first listed row), naming each flagged value and each selected
+  value without a LOINC code that saving would leave out; with neither, it doesn't
+  ask. On Android the catalog speaks the language the strings resolved to
+  (`appLanguage`), as iOS's `preferredLocalizations`. No date found also says so on the date row until it's changed.
+  A number is compared as printed, with its sign and without a qualifier (0.5
+  isn't printed by "<0,5", 160 by "1:160"), and "263,000" is read by the report's
+  own decimal notation: 263000 beside decimal points, 263 beside decimal commas;
+  with no such sign it's no number. The unit must be printed as a whole unit
+  (case, spacing and µ/u aside: "/l" isn't printed by "U/l"), and the result on
+  a line that names the test (by the model's name or printed code) wherever such
+  a line prints a result at all — a PDF's text can put a table's names and
+  values apart, and then nothing is claimed. Text that can't be saved as written
+  (`needsCorrection`) holds back saving until it's corrected or deselected.
+- **Model quality check:** `evaluation/` (JVM, not part of the app) runs
   an on-device model over synthetic sample reports with the app's exact prompt,
   schema and post-processing, and scores values, LOINC codes and dates — see
   `evaluation/README.md`. Re-run it (or `--args="replay"` for post-processing
   changes) before touching the prompt, the LOINC ranking or the downloaded model.
+  The model's replies are committed (`evaluation/replies/`), so CI replays them on
+  every pull request and fails below `tools/quality/evaluation_floor.json`; commit
+  a model run's new replies with its result. `evaluation/heldout/` is a held-out
+  set (`-Pheldout=true`), reported in the scorecard and never gated: never change
+  the Review check, the LOINC ranking or the prompt to read it better (README,
+  "Held-out set").
 
 ### CDA round-trip
 - **Export:** the shared `CdaExport.generate` (via `CDAExportService.generateCDA`)
   emits a C-CDA R2.1 Lab Report. Only values that are `isSelected`, have a
   result and have a LOINC mapping are included (`LabValue.isExportable`). A
-  number is a `PQ` with its unit normalized to UCUM (`Ucum`); a qualitative
+  number is a `PQ` with its unit normalized to UCUM (`Ucum`: without a printed
+  note like "mg/dL (calc)", though a power in parentheses, "x10(9)/L", is kept;
+  "G/L" and "Gpt/l" are `10*9/L`, "T/L" `10*12/L`, and
+  the term's LOINC property tells them from grams where it's known — schema 2,
+  whose migration reads a v1 count stored as `g/L` as `10*9/L`); a qualitative
   result — words, a titer "1:160", a threshold "<0.5", a strip grade "2+"
   (`QualitativeResult`) — is an `ST` (FHIR: `valueString`) with the printed unit
   appended, split off again on read-back. A number with stray text ("6.5 %") is
-  neither: the user fixes it in review. This was additive, so no schema bump:
-  older builds skip `ST` observations and show a `valueString` as "-" (a FHIR
-  comparator quantity would have been read by them as the bare number). Its
+  neither: the user fixes it in review. `ST` shipped without a schema bump, so
+  builds from before it skip `ST` observations and show a `valueString` as "-"
+  (a FHIR comparator quantity would have been read by them as the bare number)
+  — and could save such a report again without them. **That's no longer
+  allowed:** any change older builds can't read in full bumps
+  `ReportSchema.VERSION` (see "Migrating the exported CDA"), so they ignore
+  the document instead of editing it. As a second guard, `CdaParser` and
+  `FhirLabCodec.decodeStored` count every observation they see but can't read
+  (`LabReport.unreadValues`; on Health Connect also their record ids, so a
+  delete removes them): such a report is **read-only** on both apps — no edit,
+  no replace (`ReportWriter`/`ReportRepository.replace` refuse it), a short
+  explanation on its detail screen, and delete only after a confirmation that
+  says how many values it can't show. Its
   exact output is pinned by a golden file
   (`shared/src/jvmTest/golden/report.cda.xml`) asserted by both the Kotlin and
   the Swift tests.
@@ -205,7 +284,8 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   (provenance) and `softwareName` = `LabImporter CDA v<N>` where `N` is the shared
   `ReportSchema.VERSION` (the Android FHIR records carry the same number). On
   read-back, `CdaParser` parses `N`; `ReportSchema.upgrade` **ignores** documents
-  with no recognized version (legacy exports) and chains migrations up to the
+  with no recognized version (legacy exports), counts newer ones so the app can
+  ask for an update (`StoredReports`, `CdaParser.problem`), and chains migrations up to the
   current schema. See "Migrating the exported CDA" below before changing the export.
 
 ### UI patterns
@@ -243,7 +323,9 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   Unicode private-use characters (`OCRService.hasPrivateUseCharacters`: some
   fonts draw "<" or "(" that way, so "<1.0" would read as an exact 1.0) —
   those pages are OCR'd from their render; pages keep their order.
-  Narrative CDA labels are German.
+  A CDA document's headings and `languageCode` are the caller's (`CdaNarrative`):
+  the app's current language. Read-back ignores them, so documents with the
+  German headings all older versions wrote keep working.
 - Preferences (`labDisplayPrefs`, `patientName`, `hasSeenWelcome`, etc.) are read
   via `@AppStorage`. `LabDisplayPreferences` is `RawRepresentable` over the shared
   JSON codec (`LabImporterCore.LabDisplayPreferences.encode/decode`) — the same
@@ -262,6 +344,32 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   the variation is obvious (`#Preview("Dark")`, `#Preview("Empty")`). Drive them
   from `PreviewSampleData` / the model `sample*` fixtures rather than ad-hoc data.
   New or edited views are not done until their previews cover every variation.
+
+- **Accessibility is measured, on every screen.** `AccessibilityAuditUITests` runs Apple's
+  audit over `QualityScreen.all` (`LabImporterUITests/QualityScreens.swift`) at the
+  largest text and in light at the standard size, and the screens marked `hasTints` again in
+  dark (kept under 20 minutes for CI); Dynamic Type is measured as each text's height at both sizes. An issue fails it unless
+  `AuditExemption` names it — screen, condition, audit type and element — with why it's a
+  false positive; `TEST_RUNNER_QUALITY_AUDIT_EVIDENCE=<folder>` saves what it found. At the largest
+  text a pull request's run audits each screen's first `auditedPages` (listed in the exemption
+  baseline, may only go up); `TEST_RUNNER_QUALITY_AUDIT_ALL_PAGES=1` audits every page, as the
+  weekly `quality.yml` job does (~36 min; the clipped-text check, which scrolls the whole list
+  itself, still starts on the page a pull request's run starts it; where Apple's contrast check
+  gives up three times, every text on that page is measured to 4.5:1 instead). New screens and states go in that list (`--ss-data`, `--ss-onboarding`,
+  `--ss-screen` in `ScreenshotMode`). The audit runs on **one pinned simulator only**, here and in
+  CI — an iPhone 17 Pro with iOS 27.0 (`tools/quality/audit_simulator.sh`, `tools/ios_test.sh audit`;
+  the only iPhone and iOS this Mac and the `xcode-27` image both run, their iOS 27.1 runtimes running
+  only the iPhone Duo): its exemptions and page counts were measured there, and on the Duo the audit
+  flags other texts and pages begin elsewhere. `ui`/`all` leave it out. Moving the pin means
+  recalibrating: every new finding checked on its screenshot, the baseline's pages updated. Text goes in `.textSecondary`/`.textTertiary` and
+  the `status*` colours, not `.secondary` or `.orange`: the system's are 3.4:1 on white,
+  less over a wash, and a `List` takes `.readableListText()` for its headers and footers. Text
+  is never cut or shrunk to fit: `AdaptiveRow` stacks at accessibility sizes, `FittingRow`
+  when the parts don't fit, and a tile's glyph uses `decorativeIcon(size:)`. Android:
+  `AccessibilityAuditTest` walks the semantics of `qualityScreens`, `DesignContrastTest`
+  computes the token pairs, `isLargeText` stacks. Evidence: `ScreenshotMatrixUITests`
+  with `TEST_RUNNER_QUALITY_SCREENSHOT_DIR=<folder>` (env for `xcodebuild`), and
+  `ScreenMatrixTest` with `-PqualityScreens=<folder>`.
 
 - **iPhone Duo (foldable).** Layouts follow size classes, never the device:
   regular × regular (unfolded inner display, full-screen iPad) gets the
@@ -290,6 +398,8 @@ Config.xcconfig  # MARKETING_VERSION (the app version, both apps) + BUNDLE_IDENT
   screen that edits all of it. Every intent/query re-checks this preference
   itself (never trusts that a value was allowed when a Shortcut was built) —
   see `AskLabValueIntent.perform()` and `LabMetricEntityQuery`.
+  An intent that speaks a value needs an unlocked phone
+  (`authenticationPolicy = .requiresAuthentication`, as `AskLabValueIntent`).
 - **`LabMetricEntity`** (`AppEntity`) is the *only* place metrics are exposed
   to Siri's own suggestions: its query filters by `allowedCodes` for
   resolution and additionally by `allowKnowledgeIndexing` for proactive
@@ -340,7 +450,9 @@ shared/        # Kotlin Multiplatform (android, iosArm64, iosSimulatorArm64, jvm
                          #   read in overlapping parts, replies merged)
     transfer/            # ReportTransfer: iPhone ⇄ Android file (FHIR Bundle; also reads CDA)
     export/PdfReport.kt  # PDF content + pagination (PdfReport, PdfLayout) — both apps' PDFs
-    model/               # … also ChartAxis (rounded chart ticks), SortEditorState (Sort & Visibility rules)
+    model/               # … also ChartAxis (rounded ticks; `scale`: both apps' trend charts, zero-based y and
+                         #   time-proportional x; `sparkline`: the cards', no axis, a flat series in the middle and a
+                         #   minimum span so small changes stay small, no fill), SortEditorState (Sort & Visibility rules)
     about/               # About: FUNDING.yml links, repository URL, "Report an Issue" link
     platform/            # NumberFormatting (printf-exact on both platforms), SQLite, locks
   src/jvmTest/           # the shared tests (+ golden/report.cda.xml, also used by the Swift tests)
@@ -506,7 +618,11 @@ tools/generate_android_icon.py # layered adaptive launcher icon (+ night + monoc
 - **Previews:** the same rule as SwiftUI — every composable screen ships
   `@Preview`s for its variations (empty/populated, light/dark, sizes).
 - Build & test: `./gradlew :shared:jvmTest :androidApp:testDebugUnitTest :androidApp:assembleRelease`
-  (`androidApp/build/outputs/apk/release/`). CI: `build_android.yml`.
+  (`androidApp/build/outputs/apk/release/`). CI: `build_android.yml`. Kotlin warnings
+  are errors in `shared/` and `androidApp/` (main and test): fix a deprecation, don't
+  suppress it. Release APKs are signed with the debug key unless
+  `LABIMPORTER_RELEASE_STORE_FILE` and friends are set (README, "Android release
+  signing"); the build warns when it falls back.
 - **Robolectric tests** all run in one sandbox (`robolectric.graphicsMode=NATIVE`
   in `build.gradle.kts`): a second sandbox can't load the bundled SQLite again and
   the catalog would silently be empty. Use `waitFor` (`ComposeWait.kt`) rather
@@ -548,6 +664,10 @@ hardware fall back to `UnsupportedDeviceView` since parsing needs the on-device 
   ```
   swiftlint lint --strict
   ```
+- The analyzer rule (`unused_import`) needs a compiler log, so `lint` never runs it:
+  `build_pr.yml` runs `swiftlint analyze --strict --compiler-log-path build/xcodebuild.log`
+  after `IOS_BUILD_LOG=build/xcodebuild.log tools/ios_test.sh` (a clean build, so the
+  log holds every compile; locally add `IOS_CLEAN=1`).
 - A **pre-push hook** (`.claude/settings.json`) runs `swiftlint lint --strict`
   on `git push` and blocks the push on violations. In Claude Code on the web,
   the `SessionStart` hook auto-installs SwiftLint 0.63.2; locally it's assumed via brew.
@@ -573,20 +693,24 @@ and run in order on first setup:
    (the `Match-Secrets` repo is shared with Trio; see README "When the build
    can't find a provisioning profile"). It runs `fastlane certs || true`, so
    read its log rather than trusting a green run.
-4. **`build_labimporter.yml`** — on the `xcode-27` image with Xcode 27.1: lints, bumps the
-   build number from the latest TestFlight build, builds, archives, uploads to
-   TestFlight. Manual + scheduled (first Sunday monthly).
-5. **`lint.yml`** — SwiftLint on every PR to `main` (and manual dispatch).
+4. **`build_labimporter.yml`** — from `main` only (dispatched on another branch it
+   stops before the certificates), on the `xcode-27` image with Xcode 27.1: lints, runs
+   the iOS unit tests, bumps the build number from the latest TestFlight build, builds,
+   archives, uploads to TestFlight. Manual + scheduled (first Sunday monthly).
+5. **`lint.yml`** — SwiftLint 0.63.2 (pinned image) on every PR to `main` (and manual dispatch).
 
 `build_android.yml` (every PR to `main`) runs the shared Kotlin tests, the
 Android unit/UI tests, the translation check, Android lint and builds the APKs —
 no secrets needed.
 
 Not part of that numbered setup sequence, but also on every PR to `main` (and
-manual dispatch): **`build_pr.yml`** — SwiftLint plus the iOS unit and UI
+manual dispatch): **`build_pr.yml`** — SwiftLint 0.63.2 (the release binary, its
+SHA-256 checked) plus the iOS unit and UI
 tests (`tools/ios_test.sh all`, which builds the app) on the `xcode-27` image /
 Xcode 27.1, on the iPhone Duo simulator (booted up front — left to
-`xcodebuild`, its first boot can stall the run)
+`xcodebuild`, its first boot can stall the run), then, in a step of its own, the
+accessibility audit (`tools/ios_test.sh audit`) on its pinned iPhone 17 Pro with
+iOS 27.0, which the step creates (`tools/quality/audit_simulator.sh --create`),
 against the **Simulator SDK** with `CODE_SIGNING_ALLOWED=NO`. It calls no
 Fastlane lane and needs **no secrets at all** — no App Store Connect API key,
 no Match, no signing identity — so it works even before this repo's release
@@ -595,15 +719,99 @@ pinned Xcode version and the tests pass; it does *not* produce a signed archive
 or an `.ipa` (that needs real signing credentials — see
 `build_labimporter.yml`). Use this to confirm a branch is sound before merging.
 
+**`quality.yml`** (every PR to `main`, manual dispatch, no secrets) runs the
+gates of "Measuring quality" below and uploads the Kover reports.
+
+Every third-party action is pinned to a full commit SHA with its tag in a comment
+(resolve a tag with `gh api repos/<owner>/<repo>/git/ref/tags/<tag>`, following an
+annotated tag to its commit); `.github/dependabot.yml` proposes updates weekly for
+the actions and the Gradle dependencies. A container image is pinned to its
+`@sha256:` digest (tag kept for reading). `static_metrics.py --gate` fails on an
+unpinned action or image.
+
 Fastlane lanes (`fastlane/Fastfile`): `build_labimporter`, `release`,
 `identifiers`, `certs`, `validate_secrets`, `nuke_certs`,
 `check_and_renew_certificates`. Match uses git storage
 (`fastlane/Matchfile` → `Match-Secrets` repo). Ruby deps pinned in `Gemfile`
-(`fastlane 2.231.0`).
+(`fastlane 2.231.0`) and locked in `Gemfile.lock` (macOS arm64/x86_64; refresh it
+with `bundle lock` on Ruby 3.x — fastlane 2.231.0 doesn't load on Ruby 4, which
+dropped `ostruct`).
 
 Required secrets: `GH_PAT`, `TEAMID`, `FASTLANE_ISSUER_ID`, `FASTLANE_KEY_ID`,
 `FASTLANE_KEY`, `MATCH_PASSWORD`. The bundle ID prefix `$(DEVELOPMENT_TEAM)` in
 `Config.xcconfig` is substituted from `TEAMID` at build time.
+
+## Measuring quality
+
+`docs/quality/RUBRIC.md` defines the measures; `docs/quality/SCORECARD.md` is one
+run of them. Regenerate it with:
+
+```
+tools/quality/collect.sh [--ios] [--mutation] [--simulator <udid>]
+```
+
+It runs one step at a time (8 GB Macs): `static_metrics.py` and SwiftLint, the Gradle
+tests with Kover, Android `lintRelease`, the evaluation replay, then with `--ios` the
+iOS tests with coverage (clean build, on `--simulator`, by default the audit's), then the accessibility
+audit on its pinned simulator (the step fails, saying so, when there's none),
+`swiftlint analyze` and the privacy manifests in the built bundles, and with
+`--mutation` PIT (`tools/quality/mutation.sh`, ~4 min). The test, lint-analysis and evaluation tasks run with
+Gradle's `--rerun` (the build cache stays on for compiling), and `reports.py fresh` fails the step when one of them
+is FROM-CACHE or UP-TO-DATE in its log: a cached result would pass for this run's. `--ios` also takes both screenshot
+matrices again (`build/quality/ios-screens`, `android-screens`, each with the `commit.json` it was taken at;
+`tools/ios_test.sh screens`, `ScreenMatrixTest -PqualityScreens`), and the panel's measures are "not run" when those
+aren't the measured commit's. Each writes JSON to
+`build/quality/`; `scorecard.py` turns them into the scorecard, where a missing
+input is "not run", never a pass, and each section gets a scripted score (the weighted
+share of scripted measures that pass, out of 10). `tools/quality/consistency.sh [--runs N]
+[collect.sh options]` runs collect.sh N times in a row (default 3) at one commit — the
+rubric's "three runs in a row" — writes `build/quality/consistency.json` and the scorecard
+reports it; a tree whose only change is `docs/quality/SCORECARD.md` counts as clean.
+Python is stdlib-only plus lizard, pinned in
+`tools/quality/requirements.txt` (collect.sh installs it into `build/quality/venv`).
+
+CI gates (`quality.yml`): the quality scripts' own tests (`tools/quality/test_*.py`), then
+`static_metrics.py --gate` fails on a swallowed error where reports are read, saved,
+deleted or imported (services, Home, Import, Review, History, Dashboard, Settings, Export, the Siri intents, the share extension,
+Android's data layer and `AppViewModel`, shared export/transfer) without a stated reason —
+a comment of at least four words saying why, not a lint directive or a `///` doc comment
+(`try?`, an empty catch, a `runCatching` whose failure nothing looks at) —, an iOS audit
+exemption the audit lets go unmeasured that `tools/quality/accessibility_exemptions_baseline.json`
+doesn't list as is (hit regions, clipped text, element detection, and contrast without a named
+element — `nil` for an issue without one, `""` for whichever element the audit points at; it lists
+each with what it covers, and counts the rules in `AuditExemption.reason`: a ratchet — remove one
+when it goes, never add or widen one; one without an element may give way to one that names it, on
+the same or a narrower page with the same or a lower limit; CI checks it against the base branch's).
+Only a contrast exemption naming its element by its full label is measured and isn't listed: the
+audit lets it go only while that element's own pixels measure 4.5:1 on that run (whatever the text's
+size), and fails it otherwise. An element's contrast is its ink's: the colour most of its pixels that differ
+clearly from the background are drawn in (`PixelContrast`), so one dark glyph can't carry faint text beside it.
+`""` and `nil` are checked too (the flagged element, every text on the page), but neither says which
+text it lets go, so they count as unmeasured. Each test prints `AUDIT exemptions <test> applied <n> measured <m> unmeasured <k> rules <r>`,
+every rule application among the unmeasured; `reports.py audit` reads it from the log for the
+scorecard. It asks only for Apple's documented audit types, never `.all` (whose undocumented bits no one
+could look into); when one gives up three times on a page, the test fails: nothing stands in for it.
+The baseline also lists each screen's audited pages at the largest text and whether it leaves later
+pages alone: a screen may not audit fewer, nor newly leave pages alone),
+a missing translation, an iOS network API, a missing or
+wrong privacy manifest (a required-reason API a bundle's sources call but it doesn't
+declare, or a reason Apple doesn't list for it), a function over complexity 15 or
+100 lines that isn't in `tools/quality/complexity_allowlist.txt` (with its reason),
+a SwiftUI view file without previews, and an action or image not pinned to a SHA or
+digest; the evaluation replay, with the errors it plants in the replies' right readings
+(`evaluation/…/PlantedErrors.kt`), must stay at or above
+`tools/quality/evaluation_floor.json`, in total and for each kind of planted error. Coverage (Kover) is uploaded, never gated:
+mutation score is what counts — at least 80% in export, parse, model and loinc, run
+weekly by `quality.yml` and on pull requests that change `core/export` or `core/parse` (`shared:mutationTest`, `-Pmutation.classes=…` to narrow it
+while writing tests; PIT's RUN_ERROR is inconclusive, never killed). Also weekly, on the
+`xcode-27` runner, on the audit's pinned simulator: the iOS audit of every page of every screen (`QUALITY_AUDIT_ALL_PAGES=1`; a pull
+request's run keeps its page limits to stay under 20 minutes): every page in every condition — the
+largest text, the standard size and dark — and clipped text from each page, checked by
+`scorecard.py --check-audit … --all-pages` (every screen of `QualityScreen.all` printed its
+`AUDIT screen` line, none stopped at a limit). The scorecard
+reads the pull request's checks with `gh pr checks` ("not run" without a PR for the
+measured commit; a skipped check is "not run" too, but for the weekly every-page audit, which a pull
+request skips by design and the scorecard reports as "runs weekly, not on pull requests").
 
 ## Working in this repo
 
@@ -629,7 +837,8 @@ Required secrets: `GH_PAT`, `TEAMID`, `FASTLANE_ISSUER_ID`, `FASTLANE_KEY_ID`,
   still downloading, busy, too long…). iOS 27 throws `LanguageModelError` and
   friends instead of `GenerationError` to apps built with its SDK —
   `LabParserError.from(_:)` maps both (the iOS 27 part behind
-  `#if compiler(>=6.4)`, since CI builds with Xcode 26). Android mirrors this
+  `#if compiler(>=6.4)`, so the code still builds with Xcode 26; CI builds with
+  Xcode 27.1). Android mirrors this
   (see below). There is no rule-based fallback on either platform.
 - **Long reports are read in parts.** The models' contexts (~4K tokens) hold
   the instructions, the schema, the text and the reply, so the shared
@@ -640,7 +849,10 @@ Required secrets: `GH_PAT`, `TEAMID`, `FASTLANE_ISSUER_ID`, `FASTLANE_KEY_ID`,
   prompt. iOS OCR keeps one recognized line per line for that reason.
 - **Migrating the exported CDA:** the read-back is version-gated (see "CDA
   round-trip"). Whenever you change what the export *means* — remap a LOINC code,
-  change a unit convention, restructure observations — do all of:
+  change a unit convention, restructure observations — **or write anything an
+  older build can't read in full** (a new value type, a new kind of observation,
+  even when it's "only additive": an older build would list the report without
+  it, and saving it there would drop it), do all of:
   1. Bump `ReportSchema.VERSION` (`shared/…/export/ReportSchema.kt`, e.g. `1` → `2`)
      — it versions the iOS CDA documents and the Android FHIR records alike.
   2. Add a `ReportMigration` whose `fromVersion` is the *old* version and whose
@@ -688,7 +900,9 @@ Required secrets: `GH_PAT`, `TEAMID`, `FASTLANE_ISSUER_ID`, `FASTLANE_KEY_ID`,
   - Shared Kotlin: `./gradlew :shared:jvmTest` (catalog, resolution, CDA golden,
     transfer, dashboard, number formatting — values pinned against iOS).
   - iOS: `tools/ios_test.sh unit|ui|all [simulator]` (Swift Testing unit tests
-    incl. the Swift ⇄ Kotlin bridge, share inbox, parser errors; XCUITest launch).
+    incl. the Swift ⇄ Kotlin bridge, share inbox, parser errors; XCUITest launch),
+    and `tools/ios_test.sh audit` (the accessibility audit, on its pinned iPhone 17 Pro
+    with iOS 27.0 only; it fails when there's none: `tools/quality/audit_simulator.sh --create`).
   - Android: `./gradlew :androidApp:testDebugUnitTest` (JVM + Robolectric/Compose
     UI tests against the real LOINC catalog: AI gating, import flow, transfer,
     screens).
@@ -703,3 +917,11 @@ system's AICore, or the pinned Gemma file the user chose to download, by the
 system download manager — never lab data; `NetworkGuardrailTest` enforces it.)
 Do not introduce network calls that transmit lab data, and don't weaken the "no
 server" guarantee described in `README.md`.
+
+The privacy manifests (`LabImporter/PrivacyInfo.xcprivacy`,
+`LabImporterShare/PrivacyInfo.xcprivacy`) declare no tracking and no collected
+data, and list the required-reason APIs the binaries really call — today
+UserDefaults (CA92.1) and the executable's modification date (C617.1) in the app,
+none in the extension. Using another one (a file's dates or size, disk space,
+`systemUptime`/`mach_absolute_time`, active keyboards, a UserDefaults App Group
+suite) means adding it there with its reason; check with `nm -u` on the built binary.

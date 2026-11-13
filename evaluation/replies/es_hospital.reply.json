@@ -1,0 +1,83 @@
+{"entries":
+[
+{"code":
+"Glucosa",
+"name":
+"Glucosa",
+"rawValue":
+"96",
+"unit":
+"mg/dL"
+},
+{"code":
+"Creatinina",
+"name":
+"Creatinina",
+"rawValue":
+"0,71",
+"unit":
+"mg/dL"
+},
+{"code":
+"Filtrado glomerular (CKD-EPI)",
+"name":
+"glomerular filtration rate (CKD-EPI)",
+"rawValue":
+">90",
+"unit":
+"mL/min/1,73m2"
+},
+{"code":
+"Proteína C reactiva",
+"name":
+"Proteína C reactiva",
+"rawValue":
+"<0,5",
+"unit":
+"mg/dL"
+},
+{"code":
+"Colesterol total",
+"name":
+"Colesterol total",
+"rawValue":
+"205",
+"unit":
+"mg/dL"
+},
+{"code":
+"Ferritina",
+"name":
+"Ferritina",
+"rawValue":
+"45",
+"unit":
+"ng/mL"
+},
+{"code":
+"Tirotropina (TSH)",
+"name":
+"Tirotropina (TSH)",
+"rawValue":
+"3,12",
+"unit":
+"µUI/mL"
+},
+{"code":
+"Troponina T ultrasensible",
+"name":
+"Troponina T ultrasensible",
+"rawValue":
+"<3",
+"unit":
+"ng/L"
+}
+],
+"reportDate":
+"2026-02-10",
+"patientName":
+"Lucía Fernández Ruiz",
+"authorName":
+"Hospital Universitario del Norte - Laboratorio Central",
+"reportLanguage":
+"es"}

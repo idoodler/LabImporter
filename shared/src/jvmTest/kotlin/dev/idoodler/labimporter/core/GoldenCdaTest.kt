@@ -1,6 +1,7 @@
 package dev.idoodler.labimporter.core
 
 import dev.idoodler.labimporter.core.export.CdaExport
+import dev.idoodler.labimporter.core.export.CdaNarrative
 import dev.idoodler.labimporter.core.model.LabValue
 import kotlinx.datetime.LocalDate
 import java.io.File
@@ -18,7 +19,7 @@ class GoldenCdaTest {
     @Test
     fun documentMatchesGolden() {
         startCatalog("en-US")
-        val actual = normalize(CdaExport.generate(GoldenCda.values, LocalDate(2026, 5, 6), "IDENTITY", "Max Mustermann", "Labor & Co"))
+        val actual = normalize(CdaExport.generate(GoldenCda.values, LocalDate(2026, 5, 6), "IDENTITY", GoldenCda.narrative, "Max Mustermann", "Labor & Co"))
         val golden = File(System.getProperty("golden.dir"), "report.cda.xml")
         if (System.getProperty("golden.record") == "true") golden.writeText(actual)
         assertEquals(golden.readText(), actual)
@@ -31,11 +32,16 @@ class GoldenCdaTest {
 }
 
 object GoldenCda {
+    /** The words every document had while they were fixed, so Apple Health's older documents stay pinned too. */
+    val narrative = CdaNarrative("de-DE", "Lab Results", "Laborwerte", "Test", "Ergebnis")
+
     val values = listOf(
         LabValue(code = "2160-0", name = "Creatinine", displayValue = "0,8", numericValue = 0.8, unit = "mg/dl"),
         LabValue(code = "2823-3", name = "Potassium", displayValue = "4,1", numericValue = 4.1, unit = "mmol/l"),
         LabValue(code = "4548-4", name = "HbA1c", displayValue = "6,53", numericValue = 6.53, unit = "%"),
         LabValue(code = "1742-6", name = "ALT", displayValue = "12345,6", numericValue = 12345.6, unit = "U/l"),
+        // Giga-particles per litre, as French labs print leukocytes: 10*9/L, never grams.
+        LabValue(code = "6690-2", name = "Leukocytes", displayValue = "7,2", numericValue = 7.2, unit = "G/L"),
         LabValue(code = "KREA", name = "unmapped", displayValue = "1", numericValue = 1.0, unit = ""),
         LabValue(code = "2093-3", name = "deselected", displayValue = "198", numericValue = 198.0, unit = "mg/dl", isSelected = false),
         LabValue(code = "2951-2", name = "no value", displayValue = "-", numericValue = null, unit = "mmol/l"),

@@ -23,6 +23,8 @@ struct HeroMetricCard<ImportMenu: View>: View {
     /// the fixed-size glyphs elsewhere in the app) still grows under larger
     /// accessibility text sizes instead of staying visually frozen.
     @ScaledMetric(relativeTo: .largeTitle) private var valueFontSize: CGFloat = 44
+    /// The trend arrow speaks, so it grows with the text beside it.
+    @ScaledMetric(relativeTo: .headline) private var dockSize: CGFloat = 40
 
     private var hasTrend: Bool { metric.history.count > 1 }
 
@@ -63,7 +65,7 @@ struct HeroMetricCard<ImportMenu: View>: View {
             if let date = metric.history.last?.date {
                 Text("Last measured \(date.formatted(date: .abbreviated, time: .omitted))")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
             }
             if !hasTrend {
                 importPrompt
@@ -82,7 +84,7 @@ struct HeroMetricCard<ImportMenu: View>: View {
                     .font(.headline)
                 Text("Your only tracked value")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
             }
             Spacer(minLength: 0)
         }
@@ -105,25 +107,22 @@ struct HeroMetricCard<ImportMenu: View>: View {
 
     private func dockCircle(systemName: String, weight: Font.Weight) -> some View {
         Image(systemName: systemName)
-            .font(.system(size: 17, weight: weight))
+            .font(.system(size: dockSize * 0.42, weight: weight))
             .foregroundStyle(.white)
-            .frame(width: 40, height: 40)
+            .frame(width: dockSize, height: dockSize)
             .background(category.color.gradient, in: Circle())
     }
 
     private var valueRow: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 4) {
+        FittingRow(spacing: 4) {
             Text(metric.entry.displayValue)
                 .font(.system(size: valueFontSize, weight: .bold))
                 .foregroundStyle(valueForeground)
-                .lineLimit(1)
-                .minimumScaleFactor(0.6)
             if !metric.entry.unit.isEmpty {
                 Text(metric.entry.unit)
                     .font(.title3)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
             }
-            Spacer(minLength: 0)
             if let rangeStatus {
                 RangeStatusBadge(status: rangeStatus, range: referenceRange, unit: metric.entry.unit)
             }
@@ -135,7 +134,7 @@ struct HeroMetricCard<ImportMenu: View>: View {
             Divider()
             Text("Import at least two reports containing this value to see a trend.")
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
             Menu {
                 importMenu()
@@ -145,6 +144,7 @@ struct HeroMetricCard<ImportMenu: View>: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
+            .tint(.prominentFill)
             .controlSize(.regular)
         }
     }

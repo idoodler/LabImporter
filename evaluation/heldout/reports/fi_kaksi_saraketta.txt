@@ -1,0 +1,14 @@
+HUS Diagnostiikkakeskus                                   LABORATORIOTUTKIMUKSET
+Potilas: Virtanen, Aino Maria                             Hetu: 170872-XXXX
+Näytteenottoaika: 21.09.2026 klo 08.15                    Lähettäjä: Terveysasema Kallio
+
+TUTKIMUS       TULOS   YKSIKKÖ  VIITEARVO  |  TUTKIMUS       TULOS   YKSIKKÖ  VIITEARVO
+B -Hb          128     g/l      117-155    |  P -Krea        66      µmol/l   50-90
+B -Leuk        5,8     E9/l     3,4-8,2    |  P -K           3,9     mmol/l   3,3-4,9
+B -Trom        231     E9/l     150-360    |  P -Na          141     mmol/l   137-145
+B -Hkr         0,39             0,35-0,46  |  P -ALAT        31      U/l      <35
+B -MCV         88      fl       82-98      |  P -GT          58 +    U/l      <35
+fP -Kol        6,2 +   mmol/l   <5,0       |  fP -Trigly     1,3     mmol/l   <1,7
+fP -Kol-HDL    1,62    mmol/l   >1,2       |  fP -Kol-LDL    4,0 +   mmol/l   <3,0
+
++ = viitealueen yläpuolella

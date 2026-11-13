@@ -71,6 +71,7 @@ final class SearchPresentationCoordinator {
         presentedCode = nil
         navResetToken += 1
         Task { @MainActor [weak self] in
+            // Sleep only throws on cancellation, and the check below covers that.
             try? await Task.sleep(for: .seconds(0.35))
             guard let self, self.pendingCode == code else { return }
             self.presentedCode = code

@@ -1,0 +1,14 @@
+{
+  "reportDate": "2026-10-21",
+  "patientName": "Erika Musterfrau",
+  "values": [
+    {"names": ["CRP", "C-reaktiv"], "value": 0.3, "unit": "mg/dl"},
+    {"names": ["Ferritin"], "value": 85, "unit": "ng/ml", "loinc": "2276-4"},
+    {"names": ["TSH", "Thyreotropin"], "value": 1.82, "unit": "mU/l", "loinc": "3016-3"},
+    {"names": ["Kreatinin"], "value": 0.78, "unit": "mg/dl", "loinc": "2160-0"},
+    {"names": ["Harnsäure", "Harnsaeure", "Urat"], "value": 4.1, "unit": "mg/dl", "loinc": "3084-1"},
+    {"names": ["Triglycerid"], "value": 96, "unit": "mg/dl", "loinc": "2571-8"},
+    {"names": ["Hämoglobin", "Haemoglobin", "Hb"], "value": 14.2, "unit": "g/dl", "loinc": "718-7"},
+    {"names": ["MCV"], "value": 88, "unit": "fl", "loinc": "787-2"}
+  ]
+}

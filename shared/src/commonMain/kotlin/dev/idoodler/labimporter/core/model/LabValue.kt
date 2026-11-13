@@ -1,5 +1,7 @@
 package dev.idoodler.labimporter.core.model
 
+import dev.idoodler.labimporter.core.parse.LabParsePipeline
+import dev.idoodler.labimporter.core.platform.NumberFormatting
 import kotlin.uuid.Uuid
 
 /**
@@ -19,6 +21,13 @@ data class LabValue(
      * rather than a confident mapping — the user should confirm it.
      */
     val isSuggestedCode: Boolean = false,
+    /**
+     * True when the model returned this result but the report text doesn't
+     * print it (ALT 22 read as 222): the user should compare it with the
+     * report. It doesn't block saving. Only an import sets it — a value typed
+     * by hand or read from a saved report has no text to compare with.
+     */
+    val needsSourceCheck: Boolean = false,
 ) {
     val resolvedName: String
         get() = LabMapping.displayName(code).let { if (it == code) name else it }
@@ -35,11 +44,28 @@ data class LabValue(
     val isExportable: Boolean
         get() = isSelected && hasResult && LabMapping.loincCode(code) != null
 
+    /**
+     * Selected and mapped, with text that can't be saved as written ("neg 1",
+     * "6,5 H"): saving would leave it out, and replace the document it came from
+     * without it. Review holds back saving until the user corrects or deselects it.
+     */
+    val needsCorrection: Boolean
+        get() = isSelected && !hasResult && !QualitativeResult.isNoResult(displayValue) && LabMapping.loincCode(code) != null
+
     /** Whether this row collides with another exportable row on the same LOINC. */
     fun isDuplicate(duplicateLoincCodes: Set<String>): Boolean {
         if (!isSelected || !hasResult) return false
         val loinc = LabMapping.loincCode(code)?.loinc ?: return false
         return loinc in duplicateLoincCodes
+    }
+
+    /**
+     * This value with its result changed to what the user typed. The user has
+     * now looked at it, so what the model read no longer needs comparing.
+     */
+    fun withEditedResult(text: String): LabValue {
+        val result = LabParsePipeline.valueWithoutUnit(text, unit)
+        return copy(displayValue = result, numericValue = NumberFormatting.parse(result), needsSourceCheck = false)
     }
 
     /** Selected with a result beats a result beats neither when collapsing duplicates. */
@@ -61,6 +87,38 @@ fun List<LabValue>.duplicateLoincCodes(): Set<String> {
     }
     return counts.filterValues { it > 1 }.keys
 }
+
+/** How many values about to be saved the report text doesn't print: Review's "2 values to check". */
+fun List<LabValue>.valuesToCheckCount(): Int = count { it.needsSourceCheck && it.isExportable }
+
+/** How many values can't be saved as written: Review's "2 values to correct". */
+fun List<LabValue>.valuesToCorrectCount(): Int = count { it.needsCorrection }
+
+/**
+ * What Review asks about before saving, or null when there's nothing to ask: flag, don't block.
+ * A value the report doesn't print saves as fast as a checked one otherwise, and a selected
+ * value without a LOINC code would be left out without a word.
+ */
+data class SaveConfirmation(
+    /** Values about to be saved that the report text doesn't print ("Compare with report"). */
+    val toCheck: List<LabValue>,
+    /** Selected values with a result but no LOINC code: saving leaves them out. */
+    val leftOut: List<LabValue>,
+) {
+    /** The row Go Back scrolls to: the first value to check, else the first one left out. */
+    val firstId: String get() = (toCheck.firstOrNull() ?: leftOut.first()).id
+}
+
+/** Review's question before saving these values (in screen order), or null when nothing is flagged or left out. */
+fun List<LabValue>.saveConfirmation(): SaveConfirmation? {
+    val toCheck = filter { it.needsSourceCheck && it.isExportable }
+    val leftOut = filter { it.isSelected && it.hasResult && LabMapping.loincCode(it.code) == null }
+    return if (toCheck.isEmpty() && leftOut.isEmpty()) null else SaveConfirmation(toCheck, leftOut)
+}
+
+/** One value as the confirmation lists it: its plain name, the result and the unit ("Glucose 922 mg/dL"). */
+val LabValue.confirmationLine: String
+    get() = listOf(resolvedName, displayValue, unit).map { it.trim() }.filter { it.isNotEmpty() }.joinToString(" ")
 
 /**
  * Collapses entries sharing a LOINC code (last-resort guarantee at the save

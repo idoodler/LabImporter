@@ -165,7 +165,7 @@ struct PDFCoverPage: View {
             items.append(MetaItem(icon: "figure.stand", label: String(localized: "Sex"), value: sex))
         }
         if !data.authorName.isEmpty {
-            items.append(MetaItem(icon: "cross.case.fill", label: String(localized: "Author"), value: data.authorName))
+            items.append(MetaItem(icon: "cross.case.fill", label: String(localized: "Lab / Doctor"), value: data.authorName))
         }
         if let range = dateRangeValue {
             items.append(MetaItem(icon: "clock.arrow.circlepath", label: String(localized: "Period Covered"), value: range))
@@ -318,3 +318,39 @@ struct PDFLatestResultsPage: View {
         return metric.unit.isEmpty ? number : "\(number) \(metric.unit)"
     }
 }
+
+// MARK: - Previews
+
+#if DEBUG
+#Preview("Cover") {
+    ScrollView([.vertical, .horizontal]) {
+        PDFCoverPage(data: .sample(.sample), theme: PDFTheme(mode: .color), pageSize: PDFPageFormat.isoA4.size, pageNumber: 1, totalPages: 3)
+    }
+}
+
+#Preview("Cover · Black & White") {
+    ScrollView([.vertical, .horizontal]) {
+        PDFCoverPage(data: .sample(.sample), theme: PDFTheme(mode: .monochrome), pageSize: PDFPageFormat.isoA4.size, pageNumber: 1, totalPages: 3)
+    }
+}
+
+#Preview("Latest Results") {
+    let data = PDFReportData.sample(.sample)
+    ScrollView([.vertical, .horizontal]) {
+        PDFLatestResultsPage(
+            rows: data.metrics.enumerated().map { .metric($1, striped: $0.isMultiple(of: 2)) }, showTitle: true,
+            patientName: data.patientName, theme: PDFTheme(mode: .color), pageSize: PDFPageFormat.isoA4.size, pageNumber: 2, totalPages: 3
+        )
+    }
+}
+
+#Preview("Latest Results · Continued") {
+    let data = PDFReportData.sample(.sample)
+    ScrollView([.vertical, .horizontal]) {
+        PDFLatestResultsPage(
+            rows: data.metrics.prefix(3).map { .metric($0, striped: false) }, showTitle: false,
+            patientName: data.patientName, theme: PDFTheme(mode: .monochrome), pageSize: PDFPageFormat.isoA4.size, pageNumber: 3, totalPages: 3
+        )
+    }
+}
+#endif

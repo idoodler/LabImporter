@@ -1,17 +1,19 @@
 import Foundation
 
-/// Roams the dashboard card layout (sorting / pinning / hiding / nicknames)
-/// across the user's devices via the iCloud key-value store (`NSUbiquitousKeyValueStore`).
+/// Roams the user's display preferences (`LabDisplayPreferences`: which tests they track and their order,
+/// pins and hidden ones, nicknames, personal reference ranges) across the user's devices via the iCloud
+/// key-value store (`NSUbiquitousKeyValueStore`). The opt-in and Settings say exactly that.
 ///
 /// **Opt-in.** Nothing syncs until the user turns it on — the persisted flag
 /// `iCloudSyncEnabled` gates everything. The onboarding flow forces an explicit
 /// decision (see `CloudSyncOptInView`) and Settings lets the user change it.
 ///
-/// **What syncs:** only `labDisplayPrefs` (the dashboard card layout plus the
-/// user's nicknames for codes).
+/// **What syncs:** only `labDisplayPrefs` — which LOINC codes the user tracks (their order, pins and
+/// hidden ones), the user's nicknames for them and their personal reference ranges. The codes alone
+/// say which tests someone has, so the opt-in copy names all of it, not just "the layout".
 /// **What never syncs:** lab values — those live in Apple Health by design (see
 /// CLAUDE.md) — and patient metadata, which stays device-local. No network call
-/// here ever carries lab data; the iCloud KVS holds only the tiny layout blob.
+/// here ever carries lab values; the iCloud KVS holds only that small preferences blob.
 ///
 /// ### Mechanism
 /// The synced value lives in `UserDefaults.standard` behind an `@AppStorage`
@@ -35,10 +37,10 @@ final class CloudSyncService {
     /// The `@AppStorage` flag that gates syncing. Written by onboarding/Settings.
     static let enabledKey = "iCloudSyncEnabled"
 
-    /// The exact `@AppStorage` keys we roam. Layout only — never lab data or
+    /// The exact `@AppStorage` keys we roam. Display preferences only — never lab values or
     /// patient metadata.
     static let syncedKeys: Set<String> = [
-        "labDisplayPrefs"           // dashboard card sorting / pinning / hiding / nicknames
+        "labDisplayPrefs"           // tracked codes' order / pins / hidden ones, nicknames, personal reference ranges
     ]
 
     private let store = NSUbiquitousKeyValueStore.default

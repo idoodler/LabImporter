@@ -1,0 +1,119 @@
+{"entries":
+[
+{"code":
+"Total Kolesterol",
+"name":
+"Total Cholesterol",
+"rawValue":
+"212",
+"unit":
+"mg/dL"
+},
+{"code":
+"HDL Kolesterol",
+"name":
+"HDL Cholesterol",
+"rawValue":
+"48",
+"unit":
+"mg/dL"
+},
+{"code":
+"LDL Kolesterol (hesaplanan)",
+"name":
+"LDL Cholesterol (calculated)",
+"rawValue":
+"138",
+"unit":
+"mg/dL"
+},
+{"code":
+"Trigliserid",
+"name":
+"Triglyceride",
+"rawValue":
+"131",
+"unit":
+"mg/dL"
+},
+{"code":
+"ALT",
+"name":
+"Alanin Aminotransferaz",
+"rawValue":
+"19",
+"unit":
+"U/L"
+},
+{"code":
+"AST",
+"name":
+"Aspartat Aminotransferaz",
+"rawValue":
+"22",
+"unit":
+"U/L"
+},
+{"code":
+"GGT",
+"name":
+"Gamma-Gluteraluril Transferase",
+"rawValue":
+"15",
+"unit":
+"U/L"
+},
+{"code":
+"Alkalen Fosfataz",
+"name":
+"Alkalen Phosphatase",
+"rawValue":
+"74",
+"unit":
+"U/L"
+},
+{"code":
+"TSH",
+"name":
+"Thyroid-Stimulating Hormone",
+"rawValue":
+"3,12",
+"unit":
+"µIU/mL"
+},
+{"code":
+"Serbest T4",
+"name":
+"Free T4",
+"rawValue":
+"1,08",
+"unit":
+"ng/dL"
+},
+{"code":
+"25-OH Vitamin D",
+"name":
+"25-Hydroxyvitamin D",
+"rawValue":
+"14,6",
+"unit":
+"ng/mL"
+},
+{"code":
+"Vitamin B12",
+"name":
+"Vitamin B12",
+"rawValue":
+"2899",
+"unit":
+"pg/mL"
+}
+],
+"reportDate":
+"2050-06-19",
+"patientName":
+"Ayşe YILMAZ",
+"authorName":
+"",
+"reportLanguage":
+"de"}

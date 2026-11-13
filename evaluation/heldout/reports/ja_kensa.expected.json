@@ -1,0 +1,21 @@
+{
+  "reportDate": "2026-10-19",
+  "patientName": "山田",
+  "values": [
+    {"names": ["AST", "GOT", "Aspartate"], "value": 34, "unit": "U/L", "loinc": "1920-8"},
+    {"names": ["ALT", "GPT", "Alanine"], "value": 41, "unit": "U/L", "loinc": "1742-6"},
+    {"names": ["γ-GTP", "GGT", "Glutamyl"], "value": 88, "unit": "U/L", "loinc": "2324-2"},
+    {"names": ["総コレステロール", "Cholesterol"], "value": 231, "unit": "mg/dL", "loinc": "2093-3"},
+    {"names": ["HDL"], "value": 52, "unit": "mg/dL", "loinc": "2085-9"},
+    {"names": ["LDL"], "value": 149, "unit": "mg/dL"},
+    {"names": ["中性脂肪", "Triglyceride"], "value": 176, "unit": "mg/dL", "loinc": "2571-8"},
+    {"names": ["空腹時血糖", "Glucose"], "value": 118, "unit": "mg/dL"},
+    {"names": ["HbA1c", "Hemoglobin A1c"], "value": 6.4, "unit": "%", "loinc": "4548-4"},
+    {"names": ["クレアチニン", "Creatinine"], "value": 1.02, "unit": "mg/dL", "loinc": "2160-0"},
+    {"names": ["eGFR", "Glomerular"], "value": 57.3, "unit": "mL/min/1.73m2"}
+  ],
+  "notNumeric": [
+    {"names": ["尿蛋白", "蛋白", "Protein"], "result": "(±)"},
+    {"names": ["尿糖", "Glucose"], "result": "(−)"}
+  ]
+}

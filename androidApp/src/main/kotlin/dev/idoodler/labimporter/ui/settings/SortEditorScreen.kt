@@ -242,7 +242,8 @@ private fun VisibleRow(
         index, count,
         // Tapping a row opens its LOINC details (rename, reference range), keeping the row's width for the name.
         onClick = onOpenDetails,
-        modifier = modifier.semantics {
+        modifier = modifier,
+        action = Modifier.semantics {
             if (onOpenDetails != null) onClick(label = detailsLabel) { onOpenDetails(); true }
             // Dragging needs a pointer; TalkBack and switch users move rows with actions.
             customActions = buildList {
@@ -266,7 +267,7 @@ private fun VisibleRow(
             val range = preferences.referenceRange(code)
             if (nickname != null || range != null) {
                 Column {
-                    if (nickname != null) Text(LabMapping.catalogName(code), style = MaterialTheme.typography.bodySmall)
+                    if (nickname != null) Text(LabMapping.plainName(code), style = MaterialTheme.typography.bodySmall)
                     if (range != null) Text(range.formatted(number = ::formatNumber), style = MaterialTheme.typography.bodySmall)
                 }
             }

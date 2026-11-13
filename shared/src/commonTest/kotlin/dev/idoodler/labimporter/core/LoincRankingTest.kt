@@ -27,6 +27,49 @@ class LoincRankingTest {
     }
 
     @Test
+    fun aMixIsNamedOnlyByMoreThanOneMemberOrItsOwnName() {
+        val mix = LoincCandidate(
+            "23801-4", 11003, "PrThr", "Ord", "Ser",
+            listOf(
+                "(Arachis hypogaea+Kuhmilch+Eiweiß+Gadus morhua+Glycine max+Triticum aestivum) IgE-Antikörper [Nachweis] in Serum",
+                "Food Allergen Mix 5 (Peanut+Cow milk+Egg white+Cod+Soybean+Wheat) IgE Ab [Presence] in Serum by Multidisk",
+            ),
+            synonyms = listOf("fx5"),
+            component = "(Arachis hypogaea+Cow milk+Egg white+Gadus morhua+Glycine max+Triticum aestivum) Ab.IgE",
+            loincClass = "ALLERGY",
+        )
+        val single = LoincCandidate(
+            "6106-9", 1200, "ACnc", "Qn", "Ser", listOf("Eiweiß IgE-Antikörper [Einheiten/Volumen] in Serum"),
+            component = "Egg white Ab.IgE", loincClass = "ALLERGY",
+        )
+        // One member, with or without what all members share: not the mix.
+        assertNull(LoincRanking.best("Eiweiß", listOf(mix)))
+        assertNull(LoincRanking.best("Eiweiß IgE", listOf(mix)))
+        assertNull(LoincRanking.best("Wheat", listOf(mix)))
+        assertEquals("6106-9", LoincRanking.best("Eiweiß", listOf(mix, single))?.code)
+        // Two members, the mix's own name or its code: the mix.
+        assertEquals("23801-4", LoincRanking.best("Kuhmilch Eiweiß", listOf(mix))?.code)
+        assertEquals("23801-4", LoincRanking.best("Food Allergen Mix 5", listOf(mix))?.code)
+        assertEquals("23801-4", LoincRanking.best("fx5", listOf(mix))?.code)
+        // Only an allergen's parenthesised list is a mix: a sum, a cell phenotype or an unbracketed list is not.
+        val fluoxetine = LoincCandidate(
+            "10339-0", 4000, "MCnc", "Qn", "Ser/Plas", listOf("Fluoxetina+Norfluoxetina in Siero/Plasma (MCnc)"),
+            component = "Fluoxetine+Norfluoxetine", loincClass = "DRUG/TOX",
+        )
+        assertEquals("10339-0", LoincRanking.best("Fluoxetina", listOf(fluoxetine), unit = "ng/ml")?.code)
+        val helpers = LoincCandidate(
+            "24467-3", 1500, "NCnc", "Qn", "Bld", listOf("CD3+CD4+ (T4 helper) cells [#/volume] in Blood"),
+            component = "Cells.CD3+CD4+", loincClass = "CELLMARK",
+        )
+        assertEquals("24467-3", LoincRanking.best("CD4", listOf(helpers), unit = "/µl")?.code)
+        val horse = mix.copy(
+            code = "30088-9", labels = listOf("Horse hair+Horse dander IgE Ab [Presence] in Serum"),
+            synonyms = emptyList(), component = "Horse hair+Horse dander Ab.IgE",
+        )
+        assertEquals("30088-9", LoincRanking.best("Horse hair", listOf(horse))?.code)
+    }
+
+    @Test
     fun aTermThatCantHoldTheValueIsNeverSuggested() {
         val crystals = LoincCandidate("5817-2", 1607, "PrThr", "Ord", "Urine sed", listOf("Cristales de ácido úrico in Sedimento urinario (PrThr)"))
         assertNull(LoincRanking.best("Ácido úrico", listOf(crystals), unit = "mg/dl"))

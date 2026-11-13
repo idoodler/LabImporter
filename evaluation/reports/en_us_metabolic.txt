@@ -1,0 +1,14 @@
+Prairie Valley Clinical Lab
+Patient: Kevin O'Brien      DOB: 08/23/1961      Sex: M
+Date of Service: 01/07/2026
+
+Test                     Result      Flag    Units           Ref Range
+Glucose                  118         H       mg/dL           70-99
+BUN                      21                  mg/dL           6-24
+Creatinine               1.08                mg/dL           0.76-1.27
+eGFR                     >60                 mL/min/1.73m2   >59
+Albumin                  4.3                 g/dL            3.8-4.9
+Bilirubin, Total         0.6                 mg/dL           0.0-1.2
+Ketones, Urine           <5                  mg/dL           Negative
+Microalbumin, Urine      <3.0                mg/L            0.0-30.0
+Hemoglobin A1c           6.3         H       %               4.8-5.6

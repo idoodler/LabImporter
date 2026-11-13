@@ -1,0 +1,13 @@
+Summit Reference Laboratory
+Patient: Maria Gonzalez     DOB: 12/19/1970     Sex: F
+Collected: 02/05/2026 10:31     Received: 02/05/2026 14:02
+
+Test                        Result   Flag  Units          Reference Range
+Hemoglobin                  12.6           g/dL           11.7-15.5
+Bilirubin, Direct           <0.2           mg/dL          < OR = 0.2
+Creatinine                  0.68           mg/dL          0.50-0.99
+eGFR                        >90            mL/min/1.73m2  > OR = 60
+Albumin, Urine              <0.2           mg/dL
+Ferritin                    18             ng/mL          16-232
+hs-CRP                      0.4            mg/L           <1.0
+Lead, Blood                 <1             mcg/dL         <3.5

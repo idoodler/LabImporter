@@ -60,6 +60,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -98,6 +99,8 @@ import dev.idoodler.labimporter.ui.components.formatDate
 import kotlinx.datetime.LocalDate
 import java.time.format.FormatStyle
 import dev.idoodler.labimporter.ui.HealthConnectState
+import dev.idoodler.labimporter.ui.ReportsExport
+import dev.idoodler.labimporter.ui.dashboard.openHealthConnectUpdate
 import dev.idoodler.labimporter.ui.design.CategoryWash
 import dev.idoodler.labimporter.ui.design.GroupedListItem
 import dev.idoodler.labimporter.ui.design.SectionTitle
@@ -171,7 +174,7 @@ fun SettingsScreen(
                         leading = { Badge(MaterialShapes.Cookie7Sided, LabCategory.GLYCEMIC.color, Icons.Rounded.Search) },
                         headline = { Text(stringResource(R.string.show_latest_in_search)) },
                         trailing = { Switch(checked = search.showLatestValue, onCheckedChange = null) },
-                        modifier = Modifier.toggleable(search.showLatestValue, role = Role.Switch, onValueChange = search.onShowLatestValue),
+                        action = Modifier.toggleable(search.showLatestValue, role = Role.Switch, onValueChange = search.onShowLatestValue),
                     )
                     Text(
                         stringResource(R.string.show_latest_in_search_footer), style = MaterialTheme.typography.bodySmall,
@@ -432,8 +435,8 @@ private object PastDates : SelectableDates {
 /** Moving reports between devices (iPhone ⇄ Android) as a file — see `ReportTransfer`. */
 data class TransferSettings(
     val hasReports: Boolean = false,
-    /** Writes every report to the transfer file and returns it for sharing. */
-    val onExport: () -> Uri? = { null },
+    /** Writes every report to the transfer file, or says why not; true accepts leaving values out. */
+    val onExport: (Boolean) -> ReportsExport = { ReportsExport.Failed },
     val onImport: (Uri) -> Unit = {},
 )
 
@@ -442,22 +445,38 @@ private fun TransferItems(transfer: TransferSettings) {
     val context = LocalContext.current
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> uri?.let(transfer.onImport) }
     val chooserTitle = stringResource(R.string.transfer_export)
+    var leavesOut by rememberSaveable { mutableStateOf<Int?>(null) }
+    fun export(allowLeavingOut: Boolean) {
+        when (val result = transfer.onExport(allowLeavingOut)) {
+            is ReportsExport.Ready -> {
+                val send = Intent(Intent.ACTION_SEND)
+                    .setType("application/json")
+                    .putExtra(Intent.EXTRA_STREAM, result.uri)
+                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                context.startActivity(Intent.createChooser(send, chooserTitle))
+            }
+            is ReportsExport.LeavesOut -> leavesOut = result.results
+            ReportsExport.Failed -> Unit
+        }
+    }
+    leavesOut?.let { count ->
+        AlertDialog(
+            onDismissRequest = { leavesOut = null },
+            title = { Text(stringResource(R.string.transfer_leaves_out_title)) },
+            text = { Text(stringResource(R.string.transfer_leaves_out_message, count)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    leavesOut = null
+                    export(true)
+                }) { Text(stringResource(R.string.transfer_share_anyway)) }
+            },
+            dismissButton = { TextButton(onClick = { leavesOut = null }) { Text(stringResource(R.string.cancel)) } },
+        )
+    }
     Column {
         GroupedListItem(
             0, 2,
-            onClick = if (transfer.hasReports) {
-                {
-                    transfer.onExport()?.let { uri ->
-                        val send = Intent(Intent.ACTION_SEND)
-                            .setType("application/json")
-                            .putExtra(Intent.EXTRA_STREAM, uri)
-                            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        context.startActivity(Intent.createChooser(send, chooserTitle))
-                    }
-                }
-            } else {
-                null
-            },
+            onClick = if (transfer.hasReports) ({ export(false) }) else null,
             leading = { Badge(MaterialShapes.Arch, LabCategory.HEPATIC.color, Icons.Rounded.Upload) },
             headline = { Text(stringResource(R.string.transfer_export)) },
             supporting = { Text(stringResource(R.string.transfer_export_detail)) },
@@ -492,8 +511,14 @@ private fun Badge(polygon: RoundedPolygon, color: Color, icon: androidx.compose.
 
 @Composable
 private fun HealthConnectItem(state: HealthConnectState, onConnect: () -> Unit, onUse: (Boolean) -> Unit) {
+    val context = LocalContext.current
+    // Chosen but out of reach: the reports saved there aren't listed, and this row is the way out.
+    val cutOff = state.chosen && !state.inUse
     val supporting = when {
         state.inUse -> stringResource(R.string.hc_in_use)
+        cutOff && state.availability == HealthConnectAvailability.AVAILABLE -> stringResource(R.string.hc_access_off_message)
+        cutOff && state.availability == HealthConnectAvailability.UPDATE_REQUIRED -> stringResource(R.string.hc_needs_update_message)
+        cutOff -> stringResource(R.string.hc_gone_message)
         state.availability == HealthConnectAvailability.AVAILABLE && !state.granted -> stringResource(R.string.hc_available)
         state.availability == HealthConnectAvailability.AVAILABLE -> stringResource(R.string.hc_local_selected)
         state.availability == HealthConnectAvailability.UPDATE_REQUIRED -> stringResource(R.string.hc_update_required)
@@ -509,6 +534,12 @@ private fun HealthConnectItem(state: HealthConnectState, onConnect: () -> Unit, 
                 Text(supporting)
                 if (state.availability == HealthConnectAvailability.AVAILABLE && !state.granted) {
                     Button(onClick = onConnect, modifier = Modifier.padding(top = 10.dp)) { Text(stringResource(R.string.hc_connect)) }
+                }
+                if (cutOff && state.availability == HealthConnectAvailability.UPDATE_REQUIRED) {
+                    Button(onClick = { openHealthConnectUpdate(context) }, modifier = Modifier.padding(top = 10.dp)) { Text(stringResource(R.string.hc_update)) }
+                }
+                if (cutOff) {
+                    OutlinedButton(onClick = { onUse(false) }, modifier = Modifier.padding(top = 10.dp)) { Text(stringResource(R.string.hc_use_app_storage)) }
                 }
             }
         },
@@ -634,6 +665,39 @@ private fun SettingsPreview() {
             HealthConnectState(HealthConnectAvailability.MEDICAL_RECORDS_UNSUPPORTED), {}, {},
             AiSettings(AiAvailability.Preparing(420_000_000, 1_000_000_000)),
             "LabImporter 1.0 (1) Android", onBack = {},
+        )
+    }
+}
+
+@Preview(name = "Health Connect gone", widthDp = 400, heightDp = 1100)
+@Composable
+private fun SettingsHealthConnectGonePreview() {
+    LabImporterTheme(dynamicColor = false) {
+        SettingsScreen(
+            PatientSettings(), HealthConnectState(HealthConnectAvailability.MEDICAL_RECORDS_UNSUPPORTED, chosen = true), {}, {},
+            AiSettings(AiAvailability.Ready), "LabImporter 1.0 (1) Android", onBack = {},
+        )
+    }
+}
+
+@Preview(name = "Health Connect access off – dark", widthDp = 400, heightDp = 1100, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun SettingsHealthConnectAccessOffPreview() {
+    LabImporterTheme(darkTheme = true, dynamicColor = false) {
+        SettingsScreen(
+            PatientSettings(), HealthConnectState(HealthConnectAvailability.AVAILABLE, chosen = true), {}, {},
+            AiSettings(AiAvailability.Ready), "LabImporter 1.0 (1) Android", onBack = {},
+        )
+    }
+}
+
+@Preview(name = "Health Connect needs an update", widthDp = 400, heightDp = 1100)
+@Composable
+private fun SettingsHealthConnectUpdatePreview() {
+    LabImporterTheme(dynamicColor = false) {
+        SettingsScreen(
+            PatientSettings(), HealthConnectState(HealthConnectAvailability.UPDATE_REQUIRED, chosen = true), {}, {},
+            AiSettings(AiAvailability.Ready), "LabImporter 1.0 (1) Android", onBack = {},
         )
     }
 }

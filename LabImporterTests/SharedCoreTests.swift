@@ -37,9 +37,9 @@ struct SharedCoreTests {
         #expect(report.patientName == "Max Mustermann")
         #expect(report.authorName == "Labor & Co")
         // Only exportable values were written: mapped, selected, numeric.
-        #expect(report.entries.map(\.code) == ["2160-0", "2823-3", "4548-4", "1742-6"])
-        #expect(report.entries.map(\.numericValue) == [0.8, 4.1, 6.53, 12_350])
-        #expect(report.entries.map(\.unit) == ["mg/dL", "mmol/L", "%", "U/L"])
+        #expect(report.entries.map(\.code) == ["2160-0", "2823-3", "4548-4", "1742-6", "6690-2"])
+        #expect(report.entries.map(\.numericValue) == [0.8, 4.1, 6.53, 12_345.6, 7.2])
+        #expect(report.entries.map(\.unit) == ["mg/dL", "mmol/L", "%", "U/L", "10*9/L"])
         // Documents this app didn't write are skipped, never guessed at.
         #expect(HealthKitService.report(fromCDA: "<ClinicalDocument/>", id: id) == nil)
     }
@@ -97,8 +97,76 @@ struct SharedCoreTests {
         #expect(MetricTrend(history: [SparkPoint(date: day, value: 2)]) == nil)
     }
 
+    @Test func chartsUseTheSharedScale() throws {
+        let dates = [Fixtures.date(2024, 1, 10), Fixtures.date(2024, 1, 24), Fixtures.date(2026, 5, 28)]
+        let domain = try #require(ChartDomain(dates: dates, values: [32, 35, 34], range: nil))
+        #expect(domain.yDomain == 0...40)
+        #expect(domain.yTicks == [0, 10, 20, 30, 40])
+        #expect(domain.xDomain == dates[0]...dates[2])
+        #expect(domain.xLabels == [dates[0], dates[2]])
+
+        let sameDay = try #require(ChartDomain(dates: [dates[0], dates[0]], values: [32, 35], range: nil))
+        #expect(sameDay.xLabels == [dates[0]])
+
+        let withRange = try #require(ChartDomain(dates: dates, values: [32, 35, 34], range: ReferenceRange(low: 30, high: 50)))
+        #expect(withRange.yDomain == 0...50)
+
+        let lone = try #require(ChartDomain(dates: [dates[0]], values: [32], range: nil))
+        #expect(lone.xLabels == [dates[0]])
+        #expect(lone.xDomain.lowerBound < dates[0] && lone.xDomain.upperBound > dates[0])
+        #expect(ChartDomain(dates: [], values: [], range: nil) == nil)
+    }
+
+    @Test func cardSparklinesUseTheSharedSparklineRule() throws {
+        let dates = [Fixtures.date(2025, 6, 1), Fixtures.date(2026, 5, 28)]
+        let flat = try #require(ChartDomain(sparkline: dates, values: [92, 92]))
+        // In the middle, not at the top of a zero-based axis.
+        #expect(abs((flat.yDomain.lowerBound + flat.yDomain.upperBound) / 2 - 92) < 1e-9)
+        #expect(flat.yDomain.lowerBound > 0)
+        #expect(flat.yTicks.isEmpty)
+        #expect(ChartDomain(sparkline: [], values: []) == nil)
+    }
+
+    @Test func saveConfirmationListsFlaggedAndLeftOutValuesByName() throws {
+        let misread = LabValue(code: "2345-7", name: "Glucose", displayValue: "922", numericValue: 922, unit: "mg/dL", needsSourceCheck: true)
+        let unmapped = LabValue(code: "KREA", name: "Kreatinin", displayValue: "0.9", numericValue: 0.9, unit: "mg/dL")
+        let confirmation = try #require([unmapped, misread].saveConfirmation())
+        #expect(confirmation.toCheck == ["Glucose 922 mg/dL"])
+        #expect(confirmation.leftOut == ["Kreatinin 0.9 mg/dL"])
+        #expect(confirmation.firstID == misread.id, "Go Back leads to the value to check first")
+        #expect(confirmation.message.contains("Glucose 922 mg/dL") && confirmation.message.contains("Kreatinin 0.9 mg/dL"))
+        var checked = misread
+        checked.needsSourceCheck = false
+        #expect([checked].saveConfirmation() == nil, "Nothing flagged or left out: no question")
+    }
+
+    @Test func sharingTheReportFileAsksTheSameQuestionInItsOwnWords() throws {
+        let misread = LabValue(code: "2345-7", name: "Glucose", displayValue: "922", numericValue: 922, unit: "mg/dL", needsSourceCheck: true)
+        let unmapped = LabValue(code: "KREA", name: "Kreatinin", displayValue: "0.9", numericValue: 0.9, unit: "mg/dL")
+        let share = try #require([unmapped, misread].saveConfirmation(for: .share))
+        let save = try #require([unmapped, misread].saveConfirmation())
+        #expect(share.toCheck == save.toCheck && share.leftOut == save.leftOut, "The file leaves out what a save would")
+        #expect(share.title == "Check Before Sharing" && share.proceedTitle == "Share Anyway")
+        #expect(share.message.contains("won't be shared:") && !share.message.contains("won't be saved:"))
+        #expect(save.title == "Check Before Saving" && save.proceedTitle == "Save Anyway")
+    }
+
     @Test func trendWindowsSpanTheSharedDays() {
         #expect(TrendsView.TrendWindow.allCases.map(\.days) == [92, 183, 366, nil])
+        #expect(TrendsView.TrendWindow.opening == .all)
+    }
+
+    @Test func siriTellsTermsWithOneNameApart() throws {
+        let codes = ["2345-7", "14749-6", "4548-4"].map { CodeName(code: $0, name: "") }
+        #expect(LabMapping.displayName(for: "2345-7") == LabMapping.displayName(for: "14749-6"))
+        #expect(codes.codesSharingAName == ["2345-7", "14749-6"])
+        #expect(LabMapping.catalogName(for: "2345-7") != LabMapping.catalogName(for: "14749-6"))
+
+        let subtitles = try ["2345-7", "14749-6"].map { code in
+            try #require(LabMetricEntity(id: code, name: LabMapping.displayName(for: code)).displayRepresentation.subtitle)
+        }
+        #expect(String(localized: subtitles[0]) == LabMapping.catalogName(for: "2345-7"))
+        #expect(String(localized: subtitles[1]) == LabMapping.catalogName(for: "14749-6"))
     }
 
     @Test func codeNamesListEachCodeOnceInFirstSeenOrder() {
@@ -116,7 +184,7 @@ struct SharedCoreTests {
             report(Fixtures.date(2026, 5, 6), [("2160-0", 0.8), ("2823-3", 4.1)]),
             report(Fixtures.date(2026, 9, 10), [("4548-4", 6.5)])
         ]
-        let file = ReportTransferService.exportContents(of: reports)
+        let file = ReportTransferService.export(of: reports).contents
         let fresh = try ReportTransferService.plan(contents: file, existing: [])
         #expect(fresh.reports.count == 2)
         #expect(fresh.alreadyPresent == 0)
@@ -129,6 +197,75 @@ struct SharedCoreTests {
         #expect(try ReportTransferService.plan(contents: cda, existing: []).reports.count == 1)
         #expect(throws: ReportTransferService.Failure.self) {
             try ReportTransferService.plan(contents: "{\"resourceType\":\"Patient\"}", existing: [])
+        }
+    }
+
+    private func transferFile(_ reports: [LabReport]) throws -> URL {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).json")
+        try ReportTransferService.export(of: reports).contents.write(to: url, atomically: true, encoding: .utf8)
+        return url
+    }
+
+    /// A read that fails leaves Settings with no reports, so everything would come in as a duplicate.
+    @Test func aFileIsNotImportedWhileTheSavedReportsCantBeRead() async throws {
+        let file = try transferFile([report(Fixtures.date(2026, 5, 6), [("2160-0", 0.8)])])
+        defer { try? FileManager.default.removeItem(at: file) }
+        let health = FakeHealthStore()
+        await health.failLoads()
+        await #expect(throws: ReportTransferService.Failure.savedReportsUnreadable) {
+            try await ReportTransferService.importFile(at: file, store: health)
+        }
+        #expect(await health.saveAttempts == 0)
+    }
+
+    @Test func importingSkipsWhatAFreshReadFinds() async throws {
+        let saved = report(Fixtures.date(2026, 5, 6), [("2160-0", 0.8)])
+        let file = try transferFile([saved])
+        defer { try? FileManager.default.removeItem(at: file) }
+        let health = FakeHealthStore()
+        _ = try await ReportWriter(store: health).save(saved.asLabValues, date: saved.date)
+        let summary = try await ReportTransferService.importFile(at: file, store: health)
+        #expect(summary.imported == 0)
+        #expect(summary.alreadyPresent == 1)
+    }
+
+    @Test func aDamagedFileIsCounted() throws {
+        let intact = report(Fixtures.date(2026, 9, 10), [("4548-4", 6.5)])
+        let damaged = report(Fixtures.date(2026, 5, 6), [("2160-0", 0.8)])
+        let file = ReportTransferService.export(of: [intact, damaged]).contents
+            .replacingOccurrences(of: "\"2026-05-06\"", with: "\"not a date\"")
+        let plan = try ReportTransferService.plan(contents: file, existing: [])
+        #expect(plan.reports.count == 1)
+        #expect(plan.damaged == 1)
+    }
+
+    @Test func anExportSaysWhatItLeftOut() {
+        let mapped = report(Fixtures.date(2026, 5, 6), [("2160-0", 0.8), ("NOT-A-CODE", 1)])
+        let export = ReportTransferService.export(of: [mapped])
+        #expect(export.written == 1)
+        #expect(export.leftOut == 1)
+        #expect(export.contents.contains("2160-0") && !export.contents.contains("NOT-A-CODE"))
+    }
+
+    @Test func anExportWithNothingInItIsAnErrorNotAnEmptyFile() {
+        let export = ReportTransferService.export(of: [report(Fixtures.date(2026, 5, 6), [("NOT-A-CODE", 1)])])
+        #expect(throws: ReportTransferService.Failure.self) {
+            try ReportTransferService.writeFile(export)
+        }
+    }
+
+    @Test func aFileFromANewerVersionAsksForAnUpdate() throws {
+        let cda = CDAExportService().generateCDA(
+            labValues: report(Fixtures.date(2026, 5, 6), [("2160-0", 0.8)]).asLabValues, date: Fixtures.date(2026, 5, 6)
+        )
+        #expect(throws: ReportTransferService.Failure.newerVersion) {
+            try ReportTransferService.plan(contents: cda.replacingOccurrences(of: "LabImporter CDA v2", with: "LabImporter CDA v99"), existing: [])
+        }
+        let current = "\"code\":\"2\""
+        let file = ReportTransferService.export(of: [report(Fixtures.date(2026, 5, 6), [("2160-0", 0.8)])]).contents
+        #expect(file.contains(current))
+        #expect(throws: ReportTransferService.Failure.newerVersion) {
+            try ReportTransferService.plan(contents: file.replacingOccurrences(of: current, with: "\"code\":\"99\""), existing: [])
         }
     }
 }

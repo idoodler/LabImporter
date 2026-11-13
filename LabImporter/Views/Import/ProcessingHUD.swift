@@ -83,6 +83,7 @@ struct ProcessingHUD: View {
         .animation(.easeInOut(duration: 0.3), value: phase)
         .animation(.spring(duration: 0.4), value: parseProgress?.entryCount ?? 0)
         .task {
+            // Sleep only throws when the HUD went away, and then nothing shows the button.
             try? await Task.sleep(for: .seconds(2))
             withAnimation(.easeInOut(duration: 0.3)) { showsCancel = true }
         }
@@ -151,7 +152,7 @@ private struct ImportProgressView: View {
                     .font(.title3.weight(.semibold))
                 statusText
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
                     .contentTransition(.numericText())
             }
             .multilineTextAlignment(.center)
@@ -180,7 +181,7 @@ private struct ImportProgressView: View {
                 .frame(width: 110, height: 110)
                 .shadow(color: LabCategory.endocrine.color.opacity(0.35), radius: 24, y: 10)
             Image(systemName: phase.systemImage)
-                .font(.system(size: 44, weight: .medium))
+                .decorativeIcon(size: 44, weight: .medium)
                 .foregroundStyle(.white)
                 .contentTransition(.symbolEffect(.replace))
                 .symbolEffect(.pulse, options: .repeating, isActive: !reduceMotion)

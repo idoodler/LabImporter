@@ -59,7 +59,8 @@ struct MorphingCategoryBackground: View {
         Color(.systemBackground)
             .overlay {
                 Group {
-                    if reduceMotion {
+                    // Screenshot mode holds still too: the accessibility audit can't judge text over a moving wash.
+                    if reduceMotion || ScreenshotMode.isActive {
                         mesh(at: 0)
                     } else {
                         TimelineView(.animation) { context in

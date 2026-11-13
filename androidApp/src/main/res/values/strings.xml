@@ -34,12 +34,11 @@
     <string name="disclaimer_title">Not Medical Advice</string>
     <string name="disclaimer_body">LabImporter is not a medical device and does not provide medical advice, diagnosis, or treatment. Extracted values may be inaccurate or incomplete — always verify them against your original report. Never make medical decisions based on this app; consult a qualified healthcare professional about your results.</string>
     <string name="disclaimer_accept">I Understand</string>
-    <string name="onboarding_hc_message">Save your reports to Health Connect so they live with the rest of your health data. Lab results are stored as standard FHIR records on this device.</string>
+    <string name="onboarding_hc_message">Save your reports to Health Connect so they live with the rest of your health data. Lab results are stored as standard medical records on this device.</string>
     <string name="onboarding_hc_connected">Connected. Your reports will be saved to Health Connect as lab results.</string>
     <string name="onboarding_hc_unavailable">Health Connect medical records aren\'t available on this device, so your reports are stored privately in LabImporter on this device. You can switch later in Settings.</string>
 
     <!-- Dashboard -->
-    <string name="dashboard_empty_title">No Reports Yet</string>
     <string name="import_report">Import Report</string>
     <string name="search_metrics">Search Your Lab Values</string>
     <string name="pinned">Pinned</string>
@@ -82,9 +81,12 @@
     <!-- History -->
     <string name="history_empty_title">No Reports Yet</string>
     <string name="history_empty_message">Import a lab report to see it here.</string>
-    <string name="share_cda">Share CDA File</string>
+    <string name="share_cda">Share Report File</string>
     <string name="delete_report_title">Delete Report?</string>
     <string name="delete_report_message">This report will be permanently removed.</string>
+    <string name="delete_unread_values">Values this version of LabImporter can\'t show are deleted too: %1$d.</string>
+    <string name="report_read_only_title">Can\'t Be Edited</string>
+    <string name="report_read_only_message">This report has values this version of LabImporter can\'t show: %1$d. So that they aren\'t lost, it can\'t be edited. Updating LabImporter may show them.</string>
     <string name="report_deleted">Report deleted</string>
     <string name="patient_label">Patient: %1$s</string>
     <plurals name="value_count">
@@ -159,7 +161,10 @@
     <string name="model_ready_text">LabImporter can now read your lab reports, entirely on this phone.</string>
     <string name="model_failed_title">AI Model Not Downloaded</string>
     <string name="error_scanner">Document scanning isn\'t available on this device.</string>
-    <string name="error_save">Saving failed: %1$s</string>
+    <string name="error_save_health_connect">Health Connect couldn\'t save the report, so nothing was changed. Try again in a moment.</string>
+    <string name="error_save_storage">The report couldn\'t be saved on this device, so nothing was changed. Check the free storage and try again.</string>
+    <string name="error_save_values">Some values couldn\'t be prepared for saving, so nothing was changed. Try again in a moment.</string>
+    <string name="save_leftovers_warning">The updated report was saved, but values you removed couldn\'t be deleted yet. Edit the report to remove them again.</string>
 
     <!-- Review -->
     <string name="review_title">Review Values</string>
@@ -174,7 +179,27 @@
     <string name="search_loinc">Search lab tests</string>
     <string name="loinc_suggested">Suggested: %1$s</string>
     <string name="loinc_duplicate">Duplicate: %1$s</string>
-    <string name="engine_gemini" translatable="false">Gemini Nano</string>
+    <string name="save_check_title">Check Before Saving</string>
+    <string name="save_check_compare">Compare these with your report:</string>
+    <string name="save_check_left_out">These have no LOINC code and won\'t be saved:</string>
+    <string name="save_anyway">Save Anyway</string>
+    <string name="go_back">Go Back</string>
+    <string name="compare_with_report">Compare with report</string>
+    <string name="compare_with_report_detail">This value wasn\'t found in the report text. Compare it with your report.</string>
+    <plurals name="values_to_check">
+        <item quantity="one">%d value to check</item>
+        <item quantity="other">%d values to check</item>
+    </plurals>
+    <plurals name="values_to_correct">
+        <item quantity="one">%d value to correct</item>
+        <item quantity="other">%d values to correct</item>
+    </plurals>
+    <string name="correct_or_deselect">Can\'t be saved as written. Correct or deselect it.</string>
+    <string name="no_date_found">No date found in the report. Check that this date is right.</string>
+    <string name="date_to_check">This date may be misread. Check that it matches the report.</string>
+    <string name="several_result_dates">This report lists results from several dates. Check that the date and each value come from the same column.</string>
+    <string name="patient_and_lab">Patient and Lab</string>
+    <string name="not_filled_in">Not filled in</string>
     <plurals name="exportable_count">
         <item quantity="one">%1$d of %2$d values ready to save</item>
         <item quantity="other">%1$d of %2$d values ready to save</item>
@@ -222,14 +247,39 @@
     <string name="ai_available">Ready. Reports are read by Gemini Nano, entirely on this device.</string>
     <string name="ai_checking">Checking…</string>
     <string name="try_again">Try Again</string>
+    <string name="reports_load_failed_title">Couldn\'t Load Your Reports</string>
+    <string name="reports_load_failed_message">Your saved reports weren\'t changed, but they can\'t be read right now.</string>
+    <string name="reports_newer_title">Update LabImporter to See All Reports</string>
+    <string name="reports_newer_message">Reports saved by a newer version of LabImporter: %1$d. They\'re safe. Update the app to see them.</string>
+    <string name="hc_access_off_title">Health Connect Access Is Off</string>
+    <string name="hc_access_off_message">LabImporter can\'t read the reports you saved in Health Connect without access. They\'re still there. Allow access to see them, or keep your reports in the app from now on.</string>
+    <string name="hc_allow_access">Allow Access</string>
+    <string name="hc_needs_update_title">Health Connect Needs an Update</string>
+    <string name="hc_needs_update_message">Your reports are still in Health Connect, but it has to be updated before LabImporter can read them.</string>
+    <string name="hc_update">Update Health Connect</string>
+    <string name="hc_gone_title">Health Connect Isn\'t Available</string>
+    <string name="hc_gone_message">LabImporter can\'t reach Health Connect on this device, so the reports saved there aren\'t shown. LabImporter didn\'t delete them.</string>
+    <string name="hc_use_app_storage">Use App Storage</string>
+    <string name="reports_unreadable_title">Some Reports Can\'t Be Read</string>
+    <string name="reports_unreadable_message">Reports that can\'t be read: %1$d. They stay on this device and weren\'t deleted.</string>
+    <string name="hc_connect_failed">Couldn\'t connect to Health Connect. Your reports stay in LabImporter. Try again in Settings.</string>
     <!-- Transfer (iPhone ⇄ Android) -->
     <string name="transfer_title">Transfer</string>
     <string name="transfer_export">Export All Reports</string>
     <string name="transfer_export_detail">Save every report as one file, for example to move them to another phone.</string>
     <string name="transfer_import">Import Reports</string>
     <string name="transfer_import_detail">From a LabImporter file exported on iPhone or Android. Reports that are already here are skipped.</string>
+    <string name="transfer_leaves_out_title">Some Values Can\'t Be Exported</string>
+    <string name="transfer_leaves_out_message">Values left out of the file: %1$d. They stay in your reports.</string>
+    <string name="transfer_share_anyway">Share Anyway</string>
+    <string name="transfer_export_nothing">None of your values could be written to a file, so nothing was exported. Please try again.</string>
+    <string name="transfer_newer_version">This file comes from a newer version of LabImporter. Update the app to import it.</string>
+    <string name="transfer_newer_version_some">Reports in this file that need a newer version of LabImporter: %1$d.</string>
+    <string name="transfer_damaged_some">Damaged reports in this file: %1$d. Only what could be read was imported.</string>
     <string name="transfer_unsupported">This file doesn\'t contain LabImporter reports.</string>
     <string name="transfer_summary">New reports: %1$d · Already present: %2$d</string>
+    <string name="transfer_summary_failed">New reports: %1$d · Already present: %2$d · Not saved: %3$d</string>
+    <string name="transfer_reports_unreadable">Your saved reports can\'t be read right now, so nothing was imported. Try again in a moment.</string>
     <string name="privacy_title">Private by Design</string>
     <string name="privacy_message">Everything runs on-device. LabImporter never transmits your lab data.</string>
     <string name="loinc_catalog">LOINC catalog</string>
@@ -292,13 +342,14 @@
     <string name="pdf_all_time">All time</string>
     <string name="pdf_generated">Generated %1$s</string>
     <string name="pdf_page_of">Page %1$d of %2$d</string>
-    <string name="pdf_author">Author</string>
     <string name="pdf_period_covered">Period Covered</string>
     <string name="pdf_metrics">Metrics</string>
     <string name="pdf_out_of_range">Out of Range</string>
     <string name="pdf_trend_range">Trend Range</string>
     <string name="pdf_included_categories">Included Categories</string>
     <string name="pdf_latest_subtitle">Most recent reading for each value</string>
+    <!-- The language a shared document declares: the translation this text is loaded from. -->
+    <string name="cda_language_code">en</string>
     <string name="pdf_column_test">Test</string>
     <string name="pdf_column_result">Result</string>
     <string name="pdf_column_reference">Reference</string>
@@ -328,6 +379,7 @@
     <string name="restore">Restore</string>
     <string name="details">Details</string>
     <string name="hide">Hide</string>
+    <string name="include_in_export">Include in Export</string>
     <string name="move_up">Move Up</string>
     <string name="move_down">Move Down</string>
 
@@ -391,6 +443,7 @@
 
     <!-- Chart accessibility (TalkBack) -->
     <string name="chart_summary">%1$s chart: %2$s from %3$s to %4$s. Lowest %5$s, highest %6$s, latest %7$s.</string>
+    <string name="chart_reading">%1$s: %2$s</string>
     <plurals name="chart_readings">
         <item quantity="one">%d reading</item>
         <item quantity="other">%d readings</item>

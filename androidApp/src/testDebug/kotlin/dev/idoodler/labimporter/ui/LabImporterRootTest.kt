@@ -2,7 +2,7 @@ package dev.idoodler.labimporter.ui
 
 import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
@@ -20,7 +20,13 @@ import dev.idoodler.labimporter.ai.AiProblem
 import dev.idoodler.labimporter.ai.DevelopmentStandIn
 import dev.idoodler.labimporter.ai.FakeAi
 import dev.idoodler.labimporter.ai.UnsupportedReason
+import dev.idoodler.labimporter.core.export.ReportSchema
+import dev.idoodler.labimporter.core.model.LabReport
+import dev.idoodler.labimporter.data.LocalReportStore
 import dev.idoodler.labimporter.ui.theme.LabImporterTheme
+import java.io.File
+import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.LocalDate
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -58,12 +64,31 @@ class LabImporterRootTest {
     }
 
     @Test
+    fun theReportsScreenSaysWhichSavedReportsItCantList() {
+        ai.state.value = AiAvailability.Ready
+        val store = LocalReportStore(app, "test")
+        val report = { id: String -> LabReport(id, LocalDate(2026, 3, 1), "", "", listOf(LabReport.Entry("$id-a", "4548-4", "HbA1c", "6.5", 6.5, "%"))) }
+        runBlocking { listOf("good", "later", "damaged").forEach { store.save(report(it)) } }
+        val stored = File(app.noBackupFilesDir, "reports")
+        File(stored, "later.json").apply { writeText(readText().replace("\\\"code\\\":\\\"${ReportSchema.VERSION}\\\"", "\\\"code\\\":\\\"${ReportSchema.VERSION + 1}\\\"")) }
+        File(stored, "damaged.json").writeText("not a report")
+
+        val viewModel = launch()
+        waitFor { viewModel.reports.value.isNotEmpty() && viewModel.newerVersionReports.value == 1 && viewModel.unreadableReports.value == 1 }
+        compose.onNodeWithContentDescription(string(R.string.history_title)).performClick()
+        compose.waitForIdle()
+
+        compose.onNodeWithText(string(R.string.stat_categories)).assertExists()
+        compose.onNodeWithText(app.getString(R.string.reports_newer_message, 1)).assertExists()
+        compose.onNodeWithText(app.getString(R.string.reports_unreadable_message, 1)).assertExists()
+    }
+
+    @Test
     fun withoutOnDeviceAiTheAppOnlyExplainsWhy() {
         ai.state.value = AiAvailability.Unsupported(UnsupportedReason.DEVICE)
         launch()
         compose.onNodeWithText(string(R.string.unsupported_title)).assertIsDisplayed()
         compose.onNodeWithText(string(R.string.unsupported_message)).assertIsDisplayed()
-        compose.onNodeWithText(string(R.string.dashboard_empty_title)).assertDoesNotExist()
         compose.onNodeWithText(string(R.string.import_title)).assertDoesNotExist()
     }
 
@@ -140,7 +165,7 @@ class LabImporterRootTest {
         waitFor { viewModel.importState.value.let { it is ImportState.Reviewing || it is ImportState.Failed } }
         assertEquals(ImportState.Reviewing::class, viewModel.importState.value::class)
         compose.onNodeWithText(string(R.string.review_title)).assertIsDisplayed()
-        compose.onNodeWithText(string(R.string.engine_gemini)).assertIsDisplayed()
+        compose.onNodeWithText(string(R.string.ready_to_save)).assertIsDisplayed()
     }
 
     @Test

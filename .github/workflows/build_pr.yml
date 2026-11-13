@@ -20,26 +20,35 @@ jobs:
         run: sudo xcode-select --switch /Applications/Xcode_27.1.app/Contents/Developer
 
       - name: Checkout Repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
 
       # The Xcode "Build shared Kotlin" phase runs Gradle (shared/ KMP module).
       - name: Set up JDK
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
           distribution: temurin
           java-version: "21"
 
+      # SwiftLint 0.63.2, like lint.yml's image and the SessionStart hook, never whatever brew
+      # has today: the release's own macOS binary, checked against its SHA-256 (the digest
+      # GitHub lists for the release asset).
+      - name: Install SwiftLint 0.63.2
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/swiftlint.zip" https://github.com/realm/SwiftLint/releases/download/0.63.2/portable_swiftlint.zip
+          echo "c59a405c85f95b92ced677a500804e081596a4cae4a6a485af76065557d6ed29  $RUNNER_TEMP/swiftlint.zip" | shasum -a 256 -c -
+          unzip -o -q "$RUNNER_TEMP/swiftlint.zip" -d "$RUNNER_TEMP/swiftlint"
+          echo "$RUNNER_TEMP/swiftlint" >> "$GITHUB_PATH"
+
       - name: SwiftLint
         run: |
-          if ! command -v swiftlint &>/dev/null; then
-            brew install swiftlint
-          fi
+          test "$(swiftlint version)" = "0.63.2"
           swiftlint lint --strict --reporter github-actions-logging
 
       # Simulator SDK + code signing disabled: confirms the branch compiles and
       # the tests pass without touching App Store Connect, Match, or any repo
       # secret. No IPA is produced (a signed archive needs real signing
       # credentials, which this repo doesn't have configured).
+      # Every test but the accessibility audit, which has a step of its own below.
       - name: Unit and UI tests (Simulator SDK, unsigned)
         run: |
           # The iPhone Duo simulator if the selected Xcode has one (the layouts
@@ -47,11 +56,30 @@ jobs:
           SIMULATOR=$(xcrun simctl list devices available --json | python3 -c '
           import json, sys
           runtimes = json.load(sys.stdin)["devices"]
-          ios = sorted((k for k in runtimes if ".iOS-" in k), key=lambda k: [int(p) for p in k.rsplit("iOS-", 1)[1].split("-")])
+          ios = sorted((k for k in runtimes if ".iOS-" in k), key=lambda k: [int(p) for p in k.rsplit("iOS-", 1)[1].split("-") if p.isdigit()])
           phones = [d for k in ios for d in runtimes[k] if d["name"].startswith("iPhone")]
           duos = [d for d in phones if d["name"] == "iPhone Duo"]
           print((duos or phones)[-1]["udid"])')
           # Boot it up front: left to xcodebuild, the Duo simulator's first boot
           # can stall the test run indefinitely.
           xcrun simctl bootstatus "$SIMULATOR" -b
-          tools/ios_test.sh all "$SIMULATOR"
+          # The log feeds `swiftlint analyze` below: a clean checkout, so it holds every compile.
+          IOS_BUILD_LOG=build/xcodebuild.log tools/ios_test.sh all "$SIMULATOR"
+          # The runner's memory is for one simulator at a time.
+          xcrun simctl shutdown "$SIMULATOR"
+
+      # The accessibility audit on the one device and OS its exemptions and page counts were measured
+      # on (tools/quality/audit_simulator.sh: an iPhone 17 Pro with iOS 27.0, which this image has the
+      # runtime for but no simulator of, so it's created here). On the Duo it flags other texts and its
+      # pages begin elsewhere.
+      - name: Accessibility audit (pinned iPhone 17 Pro, iOS 27.0)
+        if: success() || failure()
+        run: |
+          SIMULATOR=$(tools/quality/audit_simulator.sh --create)
+          xcrun simctl bootstatus "$SIMULATOR" -b
+          tools/ios_test.sh audit
+
+      # The analyzer rules of .swiftlint.yml (unused_import) need the compiler's
+      # arguments, so they run here, against that build, and not in `swiftlint lint`.
+      - name: SwiftLint analyze
+        run: swiftlint analyze --strict --compiler-log-path build/xcodebuild.log --reporter github-actions-logging

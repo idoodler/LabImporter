@@ -18,17 +18,18 @@ struct ValueDescriptionCard: View {
                     Spacer()
                     Image(systemName: "chevron.right")
                         .font(.caption2)
-                        .foregroundStyle(.tertiary)
+                        .foregroundStyle(.textTertiary)
+                        .accessibilityHidden(true)
                 }
-                if let description {
-                    Text(description)
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
+                // The full catalog label in the app's language, which tells this test from its neighbours;
+                // LOINC's description is terse syntax ("Calcidiol in Ser/Plas (MCnc)").
+                Text(term.name)
+                    .font(.callout)
+                    .foregroundStyle(.textSecondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 Text(verbatim: "LOINC \(term.code)")
                     .font(.caption2)
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(.textTertiary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
@@ -37,10 +38,42 @@ struct ValueDescriptionCard: View {
         }
         .buttonStyle(.plain)
     }
+}
 
-    private var description: String? {
-        if let description = term.description, !description.isEmpty { return description }
-        // Fall back to the English name when it adds detail beyond the title.
-        return term.englishName == term.name ? nil : term.englishName
+// MARK: - Previews
+
+#if DEBUG
+#Preview("Description") {
+    NavigationStack {
+        ValueDescriptionCard(term: .sample)
     }
 }
+
+#Preview("Name Only") {
+    NavigationStack {
+        ValueDescriptionCard(term: LoincTerm(code: "2160-0", name: "Creatinine", englishName: "Creatinine",
+                                             description: nil, ucum: "mg/dL", rank: 1))
+    }
+}
+
+#Preview("Dark") {
+    NavigationStack {
+        ValueDescriptionCard(term: .sample)
+    }
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Largest Text") {
+    NavigationStack {
+        ValueDescriptionCard(term: .sample)
+    }
+    .dynamicTypeSize(.accessibility5)
+}
+
+#Preview("RTL") {
+    NavigationStack {
+        ValueDescriptionCard(term: .sample)
+    }
+    .environment(\.layoutDirection, .rightToLeft)
+}
+#endif

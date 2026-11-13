@@ -21,20 +21,28 @@ import kotlin.uuid.Uuid
  *  - the report date is the first `effectiveTime` in the document;
  *  - an observation needs a LOINC code, a display name and either a `PQ`
  *    value with a unit or an `ST` qualitative result (whose text carries the
- *    unit, see [QualitativeResult]) — older builds skip `ST` observations;
+ *    unit, see [QualitativeResult]). An observation this build can't read in full
+ *    (another value type, a damaged one) isn't dropped silently: it's counted in
+ *    [LabReport.unreadValues], which makes the report read-only;
  *  - the `Unknown` patient / `LabImporter` organisation placeholders are ignored.
  */
 object CdaParser {
     private const val LOINC_OID = "2.16.840.1.113883.6.1"
     private const val XSI_NS = "http://www.w3.org/2001/XMLSchema-instance"
 
+    /** Starts the version stamp. [CdaExport] escapes all user text, so a name can't spell this. */
+    private const val VERSION_MARKER = "<softwareName>LabImporter CDA v"
+
     /** @param id the report's identity (on iOS: the Health sample's UUID). */
     fun parse(xml: String, id: String = Uuid.random().toString()): LabReport? {
         val state = ParserState()
+        // Not XML at all: null is this function's answer, and problem() tells callers what it means.
         val reader = runCatching { xmlStreaming.newGenericReader(xml, true) }.getOrNull() ?: return null
         val ok = try {
+            // Malformed XML is no report: null again, and problem() tells callers why.
             runCatching { read(reader, state) }.isSuccess
         } finally {
+            // Reading is done either way; a reader over a string holds nothing a failed close could leak.
             runCatching { reader.close() }
         }
         if (!ok) return null
@@ -44,7 +52,7 @@ object CdaParser {
             // The stored code is the LOINC code; prefer our localized name and
             // fall back to the display name carried in the document.
             val mapped = LabMapping.displayName(obs.loinc)
-            val (text, unit) = obs.value?.let { NumberFormatting.cdaValue(it) to obs.unit } ?: QualitativeResult.split(obs.text!!)
+            val (text, unit) = obs.value?.let { NumberFormatting.exactValue(it) to obs.unit } ?: QualitativeResult.split(obs.text!!)
             LabReport.Entry(
                 id = Uuid.random().toString(),
                 code = obs.loinc,
@@ -54,8 +62,25 @@ object CdaParser {
                 unit = unit,
             )
         }
-        val report = LabReport(id, date, state.patientFamily, state.authorOrg, entries)
+        val report = LabReport(id, date, state.patientFamily, state.authorOrg, entries, unreadValues = state.unreadObservations)
         return ReportSchema.upgrade(report, state.schemaVersion)
+    }
+
+    /**
+     * Why [parse] returned null for a document from this app's own storage, to tell the user.
+     * Null when it's not worth a word: no version stamp (a legacy or foreign document) or a
+     * version below the minimum, both ignored by design. The stamp is looked up in the text
+     * because the document may be too damaged to parse.
+     */
+    fun problem(xml: String): ReportReadProblem? {
+        val start = xml.indexOf(VERSION_MARKER)
+        if (start < 0) return null
+        val version = schemaVersion(xml.substring(start)) ?: return null
+        return when {
+            ReportSchema.isNewer(version) -> ReportReadProblem.NEWER_VERSION
+            version >= ReportSchema.MINIMUM_SUPPORTED_VERSION -> ReportReadProblem.UNREADABLE
+            else -> null
+        }
     }
 
     /** True when [content] looks like a CDA ClinicalDocument (cheap sniff before parsing). */
@@ -72,6 +97,8 @@ object CdaParser {
         var authorOrg = ""
         var schemaVersion: Int? = null
         val observations = mutableListOf<Observation>()
+        // Observations seen that didn't become an [Observation].
+        var unreadObservations = 0
         val elementStack = mutableListOf<String>()
         val text = StringBuilder()
         var inObservation = false
@@ -162,6 +189,8 @@ object CdaParser {
                     s.observations += Observation(loinc, display, value, unit, null)
                 } else if (loinc != null && display != null && text != null) {
                     s.observations += Observation(loinc, display, null, "", text)
+                } else {
+                    s.unreadObservations++
                 }
                 s.inObservation = false
             }
@@ -181,6 +210,7 @@ object CdaParser {
         if (value.length != 8 || !value.all { it.isDigit() }) return null
         return runCatching {
             LocalDate(value.substring(0, 4).toInt(), value.substring(4, 6).toInt(), value.substring(6, 8).toInt())
+            // An impossible date is no date: parse() then refuses the document.
         }.getOrNull()
     }
 }

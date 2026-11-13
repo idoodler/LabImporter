@@ -17,30 +17,22 @@ struct ImportLandingView: View {
     /// survives a layout swap). `nil` falls back to a local sheet, e.g. in
     /// previews.
     var onShowSettings: (() -> Void)?
+    /// Reports exist that can't be listed: this isn't a first run, so they replace the welcome.
+    var status = ReportLoadStatus()
 
     @AppStorage("labDisplayPrefs") private var prefs = LabDisplayPreferences()
     @State private var showSettings = false
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        VStack(spacing: 0) {
-            Spacer()
-            heroSection
-            Spacer()
-            importCard
-                // Keep the card from stretching across an iPad's width — it stays
-                // a centered, readable column on large screens.
-                .frame(maxWidth: 480)
-                .padding(.horizontal, 24)
-                .opacity(isProcessing ? 0.4 : 1)
-                .allowsHitTesting(!isProcessing)
-            Spacer()
-                .frame(height: 56)
+        // Scrolls once large text no longer fits, and fills the screen until then.
+        GeometryReader { proxy in
+            ScrollView {
+                content
+                    .frame(maxWidth: .infinity, minHeight: proxy.size.height)
+            }
+            .scrollBounceBehavior(.basedOnSize)
         }
-        // Fill the whole pane so the background covers it. A VStack otherwise
-        // hugs its content width (~480pt here), which on iPad left the wash as a
-        // narrow centered strip — the Dashboard avoids this only because its
-        // background sits on a greedy ScrollView.
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
         // Painted as this view's own content background — exactly like the
         // Dashboard's CategoryBackground — so it reliably fills the screen
         // (iPhone) or the detail pane (iPad).
@@ -69,6 +61,29 @@ struct ImportLandingView: View {
         }
     }
 
+    private var content: some View {
+        VStack(spacing: 0) {
+            Spacer()
+            if status.hasNotice {
+                ReportStatusCards(status: status, onTryAgain: {})
+                    .frame(maxWidth: 480)
+                    .padding(.horizontal, 24)
+            } else {
+                heroSection
+            }
+            Spacer()
+            importCard
+                // Keep the card from stretching across an iPad's width — it stays
+                // a centered, readable column on large screens.
+                .frame(maxWidth: 480)
+                .padding(.horizontal, 24)
+                .opacity(isProcessing ? 0.4 : 1)
+                .allowsHitTesting(!isProcessing)
+            Spacer()
+                .frame(height: 56)
+        }
+    }
+
     // MARK: - Hero
 
     private var heroSection: some View {
@@ -85,7 +100,7 @@ struct ImportLandingView: View {
                     .frame(width: 110, height: 110)
                     .shadow(color: LabCategory.endocrine.color.opacity(0.35), radius: 24, y: 10)
                 Image(systemName: "waveform.path.ecg.rectangle.fill")
-                    .font(.system(size: 52))
+                    .decorativeIcon(size: 52)
                     .foregroundStyle(.white)
             }
 
@@ -96,7 +111,7 @@ struct ImportLandingView: View {
                 Text("Scan or import your lab report and\nsave it directly to Apple Health.")
                     .font(.body)
                     .multilineTextAlignment(.center)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.textSecondary)
             }
         }
     }
@@ -107,7 +122,7 @@ struct ImportLandingView: View {
         VStack(alignment: .leading, spacing: 14) {
             Text("IMPORT REPORT")
                 .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.textSecondary)
                 .kerning(1)
 
             Button(action: onScan) {
@@ -115,6 +130,7 @@ struct ImportLandingView: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
+            .tint(.prominentFill)
             .controlSize(.large)
             .disabled(!scannerAvailable)
 
@@ -143,7 +159,11 @@ struct ImportLandingView: View {
             .buttonStyle(.bordered)
             .controlSize(.large)
         }
-        .padding(24)
+        // A capsule around three lines of text is nearly a circle.
+        .buttonBorderShape(dynamicTypeSize.isAccessibilitySize ? .roundedRectangle(radius: 20) : .automatic)
+        // At accessibility sizes the icons took the width "Document" needs, and it broke into "Docu-ment".
+        .modifier(TitleOnlyAtAccessibilitySizes())
+        .padding(dynamicTypeSize.isAccessibilitySize ? 12 : 24)
         .cardSurface(cornerRadius: 28)
     }
 }
@@ -158,5 +178,56 @@ struct ImportLandingView: View {
             clipboardAvailable: true,
             isProcessing: false
         )
+    }
+}
+
+#Preview("Largest Text") {
+    NavigationStack {
+        ImportLandingView(
+            onScan: {}, onPickFile: {}, onPaste: {}, onManual: {},
+            scannerAvailable: true,
+            clipboardAvailable: true,
+            isProcessing: false
+        )
+    }
+    .dynamicTypeSize(.accessibility5)
+}
+
+#Preview("Reports Need an Update") {
+    NavigationStack {
+        ImportLandingView(
+            onScan: {}, onPickFile: {}, onPaste: {}, onManual: {},
+            scannerAvailable: true,
+            clipboardAvailable: true,
+            isProcessing: false,
+            status: ReportLoadStatus(newerVersion: 2)
+        )
+    }
+}
+
+#Preview("Reports Need an Update · Dark, Damaged Too") {
+    NavigationStack {
+        ImportLandingView(
+            onScan: {}, onPickFile: {}, onPaste: {}, onManual: {},
+            scannerAvailable: true,
+            clipboardAvailable: true,
+            isProcessing: false,
+            status: ReportLoadStatus(newerVersion: 1, unreadable: 1)
+        )
+    }
+    .preferredColorScheme(.dark)
+}
+
+/// The labels' titles alone where the text is too large for title and icon on a line.
+/// Elsewhere the system's own style, which VoiceOver reads as one button.
+private struct TitleOnlyAtAccessibilitySizes: ViewModifier {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    func body(content: Content) -> some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            content.labelStyle(.titleOnly)
+        } else {
+            content
+        }
     }
 }

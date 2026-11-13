@@ -36,8 +36,7 @@ import kotlin.math.sin
 @Composable
 fun CategoryWash(colors: List<Color>, modifier: Modifier = Modifier, animated: Boolean = false, intensity: Float = 1f) {
     val surface = MaterialTheme.colorScheme.surface
-    val dark = isDarkScheme
-    val alpha = (if (dark) 0.34f else 0.26f) * intensity
+    val alpha = washAlpha(isDarkScheme) * intensity
     val fallback = listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.tertiary, MaterialTheme.colorScheme.secondary)
     val palette = colors.distinct().ifEmpty { fallback }
 
@@ -75,6 +74,12 @@ fun CategoryWash(colors: List<Color>, modifier: Modifier = Modifier, animated: B
         }
     }
 }
+
+/** How strongly a glow's centre tints the surface at an intensity of 1. Text sits directly on it: `DesignContrastTest`. */
+internal fun washAlpha(dark: Boolean): Float = if (dark) 0.24f else 0.18f
+
+/** The strongest wash any screen asks for (onboarding). */
+internal const val MAX_WASH_INTENSITY = 1.25f
 
 private fun cycle(palette: List<Color>, position: Float): Color {
     val count = palette.size
